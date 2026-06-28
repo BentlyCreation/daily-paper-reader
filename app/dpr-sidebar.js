@@ -263,6 +263,7 @@
       centerActive: false,
       autoMark: false,
       preserveScroll: true,
+      dispatchUpdated: false,
     };
   }
   function syncActiveOptionsForInitialLoad() {
@@ -1533,7 +1534,9 @@
     } else if (opts.scrollPanel) {
       scrollPanelIntoView(opts.scrollPanel);
     }
-    dispatchSidebarUpdated();
+    if (opts.dispatchUpdated !== false) {
+      dispatchSidebarUpdated();
+    }
   }
 
   function toggleMobile(open) {
