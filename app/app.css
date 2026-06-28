@@ -7258,14 +7258,14 @@ body.dpr-sidebar-resizing {
 .dpr-sidebar-paper[data-read="0"]::after {
   content: "";
   position: absolute;
-  right: 8px;
-  top: 8px;
-  width: 8px;
-  height: 8px;
+  right: 10px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
   background: #ef4444;
-  box-shadow: 0 0 0 2px #ffffff;
-  z-index: 5;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 7px rgba(239, 68, 68, .55);
+  z-index: 6;
   pointer-events: none;
 }
 .dpr-sidebar-paper-main {
