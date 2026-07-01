@@ -148,25 +148,67 @@
   <script>
     (function () {
       var DEFAULT_CDN_BASE = 'https://cdn.zwwen.online';
+      var DEFAULT_VERSION_PREFIX = 'dpr/assets';
       var ASSET_TIMEOUT_MS = 6000;
       var explicitBase = String(window.DPR_CDN_BASE || '').replace(/\/$/, '');
       var disabled = String(window.DPR_DISABLE_CDN || '').toLowerCase() === '1';
       var isLocalHost = /^(localhost|127\.0\.0\.1|::1)$/.test(String(location.hostname || '').toLowerCase());
       var candidateBase = disabled || (isLocalHost && !explicitBase) ? '' : (explicitBase || DEFAULT_CDN_BASE);
       var preferCdn = !!candidateBase;
+      var appAssetVersion = normalizeAssetVersion(window.DPR_APP_ASSET_VERSION);
+      var versionPrefix = normalizeVersionPrefix(window.DPR_CDN_VERSION_PREFIX || DEFAULT_VERSION_PREFIX);
+      var versionedAppCdnActive = preferCdn && !!appAssetVersion;
       window.DPR_CDN_ACTIVE = preferCdn;
       window.DPR_ASSET_BASE = preferCdn ? candidateBase : '';
+      window.DPR_APP_ASSET_VERSION = appAssetVersion;
+      window.DPR_VERSIONED_APP_CDN_ACTIVE = versionedAppCdnActive;
 
       function normalizePath(path) {
         return String(path || '').replace(/^\/+/, '');
+      }
+
+      function trimSlashes(value) {
+        return String(value || '').trim().replace(/^\/+|\/+$/g, '');
+      }
+
+      function normalizeVersionPrefix(value) {
+        var text = trimSlashes(value || DEFAULT_VERSION_PREFIX);
+        if (!text || text.indexOf('..') !== -1 || !/^[A-Za-z0-9._/-]+$/.test(text)) {
+          return DEFAULT_VERSION_PREFIX;
+        }
+        return text;
+      }
+
+      function normalizeAssetVersion(value) {
+        var text = trimSlashes(value);
+        // latest/main/master 都是可变指针，会绕过 fork 的 Sync 控制，直接禁用。
+        if (!text || /^(latest|main|master)$/i.test(text)) return '';
+        if (text.indexOf('..') !== -1 || !/^[A-Za-z0-9._/-]+$/.test(text)) return '';
+        return text;
+      }
+
+      function encodePathSegments(path) {
+        return String(path || '')
+          .split('/')
+          .filter(Boolean)
+          .map(encodeURIComponent)
+          .join('/');
       }
 
       function localUrl(path) {
         return normalizePath(path);
       }
 
-      function cdnUrl(path) {
+      function cdnUrl(path, useVersionedPath) {
         if (!candidateBase) return localUrl(path);
+        if (useVersionedPath && appAssetVersion) {
+          return [
+            candidateBase,
+            encodePathSegments(versionPrefix),
+            encodePathSegments(appAssetVersion),
+            normalizePath(path),
+          ].filter(Boolean).join('/');
+        }
         return candidateBase + '/' + normalizePath(path);
       }
 
@@ -174,16 +216,25 @@
         return /^app\/vendor\//i.test(normalizePath(path));
       }
 
+      function isProjectAppAsset(path) {
+        var normalized = normalizePath(path);
+        return /^app\//i.test(normalized) && !isVendorAsset(normalized);
+      }
+
+      function shouldLoadAppAssetFromVersionedCdn(path, useCdn) {
+        return !!useCdn && versionedAppCdnActive && isProjectAppAsset(path);
+      }
+
       function shouldLoadScriptFromCdn(path, useCdn) {
         if (!useCdn) return false;
-        // 默认只把第三方 vendor 资源交给 CDN。项目自有 app/*.js
-        // 必须随当前站点版本走本地文件，避免 CDN 旧缓存导致前端改动不可见。
-        return !!explicitBase || isVendorAsset(path);
+        // 项目自有 app/*.js 只有在 fork 本地锁定了不可变版本后才走 CDN，
+        // 避免上游 latest 资源发布后绕过用户的 Sync fork 控制。
+        return isVendorAsset(path) || shouldLoadAppAssetFromVersionedCdn(path, useCdn);
       }
 
       function shouldLoadStylesheetFromCdn(path, useCdn) {
         if (!useCdn) return false;
-        if (!explicitBase && !isVendorAsset(path)) return false;
+        if (!isVendorAsset(path) && !shouldLoadAppAssetFromVersionedCdn(path, useCdn)) return false;
         // KaTeX CSS 会继续请求 fonts/*.woff2。EdgeOne Pages 当前未给字体返回
         // Access-Control-Allow-Origin，本地/GitHub Pages 跨域引用会被浏览器拦截。
         return !/\/katex\.min\.css$/i.test(normalizePath(path));
@@ -206,7 +257,9 @@
             }
           }, ASSET_TIMEOUT_MS);
           link.rel = 'stylesheet';
-          link.href = useRemoteStylesheet ? cdnUrl(path) : localUrl(path);
+          link.href = useRemoteStylesheet
+            ? cdnUrl(path, shouldLoadAppAssetFromVersionedCdn(path, useCdn))
+            : localUrl(path);
           link.onload = function () {
             if (finished) return;
             finished = true;
@@ -234,7 +287,9 @@
         var link = document.createElement('link');
         link.rel = 'preload';
         link.as = 'script';
-        link.href = useRemoteScript ? cdnUrl(path) : localUrl(path);
+        link.href = useRemoteScript
+          ? cdnUrl(path, shouldLoadAppAssetFromVersionedCdn(path, useCdn))
+          : localUrl(path);
         document.head.appendChild(link);
       }
 
@@ -255,7 +310,9 @@
             }
           }, ASSET_TIMEOUT_MS);
           script.async = false;
-          script.src = useRemoteScript ? cdnUrl(path) : localUrl(path);
+          script.src = useRemoteScript
+            ? cdnUrl(path, shouldLoadAppAssetFromVersionedCdn(path, useCdn))
+            : localUrl(path);
           script.onload = function () {
             if (finished) return;
             finished = true;
