@@ -1,0 +1,265 @@
+Title: Generative-Model Predictive Planning for Navigation in Partially Observable Environments
+
+URL Source: https://arxiv.org/pdf/2606.18888v1
+
+Published Time: Thu, 18 Jun 2026 00:50:57 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Generative-Model Predictive Planning for Navigation in Partially Observable Environments 
+
+# Thomas Quilter ∗
+
+Department of Computer Science University of Manchester Manchester, United Kingdom 
+
+# Yifan Zhu ∗
+
+Department of Computer Science Aalto University Espoo, Finland 
+
+# Guorui Quan ∗
+
+Department of Computer Science University of Manchester Manchester, United Kingdom 
+
+# Mingfei Sun 
+
+Department of Computer Science University of Manchester Manchester, United Kingdom 
+
+# Samuel Kaski 
+
+Department of Computer Science Aalto University Espoo, Finland 
+
+## ABSTRACT 
+
+Navigation in partially observable environments presents a signifi-cant challenge for autonomous agents, requiring effective decision-making with limited sensory information in unknown environ-ments. Belief-based methods, particularly those using neural net-works to approximate the belief space, often fail to capture the inher-ent multimodality of belief spaces, especially in high-dimensional cases with perceptual aliasing. While generative models present a compelling alternative, they typically require substantial data or expert demonstrations and lack explicit mechanisms for long-term planning. In this paper, we introduce BeliefDiffusion , a novel frame-work that combines the benefits of both generation and planning. 
+
+BeliefDiffusion leverages diffusion models to explicitly characterize multimodal belief distributions and utilizes Model Predictive Con-trol (MPC) to simultaneously plan ahead. It consists of two steps: (1) Imagining plausible environment configurations based on observa-tion history and (2) Planning efficient navigation strategies across an aggregated configurations. Through extensive experiments in synthetic map environments, we demonstrate that BeliefDiffusion significantly outperforms both model-free reinforcement learning baselines and other generative approaches in navigation success rate and path efficiency. Our results validate that explicitly incor-porating multimodal belief representations into planning enables more robust navigation in partially observable settings. 
+
+## 1 INTRODUCTION 
+
+We study point-goal navigation in partially observable environ-ments where an agent must reach a specified goal location without prior knowledge of the environment structure (i.e., the map). In our setting, the agent only observes a limited local region around itself along with its relative position with goal coordinates. Navigation of this kind presents a fundamental challenge in many domains, e.g., robotics[ 22 ] and autonomous driving[ 18 ]. In this setting, agents must make decisions based on limited or incomplete sensory infor-mation about their surroundings. One traditional approach to solv-ing this challenge is through Partially Observable Markov Decision Processes (POMDPs), which assumes that the agent cannot directly observe the true state but instead needs to maintain a probability “belief” of all possible states based on the observations received so far – also known as Belief MDP. By constructing representations of 
+
+> ∗These authors contributed equally to this work.
+
+environmental states that are consistent with observations, agents can make more informed decisions under uncertainty. Since the be-lief state serves as a sufficient statistic of the agent’s history, there is no need to retain a growing record of past actions and observations, allowing decisions to rely on a fixed-size representation. Moreover, by maximizing the expected total discounted reward over the space of belief states, agents can achieve optimal decision-making. Tech-niques such as simultaneous localization and mapping (SLAM) have been used to build belief representations of environments[ 2]. More recent approaches leverage neural network-based world models to infer environmental states from observation histories[32, 35]. However, these belief-based methods often simplify belief rep-resentations into a unimodal point estimation, i.e., most likely state[ 32 ], sacrificing the probabilistic reasoning necessary for opti-mal navigation in partially observable settings. This limitation is especially problematic in environments with perceptual aliasing and restricted sensor ranges, where multiple plausible configura-tions exist. In such cases, unimodal approximations fail to capture the true multimodal nature of the belief space, leading to subopti-mal decision-making[ 3]. Furthermore, these methods struggle to cope with high-dimensional belief spaces and require explicit envi-ronmental models that are difficult to acquire in complex, unknown settings [ 10 , 14 ]. Previous attempts to overcome these limitations include the use of generative models, which stitch navigation tra-jectories directly without explicitly planning[ 4 , 12 ], or reinforce-ment learning[ 29 ], which focuses on model-free and end-to-end training. By learning a structured latent space, generative models enhance decision-making efficiency without directly interacting with the real environment. They effectively encode complex state distributions[ 5 ], capturing a diverse range of possible states. This makes them particularly well-suited for large, high-dimensional environments. Despite their advantages, these models still require expert demonstrations [ 31 ], or extensive offline trajectories [ 12 ], and often ignore the need for long-term and robust planning in navigation[11]. In this paper, we combine the benefits of both worlds, generation and planning, and introduce BeliefDiffusion , a novel framework that leverages diffusion models to explicitly characterize multimodal belief distributions and utilizes Model Predictive Control (MPC) to simultaneously plan ahead. BeliefDiffusion follows a two-step pro-cess: (1) Imagining plausible environment configurations based on observation history and (2) Planning efficient navigation strategies 
+
+> arXiv:2606.18888v1 [cs.AI] 17 Jun 2026 Thomas Quilter, Yifan Zhu, Guorui Quan, Mingfei Sun, and Samuel Kaski
+
+across an aggregated configurations. First, our model generalizes belief estimation to distribution generation, producing possible map layouts that are consistent with past observations. Our key insight is to treat map layout inference as a conditional generative modeling problem, in order to capture the multimodal distribu-tion of plausible environments. By learning to generate diverse and realistic local maps, our model constructs an explicit belief representation over possible worlds. Second, we integrate this belief representation into an MPC planning framework. We iteratively minimize the cost based on a dynamic model and action proposals derived from the distribu-tion of potential map layouts, and then select a locally optimal trajectory at each timestep. By performing path planning jointly across sampled layouts, we identify robust and efficient navigation strategies in environments where accurate long-horizon planning is impossible. Figure 1 illustrates the key steps of BeliefDiffusion, from initial observations to belief sampling and path planning. Through extensive experimentation in synthetic map environ-ments, we demonstrate that BeliefDiffusion significantly outper-forms existing methodologies in both navigation success rate and path efficiency. Our results show that by explicitly incorporating reasoned belief space into MPC, our framework enables more in-formed decision-making in complex, unknown environments with-out requiring the extensive training data needed by reinforcement learning approaches. The main contributions of our work include: 
+
+• A novel diffusion-based approach for explicitly modeling multimodal belief states in navigation, 
+
+• A belief-space model-predictive planning framework that integrates generated map layouts for robust decision-making in navigation, 
+
+• Strong empirical evidence demonstrating improved sample efficiency and performance compared to both model-free RL methods and approaches that rely on unimodal approxi-mations. In essence, our method first imagines several plausible versions of the unseen parts of the world, then plans actions that work well across those possibilities. Concretely, the diffusion model takes the agent’s partial experience, like a sketch of corridors glimpsed so far, and proposes multiple likely local maps rather than bet-ting on a single guess. MPC then evaluates short action sequences across this small bundle of maps and picks the move that keeps progress towards the goal while avoiding routes that would fail on any reasonable alternative. This two-step “imagine then plan” loop is repeated as new observations arrive, so poor hypotheses are discarded and good ones reinforced, much like a sat-nav that con-tinually recalculates as roads are revealed. A simple analogy: if two passages might exist ahead, we prepare for both, taking the turn that remains safe and useful whichever passage proves real. This makes the agent robust to perceptual aliasing, reduces wrong turns, and saves data, because we do not need to learn a monolithic policy for every situation, only to generate a handful of sensible maps and choose actions that hedge across them. In short, modelling uncertainty explicitly, then planning through that uncertainty, is why BeliefDiffusion succeeds in challenging, partially observable navigation. 
+
+## 2 RELATED WORK 
+
+POMDP for Partial Observability. Navigating in unseen environ-ments presents significant challenges due to partial observabil-ity and unknown environmental dynamics. Partially Observable Markov Decision Processes (POMDPs)[ 13 ] provide a mathematical framework for decision-making under partial observability by main-taining belief states over possible environmental configurations. This enables agents to perform belief-space planning, reasoning over latent state distributions to account for perceptual aliasing and ambiguous observations. The POMDP framework has shown success in various robotic tasks involving partial observability, par-ticularly in navigation contexts [ 15 , 16 ]. Despite their theoretical elegance, classical POMDP solvers face substantial scalability chal-lenges. These algorithms struggle with high-dimensional belief states [ 7] and typically require explicit transition models, which necessitate extensive data collection in complex, unknown environ-ments [ 10 , 14 ]. While reinforcement learning methods such as PPO [ 24 , 29 ] offer alternative approaches, they frequently suffer from data inefficiency and training instability. Recent neural approaches [ 19 , 32 ] attempt to model belief distributions in POMDPs but fail to address a critical challenge: capturing the multimodal nature of belief states in map environments. Instead, these methods tend to collapse to the most probable latent state or rely on a single sample from their model, rather than maintaining the full belief distribution necessary for optimal decision-making under partial observability. 
+
+World Models for Environmental Understanding. Generative mod-els play an increasingly important role in decision-making prob-lems, commonly referred to as World Models. These models serve multiple functions: (1) learning abstract representations of envi-ronments [ 4], (2) predicting future states [ 6 ], and finally providing contextual information for decision-making processes. Recent ad-vances in generative techniques, particularly diffusion models, have been applied to future state prediction [ 12 ] in complex scenarios in-cluding autonomous driving [ 33 ]. These approaches effectively offer probabilistic frameworks for modeling future trajectories. However, most existing methods are constrained in scope, primarily focusing on predicting observation-wise states rather than developing holis-tic environmental representations. More succinct and task-oriented representations, such as Occupancy Grids [ 28 ] or Bird’s-Eye View representations [ 35 ], often prove more effective, particularly for navigation tasks. While these specialized models provide highly descriptive information, they typically lack direct integration with decision-making processes—a crucial component for effective navi-gation. 
+
+## 3 PRELIMINARIES 
+
+In this section, we provide a brief introduction to Partially Ob-servable Markov Decision Processes (POMDP), Model Predictive Control, and diffusion models with classifier-free guidance. 
+
+## 3.1 Partially Observable Markov Decision Process (POMDP) 
+
+A Partially Observable Markov Decision Process (POMDP) is for-mally defined as a 6-tuple ⟨S , A, O, T , Z, R⟩ . Here, S denotes the Generative-Model Predictive Planning for Navigation in Partially Observable Environments Initial Observations 
+
+> Unobserved wall Agent
+
+Belief Samples   
+
+> Noise Condition τ
+> Diffusion Process
+
+Path Planning 
+
+> High probability block (>=0.9) Low reward path High reward path
+
+## Inference Planning Medium reward path. Sample #1 Sample # 2 Sample # 3 Sample # 4 denoising 
+
+Figure 1: BeliefDiffusion explicitly characterises multimodal belief distributions using diffusion models to generate plausible environment configurations from partial observations. We then leverage Model Predictive Control, MPC, to plan robust navigation strategies across these beliefs, enabling efficient navigation in unknown environments. 
+
+set of states, while A represents the set of available actions. The agent receives observations from the set O, which provide partial information about the underlying state. The system evolves accord-ing to the transition probability function T ( 𝑠, 𝑎, 𝑠 ′) = 𝑃 (𝑠 𝑡 +1 = 𝑠 ′ |
+
+𝑠 𝑡 = 𝑠, 𝑎 𝑡 = 𝑎 ). The observation probability function Z( 𝑠 ′, 𝑎, 𝑜 ) =
+
+𝑃 (𝑜 𝑡 +1 = 𝑜 | 𝑠 𝑡 +1 = 𝑠 ′, 𝑎 𝑡 = 𝑎 ), specifies the likelihood of receiving observation 𝑜 given that the system has transitioned to state 𝑠 ′ after taking action 𝑎 . Finally, the reward function R ( 𝑠, 𝑎 ) determines the immediate reward obtained upon executing action 𝑎 in state 𝑠 . A POMDP problem can be transformed into a fully observable Markov Decision Process (MDP) over belief states, often referred to as a belief MDP. More formally, the state space consists of all possible belief states, denoted as 𝑏 ∈ Δ(S) , where Δ(S) represents the set of all probability distributions over the state space S. The action space remains the same as in the original POMDP, i.e., A. The transition function, 𝜏 (𝑏, 𝑎, 𝑏 ′), gives the probability of transitioning to belief state 𝑏 ′ after taking action 𝑎 in belief state 𝑏 . The reward function is defined as 𝜌 (𝑏, 𝑎 ) = Í𝑠 ∈ S 𝑏 (𝑠 )R ( 𝑠, 𝑎 ), where 𝑏 (𝑠 ) is the belief probability of state 𝑠 and R ( 𝑠, 𝑎 ) is the reward function in the original POMDP. When the agent takes action 𝑎 in belief state 𝑏 
+
+and receives observation 𝑜 , the belief state is updated using Bayes’ rule: 𝑏 ′ (𝑠 ′) = 𝑃 (𝑜 |𝑠 ′,𝑎 ) Í𝑠 ∈S 𝑃 (𝑠 ′ |𝑠,𝑎 )𝑏 (𝑠 )   
+
+> 𝑃 (𝑜 |𝑏,𝑎 )
+
+where 𝑃 (𝑜 | 𝑏, 𝑎 ) is given by: 𝑃 (𝑜 | 𝑏, 𝑎 ) = Í𝑠 ′ ∈ S 𝑃 (𝑜 | 𝑠 ′, 𝑎 ) Í𝑠 ∈ S 𝑃 (𝑠 ′ | 𝑠, 𝑎 )𝑏 (𝑠 ). Since the agent cannot directly observe the true state of the environment, it maintains a probability distribution over all possible states, known as a belief state. At time 𝑡 , the belief state 𝑏 𝑡 is a distribution over the state space S, where 𝑏 𝑡 (𝑠 ) denotes the probability that the system is in state 𝑠 ∈ S .In a navigation task, an agent must move through an environ-ment with an uncertain layout. If there is only a finite set of possible maps, denoted as M = {𝑚 1, 𝑚 2, ..., 𝑚 𝑘 }, where each map represents a distinct arrangement of obstacles, and when the agent performs an action and moves, its observation is its current position, 𝑝 𝑜𝑏𝑠 .Then the state space P × M is defined by the combination of the agent’s position 𝑝 and the actual map 𝑚 . Since the agent’s position 
+
+𝑝 ′ is fully observed after each action 𝑎 , the uncertainty about its location is eliminated, and the belief state simplifies to a probability distribution over M.
+
+## 3.2 Model Predictive Control 
+
+Model Predictive Control (MPC) is a model-based method for op-timal control[ 17 , 25 ]. The core characteristic of MPC is to opti-mize the reward over a receding horizon, where the objective is: ˆ𝑎 𝑡 :𝑡 +𝐻 = arg max 𝑎 𝑡 :𝑡 +𝐻 E𝑝 𝜃 (𝑠 𝑡 +1: 𝑡 +𝐻 |𝑎 𝑡 :𝑡 +𝐻 ,𝑠 0: 𝑡 ) [𝑟 𝑡 +1 + · · · + 𝑟 𝑡 +𝐻 ].Here, a learned dynamic model 𝑝 𝜃 predicts future state distributions given a sequence of actions. 𝑎 𝑡 represents the action sequence over the horizon 𝐻 , 𝑠 𝑡 +1, . . . are the future states and 𝑟 𝑡 +1, . . . are the corresponding rewards. Once the optimal action sequence ˆ𝑎 𝑡 :𝑡 +𝐻 
+
+is acquired, MPC use a closed-loop control method, executing the first action 𝑎 𝑡 and replanning the remaining actions based on new observations. MPC offers two key advantages: 1. Adaptability to changing environments – Since MPC iteratively updates its deci-sions based on new observations, it naturally reacts to uncertainties. 2. Data efficiency – Unlike reinforcement learning, MPC often re-quires less data because it does not rely on learning a full policy from scratch. Thomas Quilter, Yifan Zhu, Guorui Quan, Mingfei Sun, and Samuel Kaski 
+
+Two closely related works to our approach are Diffuser [12 ] and 
+
+Diffusion Model Predictive Control (D-MPC) [34 ]. Diffuser 
+
+employs a diffusion model to jointly model future state and action distributions, integrating action proposal and dynamics prediction into a single framework. In contrast, D-MPC separates dynamics modeling and action proposal into two diffusion models, allowing for better adaptation to environmental changes. Our method re-tains the advantages of separating dynamics modeling and action proposal but does so in the belief space using only a single diffu-sion model. This approach further enhances data efficiency while preserving adaptability. 
+
+## 3.3 Denoising diffusion probabilistic models (DDPM) 
+
+Denoising diffusion probabilistic models (DDPM) is a generative model which have two processes: a forward diffusion process and a reverse denoising process. Given a sample point 𝒙 0 from an un-known distribution 𝑝 (𝒙 0), the forward diffusion process adds a small amount of Gaussian noise to the sample 𝒙 0 in 𝑇 steps, pro-ducing a sequence of noisy samples 𝒙 1, 𝒙 2, ..., 𝒙 𝑇 . The step sizes are controlled by a variance schedule {𝛽 𝑡 ∈ ( 0, 1)} 𝑇 𝑡 =1, yielding dis-tributions 𝑞 (𝒙 𝑡 |𝒙 𝑡 −1) = N ( 𝒙 𝑡 ;√︁ 1 − 𝛽 𝑡 𝒙 𝑡 −1, 𝛽 𝑡 I) and 𝑞 (𝒙 1: 𝑇 |𝒙 0) =
+
+Î𝑇 𝑡 =1 𝑞 (𝒙 𝑡 |𝒙 𝑡 −1). After defining 𝛼 𝑡 ≜ 1 − 𝛽 𝑡 and ¯𝛼 𝑡 ≜ Î𝑡 𝑖 =1 𝛼 𝑖 , the diffusion kernel is given as 𝒙 𝑡 = √ ¯𝛼 𝑡 𝒙 0 + √1 − ¯𝛼 𝑡 𝝐 , where 𝝐 is the Gaussian noise. The reverse denoising process reverses the diffu-sion process to generate data 𝒙 0 by denoising in 𝑇 steps: 𝑝 (𝒙 𝑇 ) =
+
+N ( 𝒙 𝑇 ; 0, I) and 𝑝 𝜃 (𝒙 𝑡 −1 |𝒙 𝑡 ) = N ( 𝒙 𝑡 −1; 𝜇 𝜃 (𝒙 𝑡 , 𝑡 ), 𝜎 2 
+
+> 𝑡
+
+I), where 𝜇 𝜃 is a trainable network. After a few arithmetic operations and repa-rameterisation, we can write down the variational objective as: 
+
+min 𝜃 E
+
+h
+
+𝜆 𝑡 𝝐 − 𝝐 𝜃 
+
+ √ ¯𝛼 𝑡 𝒙 0 + √1 − ¯𝛼 𝑡 𝝐 , 𝑡  2 i
+
+, where the expectation is over 𝒙 0 ∼ 𝑞 (𝒙 0), 𝑡 ∼ U{ 1,𝑇 }, 𝝐 ∼ N ( 0, I), and 𝒙 𝑡 is substituted with 𝒙 0 using 𝒙 𝑡 = √ ¯𝛼 𝑡 𝒙 0 +√1 − ¯𝛼 𝑡 𝝐 . [ 8] observe that simply setting 
+
+𝜆 𝑡 to 1 for all 𝑡 works best in practice. The denoising process generates a data distribution from noise without specific conditions. Classifier-Free Guidance (CFG) is a way to modify an unconditional denoising process by conditioning on a discrete random variable 𝒄 in order to control the generation process [ 9]. In practice, CFG operates by mixing the predictions of a conditional diffusion model 𝑝 𝜃 (𝒙 |𝒄 ) and an unconditional diffusion model 𝑝 𝜃 (𝒙 ), both of which can be parameterised via a shared network architecture. For training the unconditional model, the condition is masked to a null token ∅. For sampling, the output at time step 𝑡 is given by ˆ𝝐 (𝒙 𝑡 , 𝑡, 𝒄 ) = (1 + 𝑤 ) · 𝝐 𝜃 (𝒙 𝑡 , 𝑡, 𝒄 ) − 𝑤 ·
+
+𝝐 𝜃 (𝒙 𝑡 , 𝑡, ∅) .
+
+## 4 METHOD 4.1 Map Layout Inference with Diffusion Models 
+
+In our first module, we aim to train a diffusion model that can infer an 𝑆 × 𝑆 local map 𝑚 around the agent, conditioned on the agent’s observation history 𝜏 .
+
+Dataset Collection To train the diffusion model, we collect a dataset (𝑚 𝑛 , 𝜏 𝑛 ): 𝜏 𝑛 is the agent’s observation history {𝑜 𝑛 0, 𝑜 𝑛 1, . . . , 𝑜 𝑛𝑇 },and 𝑚 𝑛 is the ground truth environment map. We discretized each map into grid cells, and each map instance in our dataset is repre-sented as a 2D binary occupancy grid, which is 𝑆 × 𝑆 in size and centered at the agent’s current position. During the collection pro-cess, the agent navigates using a map that is intentionally distorted by noise. This noisy map is the ground truth map with each cell flipped with probability 𝑝 𝑓 𝑙𝑖𝑝 . We then use A* algorithm to plan waypoints for the agent’s movement. This method is designed to collect observation history in scenarios where the agent does not have access to an accurate map during testing. 
+
+Map Representation Embedding To effectively adapting to varying history length, we leverage multi-head attention to enable the model to focus selectively on relevant aspects of the observa-tion history for each cell. This yields extra benefits when the agent remains in the same location for long periods, since simple aver-aging or pooling of the observation history could dilute important information. In specific, given a trajectory of observation history 
+
+𝜏 = 𝑜 1: 𝑇 , we aggregate observations 𝑜 𝑡 based on the cell position 
+
+(𝑖 𝑡 , 𝑗 𝑡 ) where the agent receives those observations, as shown in Figure 2. Specifically, for each grid cell (𝑖, 𝑗 ) in the 𝑆 × 𝑆 local map 
+
+𝑚 , we define the history sequence as the set of all past observations that occurred in that cell: 𝐻 𝑖 𝑗 = {𝑜 𝑡 | 𝑖 𝑡 = 𝑖, 𝑗 𝑡 = 𝑗 }.If a cell has not been visited, its history remains empty, i.e., 𝐻 𝑖 𝑗 = ∅. To effectively condition the U-Net, we convert the sequence in each grid into an embedding through a multi-head attention. More specifically, for each grid cell (𝑖, 𝑗 ), we map its observation sequence 𝐻 𝑖 𝑗 to key k𝑖,𝑗 𝑡 and value v𝑖,𝑗 𝑡 . A shared learnable query q attends to these via multi-head attention. Unvisited cells ( 𝑜 𝑖,𝑗 𝑡 = ∅) are assigned zero embeddings. The resulting embeddings {e𝑖 𝑗 }𝑖,𝑗 ∈𝑆 ×𝑆 form the conditional input patch for the diffusion model. 
+
+Diffusion Model Training We utilize Denoising Diffusion Prob-abilistic Models (DDPM)[ 8] to train our map inference model be-cause DDPM can effectively capture multi-modality distribution, and are less susceptible to mode collapse than Generative Adversar-ial Networks (GANs)[ 1 ]. We implement a U-Net[ 21 ] as the backbone in the diffusion model. Following classifier-free guidance[ 9], we randomly mask {e𝑖 𝑗 }𝑖,𝑗 ∈𝑆 ×𝑆 to zero with a probability of 0.1 for the unconditional model. Instead of predicting noise, We directly predict the original map 𝒙 0 = 𝑚 , similar to DALLE [ 20 ]. Our model learns to reconstruct the original map by optimizing the following objective: 
+
+L( 𝜃 ) = E𝑡,𝜖,𝑚, e
+
+∥𝑚 − 𝜖 𝜃 (𝑚 𝑡 , 𝑡, e)∥ 2  , (1) where 𝑡 ∼ U{ 1, 2, . . . , 𝑁 } represents the diffusion timestep, 𝜖 ∼N ( 0, I) is the noise target, and 𝑚 𝑡 is the noisy version of the map, given by 𝑚 𝑡 = √ ¯𝛼 𝑡 𝑚 + √1 − ¯𝛼 𝑡 𝝐 . We incorporate the conditional embedding and the 2D noise input by concatenating them and feeding the combined input into the diffusion model. For sampling from the denoised imaginary layout, we first use the conditional model to obtain the model input and then follow the denoising process outlined in [ 8 ]. Finally, we apply a threshold of 0.5 to the samples to generate a binary matrix. 
+
+## 4.2 Navigation Planning 
+
+The trained model will generate plausible map layouts based on prior observations. A "plausible" map layout marks as empty for those grids traversed by the agent, and marks as blocks for those Generative-Model Predictive Planning for Navigation in Partially Observable Environments j=0       
+
+> i=1 i=2 i=0 i=3 i=4
+> j=1
+> j=2
+> j=3
+> leranable
+> share query
+> i=1 i=2 i=0 i=3 i=4
+> j=1
+> j=2
+> j=3
+> j=0
+
+key 
+
+value 
+
+> Multi-head Attention
+> Observation history
+> on grid i,j
+> softmax
+
+Figure 2: Map embedding relies on multi-head attention to selectively aggregate past observations to generate conditional embeddings for each grid cell in the local map. 
+
+where the agent encountered obstacles, and extrapolates map struc-ture in unobserved areas based on learned distributions, conditioned on empty and block grids. To enable planning, we approximate the distribution of potential map layouts, denoted as 𝑃 (𝑚 |𝜏 ), by sam-pling a set S𝑁 of 𝑁 map samples of size 𝑆 × 𝑆 from the diffusion model conditioned on the observed trajectory 𝜏 . These samples will be used for 1) estimating the transition function in local regions. and 2) proposing candidate actions for planning. 
+
+• To estimate the dynamic model, we observe that the sample distribution reveals consensus on block placements near observed regions while exhibiting diversity in unexplored areas. To model dynamics, we conservatively aggregate all generated local maps to form one map 𝑚 agg by treating a cell as a block if it is marked as a block in at least 𝑁 · 𝜆 𝑝 
+
+of the generated samples ( 𝜆 𝑝 is a threshold), and as empty otherwise, even for areas outside of the generated local maps. As shown in Figure 1, the areas outside of the local maps are all marked as empty (in grey). 
+
+• To produce action proposals, we generate a set of candidate paths, denoted as 𝑝 𝑖 , by applying a planning algorithm to each individual sampled map layout. Note that this step is independent of the previous dynamic prediction. For each sampled map, planning is conducted with the same start position (i.e., agent’s current position) and the goal position. All path candidates generated are then evaluated with the aggre-gated dynamics model, 𝑚 agg : any path violating the layout in 𝑚 agg 
+
+will receive zero reward. Finally, we select the path with the highest reward as the final plan. In our planning module, the parameter 𝑆 defines the size of the local map used for diffusion, effectively setting the spatial scope of our belief representation. This is analogous to the planning horizon in MPC but applied within the belief space in a spatial context. Importantly, 𝑆 affects action proposals by constraining the spatial extent of the dynamic model during planning. A larger 𝑆 
+
+provides a broader spatial context, allowing planning to capture more global map structures and potentially make long-term deci-sions, but comes with a price: large 𝑆 yields high computational cost in inference and requires more diverse training data to learn effective representations for large map regions. The number of samples, 𝑁 , representing the number of action proposals, also in-troduces a trade-off. Increasing 𝑁 enables a more comprehensive exploration of possible map configurations, potentially leading to more efficient paths and reducing the risk of suboptimal layouts. However, a larger 𝑁 also increases computational costs and may result in infeasible solution proposal. We implement the A* search algorithm for path planning by assigning a cost of 1 to moving through empty cells and penalizing inferred blocks with a cost greater than 1. Manhattan distance serves as our heuristic function. Although infinite costs for obstacles might seem ideal, we find that they can cause planning failures when inferred maps contain slight disconnections. The selected path is then converted into waypoints for the agent to follow using a greedy strategy. At each step, the agent chooses the action (move forward, turn left, or turn right) that best advances towards the next waypoint. For complex movement, more sophisticated waypoint-following or reactive control could improve performance. During testing, our system operates iteratively as follows: the agent collects observations, the layout inference module generates plausible map configurations, the navigation planning module plans the optimal path, and the agent executes actions to reach the next waypoints and gather new information. Once the agent reaches the first waypoint, a new round of generation and planning starts. This procedure repeats until the agent either reaches the goal or exceeds the predetermined step limit. 
+
+## 5 EXPERIMENTS 5.1 Setup of the Experiment 
+
+Map Dataset We constructed a synthetic map dataset inspired by point-goal navigation in indoor environments[ 23 ]. Each map instance in our dataset is represented as a 2D binary occupancy grid. We chose to develop our own synthetic dataset rather than using existing navigation datasets from embodied AI simulations like Habitat for two reasons: 1. Existing datasets are often integrated with too complex simulators that are difficult to customize for our Thomas Quilter, Yifan Zhu, Guorui Quan, Mingfei Sun, and Samuel Kaski 
+
+specific requirements. 2. We can have precise control over dataset quality with synthetic tasks. For example, the Gibson PointNav dataset [ 30 ] used in the Habitat simulator [ 23 ] contains navigation tasks with notable limitations: 23% of validation tasks can be solved by direct move towards the goal, most tasks have relatively short routes, and some scenes contain poorly reconstructed areas with holes in the floor that disrupt navigation. In contrast, our synthetic methodology grants us fine-grained control over map properties, enabling the generation of a diverse dataset specifically designed to isolate the navigation task itself. For the training dataset, we randomly generated 100 maps and collected 50,000 episodes, with each episode having a maximum length of 200. The generated maps are 64 ×64 in size, and map-generation details are provided in the supplementary material. 
+
+Implementation Details Our diffusion model is based on a U-Net architecture[ 21 ] that consists of two downsampling and up-sampling stages, with each resolution level containing two ResNet blocks. An attention layer is applied at an 8 ×8 resolution, and we use group normalization and ReLU activation throughout the model, along with a 0.1 dropout rate during training. Trajectory informa-tion is integrated into both the input and skip connections through concatenation. Our diffusion training and sampling employ a lin-ear noise schedule and utilize the DDIM sampling algorithm[ 27 ]for efficient inference. During evaluation, we perform sampling with 20 steps. Hyperparameters are reported in the supplementary material. 
+
+## 5.2 Evaluation Results 
+
+In this section, we address the following questions: 1) Can diffusion models generate maps suitable for navigation? 2) Does the explicit belief representation improve navigation performance compared to end-to-end approaches such as LSTM-PPO? 3) Can generative models that model at the observation level achieve comparable performance? 4) How do the hyperparameters of the generative model impact planning performance? 
+
+Diffusion Models Generate Plausible and Diverse Layouts. To as-sess the ability of our diffusion model to generate navigable maps, we train the diffusion model on 16 ×16 maps and compare it against a deterministic prediction model trained using supervised learning with an MSE objective and the same U-Net architecture. Figure 3 presents visualizations of map samples generated by both mod-els. The deterministic prediction model produces maps that do not exhibit any structure in the map dataset, such as paths, failing to capture the variety of plausible layouts. To further assess the quality of the generated maps, we con-ducted tests using agent random walks and recorded the blocks they traversed and interacted with. Our results show that our model leaves 97.1% of the traversed blocks empty and correctly marks 
+
+95.9% of agent-collision blocks as walls. These findings highlight the model’s ability to accurately identify key map elements, demon-strating its effectiveness in generating meaningful and navigable layouts. 
+
+Navigation Performance Comparison with LSTM-PPO. Next, we compare the navigation performance of our approach against LSTM-PPO[29], a strong baseline in Navigation. Ground Truth Map (16x16) Deterministic Prediction Map      
+
+> Diffusion Sample 1 Diffusion Sample 2 Diffusion Sample 3 Diffusion Sample 4
+> Open Space Agent (Trajectory) Wall
+
+Figure 3: Generated maps from diffusion model and an de-terministic prediction model. 
+
+We evaluate each method using 2000 navigation episodes across 100 different test maps which do not exist in training dataset. A timeout of 200 steps was imposed for each episode. We use two evaluation metrics: Success Rate (SR) and Success weighted by inverse Path Length (SPL) [23 ]. Success Rate (SR) represents the percentage of episodes where the agent successfully reached the goal. And SPL defined as SPL = 𝑆 𝑙   
+
+> max (𝑝,𝑙 )
+
+, where 𝑆 is a binary suc-cess indicator (1 if successful, 0 otherwise), 𝑝 is the path length taken by the agent, and 𝑙 is the optimal (shortest) path length. The agent had three possible actions at each step: move forward 0.5 me-ters, turn left by 30 degrees, or turn right by 30 degrees. The agent’s observation space consisted of its relative position to the goal and its current orientation, mimicking a scenario where navigation re-lies solely on GPS and compass sensors. We also included a simple 
+
+Goal-Follower baseline, adapted from the Habitat Challenge[ 23 ], where the agent directly navigates towards the goal in a straight line. The results of this comparative analysis are summarized in Table 1. Our method uses fixed parameters with a map size of 8x8, a sample number of N=10, and a CFG weight of 0.5. For the LSTM-PPO baseline, we use a two-layer LSTM network with a hidden dimension of 512. The hyperparameters for PPO and the network architecture remain consistent with those used in [ 29 ]. We also use the same reward design, which includes a terminal reward and a shaped reward. The agent receives a terminal reward of 𝑟 𝑇 = 2.5 SPL if it is within 1m of the target. The shaped reward at each step is 𝑟 𝑡 (𝑎 𝑡 , 𝑠 𝑡 ) = −Δgeo dist − 0.01 , where Δgeo dist is the geodesic distance change, and −0.01 is a step penalty to promote efficiency. We use the fast marching method[ 26 ] to approximate the geodesic distance. The Goal-Follower baseline, which follows a straight-line path, performs poorly, highlighting the difficulty of our navigation tasks. In contrast, our method outperforms the best LSTM-PPO agent, which achieves its best performance after 500M interactions with the environment. We report LSTM-PPO’s performance at 500M because, beyond this point, its performance experiences instability and diminishing returns. On the other hand, our model reaches the same performance while being trained on a dataset that is only 1/500th the size of what the best LSTM-PPO requires. Furthermore, we observe that LSTM-PPO struggles with insta-bility when the training task becomes too complex, limiting its ability to learn from episodes that demand long-term planning. Our Generative-Model Predictive Planning for Navigation in Partially Observable Environments 
+
+Table 1: The Navigation performance comparison of our method against LSTM-PPO. The numbers in parentheses in-dicate the environment interaction steps for LSTM-PPO and the offline dataset size for our method. 
+
+Method Success Rate (SR) SPL Goal-Follower 10.9% 10.1% LSTM-PPO(100M) 35.9% 28.6% LSTM-PPO(500M) 45.5% 35.5% Our Method(0.1M) 39.4% 31.4% Our Method(1M) 45.8% 36.1% Our Method(10M) 47.3% 37.0% diffusion-based approach, which uses an explicit belief representa-tion, offers more robust and sample-efficient navigation. Additional visualizations can be found in the appendix. 
+
+Comparison with Deterministic and Generative Baselines. To show that the diffusion model for map layout modeling is necessary, we included the following baselines: 1. Deterministic Prediction Model : In this approach, we replace diffusion with a deterministic prediction model. 2. Trajectory Diffusion : We train a 5-layer transformer on the same dataset to predict the next 10 steps based on the observation history of positions relative to the goal position. During testing, we use these predictions as waypoints for the agent to follow greedily, similar to our method. 
+
+Table 2: The Navigation performance comparison of our method against LSTM-PPO. 
+
+Method Success Rate (SR) SPL Trajectory Diffusion 9.4% 6.2% Deterministic Prediction 20.4% 16.5% Our Method 47.3% 37.0% The results demonstrate that our method significantly outper-forms both deterministic and generative models on trajectory pre-diction in navigation tasks. The deterministic prediction model exhibits more stable performance than the trajectory generative approach, highlighting that learning a map model is usually easier than predicting future dynamics, and that generative models at the observation level may require carefully designed, high-quality datasets to be effective. However, deterministic methods’ inability to capture multimodal distributions limits their effectiveness in complex environments. 
+
+Impact of Hyperparameters on Planning Performance. Finally, we examine the influence of key hyperparameters on navigation per-formance, focusing on two key parameters: Inference Map Size (S) and Belief Space Sample Number (N) . For each ablation, we report the best performance for CFG weights of 0.0 and 0.5, and sample sizes of N = 10 and 15 (except for the ablation of the number of samples). The results in Table 3 highlight that a map size of 8 consis-tently delivers the best performance. Additionally, navigation per-formance improves as the dataset size increases for all window sizes. 
+
+Table 3: Navigation Performance with Different Map Sizes and Dataset Sizes 
+
+Map Size Dataset Size SPL (%) SR (%) 4 10M 33.6 42.1 4 1M 33.1 41.1 4 0.1M 30.0 37.9 8 10M 37.0 47.3 8 1M 36.1 45.8 8 0.1M 31.8 40.0 16 10M 34.9 44.5 16 1M 35.2 44.3 16 0.1M 30.8 38.2 32 10M 33.2 41.4 32 1M 33.1 41.8 32 0.1M 31.4 39.4 
+
+Table 4: Navigation Performance with Different Window Sizes and Sample Number 
+
+Window Size Sample Number SPL (%) SR (%) 4 1 23.1 32.5 4 5 31.7 40.2 4 10 33.0 41.3 4 15 33.6 42.1 8 1 23.1 33.0 8 5 35.1 45.5 8 10 37.0 47.3 8 15 36.3 46.7 16 1 22.5 31.3 16 5 33.4 42.9 16 10 34.9 44.5 16 15 34.6 43.1 Increasing the map size beyond 8 either results in marginal perfor-mance reduction or no significant improvement. This suggests that larger inference maps introduce added complexity without yielding better contextual understanding when the data is limited. Further-more, smaller map sizes, such as 4, cause the model to struggle with long-term planning. We observe that this often leads to paths with frequent back-and-forth movements due to limited context length. From Table 4, we observe significant performance improvements when increasing N from 1 to 5 and then from 5 to 10 across all win-dow sizes. However, the performance gains from further increasing N to 15 are much smaller, with some cases showing a slight decrease. This suggests that with N=10 samples, the belief space is already adequately represented for effective navigation. Increasing the sam-ple number beyond this point offers only marginal improvements in belief accuracy, which may lead to infeasible path suggestions and a decrease in navigation performance, particularly with larger window contexts. Thomas Quilter, Yifan Zhu, Guorui Quan, Mingfei Sun, and Samuel Kaski 
+
+## 6 CONCLUSION 
+
+In this paper, we presented BeliefDiffusion, a novel framework for point-goal navigation in partially observable environments that explicitly models multimodal belief states using diffusion models. By generating a distribution of plausible map layouts conditioned on observation history and integrating these layouts into a Model Predictive Control (MPC) planner, BeliefDiffusion achieved robust and efficient navigation in complex and unknown environments. Our empirical evaluation in synthetic 2D grid worlds demonstrated that BeliefDiffusion significantly outperforms both model-free rein-forcement learning methods like LSTM-PPO and generative models relying on unimodal approximations or trajectory prediction, par-ticularly in terms of sample efficiency and navigation performance. While our results are promising, the computational demands of belief sampling for each planning step could be further improved in real-time applications. Future research directions include optimiz-ing the computational efficiency of belief sampling and planning, and exploring the broader applicability of our BeliefDiffusion frame-work to other POMDP beyond point-goal navigation. 
+
+## REFERENCES 
+
+[1] Prafulla Dhariwal and Alexander Nichol. 2021. Diffusion models beat gans on image synthesis. Advances in neural information processing systems 34 (2021), 8780–8794. [2] Hugh Durrant-Whyte and Tim Bailey. 2006. Simultaneous localization and mapping: part I. IEEE robotics & automation magazine 13, 2 (2006), 99–110. [3] Himanshu Gupta. 2024. Efficient Continuous Space BeliefMDP Solutions for Navigation and Active Sensing.. In AAMAS . 2749–2751. [4] David Ha and Jürgen Schmidhuber. 2018. World models. arXiv preprint arXiv:1803.10122 (2018). [5] Danijar Hafner, Timothy Lillicrap, Jimmy Ba, and Mohammad Norouzi. 2019. Dream to control: Learning behaviors by latent imagination. arXiv preprint arXiv:1912.01603 (2019). [6] Nicklas Hansen, Yixin Lin, Hao Su, Xiaolong Wang, Vikash Kumar, and Aravind Rajeswaran. 2022. Modem: Accelerating visual model-based reinforcement learning with demonstrations. arXiv preprint arXiv:2212.05698 (2022). [7] Milos Hauskrecht. 2000. Value-function approximations for partially observable Markov decision processes. Journal of artificial intelligence research 13 (2000), 33–94. [8] Jonathan Ho, Ajay Jain, and Pieter Abbeel. 2020. Denoising diffusion probabilistic models. Advances in neural information processing systems 33 (2020), 6840–6851. [9] Jonathan Ho and Tim Salimans. 2022. Classifier-free diffusion guidance. arXiv preprint arXiv:2207.12598 (2022). [10] Marcus Hoerger, Joshua Song, Hanna Kurniawati, and Alberto Elfes. 2019. Pomdp-based candy server: Lessons learned from a seven day demo. In Proceedings of the International Conference on Automated Planning and Scheduling , Vol. 29. 698–706. [11] Mineui Hong, Minjae Kang, and Songhwai Oh. 2023. Diffused task-agnostic milestone planner. Advances in Neural Information Processing Systems 36 (2023), 387–405. [12] Michael Janner, Yilun Du, Joshua B Tenenbaum, and Sergey Levine. 2022. Plan-ning with diffusion for flexible behavior synthesis. arXiv preprint arXiv:2205.09991 
+
+(2022). [13] Leslie Pack Kaelbling, Michael L Littman, and Anthony R Cassandra. 1998. Plan-ning and acting in partially observable stochastic domains. Artificial intelligence 
+
+101, 1-2 (1998), 99–134. [14] Peter Karkus, David Hsu, and Wee Sun Lee. 2017. Qmdp-net: Deep learning for planning under partial observability. Advances in neural information processing systems 30 (2017). [15] Mikko Lauri and Risto Ritala. 2016. Planning for robotic exploration based on forward simulation. Robotics and Autonomous Systems 83 (2016), 15–31. [16] Ruben Martinez-Cantin, Nando De Freitas, Eric Brochu, José Castellanos, and Arnaud Doucet. 2009. A Bayesian exploration-exploitation approach for optimal online sensing and planning with a visually guided mobile robot. Autonomous Robots 27 (2009), 93–103. [17] Manfred Morari and Jay H Lee. 1999. Model predictive control: past, present and future. Computers & chemical engineering 23, 4-5 (1999), 667–682. [18] Teddy Ort, Liam Paull, and Daniela Rus. 2018. Autonomous vehicle navigation in rural environments without detailed prior maps. In 2018 IEEE international conference on robotics and automation (ICRA) . IEEE, 2040–2047. [19] Santhosh Kumar Ramakrishnan, Devendra Singh Chaplot, Ziad Al-Halah, Jiten-dra Malik, and Kristen Grauman. 2022. Poni: Potential functions for objectgoal navigation with interaction-free learning. In Proceedings of the IEEE/CVF Confer-ence on Computer Vision and Pattern Recognition . 18890–18900. [20] Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen. 2022. Hierarchical text-conditional image generation with clip latents. arXiv preprint arXiv:2204.06125 1, 2 (2022), 3. [21] Olaf Ronneberger, Philipp Fischer, and Thomas Brox. 2015. U-Net: Convolutional Networks for Biomedical Image Segmentation. In Medical Image Computing and Computer-Assisted Intervention – MICCAI 2015 , Nassir Navab, Joachim Horneg-ger, William M. Wells, and Alejandro F. Frangi (Eds.). Springer International Publishing, Cham, 234–241. [22] Stephane Ross, Brahim Chaib-draa, and Joelle Pineau. 2008. Bayesian reinforce-ment learning in continuous POMDPs with application to robot navigation. In 
+
+2008 IEEE International Conference on Robotics and Automation . IEEE, 2845–2851. [23] Manolis Savva, Abhishek Kadian, Oleksandr Maksymets, Yili Zhao, Erik Wijmans, Bhavana Jain, Julian Straub, Jia Liu, Vladlen Koltun, Jitendra Malik, et al . 2019. Habitat: A platform for embodied ai research. In Proceedings of the IEEE/CVF international conference on computer vision . 9339–9347. [24] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. 2017. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347 
+
+(2017). [25] Max Schwenzer, Muzaffer Ay, Thomas Bergs, and Dirk Abel. 2021. Review on model predictive control: An engineering perspective. The International Journal of Advanced Manufacturing Technology 117, 5 (2021), 1327–1349. [26] James A Sethian. 1999. Fast marching methods. SIAM review 41, 2 (1999), 199–235. [27] Jiaming Song, Chenlin Meng, and Stefano Ermon. 2020. Denoising diffusion implicit models. arXiv preprint arXiv:2010.02502 (2020). [28] Lening Wang, Wenzhao Zheng, Yilong Ren, Han Jiang, Zhiyong Cui, Haiyang Yu, and Jiwen Lu. 2024. Occsora: 4d occupancy generation models as world simulators for autonomous driving. arXiv preprint arXiv:2405.20337 (2024). [29] Erik Wijmans, Abhishek Kadian, Ari Morcos, Stefan Lee, Irfan Essa, Devi Parikh, Manolis Savva, and Dhruv Batra. 2019. Dd-ppo: Learning near-perfect pointgoal navigators from 2.5 billion frames. arXiv preprint arXiv:1911.00357 (2019). [30] Fei Xia, Amir R Zamir, Zhiyang He, Alexander Sax, Jitendra Malik, and Silvio Savarese. 2018. Gibson env: Real-world perception for embodied agents. In 
+
+Proceedings of the IEEE conference on computer vision and pattern recognition .9068–9079. [31] Xinyao Yu, Sixian Zhang, Xinhang Song, Xiaorong Qin, and Shuqiang Jiang. 2024. Trajectory Diffusion for ObjectGoal Navigation. Advances in Neural Information Processing Systems 37 (2024), 110388–110411. [32] Sixian Zhang, Xinyao Yu, Xinhang Song, Xiaohan Wang, and Shuqiang Jiang. 2024. Imagine Before Go: Self-Supervised Generative Map for Object Goal Navigation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 16414–16425. [33] Yinan Zheng, Ruiming Liang, Kexin Zheng, Jinliang Zheng, Liyuan Mao, Jianx-iong Li, Weihao Gu, Rui Ai, Shengbo Eben Li, Xianyuan Zhan, et al . 2025. Diffusion-Based Planning for Autonomous Driving with Flexible Guidance. arXiv preprint arXiv:2501.15564 (2025). [34] Guangyao Zhou, Sivaramakrishnan Swaminathan, Rajkumar Vasudeva Raju, J Swaroop Guntupalli, Wolfgang Lehrach, Joseph Ortiz, Antoine Dedieu, Miguel Lázaro-Gredilla, and Kevin Murphy. 2024. Diffusion Model Predictive Control. 
+
+arXiv preprint arXiv:2410.05364 (2024). [35] Jiayu Zou, Kun Tian, Zheng Zhu, Yun Ye, and Xingang Wang. 2024. Diffbev: Conditional diffusion model for bird’s eye view perception. In Proceedings of the AAAI conference on artificial intelligence , Vol. 38. 7846–7854.

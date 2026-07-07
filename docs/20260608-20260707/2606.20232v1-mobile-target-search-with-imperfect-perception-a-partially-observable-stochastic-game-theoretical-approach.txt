@@ -1,0 +1,996 @@
+Title: Mobile Target Search with Imperfect Perception: A Partially Observable Stochastic Game Theoretical Approach
+
+URL Source: https://arxiv.org/pdf/2606.20232v1
+
+Published Time: Fri, 19 Jun 2026 01:09:40 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# MOBILE TARGET SEARCH WITH IMPERFECT PERCEPTION : A PARTIALLY OBSERVABLE STOCHASTIC GAME THEORETICAL 
+
+# APPROACH 
+
+Hanzheng Zhang 1
+
+, Shu Liang 1,2
+
+, Shuyu Liu 2
+
+## ABSTRACT 
+
+This paper investigates mobile target search under imperfect perceptions caused by sensor limitations, malicious jamming, or communication noise. Searchers and targets operate in a grid-shaped area with bounded mobility, leading to a dynamic interplay between search and evasion. To capture this adversarial interaction under imperfect perceptions, we adopt the partially observable stochastic game (POSG) approach, which generalizes partially observable Markov decision processes (POMDPs) by incorporating target intelligence. To handle false alarms and missed detections caused by perceptual uncertainties, we propose a novel detectability concept to determine whether a search strategy guar-antees eventual detection, and provide sufficient detectability criteria based on stochastic recurrence analysis. We further develop a server-assisted distributed algorithm that utilizes the aggregative potential game structure for searchers and a KL-divergence-based reduction for target prediction. Nu-merical simulations validate the effectiveness of the proposed algorithm and support the detectability analysis. 
+
+Keywords mobile target search, imperfect perceptions, partially observable stochastic game, information entropy, detectability, distributed algorithm 
+
+## 1 Introduction 
+
+Recent technological advancements in robotics have spurred research interest in mobile robots across various application scenarios such as logistics [ 1 , 2], environmental monitoring [ 3, 4 ], and emergency response [ 5, 6]. Within mobile robotics, target search addresses the problem of efficiently detecting and localizing targets in unknown or dynamic environments. This capability is key to mission success in applications such as surveillance, search and rescue, and patrol operations [7, 8, 9, 10, 6, 5, 11]. Target search encompasses a range of challenges, including efficient path planning for searchers [ 4 , 6], optimal allocation of sensing resources [ 12 , 13 ], and determining search positions over time [ 14 , 5]. These problems become particularly complex when the target is mobile and adversarial, or the environment is uncertain [ 15 , 6, 16 , 5 ]. Our work focuses on multi-stage search problems for a mobile target with both imperfect sensing and limited information. One of the main challenges in target search arises from actively evading targets, which posses obstacles in predicting the target’s future positions. To this end, game-theoretic approaches, as an effective tool in predicting adversarial actions, have been widely employed in mobile target search. These methods model the search-evasion interaction as a two-player (or two-group) game between searchers and targets, yielding strategies that are effective against rational adversaries [ 17 , 18 , 19 , 20 ]. Among these, pursuit-evasion games have evolved into a distinct category, which typically assume perfect sensor perception and complete information [21, 16]. Beyond the challenge of actively evading targets, environmental uncertainties, and perception failures present another layer of complexity in realistic search scenarios. These issues stem from a variety of sources, including inherent sensor limitations (such as limited range and field of view [ 22 ]), dynamic environmental changes [ 7 ], and 
+
+> 1
+
+Shanghai Research Institute for Intelligent Autonomous Systems, Tongji University, Shanghai, China 
+
+> 2
+
+Department of Control Science and Engineering, Tongji University, Shanghai, China This work was supported by the National Key Research and Development Program of China under Grant 2022YFA1004700. Emails: {zhanghanzheng, sliang, shuyuliu}@tongji.edu.cn. Corresponding author: S. Liang. 
+
+> arXiv:2606.20232v1 [cs.RO] 18 Jun 2026
+
+Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach even adversarial interference such as malicious jamming [ 23 ]. Such imperfections lead to incomplete, noisy, or entirely missing observations. This unreliability significantly complicates the search problem. Firstly, it introduces and perpetuates erroneous beliefs of the target, leading searchers to search in wrong areas [ 8]. Secondly, it forces searchers to engage in a complex trade-off between exploring the environment to reduce uncertainty and exploiting current, but possibly incorrect, beliefs to capture the target [9]. Partially observable Markov decision processes (POMDPs) and partially observable stochastic games (POSGs) are widely employed to address uncertainties arising from environments and perceptions, where they model the task as a Markov process and a stochastic game, respectively. Specifically, POMDPs [ 24 , 25 , 26 , 5, 23 ] offer a principled approach for sequential decision-making under state and observation uncertainty. POSG approaches [ 27 , 28 , 19 , 20 ] additionally combine player interactions in adversarial scenarios under environmental uncertainties and sensor limitations. However, most POSG studies for target search focus on problems within the searcher coalition (e.g. [ 20 ]), while their application to mobile target search with false alarms and missed detections remains limited. However, the aforementioned POSG models for mobile target search have neglected the existence of false alarms, a crucial aspect of perception. Existing works typically assume near-perfect sensing, ignoring false alarms and thereby sidestepping the potential risk of being misled caused by unreliable perceptions. Considering this, in this paper we employ a practical sensing model incorporating both false alarms and missed detections. This sensing model with missed detections and false alarms is common in imperfect search and tracking problems [ 14 , 5, 29 ], and related uncertainty-aware search models have also been studied in robotic exploration and search-and-rescue scenarios [ 10 , 8, 9]. However, its application to mobile target search remains limited. Consequently, under this more challenging model, a fundamental and previously under-explored question arises: can the searcher guarantee eventual detection of the target at all? This concept of detectability, that is, whether a search strategy ensures a terminal detection state, becomes critical. This question highlights a fundamental challenge in adversarial environments with active evasion and imperfect sensing. Under such conditions, the signal-to-noise ratio (SNR) of positive outcomes dramatically decreases compared to cases without false alarms. With a much smaller SNR, it follows from the active evasion of the target that a positive information gain cannot be guaranteed over each iteration. Consequently, conventional approaches that rely on optimizing utilities or computing Nash equilibrium strategies in Markov-based models cannot directly lead to eventual detection. The searcher’s true objective, namely reaching an end state corresponding to detection, necessitates a further re-evaluation of strategy design against adversarial and perceptually limited settings. Therefore, a major contribution of this work is to bridge this gap by formally establishing an α-detectability condition under imperfect perceptions and developing computational methods to derive strategies that provably ensure detection. To this end, we construct the natural filtration generated by sequential belief updates, search actions, target motions, and search results, and analyze detectability as a hitting property of the posterior belief process. By applying the Borel-Cantelli lemma, we establish a sufficient condition for α-detectability, i.e., the almost-sure eventual crossing of the detection threshold. Furthermore, for the homogeneous setting, we provide a quantitative analysis of the worst-case scenario that searchers may face, yielding explicit bounds on the detection threshold. These results not only offer insight into how detectability can be achieved, but also highlight a fundamental distinction between our problem and existing work without false alarms. To sum up, in this paper, we explore an approach for a class of mobile target search problems incorporating both imperfect perceptions and agent mobility. In this scenario, searchers receive imperfect perceptions due to limitations in sensor abilities [ 5, 22 ], malicious jamming [ 23 ], and communication noise [ 11 ], while both searchers and the target are mobile within a constrained area. This combination prompts an investigation into search strategies to determine whether they can lead to detection and how to achieve an α-detectable strategy. To this end, we analyze the stochastic recurrence of the posterior belief process and provide sufficient conditions for α-detectability from both the qualitative and quantitative perspectives. Then, to overcome the computational complexities arising from exponentially large state and action spaces, we design a distributed algorithm with a central server that incorporates strategic approximations for both sides, drastically reducing the problem dimension to circumvent the curse of dimensionality inherent in POSGs. In this view, the main contributions are as follows. • We investigate a mobile target search problem under imperfect perceptions, which includes false alarms and missed detections. This generalizes existing works by incorporating target intelligence [ 8, 9, 10 , 14 ] and imperfect perceptions [ 6 , 23 , 25 ]. To handle the active target and imperfect perceptions including false alarms, we formulate the problem as a partially observable stochastic game (POSG), which provides a principled framework for reasoning under both observation errors and strategic interactions. • We establish the concept of α-detectability to formally determine whether target detection can be guaranteed in the presence of false alarms. By leveraging the Borel-Cantelli lemma, we provide sufficient conditions for 
+
+α-detectability from both qualitative and quantitative perspectives. Compared with existing robotic search and 2Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach mobile-target coordination studies where false alarms are absent [ 6, 8 , 10 ], we bridge the gap between strategy optimality and the detection guarantee, which is crucial when false alarms are present and mislead the search. • We design a server-assisted distributed algorithm for detectable strategies. The searcher-side problem is decomposed based on the aggregative potential game structure, while the target-side prediction is reduced through a KL-divergence reformulation based on the scalar average belief. These design choices drastically reduce computational burdens while preserving the strategic reasoning essential for effective search. The rest of this paper is organized as follows. Section 2 summarizes the preliminaries. Section 3 formulates the search problem and reformulates it as a POSG. Section 4 analyzes the α-detectability using stochastic recurrence arguments. Section 5 presents the distributed algorithm with detailed implementations. Section 6 provides numerical simulations for illustration. Finally, Section 7 concludes the paper. 
+
+Notations: Denote the n-dimensional real Euclidean space by Rn and its L∞-norm by ∥·∥ ∞. For a set A with finite elements, |A| denotes its cardinality, and ∆( A) = {P|A|  
+
+> i=1
+
+kiai : P|A|  
+
+> i=1
+
+ki = 1 , k i ≥ 0, a i ∈ A} denotes the simplex over A.
+
+## 2 Preliminaries 
+
+2.1 Probability and Information Entropy 
+
+For events A and B, P(A) is the probability of A occurring, and P(A|B) denotes the conditional probability that 
+
+A occurs when B occurs, which satisfies P(A|B) = P(AB ) 
+
+> P(B)
+
+, where AB refers to both events occurring. An event A
+
+is said to be a.s. (almost surely) valid if P(A) = 1 . A binomial distribution with positive integer K and p ∈ [0 , 1] is denoted by B(K, p ), with probability mass function P(X = k) =  Kk
+
+pk(1 − p)K−k. For a given random variable X
+
+and its probability distribution P , the expectation of f is EX∼P [f (X)] = P 
+
+> X
+
+P (X)f (X), which is often simplified by E[f (X)] .Information entropy is defined as H(X) = − Pn−1 
+
+> i=0
+
+P(X = i) log 2(P(X = i)) for a random variable X with possible outcomes 0, 1, . . . , n − 1. Furthermore, the expected conditional information entropy is E[H(X|Y )] = P 
+
+> y
+
+P(y)H(X|Y = y).Specifically, the binary information entropy of X is H(X) = −p log 2(p) − (1 − p) log 2(1 − p), where p is the probability of X = 1 . For simplification, denote the above entropy as h(p) where p is the corresponding positive probability. Obviously, h(p) is concave and non-negative with h(p) = h(1 − p), arg max p h(p) = 0 .5, and 
+
+h(0) = h(1) = 0 .
+
+2.2 Filtration, Stopping Time, and Borel-Cantelli Lemma 
+
+We provide the necessary probabilistic tools used in the detectability analysis in Section 4. The detailed introduction can be found in standard textbooks such as [30] and [31]. Let (Ω , F, P) be a probability space. A filtration {F t}t≥0 is an increasing sequence of sub-σ-algebras representing the information available over time. A random variable τ : Ω → N ∪ {∞} is a stopping time with respect to {F t} if 
+
+{τ ≤ t} ∈ F t for every t. The first time the posterior belief satisfies the detection criterion is treated as such a stopping time. The following (conditional) Borel-Cantelli Lemma is an effective tool to obtain a finite stopping time. 
+
+Lemma 1 (Borel-Cantelli Lemma) Let {At}t≥1 be a sequence of events adapted to {F t}t≥0, with At ∈ F t. If 
+
+> ∞
+
+X
+
+> t=1
+
+P(At|F t−1) = ∞, a.s. ,
+
+then At occurs infinitely often. 
+
+## 3 Problem Formulations 
+
+In this section, we formulate a mobile target search problem and introduce the α-detectability to characterize the ability to eventually detect the target. Based on this, we then present the two main problems: how to determine the 
+
+α-detectability and how to find an α-detectable search strategy. To tackle these problems, we reformulate the search process with a multi-agent partially observable stochastic game (POSG). 
+
+3.1 Mobile Target Search 
+
+Consider a search problem with m searchers and a mobile target in an A1 × A2 grid area A, with the searcher set 
+
+V = {1, . . . , m }. Each searcher i is associated with a search coverage region Ct(vi) centered at its current position 3Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach 
+
+vit. While the shape of this region can be designed based on specific sensing characteristics, in this paper we assume it to be a square with a side length of 2rs. Formally, this region is defined as Ct(vi) = {a : ∥a − vit∥∞ ≤ rs}.For brevity, the coverage is denoted by Cit for searcher i and Ct = S 
+
+> i
+
+Cit for all searchers. Within this region, the searcher can detect a valid target with probability pid and may generate a false alarm with probability pif . Specifically, if the target lies in an area a within the search coverage Cit of searcher i, a positive detection occurs with probability 
+
+pid and a negative outcome with 1 − pid; otherwise, if a contains no target, a false positive occurs with probability 
+
+pif and a negative outcome with 1 − pif . Each searcher has a mobility capacity, namely maximum speed, that constrains its feasible movement xit = vit − vit−1. Given its previous position vit−1, the corresponding action set is Xit = {xi : ∥xi∥∞ ≤ rm,s , v it−1 + xi ∈ A} simply denoted as Xit , where rm,s is the searcher’s mobility. Meanwhile, the target moves evasively from wt−1 to wt with displacement yt = wt − wt−1 and its action set 
+
+Yt = {y : ∥y∥∞ ≤ rm,t , w t−1 + y ∈ A} , where rm,t is the target’s mobility, simply denoted as Yt.At each time step, the target and the searchers choose their movements simultaneously, and the searchers then perform search actions. The search result at time t is denoted by o(t) = ( oia(t)) i∈Va∈C it
+
+, where oia(t) = 1 indicates that searcher i reports a target in area a at time t, and oia(t) = 0 indicates no detections here. Suppose that the search results 
+
+oia (i ∈ V, a ∈ C it ) are mutually independent. The searchers maintain a per-area confidence regarding the possible presence of the target. Rather than modeling the target presence as a categorical random variable whose probabilities must sum to one, we treat the presence of the target in each area as an independent binary random variable. Formally, let {ξt(a)}a∈A be a family of independent Bernoulli random variables, where ξt(a) ∈ { 0, 1} indicates whether the target is in area a at time t. Therefore, 
+
+ba(t) = P(ξt(a) = 1) is the confidence (called prior belief) for a.After each search at time t, the searchers update this per-area confidence based on the local detection outcome. For searcher i covering area a, let oia(t) ∈ { 0, 1} denote the binary observation, with 1 for positive and 0 for negative. The updated confidence (called posterior belief) for area a is obtained via the Bayesian update rule 
+
+ba(t|oia(t) = 1) = pidba(t)
+
+pipd (a, t ) ,ba(t|oia(t) = 0) = (1 − pid)ba(t)1 − pipd (a, t ) ,
+
+(1) where pipd (a, t ) = pidba(t) + pif (1 − ba(t)) is the prior probability of a positive detection result in a by searcher i. To simplify the notation, we denote the posterior belief by ˜ba(t) and write pipd for pipd (a, t ) for convenience. 
+
+Remark 1 The design of the variable ba(t), which is modeled as an independent Bernoulli parameter that the sum across areas is not constrained to 1, is intentional. Although a normalized Bayesian filter can be formulated for a single target, false alarms would couple all areas through the global normalization term, so that a noisy report in one area redistributes probability mass over the entire grid. In contrast, the independent Bernoulli model updates each area locally and is therefore more robust and computationally tractable under simultaneous false alarms and missed detections. 
+
+We give the following assumption regarding false alarms and positive detections, which is standard in imperfect detection and search models [ 14 , 29 , 5 ] and ensures a positive signal-to-noise ratio (SNR) as a prerequisite for detection. 
+
+Assumption 1 For each search agent i, the probability of false alarms and positive detections satisfies 0 ≤ pif < p id ≤
+
+1.
+
+After Bayesian updating based on search results, the searchers predict the next location of the target wt+1 based on both the posterior belief ˜b(t) and the expected target’s strategy πt+1 ∈ ∆( Yt+1 ), shown as follows. 
+
+ba(t + 1) = X
+
+> a′∈A , a ′+y=a
+
+˜ba′ (t)˜ πa′
+
+> t+1
+
+(y), (2) where ˜πat denotes the feasible strategy at area a subject to boundary constraints: for boundary areas, it is obtained by restricting πt to feasible moves and renormalizing, while for interior areas ˜πat = πt.In a multi-agent search task, the execution of search decisions is inherently distributed, as each searcher operates from a distinct physical location. Nevertheless, maintaining a consistent global belief and emulating the target’s motion require aggregating observations from all searchers, tasks that are naturally centralized. To reconcile this tension, we adopt a server-assisted distributed architecture. The central server aggregates all detection reports, updates the global posterior belief via (1) , predicts the next prior belief through (2) , and broadcasts it to all searchers. Each searcher then exchanges intended coverages with neighboring agents whose sensing regions may overlap and solves a local movement 4Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach optimization problem based on the global belief and local coordination information. This structure preserves consistent belief synchronization while avoiding a fully centralized search planner. To measure strategies under imperfect perceptions, we employ information entropy as a metric to quantify search performance, which refers to the uncertainty of a system. As search results in our framework are binary, the information entropy of the prior belief can be expressed as 
+
+H(ξt) = − X
+
+> a∈A
+
+(ba(t) log 2 ba(t) + (1 − ba(t)) log 2(1 − ba(t))) ,
+
+where ξt is the |A| -dimensional binary random variable defined above. Therefore, the posterior (conditional) entropy is defined as H(ξt|o(t)) = P 
+
+> a∈A
+
+H(ξt|oa(t)) . As in the preliminaries, we take h(p) to represent the binary entropy 
+
+H(ξ) with P(ξ = 1) = p. Also, for simplification, we abuse the notation h, where h(b(t)) refers to the total entropy given the belief vector b(t) and h(ba(t)) denotes the entropy associated with its belief value ba(t). Consequently, the posterior entropy can be compactly written as h(˜b(t)) .
+
+Definition 1 (detection threshold) The searchers are said to successfully detect the target if for a given α ≥ 0 (called 
+
+detection threshold ), the posterior belief ˜b(t) satisfies: (i) max a h(˜ba(t)) ≤ α; (ii) there exists exactly one area a∗ ∈ A 
+
+such that ˜ba∗ (t) > 0.5.
+
+Based on the above definition, we propose a novel concept to judge whether searchers operating under a specific strategy or a specific scenario possess the ability to detect the target. 
+
+Definition 2 ( α-detectability) Given a detection threshold α, a search strategy is called α-detectable if, for any adversarial strategy, with probability 1 there exists a finite time τ at which the searchers successfully detect the target as in Definition 1. A search game is called α-detectable if there exists at least one α-detectable search strategy for the searchers. 
+
+Remark 2 Existing works have provided several criteria to judge detection. Most studies that do not consider false alarms [ 8, 9, 10 , 28 ] treat the target as detected once the positive detection probability exceeds a given threshold, which is reasonable when pf = 0 . When false alarms are present, [ 29 ] introduced the cumulative number of positive outcomes to confirm detection, assuming a static target so that repeated observations can overcome noise. However, this criterion is not suitable for our mobile setting. 
+
+For the proposed mobile target search, we first explore the detectability criteria. To ensure target detection, we must answer whether a strategy or a game is α-detectable. Unlike works with reliable sensors that an optimal strategy often implicitly ensures eventual detection [ 8 , 9, 10 ], our work has to answer this due to both the engagement of evasive target and low SNR of positive detection. The problem is summarized below. 
+
+Problem 1 (detectability criterion) : How to judge whether a strategy or a search game is α-detectable or not? Next, we investigate how to obtain an α-detectable strategy. The main challenge is the computational difficulties arising from exponentially large state and action spaces. This prompts us to design an efficient algorithm with certain approximations to both make the computation of search strategies tractable and ensure effective search. The problem is as follows. 
+
+Problem 2 (detectable strategy computation) : How to design a distributed algorithm for an α-detectable search strategy? 
+
+3.2 POSG Reformulations 
+
+To handle the above problems, we reformulate the mobile target search as a multi-agent POSG, which is effective in mobile target search. For searchers, their objective is to reduce the uncertainty of search for detecting the target, i.e., to minimize the posterior information entropy after a search. Consequently, we propose the utility based on the posterior information entropy 
+
+u(x, π |˜b(t − 1)) = X
+
+> a∈A
+
+E[h(˜ba(t)) |x, π, ˜b(t − 1)] , (3) where h(˜ba(t)) is the expected posterior information entropy and E[·| x, π ] is its expectation before implementation of the search and evasion as 
+
+E[h(˜ba(t)) |x, π ] = X
+
+> oa∈Oa(t)
+
+P(oa|ba(t|π)) h(ba(t|oa(t) = oa, π )) , (4) 5Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach with Oa(t) referring to all feasible outcomes with respect to the current position, ba(t|π) (i.e., ba(t)) is the expected prior belief according to (2) , ba(t|oa, π ) is the expected posterior belief based on (1) , and P(oa|b) is the subjective probability of outcome oa according to belief ba(t), which can be obtained by 
+
+P(oa|ba(t)) = Y 
+
+> {i:a∈C it}
+
+P(oia|ba(t)) ,
+
+with P(oia = 1) = pipd (a, t ) and P(oia = 0) = 1 − pipd (a, t ), which can be computed via ba(t).Conversely, the target’s strategy aims to maximize the uncertainty, which corresponds to maximizing the expected posterior information entropy u.Therefore, with both sides’ strategies (σ, π ) and the prior estimation b(t), the expected payoff with discount ξ is 
+
+U (σ, π |˜b(t − 1)) = Ex∼σt [u(x, π t)] + 
+
+> ∞
+
+X 
+
+> τ=1
+
+ξτ Ex∼σt+τ ,˜b(t+τ −1) [u(x, π t+τ |˜b(t + τ − 1))] . (5) 
+
+Remark 3 Different from existing works [ 8 , 9, 10 ], our work takes false alarms into account and evaluates performance by the metric of information entropy, where we leverage the information embedded in negative outcomes to refine our search strategy. Moreover, this setting is a generalization of the aforementioned models in [ 8, 9 , 10 ] when the probability of false alarms pif ≡ 0, since the probability of detection and the information entropy share an extremal point. 
+
+On this basis, the agents participate in a partially observable stochastic game (POSG) denoted by G = ⟨I, S, O, X ×
+
+Y, T, Ξ, U, b 0⟩, where (i) I = V ∪ { target } is a set of players consisting of m searchers {1, . . . , m } and a target. (ii) S(t) = {wt}wt∈A is a set of states referring to the position of the target from the searchers’ perspective. (iii) O(t) = {oia(t)}i∈Va∈C it
+
+is the observation set that refers to all possible observations of searchers. (iv) Xt × Yt is the joint action set, where Xt = X1 
+
+> t
+
+× · · · × Xmt is the set for the searchers. Here, xit ∈ Xit and 
+
+yt ∈ Yt denote the feasible movement actions starting from the current positions vit and wt, for searcher i
+
+and the target, respectively. σit ∈ ∆( Xit ) and πt ∈ ∆( Yt) are the mixed strategies of searchers and the target, respectively. (v) T : S × ∆( Y ) × S → [0 , 1] is the transition probability function satisfying T (wt, π t, w t+1 ) =
+
+P(wt+1 |wt, π t) = πt(wt+1 − wt).(vi) Ξ : S × O → R is the observation distribution function, with Ξ( oia(t)|wt) = pid if wt = a, and with 
+
+Ξ( oia(t)|wt) = pif otherwise. (vii) U is the utility function as in (5). (viii) b0 ∈ [0 , 1] |A| is an initial belief. In the context of search games modeled between searchers and a target, the Nash equilibrium (NE) provides a key concept for analyzing their strategic interactions. When reaching a NE, no player can unilaterally change their strategies for a better expected payoff. Technically, we give the definition as follows. 
+
+Definition 3 (Nash equilibrium) A strategy pair (σ∗, π ∗) is a Nash equilibrium (NE) for the search game if, for any given b0, the following holds for each feasible σ and π,
+
+U (σ∗, π ∗|b0) ≤ U (σ, π ∗|b0),U (σ∗, π |b0) ≤ U (σ∗, π ∗|b0).
+
+The existence of NE is guaranteed by the compactness and closure of the action sets, as established in the following result. 
+
+Lemma 2 Under Assumption 1, there exists a NE of the POSG G.
+
+The above POSG framework provides a theoretical foundation for multi-agent search games. In practice, each searcher only considers its local utility over ¯Ct(vi) = {a : ∥a − vit∥∞ ≤ rs + rm,s }:
+
+ui = X 
+
+> a∈¯Ct(vi)
+
+E[h(ba(t)|o(t))] ,
+
+where the expected utility in (5) is restricted accordingly. This distributed structure aligns with the partial observability inherent in the POSG. Although agents share information through the central server, their decision-making and utility calculation remain localized to their observable regions. 6Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach 
+
+Remark 4 Since the POSG formulated above is zero-sum, a Nash equilibrium coincides with a sequential minimax strategy. Moreover, since the game is imperfect-information, predicting the target’s next move and inferring its past move are equivalent from the searcher’s information set. With this observation, we adopt a sequential decision model in algorithm designs in Section 5 to simplify computation. 
+
+Based on the properties of zero-sum games, the following lemma links equilibrium and detectability, showing that solving for an equilibrium yields a sound approach for an α-detectable strategy. 
+
+Lemma 3 Let (σ∗, π ∗) be a Nash equilibrium. For a given threshold α, the searchers’ equilibrium strategy σ∗ achieves successful target detection against π∗ in the sense of Definition 1, if and only if the corresponding game is α-detectable. 
+
+Lemma 3 motivates the equilibrium-based approach. For Problem 1, it justifies analyzing whether equilibrium-induced beliefs satisfy the definition of α-detection. For Problem 2, it directs the design of equilibrium-seeking algorithm as a sound approach for an α-detectable strategy. 
+
+## 4 Detectability 
+
+In this section, we investigate the detectability of our search problem. We start from the detectability criterion, to explore when a game is α-detectable. Besides, we study a homogeneous case to give quantitative insight to determine whether a strategy or a game is α-detectable. 
+
+4.1 α-Detectability Analysis: General Cases 
+
+To establish a detectability criterion, we first investigate the mechanism through which players influence information entropy, namely, utility functions. We start from the searcher’s side to show that the information entropy can be systematically decreased. 
+
+Lemma 4 Suppose Assumption 1 holds. For any searched area a ∈ C t and belief ba(t) ∈ (0 , 1) , the expected information gain is strictly positive. That is, 
+
+h(ba(t)) > Eoa [h(ba(t)|oa)] . (6) 
+
+Proof. According to the mutual independence of the search results, each observation oa = ( o1
+
+> a
+
+, o 2
+
+> a
+
+, . . . ) can be regarded as a cumulative result of finite single searches. Consequently, to show the strict increase in the expected information gain of oa, we only have to prove that the expected information gain after a single search oia is strictly positive. Recalling the computation of the expected posterior entropy (4) and combining with Bayesian updates (1), 
+
+E[ba(t|oia)] = pipd ba(t|oia = 1) + (1 − pipd )ba(t|oia = 0) = pipd 
+
+pidba(t)
+
+pipd 
+
++ (1 − pipd ) (1 − pid)ba(t)1 − pipd 
+
+= ba(t).
+
+Since the information entropy h(p) is concave with respect to p and ba(t|oia = 1) > b a(t|oia = 0) , combining with Jensen’s inequality, 
+
+E[h(ba(t)|oia)] < h (pipd ba(t|oia = 1) + (1 − pipd )ba(t|oia = 0)) = h(ba(t)) ,
+
+which validates (6) and completes the proof. □
+
+This lemma demonstrates that search actions always provide positive information gain, which leads to a decrease in the uncertainty, i.e., decrease in the utility. In contrast to searchers, the mobile target consistently escapes the searchers, which brings uncertainty to the game, that is, an increase in utility. Specifically, for the mixed strategy, evasion always increases the information entropy. 
+
+Lemma 5 If the target adopts a mixed strategy and the posterior beliefs are not identical, for any given t > 0, the posterior estimate ˜b(t) is worse than the prior estimate b(t + 1) in terms of entropy. That is, 
+
+h(˜b(t)) < h (b(t + 1)) . (7) 
+
+A lower bound for (7) is given by the value obtained under condition ba(t + 1) = 1
+
+> |A|
+
+P 
+
+> a′∈A
+
+˜ba′ (t), although the corresponding π is typically unattainable, implying that the true minimum exceeds this bound. 
+
+7Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach 
+
+Proof. By the concavity of h,
+
+h(b(t + 1)) = X
+
+> a∈A
+
+h
+
+ X
+
+> a′+∆ y=a, a ′∈A
+
+˜ba′ (t)˜ πa′ 
+
+> t
+
+(∆ y)
+
+
+
+≥ X
+
+> a∈A
+
+X
+
+> a′+∆ y=a, a ′∈A
+
+h(˜ba′ (t))˜ πa′ 
+
+> t
+
+(∆ y)= X
+
+> a′∈A
+
+h(˜ba′ (t)) X
+
+> ∆y∈w(a′)
+
+˜πa′ 
+
+> t
+
+(∆ y) = X
+
+> a∈A
+
+h(˜ba(t)) ,
+
+where ˜πat is the feasible strategy considering the boundary restriction. Because πt is a mixed strategy, ˜πa′ 
+
+> t
+
+are non-degenerate for at least some a′ with ˜ba(t) > 0. Hence, Jensen’s inequality is strict for those terms, and consequently, 
+
+h(b(t + 1)) > P 
+
+> a∈A
+
+h(˜ba(t)) .Note that the sum of beliefs remains unchanged, i.e., P 
+
+> a
+
+˜ba(t) = P 
+
+> a
+
+ba(t + 1) . To maximize the prior entropy for strategy π, based on Jensen’s inequality, 
+
+X
+
+> a∈A
+
+h(ba(t + 1) |π) ≤ |A| h 1
+
+|A| 
+
+X
+
+> a∈A
+
+˜ba(t)
+
+!
+
+,
+
+which proves the lower bound given in the lemma. □
+
+Lemmas 4 and 5 characterize the static effects of one search–evasion step: search observations reduce the expected uncertainty of searched areas, while target motion redistributes posterior belief and may increase uncertainty. However, detectability is not a one-step entropy property. It requires that the posterior belief process reaches, in finite time, a belief configuration satisfying both the entropy threshold and the unique-peak requirement in Definition 1. 
+
+Theorem 1 Suppose Assumption 1 holds. Given a search equilibrium σ∗, assume that, for every target strategy π,
+
+> ∞
+
+X
+
+> t=1
+
+P(˜b(t) ∈ B d|F t−1) = ∞, a.s. (8) 
+
+where Bd is the detection belief set consisting of all posterior belief vectors satisfying the conditions in Definition 1. Then σ∗ is an α-detectable strategy, and the search game is α-detectable. 
+
+Proof: Let At = {˜b(t) ∈ B d}. Since ˜b(t) is generated by the belief update, target motion, and search results up to time 
+
+t, At is adapted to the natural filtration of the search process. By the Borel-Cantelli lemma, (8) implies that At occurs infinitely often almost surely. Hence, with probability one, there exists a finite time t such that ˜b(t) ∈ B d. Therefore, with Lemma 3, σ∗ is α-detectable against every admissible target strategy. Since such a strategy exists, the search game is α-detectable. □
+
+Theorem 1 provides a qualitative recurrence criterion for detectability. It shows that if the posterior belief process has non-summable conditional opportunities to enter Bd, then Bd is reached in finite time almost surely. Since the conditional probability in (8) depends on sensing probabilities, overlapping coverages, target motion, and belief redistribution, it is difficult to evaluate directly in heterogeneous settings. We therefore next consider homogeneous searchers, where the belief dynamics can be reduced to an average-belief analysis and explicit sufficient conditions can be derived. 
+
+4.2 α-Detectability Analysis: Homogeneous Agents 
+
+For homogeneous searchers, actions can be equivalently described through their induced sensing coverage. Let 
+
+λi(a) ∈ { 0, 1} indicate whether searcher i covers area a, and let λ(a) = P 
+
+> i∈V
+
+λi(a) denote its aggregate coverage count. Thus, the observation distribution and the Bayesian update in an area depend on λ(a) rather than on the identities of the covered searchers. 
+
+Lemma 6 In the homogeneous setting, for a covered area a with coverage count λ(a) ≥ 1, let k ∈ { 0, . . . , λ (a)} be the number of positive outcomes. Then, 
+
+P(oa(t) = k|wt, λ (a)) = 
+
+(
+
+P λ(a) 
+
+> D
+
+(k), wt = a, P λ(a) 
+
+> F
+
+(k), wt̸ = a, 
+
+where P λ(a) 
+
+> D
+
+(k) =  λ(a)
+
+> k
+
+pkd (1 − pd)λ(a)−k, P λ(a) 
+
+> F
+
+(k) =  λ(a)
+
+> k
+
+pkf (1 − pf )λ(a)−k The subjective probability of ob-serving k positives is P λ(a) 
+
+> P D
+
+(k) = ba(t)P λ(a) 
+
+> D
+
+(k) + (1 − ba(t)) P λ(a) 
+
+> F
+
+(k), and the posterior belief is ˜ba(t|k) = 
+
+P λ(a) 
+
+> D
+
+(k)ba(t)/P λ(a) 
+
+> P D
+
+(k).
+
+8Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach To obtain an explicit sufficient condition, we impose the following homogeneous assumption. 
+
+Assumption 2 At every time step, |C (t)| = C and each searched area has coverage count λ. Moreover, for a search strategy σ, P(wt ∈ C (t)|F t−1, σ ) ≥ ρ > 0 a.s. for all t and all adversarial strategies. 
+
+Given a threshold α ∈ (0 , 1) , define δ ∈ (0 , 0.5) satisfying h(δ) = α. Define the average belief of priors as 
+
+¯bt = 1
+
+> |A|
+
+P 
+
+> a
+
+ba(t).
+
+Theorem 2 Given a search strategy σ, if Assumptions 1 and 2 hold, and 
+
+(1 − δ)pλf
+
+δp λd + (1 − δ)pλf
+
+≤ ρC ≤ ρδ (1 − pf )λ
+
+δ(1 − pd)λ + (1 − δ)(1 − pf )λ , (9) 
+
+then the search game is α-detectable for any α ≥ h(ρ/C ).
+
+Proof: Define St = P 
+
+> a
+
+˜ba(t). Since the sum of prior beliefs equals the previous posterior sum, we have P 
+
+> a
+
+ba(t) = 
+
+St−1. According to Lemma 5, the worst target strategy equalizes the next prior belief as ba(t) = 1 
+
+> |A|
+
+St−1 = ¯bt.Because the game is zero-sum, it is sufficient to show the α-detectability by showing that the given strategy σ can detect the target under this worst-case prior evolution. We first analyze the infinite behavior of St. For a searched area, the expected posterior belief is 
+
+E[˜ba(t)|F t−1, a = wt] = 
+
+> λ
+
+X
+
+> k=0
+
+(P λD (k)) 2¯bt
+
+P λP D (k) ,
+
+E[˜ba(t)|F t−1, a ̸ = wt] = 
+
+> λ
+
+X
+
+> k=0
+
+P λD (k)P λF (k)¯bt
+
+P λP D (k) .
+
+Thus, their sum satisfies 
+
+E[St|F t−1] − St−1 =ρtE[St|F t−1, w t ∈ C t] + (1 − ρt)E[St|F t−1, w t /∈ C t]=¯bt ρtλX
+
+> k=0
+
+(P λD (k)) 2
+
+P λP D (k) + ( C − ρt)
+
+> λ
+
+X
+
+> k=0
+
+P λD (k)P λF (k)
+
+P λP D (k) − C
+
+!
+
+.
+
+With Pλk=0 P λD (k) = 1 , the terms in the above equation satisfy 
+
+> λ
+
+X
+
+> k=0
+
+(P λD (k)) 2
+
+P λP D (k) − 1 = 
+
+> λ
+
+X
+
+> k=0
+
+P λD (k)( P λD (k) − P λF (k)) 
+
+P λP D (k) (1 − ¯bt),
+
+> λ
+
+X
+
+> k=0
+
+P λD (k)P λF (k)
+
+P λP D (k) − 1 = 
+
+> λ
+
+X
+
+> k=0
+
+P λD (k)( P λF (k) − P λD (k)) 
+
+P λP D (k) ¯bt.
+
+Consequently, 
+
+E[St|F t−1] − St−1 = ( ρt − C¯bt)¯btλX
+
+> k=0
+
+P λD (k)( P λD (k) − P λF (k)) 
+
+P λP D (k) .
+
+Since F (x) = 1−xb+(1 −b)x is strictly convex for b > 0, the summation term satisfies 
+
+> λ
+
+X
+
+> k=0
+
+P λD (k) P λD (k) − P λF (k)
+
+P λD (k)¯bt + (1 − ¯bt)P λF (k) =
+
+> λ
+
+X
+
+> k=0
+
+P λD (k) 1 − P λF (k)/P λD (k)¯bt + (1 − ¯bt)P λF (k)/P λD (k) > 0.
+
+Therefore, E[St|F t−1] > S t−1 if ¯bt < ρt 
+
+> C
+
+and E[St|F t−1] < S t−1 if ¯bt > ρt 
+
+> C
+
+. Since 1 ≥ ρt ≥ ρ, we have 
+
+E[St|F t−1] > S t−1 when ¯bt < ρC and E[St|F t−1] < S t−1 when ¯bt > 1 
+
+> C
+
+. Together with the fact that P(¯bt < 1 
+
+> C
+
+|¯bt−1 = 
+
+> 1
+> C
+
++ ϵ) > 0 and P(¯bt > 1 
+
+> C
+
+|¯bt−1 = 1 
+
+> C
+
+− ϵ) > 0 for some ϵ > 0 under all-negative or all-positive outcomes, the process cannot remain outside the interval [ρ/C, 1/C ] after a finite time. Hence, there exists an infinite sequence {τk} such that ¯bτk ∈ [ρ/C, 1/C ]. Combining this with P(wt ∈ C t|F t−1) > ρ > 0 and the Borel-Cantelli lemma, there exists an infinite subsequence ˜τk such that w˜τk ∈ C ˜τk and ¯b˜τk ∈ [ρ/C, 1/C ].It remains to show that the α-detection is reached in finite time. Suppose that, at time ˜τk, all observations at the target location are positive. Then ˜bw˜τk (˜ τk|λ) = pλd ¯b˜τk     
+
+> pλd¯b˜τk+pλf(1 −¯b˜τk)
+
+. By (9) , we obtain ˜bw˜τk (˜ τk|λ) ≥ 1 − δ. Similarly, 9Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach if all observations at non-target covered areas are negative, then ˜ba(˜ τk|0) ≤ δ for all covered areas except the target location. Since P(oa̸=w˜τk = 0 , o w˜τk = λ|F ˜τk −1) is a positive constant, the Borel-Cantelli lemma implies that there exists a finite stopping time τ ∈ { ˜τk} such that oa̸=w˜τk = 0 for searched areas and ow˜τk = λ. At this time, for searched areas, ˜ba̸=w˜τk ≤ δ and ˜bw˜τk ≥ 1 − δ > 0.5, while for unsearched areas, ˜ba = ¯bt ≤ ρC ≤ δ according to α ≥ h(ρ/C ).Therefore, the search game is α-detectable. □
+
+Theorem 2 provides a quantitatively sufficient condition for α-detectability in the homogeneous case. Compared with Theorem 1, which gives a qualitative recurrence condition for entering the detection set, this result makes the condition explicit by reducing the belief evolution to the scalar average belief under the equalized worst-case prior. The lower and upper bounds in (9) ensure that, whenever the target is covered and the favorable observation event occurs, the target area obtains posterior belief at least 1 − δ, while the other covered areas remain below δ. Since h(δ) = α,this event satisfies both the entropy threshold and the unique dominant peak requirement in Definition 1. The conditions are sufficient rather than necessary. The proof relies on the conservative event that all searchers covering the target report positive observations and all non-target covered areas report negative observations. Therefore, a strategy may still be α-detectable even when conditions are not satisfied. 
+
+Remark 5 With numerical validation, (9) is not difficult to satisfy. Consequently, the uniform lower bound of the coverage probability in Assumption 2 becomes the critical factor that determines α-detectability. This insight into the critical role of a uniformly positive coverage probability guides the algorithm design, particularly when precise solutions become computationally prohibitive in high-dimensional multi-agent settings. 
+
+Compared with existing works that do not consider false alarms [ 8, 9, 10 ], our result bridges the gap in the detectability criterion against false alarms. When false alarms are absent, i.e., pf = 0 , the sufficient condition in Theorem 2 becomes trivial. 
+
+Corollary 1 Suppose Assumptions 1 and 2 hold. If pf = 0 and C > 1, then the search game is α-detectable for any 
+
+α > h ( ρC ).
+
+The proof is straightforward. When pf = 0 , the left-hand side of (9) becomes 0, while the right-hand side becomes  
+
+> ρ
+> 1+(1 −pd)λ
+
+> ρC for C > 1, which completes the proof. 
+
+## 5 Distributed Algorithm for Detectable Search Strategy 
+
+In this section, we develop a computational framework for α-detectable strategies for homogeneous searchers. To address the intractability caused by the high-dimensional action space and both the high-dimensional and continuous belief space inherent in the POSG, we decompose the searchers’ collective optimization into local, area-based utility improvements by leveraging the aggregative potential game structure of the system. This allows searchers to adopt computationally efficient 1-step lookahead greedy updates that align with the global objective. For the target, we simplify the high-dimensional planning problem by shifting the utility to a KL divergence-based metric (Lemma 7), which enables a state-space reduction to a one-dimensional average belief. On this basis, we propose the distributed algorithm, which also enables an α-detectable strategy under certain conditions. 
+
+5.1 Distributed Execution for Searchers 
+
+As established in Lemma 6, in homogeneous settings, the Bayesian update depends only on the total number of detections rather than on which specific agent generated each report. Following the approach of the previous section, we replace each searcher’s action with its induced sensing coverage, since the feasible motions uniquely determine which areas fall within the sensing range. Specifically, define λi(a) ∈ { 0, 1} as the coverage indicator of searcher i for area a, and let λi = ( λi(a)) a∈A be the corresponding coverage vector, which provides an equivalent description of the searcher’s action. The total coverage of area a is then λ(a) = P 
+
+> i∈V
+
+λi(a), and λ = ( λ(a)) a∈A refers to the aggregate coverage vector. For a fixed searcher i, let λ−i(a) = P  
+
+> j̸=i
+
+λj (a) denote the coverage contributed by all other searchers except i.Based on the utility function (4) , the per-area expected utility, when expressed through the aggregate coverage count 
+
+λ(a), becomes 
+
+Φ( λ(a), b a) = 
+
+> λ(a)
+
+X
+
+> k=0
+
+P λ(a) 
+
+> P D
+
+(k)h(ba(t|oa = k)) , (10) where P λ(a) 
+
+> P D
+
+(k) is the subjective probability of observing exactly k positive outcomes among the λ(a) searchers covering area a, and ba(t|oa = k) is the posterior belief. The definitions can be found in Lemma 6. 10 Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach In the distributed setting, each searcher can only evaluate the effect of its actions within its reachable range ¯Cit .Hence, the immediate local utility of searcher i is 
+
+ui(λi, λ −i|b(t|π)) = X 
+
+> a∈¯Cit
+
+Φ( λ−i(a) + λi(a), b a(t|π)) .
+
+Since the global utility Ψ( λ, b ) = P 
+
+> a∈A
+
+Φ( λ(a), b a) is additively separable across areas and a unilateral action change by searcher i affects only the areas in ¯Cit , the game is an exact potential game with local payoff ui aligned with Ψ.Consequently, any greedy improvement of ui directly improves the global objective, and a pure NE is guaranteed to exist. To avoid infinite-horizon planning over the continuous belief space, we adopt a 1-step lookahead approximation. This idea is motivated by the computational intractability of multi-step planning and the compounding prediction errors it entails. The resulting approximate action-value for searcher i is 
+
+ˆUi(λi, λ −i, b (t)) = Eo[ X 
+
+> a∈¯Cit
+
+h(˜ba(t|o)) + ξ max 
+
+> ˆλi
+
+ui(ˆλi, λ −i|b(t|o), π )] (11) where ba(t|o) is the posterior belief after observing o. This local surrogate retains alignment with the global objective due to the exact potential structure established above, while being computationally tractable for distributed execution. In a distributed potential game, purely greedy simultaneous updates can lead to cyclic behavior and fail to converge. We therefore adopt an inertia-based update [ 32 , 33 ], where each searcher retains its current action with probability β
+
+and otherwise performs a greedy or exploratory update according to an ϵ-greedy rule. Formally, searcher i updates its action as: with probability β, it keeps the previous action, and with probability 1 − β, it chooses a new action according to an ϵ-greedy rule. That is, 
+
+λit =
+
+λit−1, with probability β, 
+
+˜λit, with probability 1 − β, (12) where ˜λit is obtained by an ϵ-greedy rule, namely, with probability 1 − ϵ take the greedy action ˜λit =arg min λi∈Λi(vit−1) ˆUi(λi, λ −it−1, b (t)) , and with probability ϵ take a random action from the feasible action set Λi(vit−1).Here, β ∈ (0 , 1) is the inertia probability and ϵ ∈ (0 , 1) is the exploration rate. In the exploitation branch, the searcher performs a one-step greedy update with respect to the approximate utility ˆUi. Due to the potential game structure, any decrease in ˆUi yields a decrease in the global approximations. 
+
+5.2 Learning for Target Predictions 
+
+From the perspective of searchers, the target’s strategy is unknown and needs to be estimated in order to assess the prior belief b(t + 1) . Estimating this strategy by working directly with the entire belief vector b ∈ [0 , 1] |A| and the mixed strategy space ∆( Y ) leads to excessive computational complexity. To handle this complexity, the following lemma establishes that the target’s immediate reward depends on the entire belief vector only through its average ¯bt.This observation allows us to approximate the target’s value function using the average belief as the state variable. 
+
+Lemma 7 The strategy that maximizes the target’s immediate utility, i.e., arg max π∈∆( Y ) h(b(t|π)) , coincides with the solution of the following optimization 
+
+min  
+
+> π∈∆( Y)
+
+X
+
+> a∈A
+
+DKL (ba(t|π)∥¯bt),
+
+where DKL (p∥q) = P 
+
+> j
+
+p(j) log p(j) 
+
+> q(j)
+
+denotes the KL divergence and ¯bt is the average posterior belief. 
+
+Proof. Expanding the KL divergence yields 
+
+X
+
+> a∈A
+
+DKL (ba(t|π)∥¯bt) = X
+
+> a∈A
+
+
+
+ba(t|π) log ba(t|π)¯bt
+
++ (1 − ba(t|π)) log 1 − ba(t|π)1 − ¯bt
+
+
+
+=|A| h(¯bt) − h(b(t|π)) ,
+
+where we used the identity P 
+
+> a
+
+ba(t|π) = |A| ¯bt and the fact that ¯bt is fixed at the moment of prediction. □
+
+Lemma 7 establishes an exact equivalence between the target’s one-step entropy maximization and a KL-divergence minimization when the full predicted belief vector is available. With this equivalence, we employ the scalar average belief ¯b as the reduced state rather than the entire belief vector to reduce computational complexity. This reduction retains the precision of the immediate utility with the subsequent value being approximated. Although this reduction 11 Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach brings additional approximation errors, it is valuable because directly solving an exact high-dimensional POSG is not practical. During training, the value function ˆU T is learned against a weak searcher model that plays the no-lookahead greedy strategy, i.e., it simply minimizes the immediate entropy. While this opponent is not fully strategic, it provides a conservative and computationally affordable baseline for value learning. The immediate utility of the target in this setting is 
+
+ˆuT (¯b, π ) = − X
+
+> a∈A
+
+DKL 
+
+ ba(t|π) ¯b, (13) and by Lemma 7, maximizing ˆuT is equivalent to maximizing the immediate entropy h(b(t|π)) .To further ensure tractability, we discretize the average belief and the target’s mixed strategy space into finite sets Bb
+
+and ˆΠ, respectively. For any ¯b ∈ Bb, let ˆ¯b denote the predicted next average belief after one step of search and evasion under the weak searcher model. The value function is then updated as 
+
+ˆU T (¯b) ← max  
+
+> π∈ˆΠ
+
+(ˆ uT (¯b, π ) + ξ ˜ˆU T (ˆ¯b)) , (14) where ˜ˆU T (·) denotes the linear interpolation of current ˆU T on the grid Bb. The update is iterated over all discretized states until convergence, yielding a look-up table ˆU T stored on the server. During execution, the server selects the target strategy greedily according to this value function. 
+
+Remark 6 Because the entire belief vector is reduced to the scalar average ¯b, the exact transition still requires knowledge of the full belief distribution, so approximation bias is unavoidable. The moderate loss of predictive fidelity is an acceptable trade-off here, as the reduced target-side value function is introduced to obtain a computationally feasible adversarial predictor. 
+
+5.3 Distributed Algorithm with Central Server 
+
+The overall algorithm is structured in two phases. In the pre-training phase, the central server discretizes the reduced state and action spaces, and trains the target value function ˆU T via the Bellman update (14) against a weak searcher baseline. During the distributed search phase, each searcher distributedly selects its movement using (11) with local strategy exchanges, while the server performs belief aggregation and prior belief prediction. The procedure is summarized as follows. 
+
+Algorithm 1 Server-assisted distributed algorithm 
+
+Phase 1 (Target Value Pre-Learning) 
+
+Initialize Bb, ˆΠ and ˆU T (¯b) for all ¯b ∈ Bb.
+
+repeat for each ¯b ∈ Bb do 
+
+Train ˆU T according to the update rule (14). 
+
+end for until convergence or max steps 
+
+Phase 2 (Search Execution) for t = 0 , 1, 2, . . . do 
+
+Server broadcasts predictions b(t).
+
+for all searcher i ∈ V do 
+
+Receive neighbors’ λjt−1. Choose λit via (12) using ˆUi from (11). Execute move and sense, send results to server. 
+
+end for 
+
+Server updates ˜b(t) via (1) and gets their average ¯bt+1 .Server picks πt greedily according to ˆU T over ˆΠ as (14), then predicts b(t + 1) by (2). 
+
+end for 
+
+Due to the approximations introduced in the algorithm, a direct convergence guarantee is difficult to establish. Instead, the following proposition summarizes a key property concerning equilibrium solutions. 
+
+Proposition 1 Let Σ be the set of all searcher strategy profiles generable by Algorithm 1 when the greedy ac-tion selection in (12) is replaced by a strict better response rule (i.e., ˜λit is chosen such that ˆUi(˜λit, λ −it−1, b (t)) <
+
+ˆUi(λit−1, λ −it−1, b (t)) whenever such an action exists). Then a Nash equilibrium strategy σ∗ satisfies σ∗ ∈ Σ.
+
+12 Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach 0 10 20 30 40 50 60 70 80 
+
+> Step
+> 510 20 50 100
+> Total Entropy Total Entropy Max belief matches target
+
+Figure 1: Total posterior entropy for m = 3 searchers under moderate accuracy ( pd = 0 .8, pf = 0 .1). At step 82, it reaches α-detectability. 0.0 
+
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Belief
+
+(a) Step 10 0.0  
+
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Belief
+
+(b) Step 30 0.0  
+
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Belief
+
+(c) Step 40 0.0  
+
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Belief
+
+(d) Step 82 
+
+Figure 2: Belief maps and agent positions for the run in Fig. 1. Proposition 1 indicates that Algorithm 1 does not exclude equilibrium strategies from the reachable strategy space. According to Theorem 2, the essential requirement for α-detectability is not precise optimality, but a uniformly positive lower bound on the probability of covering the target, i.e., P(wt ∈ C (t)|F t−1) ≥ ρ > 0 in Assumption 2. As long as the search strategy maintains such a uniform lower bound on the coverage probability, the α-detectability guarantee established in Theorem 2 remains valid even when the computed strategy deviates moderately from an exact equilibrium. 
+
+## 6 Numerical Simulations 
+
+In this section, we present numerical simulations to illustrate the behavior of the proposed distributed algorithm and to examine the α-detectability of the derived search strategies. The simulation is conducted under the following settings. The search area is a 10 × 10 grid unless otherwise stated. Players’ mobility is set to 1 grid per step. The detection threshold is set to α = 0 .4. Initially, no prior information about the target’s location is assumed, i.e., ba(0) = 0 .5 for all areas a. For all entropy plots in this section, each trajectory is shown only up to the first step at which the detection threshold α is crossed, or up to 300 steps if the threshold is never reached. 
+
+6.1 Validation of Distributed Algorithm 
+
+We first examine whether the proposed distributed algorithm can produce effective search strategies for a given perceptual setting pd = 0 .8 and pf = 0 .1 with 3 searchers. Fig. 1 and Fig. 2 present the same single run from two complementary perspectives. Fig. 1 shows the total posterior entropy P 
+
+> a∈A
+
+h(˜ba(t)) , which drops sharply from its initial high value, then rebounds and subsequently goes through several cycles of decline and increase. To provide a more direct assessment of whether the searchers have truly located the target, we additionally mark the time steps at which the area of the highest posterior belief, i.e., arg max a ˜ba(t), coincides with the true target position. Fig. 2 depicts the evolution of the belief map and the positions of the agents at four selected steps of the same run. 13 Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach Pre-trained Random Maximial distance 050 100 150 200 250 300 350 400 
+
+> Detection step Algorithm 1 Greedy Max-coverage
+
+Figure 3: Box plots of detection steps for all combinations of searcher and target strategies (high false alarm case: 5 × 5
+
+grid, pd = 0 .8, pf = 0 .3, m = 3 , 100 runs each). Notably, black dots first persistently appear around step 30, which is also consistent with its heatmap, indicating that the searchers have already located the target in terms of maximum posterior belief. However, the total entropy at this stage remains well above the threshold α = 0 .4, revealing that a correct maximum-likelihood estimate does not yet constitute reliable detection. This gap precisely illustrates the necessity of the joint criterion in Definition 1: the entropy threshold serves as a reliability measure that complements the peak location, thereby highlighting the significance of α-detectability. Subsequently, the entropy rebounds and the process enters a phase of belief vanishing, where no area maintains a confidence above 0.5 and the posterior mass diffuses across the grid. This phenomenon confirms that guaranteed detection critically relies on the recurrent coverage condition in Assumption 2; without a persistent positive probability ρ of covering the target, the evader can escape the sensing range for extended periods, causing information loss to dominate. Around step 80, the searchers re-establish coverage through continued exploration, and the black dots reappear. Leveraging renewed observations, the entropy undergoes a final decline and drops below α at step 82 while a unique dominant peak exceeding 0.5 persists at the true target location, thereby achieving α-detectability. To further assess the effectiveness of the proposed algorithm, especially facing false alarms, we compare it with another two heuristic searcher strategies, greedy (maximizing the highest expected posterior probability) and max-coverage (maximizing the cumulative count of coverage), against three target strategies: (1) Algorithm 1, (2) random, and (3) max-distance (from searchers). We conduct 100 independent runs for each of the nine combinations under a high false alarm rate condition: 5 × 5
+
+grid, pd = 0 .8, pf = 0 .3, m = 3 , with a maximal step of 400. This design is intended to emphasize the impact of false alarms on different search strategies, so the search task itself is kept relatively easy and the other parameters remain fairly benign. Fig. 3 presents the detection-step statistics as box plots. The results demonstrate that the proposed algorithm achieves a relatively low median detection time and a relatively low variance, indicating robust and reliable performance against noisy perceptions. The learned NE target proves to be the most challenging adversary for all search strategies, validating that the value iteration captures a strong evasion policy. 
+
+6.2 Verification of Detectability 
+
+We now turn to the verification of α-detectability from an empirical perspective. Fig. 4 shows representative total entropy trajectories under three sensing configurations: (i) high accuracy ( pd = 0 .95 , pf = 0 .02 ), (ii) moderate accuracy ( pd = 0 .8, pf = 0 .1), and (iii) low accuracy ( pd = 0 .6, pf = 0 .2), with m = 3 searchers. While Fig. 6 shows trajectories under the moderate regime for varying team sizes m = 2 , 3, 4. Fig. 5 and Fig. 7 present the corresponding detection step statistics as box plots, respectively. These figures collectively imply that α-detectability is achieved only when factors are sufficiently favorable. In Fig. 4 and Fig. 5, only the hard case fails to reach α-detectability within 300 steps; higher accuracy yields shorter detection times and smaller variance. Likewise, in Fig. 6 and Fig. 7, only m = 2 frequently fails to achieve α-detectability, whereas larger teams succeed; increasing the team size accelerates detection and reduces variability. This finding is consistent with Theorem 2. When the SNR is too low (hard case) or the coverage is too small ( m = 2 ), the inequality in Theorem 2 and the uniform lower bound on covering the target may no longer hold. Consequently, the noise from false alarms and missed detections or uncovered stages dominates the dynamics, so that either the total entropy ceases to decrease or the belief remains trapped in vanishing. 14 Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach 0 50 100 150 200 250 300 
+
+> Step
+> 510 20 50 100
+> Total Entropy Total Entropy over Steps for Different Models High Moderate Low Max belief = target
+
+Figure 4: Total entropy over steps under each sensing accuracy. The hard configuration fails to achieve detectability within the horizon. High Moderate Low 50 100 150 200 250 300 
+
+> Detection step
+
+Figure 5: Box plots of detection steps for different sensing accuracies (High: pd = 0 .95 , pf = 0 .02 , Moderate: 
+
+pd = 0 .8, pf = 0 .1, Low: pd = 0 .6, pf = 0 .2, 100 runs each). The hard one fails to detect within 300 steps. 0 50 100 150 200 250 300 
+
+> Step
+> 510 20 50 100
+> Total Entropy Searchers = 2 Searchers = 3 Searchers = 4 Max belief = target
+
+Figure 6: Total entropy over steps under different searcher numbers. The m = 2 configuration fails to achieve detectability within the horizon. 15 Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach m=4 m=3 m=2 50 100 150 200 250 300 
+
+> Detection step
+
+Figure 7: Box plots of detection steps for different number of searchers ( m = 2 , 3, 4). Overall, the results in this subsection provide empirical support for the detectability criteria derived in Section 4. Although these numerical results cannot serve as a formal proof of α-detectability for every specific scenario, they demonstrate that detectability is contingent on sufficient sensing quality and number of searchers: the hard accuracy setting and the number of searchers m = 2 fail to achieve detection within the 300-step horizon because sustained belief vanishes, whereas more favorable configurations reliably satisfy the criterion. 
+
+## 7 Conclusions 
+
+In this work, we addressed mobile target search under uncertain perceptions by adopting a distributed partially observable stochastic game (POSG) approach. We proposed the concept of α-detectability which determines whether a search strategy can guarantee eventual detection despite false alarms and missed detections, and established sufficient conditions from both qualitative and quantitative perspectives using conditional recurrence analysis of the belief process. To compute an α-detectable search strategy under the high-dimensional belief and action spaces, we designed a distributed algorithm that leverages the aggregative potential structure for local searcher-side updates and a KL-divergence-based reduction for target-side prediction. Numerical simulations validated the effectiveness of the algorithm and provided empirical support for our detectability analysis. 
+
+## References 
+
+[1] T. Stoyanov, R. Mojtahedzadeh, H. Andreasson, and A. J. Lilienthal, “Comparative evaluation of range sensor accuracy for indoor mobile robotics and automated logistics applications,” Robotics and Autonomous Systems ,vol. 61, no. 10, pp. 1094–1105, 2013. [2] M. Seder, L. Petrovi´ c, J. Perši´ c, G. Popovi´ c, T. Petkovi´ c, A. Šelek, B. Bi´ cani´ c, I. Cviši´ c, D. Josi´ c, I. Markovi´ c, I. Petrovi´ c, and A. Muhammad, “Open platform based mobile robot control for automation in manufacturing logistics,” IFAC-PapersOnLine , vol. 52, no. 22, pp. 95–100, 2019. [3] M. Dunbabin and L. Marques, “Robots for environmental monitoring: Significant advancements and applications,” 
+
+IEEE Robotics & Automation Magazine , vol. 19, no. 1, pp. 24–39, 2012. [4] K. R. Jensen-Nau, T. Hermans, and K. K. Leang, “Near-optimal area-coverage path planning of energy-constrained aerial robots with application in autonomous environmental monitoring,” IEEE Transactions on Automation Science and Engineering , vol. 18, no. 3, pp. 1453–1468, 2021. [5] Y. Sung and P. Tokekar, “GM-PHD filter for searching and tracking an unknown number of targets with a mobile sensor with limited FOV,” IEEE Transactions on Automation Science and Engineering , vol. 19, no. 3, pp. 2122–2134, 2022. [6] H. Liu, S. Ye, C. Y. T. Ma, Y. Wang, and T. T. Chan, “Motion coordination of swarm robots for mobile target search,” IEEE Transactions on Automation Science and Engineering , vol. 22, pp. 20323–20340, 2025. [7] R. Raj and A. Kos, “A comprehensive study of mobile robot: history, developments, applications, and future research perspectives,” Applied Sciences , vol. 12, no. 14, p. 6951, 2022. 16 Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach [8] X. Zhang, W. Zhao, C. Liu, and J. Li, “Distributed multi-target search and surveillance mission planning for unmanned aerial vehicles in uncertain environments,” Drones , vol. 7, no. 6, p. 355, 2023. [9] S. H. Alsamhi, A. V. Shvetsov, S. Kumar, S. V. Shvetsova, M. A. Alhartomi, A. Hawbani, N. S. Rajput, S. Srivastava, A. Saif, and V. O. Nyangaresi, “UAV computing-assisted search and rescue mission framework for disaster and harsh environment mitigation,” Drones , vol. 6, no. 7, p. 154, 2022. [10] M. Aggravi, A. A. S. Elsherif, P. R. Giordano, and C. Pacchierotti, “Haptic-enabled decentralized control of a heterogeneous human-robot team for search and rescue in partially-known environments,” IEEE Robotics and Automation Letters , vol. 6, no. 3, pp. 4843–4850, 2021. [11] L. Sun, J. Wang, L. Wan, K. Li, X. Wang, and Y. Lin, “Human-UAV interaction assisted heterogeneous UAV swarm scheduling for target searching in communication denial environment,” IEEE Transactions on Automation Science and Engineering , vol. 22, pp. 4457–4472, 2025. [12] R. Hohzaki, “Search games: Literature and survey,” Journal of the Operations Research Society of Japan , vol. 59, no. 1, pp. 1–34, 2016. [13] K. Woiceshyn, Z. Kashino, G. Nejat, and B. Benhabib, “Vehicle routing for resource management in time-phased deployment of sensor networks,” IEEE Transactions on Automation Science and Engineering , vol. 16, no. 2, pp. 716–728, 2018. [14] J. G. Baylog and T. A. Wettergren, “A ROC-based approach for developing optimal strategies in UUV search planning,” IEEE Journal of Oceanic Engineering , vol. 43, no. 4, pp. 843–855, 2018. [15] Z. Kashino, G. Nejat, and B. Benhabib, “A hybrid strategy for target search using static and mobile sensors,” IEEE Transactions on Cybernetics , vol. 50, no. 2, pp. 856–868, 2020. [16] H. Fang, P. Yi, D. Deng, and B. He, “Multiple pursuers versus one evader reach-avoid differential games with asymmetric observations,” IEEE Transactions on Automation Science and Engineering , vol. 22, pp. 18605–18616, 2025. [17] T. Ba¸ sar and G. J. Olsder, Dynamic Noncooperative Game Theory, 2nd Edition . SIAM, 1998. [18] H. Zhang, G. Chen, and Y. Hong, “Distributed algorithm for continuous-type Bayesian Nash equilibrium in subnetwork zero-sum games,” IEEE Transactions on Control of Network Systems , vol. 11, no. 2, pp. 915–927, 2024. [19] W. Zheng, T. Jung, and H. Lin, “Continuous-observation one-sided two-player zero-sum partially observable stochastic game with public actions,” IEEE Transactions on Automatic Control , vol. 68, no. 12, pp. 7390–7404, 2023. [20] T. Kozuno, P. Ménard, R. Munos, and M. Valko, “Learning in two-player zero-sum partially observable Markov games with perfect recall,” in Advances in Neural Information Processing Systems , vol. 34, pp. 11987–11998, 2021. [21] L. Gregorin, S. N. Givigi, E. Freire, E. Carvalho, and L. Molina, “Heuristics for the multi-robot worst-case pursuit-evasion problem,” IEEE Access , vol. 5, pp. 17552–17566, 2017. [22] Y. Xiao, S. Katt, A. t. Pas, S. Chen, and C. Amato, “Online planning for target object search in clutter under partial observability,” in 2019 International Conference on Robotics and Automation (ICRA) , pp. 8241–8247, 2019. [23] X. Jiang, F. Zhou, S. Chen, H. He, and J. Yang, “Jamming resilient tracking using pomdp-based detection of hidden targets,” IEEE Transactions on Information Forensics and Security , vol. 16, pp. 983–998, 2020. [24] D. Hsu, W. S. Lee, and N. Rong, “A point-based POMDP planner for target tracking,” in 2008 IEEE International Conference on Robotics and Automation , pp. 2644–2650, 2008. [25] Y. Chen and H. Kurniawati, “POMDP planning for object search in partially unknown environment,” in Advances in Neural Information Processing Systems , vol. 36, pp. 53146–53157, 2023. [26] M. Zhang, Q. Xu, Y. Mi, C. Cao, J. Yu, W. Chi, and L. Sun, “An active robot object search strategy based on probabilistic Voronoi diagram and POMDP,” IEEE Transactions on Intelligent Vehicles , vol. 10, no. 7, pp. 4068–4079, 2025. [27] K. Horák and B. Bošansk `y, “Solving partially observable stochastic games with public observations,” in Proceed-ings of the AAAI Conference on Artificial Intelligence , vol. 33, pp. 2029–2036, 2019. [28] L. Sun, Y.-C. Chang, C. Lyu, Y. Shi, Y. Shi, and C.-T. Lin, “Toward multi-target self-organizing pursuit in a partially observable Markov game,” Information Sciences , vol. 648, p. 119475, 2023. [29] T. C. E. Cheng, B. Kriheli, E. Levner, and C. T. Ng, “Scheduling an autonomous robot searching for hidden targets,” Annals of Operations Research , vol. 298, no. 1, pp. 95–109, 2021. 17 Mobile Target Search with Imperfect Perception: A POSG Theoretical Approach [30] B. Hajek, Random Processes for Engineers . Cambridge University Press, 2015. [31] R. Durrett, Probability: Theory and Examples , vol. 49. Cambridge University Press, 2019. [32] G. Arslan and S. Yüksel, “Decentralized Q-learning for stochastic teams and games,” IEEE Transactions on Automatic Control , vol. 62, no. 4, pp. 1545–1558, 2017. [33] B. Yongacoglu, G. Arslan, L. Pavel, and S. Yüksel, “Generalizing better response paths and weakly acyclic games,” in 2024 IEEE 63rd Conference on Decision and Control (CDC) , pp. 5262–5267, 2024. 18

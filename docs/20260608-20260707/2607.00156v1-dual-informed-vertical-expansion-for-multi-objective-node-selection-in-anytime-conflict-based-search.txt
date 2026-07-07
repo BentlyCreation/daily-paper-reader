@@ -1,0 +1,1331 @@
+Title: Dual-Informed Vertical Expansion for Multi-Objective Node Selection in Anytime Conflict-Based Search
+
+URL Source: https://arxiv.org/pdf/2607.00156v1
+
+Published Time: Thu, 02 Jul 2026 00:13:25 GMT
+
+Number of Pages: 19
+
+Markdown Content:
+> 1
+
+# Dual-Informed Vertical Expansion for Multi-Objective Node Selection in Anytime Conflict-Based Search 
+
+Willem van Osselaer, Jiarui Li, Meshal Alharbi, and Gioele Zardini 
+
+Abstract —Conflict-Based Search (CBS) is a leading exact al-gorithm for Multi-Agent Path Finding (MAPF), but its high-level node-selection rule is usually treated as a fixed implementation detail. Standard best-first selection is strong for minimizing expanded nodes and closing the optimality certificate, yet it can maintain a large frontier, interrupt parent-child expansion sequences, and provide no feasible incumbent until termination. This paper studies node selection as a first-class design choice for exact CBS. We introduce Dual-Informed Vertical Expansion (DIVE), a policy that is best-bound between dives and depth-oriented within a dive. DIVE starts each dive from the current best-bound frontier, follows promising children to exploit parent-child locality, and uses incumbent pruning to limit unproductive excursions. We formalize CBS node selection through a branch-and-bound view, prove that the traversal policy can be changed without affecting exactness, and analyze the resulting trade-offs among expanded nodes, dive breaks, queue size, and primal-dual bound progress. The analysis predicts three complementary extremes. Best-first search is node efficient, iterative deepening is memory efficient, and DIVE is dive efficient while retaining regular best-bound reanchoring. Experiments on standard MAPF benchmarks support this trade-off map. DIVE consistently re-duces dive breaks, provides early incumbents with certified gaps, uses substantially less queue memory than best-first search, and benefits from warm starts and simple responsive variants in dense or memory-limited regimes. 
+
+I. I NTRODUCTION 
+
+# COORDINATING many robots through a shared envi-ronment is a core problem in robotics, with applica-tions ranging from warehouse automation to airport surface operations and other graph-structured routing domains [1], [2]. Multi-Agent Path Finding (MAPF) captures this problem through a compact abstraction. Each agent must move from a start vertex to a goal vertex, agents may not collide, and the objective is to minimize a global cost such as the sum of arrival times. The abstraction is simple, but optimal routing is computationally hard [3]. For robotic systems that require cer-tificates of optimality, predictable resource use, or meaningful behavior under time limits, the internal search policy of the solver becomes as important as its final guarantee. Conflict-Based Search (CBS) is one of the most widely used exact approaches for optimal MAPF [4], and decomposes the problem into a high-level search over a Constraint Tree (CT). Each node n represents a relaxed subproblem with additional 
+
+The authors are with the Laboratory for Information and Decision Sys-tems, Massachusetts Institute of Technology, Cambridge, MA, USA (e-mails: 
+
+{willemvo, jiarui01, meshal, gzardini }@mit.edu). This work was supported by Prof. Zardini’s grant from the MIT Amazon Science Hub, hosted in the MIT Schwarzman College of Computing, and the MIT Maritime Consortium. Van Osselaer was supported by the Office of Naval Research (ONR) through the National Defense Science & Engineering Graduate (NDSEG) Fellowship Program. Max queue size  
+
+> Num dive breaks Num nodes DIVE BFS
+> Each policy has a unique strength
+> DIVE exploits parent-child efficiency
+> Frontier sweeps Maintain steady dual bound progress Intermediate solutions tighten the primal bound
+> DIVE turns exact CBS into an
+> anytime algorithm
+> BFS
+> Uncontrolled deep
+> DFS
+> Threshold passes
+> ID
+> Dive and reanchor
+> DIVE
+> exploration
+> DFS ID
+
+Fig. 1. Overview of the node-selection perspective developed in this paper. Top: BFS expands the best-bound frontier, DFS follows deep branches without reanchoring, ID performs repeated threshold-limited passes, and DIVE combines depth-oriented dives with best-bound reanchoring. Bottom left: these policies occupy different regions of the multi-objective design space induced by expanded nodes, dive breaks, and queue size. Bottom right: by entering the primal zone in a controlled way while repeatedly returning to the best-bound frontier, DIVE can produce intermediate feasible solutions and maintain dual-bound progress, giving exact CBS an anytime mode. 
+
+constraints on individual agents and a lower-bound key ℓ(n).Expanding a node either produces a conflict-free solution or creates child subproblems that forbid one side of a selected conflict. The standard policy is to expand the open node with smallest ℓ(n), and this best-first rule is so closely associated with CBS that it is often treated as part of the algorithm itself [4]. In this paper, we take a different view. We treat high-level node selection as a modular policy that shapes the behavior of exact CBS without changing the low-level search, branching rule, admissible heuristic, or pruning logic. The choice of node-selection policy controls several competing quantities. Specifically, it affects how many nodes are expanded, how quickly the dual bound moves toward the optimality certifi-cate, how many open nodes must be stored, how often the search jumps away from a parent-child sequence, and whether feasible solutions appear before the algorithm has certified optimality. These quantities trade off against one another rather than improving together, and the right balance is set by the robot’s deployment context, including onboard memory limits, the real-time window available for replanning, and whether 
+
+> arXiv:2607.00156v1 [cs.RO] 30 Jun 2026 2
+
+the system must act on a feasible plan before optimality is certified. Figure 1 previews this multi-objective design space and the distinct operating point that DIVE targets. The usual best-first policy is excellent for expanded-node count and dual-bound progress, but it has two important drawbacks: i) it can store a large frontier, and ii) it usually provides no incumbent solution until termination. It also jumps across the frontier, limiting opportunities to exploit the fact that a child CBS node differs from its parent by only one added constraint. Iterative Deepening CBS (IDCBS) addresses the frontier-size problem by using repeated depth-first passes under increasing thresholds [5]. While this approach greatly reduces explicit queue memory, it re-expands nodes across passes and still does not provide intermediate feasible solu-tions. Most other exact-CBS improvements refine the best-first key rather than changing this broader trade-off profile [6], [7]. We propose DIVE, a high-level node-selection policy de-signed to occupy the missing middle ground. DIVE is best-bound between dives and depth-oriented within each dive. A new dive starts from the globally best-bound open node, and the dive then follows promising children while they can still improve the incumbent. When the dive terminates, the search returns to the best-bound frontier. This simple structure preserves regular progress toward the optimality certificate, while exposing feasible incumbents earlier, improving parent-child continuity, and keeping a smaller frontier than standard best-first search. The paper also argues for a broader perspective on node selection in CBS. Exactness and traversal order should be separated formally. Policy quality should then be evaluated as a multi-objective trade-off across expanded nodes, parent-child continuity, memory, incumbent discovery, and certificate progress, rather than through the number of expanded nodes alone. Because these objectives compete rather than improve together, the policies of interest form a Pareto front rather than admitting a single universally best rule, and DIVE is best understood as a previously missing point on that front. This view becomes especially consequential when MAPF serves as a routing subroutine inside a larger optimization or control system, where intermediate trade-offs can directly shape outer-loop decisions before optimality is certified [8], [9]. It also motivates adaptive node selection, since the right balance between memory, incumbent quality, and certificate progress depends on both the instance and the surrounding operating context. 
+
+Statement of contribution: The paper makes four con-tributions. First, it formulates high-level CBS node selection as an explicit policy and proves, through a branch-and-bound abstraction, that changing this policy preserves exactness when standard pruning conditions are maintained. Second, it intro-duces DIVE and identifies the two mechanisms that make it robust, namely incumbent cutoffs and diversified best-bound restarts. Third, it develops a search-tree framework that com-pares best-first search, depth-first search, iterative deepening, and DIVE across expanded nodes, dive breaks, queue size, and primal-dual bound progress. Fourth, it evaluates these predictions on standard MAPF benchmarks and ablations, showing that DIVE provides a distinct Pareto point with far fewer dive breaks, substantially smaller queues than best-first search, and early incumbents with certified gaps. 
+
+Paper structure: Section II fixes the MAPF and CBS notation and positions node selection relative to existing exact-CBS variants and Branch and Bound (B&B). Section III introduces node selection as a modular policy and defines DIVE together with its two governing mechanisms, incumbent cutoffs and diversified best-bound restarts. Section IV develops the node-selection framework, i.e., it proves that traversal order is independent of exactness, defines the search-tree model and the five competing objectives, and introduces responsive node selection. Section V uses this framework to compare Best-First Search (BFS), Depth-First Search (DFS), Iterative Deepening (ID), and DIVE, locating the structural extreme that each policy occupies. Finally, Section VI validates the predicted trade-offs on standard MAPF benchmarks, and Section VII concludes. II. B ACKGROUND AND RELATED WORK 
+
+This section fixes the MAPF notation used throughout the paper, reviews CBS, and places our node-selection focus rela-tive to existing CBS variants and branch-and-bound methods. 
+
+A. MAPF Formalization 
+
+We consider optimal MAPF on a directed reflexive graph, where the reflexive edges represent wait actions. A MAPF instance specifies a start and a goal vertex for each agent. The task is to compute one trajectory per agent such that agents do not collide and the sum of costs is minimized [1], [10]. 
+
+Definition II.1 (MAPF instance) . A MAPF instance is a tuple I = ( G, A, ρ s, ρ g ), where G = ( V, E ) is a directed reflexive graph, A is a finite set of agents, and ρs, ρ g : A → V
+
+map each agent to its start and goal vertex, respectively. 
+
+Definition II.2 (Trajectory and cost) . For an agent a ∈ A,a trajectory is a finite sequence τa =  va 
+
+> 0
+
+, . . . , v aTa
+
+, such that va 
+
+> 0
+
+= ρs(a), vaTa = ρg (a), and (vat , v at+1 ) ∈ E for all 
+
+t = 0 , . . . , T a −1. After reaching its goal, the agent is assumed to remain there, so vat := vaTa for all t > T a. The cost of τa
+
+is its arrival time c(τa) := Ta.
+
+Definition II.3 (Conflict) . Given two agents a, b ∈ A and time t ≥ 0, a vertex conflict occurs if vat = vbt . An edge conflict occurs if vat = vbt+1 and vbt = vat+1 .
+
+Definition II.4 (MAPF solution) . A MAPF solution is a set of trajectories {τa}a∈A with no vertex or edge conflicts. Throughout the paper, we consider the standard sum-of-costs objective 
+
+SoC  {τa}a∈A
+
+ = X
+
+> a∈A
+
+c(τa).
+
+A set of individually valid trajectories that still contains conflicts will be referred to as a joint plan .This is the relaxed object manipulated by CBS before outputting conflict-free optimal trajectories. 3
+
+B. Conflict-Based Search 
+
+CBS solves MAPF through a high-level search over a CT [4]. Each CT node n stores a set of agent-specific space-time constraints, one trajectory per agent satisfying those constraints, and a lower bound key ℓ(n) on the best conflict-free objective attainable below that node. The root node has no additional constraints. In vanilla CBS, ℓ(n) is the sum of the individually optimal path costs at n.To expand a CT node, a low-level search computes optimal single-agent trajectories consistent with that node’s constraints, typically using A*. If the resulting joint plan is conflict-free, the node yields a feasible MAPF solution. Otherwise, CBS selects one conflict and branches on it. For a vertex con-flict (a, b, v, t ), the two children respectively add constraints forbidding agent a or agent b from occupying vertex v at time t. For an edge conflict, the two children analogously forbid one of the two conflicting traversals. A large body of work improves CBS through better conflict selection, bypassing, admissible high-level heuristics, finite-horizon variants, and bounded-suboptimal variants [6], [7], [11]–[15]. CBS has also been extended to settings that couple routing with other decisions, including configurable environ-ments and task allocation [16], [17]. These developments change how nodes are evaluated, generated, or solved. The focus of this paper is orthogonal. We study which open high-level node should be expanded next. 
+
+C. Node Selection in CBS 1) Best-first search and admissible high-level heuristics: 
+
+Standard optimal CBS uses BFS, selecting an open node with minimum lower-bound key ℓ(n) [4]. This choice is natural for exact search because it prioritizes nodes that can still improve the optimality certificate. It also supports the classical CBS proof, where the first conflict-free node selected by best-bound order is optimal [4]. Many exact-CBS improvements strengthen this best-first paradigm rather than replacing it. Admissible high-level heuristics tighten the key ℓ(n) beyond the raw sum of indi-vidual path costs [6]. Subsequent heuristics based on conflict structure have produced major practical gains [7]. These methods improve the quality of the best-first key, but the search remains fundamentally best-bound. As a result, they do not directly address the memory, parent-child locality, or incumbent-discovery issues studied here. 
+
+2) Parent-child efficiency and iterative deepening: A child CBS node differs from its parent by a single additional constraint, and only the newly constrained agent must be replanned. Importantly, this creates an opportunity for parent-child efficiency. If a child is processed immediately after its parent, implementation state from the parent can often be reused more effectively than when the search jumps to an unrelated node [5]. Node selection therefore affects runtime not only through the number of expanded nodes, but also through the continuity of parent-child expansion chains. IDCBS is the main exact-CBS alternative to standard best-first node selection [5]. It performs repeated depth-first passes under a nondecreasing cost threshold and restarts from the root when the threshold increases. This gives a small explicit frontier and preserves depth-first behavior within each pass. However, the policy discovers new nodes in best-first order, performs repeated work across thresholds, and does not seek feasible incumbents before the threshold reaches them. Our analysis and experiments compare DIVE directly with this memory-oriented baseline. 
+
+3) Suboptimal variants and learned node selection: Node selection has also been studied in suboptimal CBS solvers. Greedy CBS selects nodes using non-admissible measures such as the number of conflicts, while bounded CBS and its descendants use focal search to explore promising nodes within a bounded suboptimality range [12], [13]. Learning-based node selection has been explored in bounded-suboptimal CBS as well [18]. These methods are important, but they answer a different question. They trade exact best-bound ordering for speed or bounded-suboptimal performance. This paper asks how much freedom remains in node selection while preserving exact optimal CBS. Fast suboptimal MAPF methods are also relevant as sources of feasible warm starts. In our experiments, we use Priority Inheritance with Backtracking (PIBT) to initialize an incum-bent in dense regimes [19]. The warm-start solution does not replace exact search. It only provides an initial primal bound that can activate valid incumbent pruning. 
+
+D. Connection to Branch and Bound 
+
+CBS has the same high-level structure as a B&B algo-rithm [20]. A node represents a relaxed subproblem, the node key is a lower bound, branching refines the relaxation, and an incumbent gives a primal bound. This connection is useful because node selection has long been treated as a major design dimension in branch-and-bound solvers [21]. The contrast with Mixed Integer Programming (MIP) is especially instructive. MIP solvers routinely mix best-bound, depth-oriented, and responsive strategies, and they expose parameters that shift effort between finding feasible solutions and proving optimality [21]–[23]. Hybrid best-first strategies with plunging have also been studied outside MAPF, for example, in weighted constraint-satisfaction problems [24]. DIVE adapts this general idea to exact CBS, where parent-child locality, incumbent discovery, and certificate progress have a MAPF-specific interpretation. III. DIVE We have identified two dominant high-level traversal regimes for CBS. BFS expands nodes in best-bound order, which is favorable for expanded-node count and dual-bound progress, but it tends to maintain a large frontier and provides no incumbent before termination. ID greatly reduces the frontier size by using repeated depth-first passes, but it pays for this memory reduction through repeated work and still does not provide intermediate feasible solutions. DIVE is designed to occupy the missing middle ground: it preserves the best-bound frontier between dives while exploiting parent-child continuity and exposing feasible incumbents during the solve. 4
+
+Algorithm 1 CBS with node-selection policy π 
+
+> Blue lines collect information that is specific to DIVE.
+> 1:
+
+OPEN ← { n0}, initialize queue with the root node  
+
+> 2:
+
+zP ← ∞ or warm-start value ▷ e.g. from PIBT solution  
+
+> 3:
+
+ninc ← none or a warm-start solution  
+
+> 4:
+
+nlast ← ∅ 
+
+> 5:
+
+while OPEN ̸ = ∅ do  
+
+> 6:
+
+n ← π(OPEN , n last , z P)1 ▷ π : node selection policy.  
+
+> 7:
+
+remove n from OPEN  
+
+> 8:
+
+nlast ← n 
+
+> 9:
+
+if n is infeasible or ℓ(n) ≥ zP then  
+
+> 10:
+
+continue  
+
+> 11:
+
+end if  
+
+> 12:
+
+if n is conflict-free then  
+
+> 13:
+
+zP ← ℓ(n) 
+
+> 14:
+
+ninc ← n 
+
+> 15:
+
+continue  
+
+> 16:
+
+end if  
+
+> 17:
+
+branch on a selected conflict & generate children of n 
+
+> 18:
+
+add each feasible child c with ℓ(c) < z P to OPEN  
+
+> 19:
+
+end while  
+
+> 20:
+
+return ninc ▷ returning ∅ certifies infeasibility This section first introduces node selection as a modular component of CBS. It then defines the DIVE policy and sum-marizes the mechanisms responsible for its trade-off profile. The formal correctness argument and the technical comparison with existing policies are deferred to Sections IV and V. 
+
+A. Node Selection as a Modular Policy 
+
+A CBS solve maintains a set of open constraint-tree nodes, denoted by OPEN . At each high-level iteration, the solver re-moves one node from OPEN , processes it, and either discards it or replaces it with its expanded children. In standard optimal CBS, this node is selected by best-bound order: the next expanded node has minimum lower-bound key ℓ(n) among the open nodes. IDCBS realizes the same best-bound discovery order indirectly, through repeated depth-first searches under increasing cost thresholds [5]. We separate this traversal choice from the rest of the algo-rithm. A high-level node-selection policy π maps the current observable solver state to a node in OPEN . Algorithm 1 shows CBS with this policy made explicit. The low-level search, conflict selection, branching rule, admissible high-level heuristic, and pruning tests are unchanged; only the order in which open CT nodes are processed is delegated to π.This relaxation is algorithmically safe under the usual finite-search assumption stated formally in Section IV-A: any policy π that always selects an open node changes only the order in which subproblems are processed. The choice of π is nevertheless consequential because it determines the traversal pattern of the CT, and therefore the trade-off among expanded nodes, parent-child continuity, frontier size, incumbent discov-ery, and dual-bound progress. 
+
+Remark 1 (machine learning-driven node selection) . Our framework of node selection as modular yet algorithmically safe makes it naturally suited for machine-learning driven approaches, particularly with cutoffs as in Proposition 1 as a safety guard. While this paper remains focused on analyzing the node selection tradeoff space through its node count, diving, and queue size extremes, other methods may exploit the rest of the design space. Policies can be trained online on previous iterations of the same solve, offline on instances within the same distribution, or as part of a reinforcement learning scheme. Such approaches are well-studied in the MIP context [25]–[27]. In CBS, machine learning has been confined to conflict selection [28] and suboptimal variants [18], but detaching node selection from correctness expands this scope. 
+
+B. DIVE Policy 
+
+DIVE is a high-level node-selection policy for optimal CBS. 
+
+Definition III.1 (Dive) . Given a node expansion se-quence (n0, n 1, . . . ), a dive is a maximal contiguous sub-sequence (ni, . . . , n j ) such that nt+1 is a child of nt for every t = i, . . . , j − 1. The first node of the subsequence is referred to as the dive root .DIVE is best-bound between dives and depth-oriented within a dive . Each dive starts from the current best-bound node in the open node queue OPEN , then repeatedly follows the best child in order to exploit parent-child locality. The dive is terminated as soon as continuing it becomes unproductive: Either the current node is conflict-free, no feasible child exists, or the node lower bound ℓ(n) can no longer improve the incumbent solution. 
+
+Definition III.2 (Incumbent and primal bound) . At iteration t,an incumbent is a conflict-free solution found by the search whose objective value is smallest among all conflict-free solutions found up to that iteration. Its objective value zP 
+
+> t
+
+is used as a primal bound .
+
+zP 
+
+> t
+
+=
+
+(
+
+ℓ(ninc  
+
+> t
+
+), if an incumbent ninc  
+
+> t
+
+exists ,
+
++∞, otherwise. Algorithm 2 states the policy and Figure 2 shows a graphical example. Let nlast be the node expanded in the previous high-level iteration. If one of its children remains in OPEN and the lowest-bound such child has ℓ(c) < z P, DIVE expands that child next. Otherwise, DIVE starts a new dive by selecting the best-bound node in OPEN . Ties among equal-bound nodes are resolved by a fixed deterministic rule 2.This policy deliberately differs from both main baselines. Relative to BFS, DIVE is willing to leave best-bound order temporarily in order to obtain longer parent-child expansion chains and earlier feasible solutions. Relative to ID, DIVE does not restart from the root after each threshold; it keeps the open frontier and reanchors each new dive by a global best-bound selection. Similar ideas outside MAPF are known as Hybrid BFS or best-bound search with plunging [21], [24].    
+
+> 1This signature is specific to DIVE. Policies may use any observable information as input.
+> 2In our implementation, deeper nodes are preferred first, followed by nodes whose selected conflict has larger cardinality. The definition of DIVE does not depend on this particular tie-breaking rule. 53. Diving
+> continues along
+> the least -cost
+> child 1. First dive
+> finishes upon
+> reaching conflict -
+> free solution
+> 1
+> 1
+> 1
+> 1
+> 2
+> 32
+> 2
+> Prune!
+> Explored nodes
+> Open nodes
+> Undiscovered
+> 2. Second dive
+> can be pruned
+> by incumbent
+> Fig. 2. Example DIVE traversal on a CT. Parents and left siblings have smaller lower-bound ℓ(n). Squares denote conflict-free nodes, and the star denotes the best conflict-free node. Edges with the same label are traversed within the same dive; labels indicate the order of the dives.
+
+Algorithm 2 DIVE node-selection policy  
+
+> 1:
+
+function πDIVE (OPEN , n last , z P) 
+
+> 2:
+
+if nlast = ∅ then  
+
+> 3:
+
+return πBFS (OPEN)  
+
+> 4:
+
+end if  
+
+> 5:
+
+C ← set of children of nlast  
+
+> 6:
+
+if C = ∅ then  
+
+> 7:
+
+return πBFS (OPEN)  
+
+> 8:
+
+end if  
+
+> 9:
+
+cmin ← arg min c∈C ℓ(c) ▷ with fixed tie-breaking  
+
+> 10:
+
+if ℓ(cmin ) < z P then  
+
+> 11:
+
+return cmin ▷ continue the current dive  
+
+> 12:
+
+end if  
+
+> 13:
+
+return πBFS (OPEN) ▷ start a new dive  
+
+> 14:
+
+end function  
+
+> 15:
+
+function πBFS (OPEN ) 
+
+> 16:
+
+return arg min n∈OPEN ℓ(n) ▷ with fixed tie-breaking  
+
+> 17:
+
+end function 
+
+C. Mechanisms and Trade-offs 
+
+DIVE’s behavior is governed by two mechanisms: incum-bent cutoff and diversified search. Together, they allow DIVE to enter deeper parts of the CT without turning into plain DFS. 
+
+1) Incumbent cutoff: DIVE may expand nodes whose lower bound is larger than the optimal objective. Such nodes are not required for the final optimality certificate, but they can produce feasible incumbents early and extend parent-child expansion chains. The risk is that a depth-oriented policy may spend too long in regions that cannot improve the best solution already found. Incumbent pruning controls this risk. 
+
+Proposition 1 (Incumbent cutoff) . Let zP 
+
+> t
+
+be the current incumbent after t iterations. If an open node n satisfies ℓ(n) ≥
+
+zP 
+
+> t
+
+, then no descendant of n can improve the incumbent. 
+
+Proof. The value ℓ(n) is a lower bound on every feasible solution in the subproblem represented by n. Every feasible descendant of n is also feasible within that subproblem, and therefore has objective value at least ℓ(n) ≥ zP 
+
+> t
+
+. Such a descendant cannot have objective value strictly smaller than the current incumbent. The cutoff is a valid branch-and-bound pruning test and is not unique to DIVE. It is central to DIVE because DIVE intentionally follows child nodes before the global best-bound frontier has been exhausted. In Algorithm 2, if the best avail-able child of the previously expanded node already satisfies 
+
+ℓ(c) ≥ zP 
+
+> t
+
+, then every sibling child has lower bound at least 
+
+zP 
+
+> t
+
+as well, so the current dive is stopped. 
+
+2) Diversified search: Stopping a dive is useful only if the next dive is chosen carefully. DIVE reanchors each new dive at the global best-bound frontier rather than continuing near the branch that happened to be explored most recently. 
+
+Definition III.3 (Diversified diving policy) . A diving policy is σ-diversified if every dive root is selected by a global rule σ(OPEN) over the open set, with σ independent of traversal history. DIVE is best-bound-diversified, meaning that 
+
+σ(OPEN) ∈ arg min n∈OPEN ℓ(n) up to tie-breaking. Best-bound diversification separates DIVE from DFS with incumbent pruning. A poor child choice in plain DFS can be followed by many additional depth-first choices in the same unproductive region. In DIVE, the effect of such a choice is limited to one dive: once the dive stops, the next dive root is selected from the global best-bound frontier. This is the mechanism that preserves regular progress toward the optimality certificate while still allowing incumbent-seeking excursions. 
+
+3) Frontier size and parent-child continuity: DIVE keeps substantially more frontier information than ID, because it does not discard the open nodes left behind by a dive. In binary CBS, each internal node visited during a dive can leave at most one unchosen child in OPEN . This is the price of reanchoring future dives at the best-bound frontier. Conversely, 6
+
+DIVE usually keeps a smaller frontier than BFS, because it does not expand the CT layer by layer before moving deeper. The same traversal pattern improves parent-child continuity. Whenever DIVE continues a dive, the next high-level ex-pansion is a child of the previous one. Implementations that exploit data between a parent and child can therefore process these consecutive expansions more efficiently than unrelated jumps across a wide frontier. The formal analysis in Section V makes this tradeoff explicit: BFS is optimized for expanded-node count, ID for queue size, and DIVE for dive continuity. 
+
+D. Bounds, Anytime Behavior, and Warm Starts 
+
+DIVE can find feasible solutions before the optimality proof is complete. After an incumbent has been found, the solver can be interrupted and still return the best feasible solution found so far. This gives exact CBS an anytime mode: the returned solution is feasible at interruption time, and it becomes certified optimal only when the remaining open nodes can no longer contain a better solution. DIVE does not obtain this anytime behavior by neglecting the lower bound. Since each new dive starts from the best-bound frontier, the search continues to raise the certificate side of the solve. The active dual bound can be written as 
+
+zDt = min 
+
+> n∈OPEN t
+
+ℓ(n),
+
+When an incumbent exists, zD 
+
+> t
+
+≤ z∗ ≤ zP 
+
+> t
+
+. If zDt = zP 
+
+> t
+
+,then the incumbent is certified optimal. For nonzero incumbent cost, the relative primal-dual gap is therefore 
+
+Gap t = zP 
+
+> t
+
+− zD
+
+> t
+
+zP
+
+> t
+
+, 0 < z P 
+
+> t
+
+< +∞.
+
+The zero-cost degenerate case can be handled by reporting zero gap once zP 
+
+> t
+
+= zD 
+
+> t
+
+= 0 . The gap is not a runtime predictor, but it gives an instance-specific, scale-normalized certificate of how much improvement remains possible. DIVE also interfaces naturally with warm starts. 
+
+Definition III.4 (Warm start) . A warm start is any feasible MAPF solution supplied before the CBS solve begins and used to initialize ninc and zP 
+
+> t
+
+.A warm start activates incumbent pruning immediately. This creates a simple interface between fast suboptimal planners and exact search: a heuristic planner can provide a feasible solution, while DIVE continues searching only for a proof of optimality or a better incumbent. The resulting solver remains exact because the warm start changes only the initial primal bound; it does not remove any node that could contain a solution better than that bound. IV. N ODE -S ELECTION FRAMEWORK 
+
+Section III made high-level node selection explicit in CBS. This section formalizes what that choice can and cannot change. The central point is simple: under standard B&B conditions, node selection does not affect exactness, but it strongly affects the route by which exactness is obtained. We organize the discussion around three principles. First, node selection can be studied formally rather than only em-pirically. Second, it is inherently multi-objective: expanded nodes, parent-child continuity, memory, incumbent discovery, and dual-bound progress are distinct quantities. Third, the preferred trade-off is context dependent, so useful policies may dynamically respond to the state of the ongoing solve. Section V then uses the notation introduced here to compare BFS, DFS, ID, and DIVE. 
+
+A. Correctness 
+
+We first separate correctness from traversal order by ab-stracting high-level CBS as an instance of B&B. This abstrac-tion serves to capture not just the standard scope of CBS, but also its many extensions, such as A-CBS and TA-CBS which capture map configuration and task assignment respectively in addition to agent routing [16], [17]. Other adaptations, such as suboptimal and finite-horizon variants [14], [15] are likewise captured under the same B&B scheme. Consider a minimization problem with objective g and feasible set Q
+
+contained in a relaxation O. A B&B node P ⊆ O represents a relaxed subproblem. Solving P either proves it infeasible or returns a relaxed optimizer s(P ) together with a valid lower bound ℓ(P ) satisfying 
+
+ℓ(P ) ≤ g(q) ∀q ∈ P ∩ Q. (1) If s(P ) ∈ Q, the node is pruned because the relaxation optimum is already feasible and therefore no point in P ∩Q can improve on s(P ). If s(P ) /∈ Q, branching creates children L
+
+and R satisfying 
+
+L, R ⊆ P, (2) 
+
+s(P ) /∈ L ∪ R, (3) 
+
+P ∩ Q ⊆ L ∪ R. (4) The first condition makes children refinements of the parent, the second excludes the current infeasible relaxed optimizer, and the third preserves every feasible solution that could still be hidden inside the parent. The children need not be disjoint. 
+
+Proposition 2 (Node selection does not affect correctness) .
+
+Assume the search tree induced by the branching rule is finite, every node lower bound satisfies (1), and every branch oper-ation satisfies (2)–(4). Then Algorithm 3 returns an optimal solution, or correctly certifies infeasibility, for any policy that always selects a node from OPEN (completeness). 
+
+Proof sketch. Node selection changes only the order in which open subproblems are processed. Incumbent pruning is valid by (1). Infeasible nodes contain no feasible solution. Feasible relaxed optimizers can be fathomed because they are already optimal within their subproblem. Branching preserves all fea-sible solutions by (4). Thus, after each iteration, every fea-sible solution that could still improve the incumbent remains covered by the open nodes. Since the induced tree is finite, every open node is eventually processed or validly pruned. At termination no improving feasible solution remains; hence the incumbent is optimal, and if no incumbent exists the instance is infeasible. Section A gives the full invariant proof. 7
+
+Algorithm 3 Generic B&B with node-selection policy π 
+
+> 1:
+
+OPEN ← { O} 
+
+> 2:
+
+sinc ← ∅ , zP ← +∞ 
+
+> 3:
+
+while OPEN ̸ = ∅ do  
+
+> 4:
+
+P ← π(S), where P ∈ OPEN  
+
+> 5:
+
+Remove P from OPEN  
+
+> 6:
+
+Solve P to obtain status, lower bound ℓ(P ), and relaxed optimizer s(P ) if one exists  
+
+> 7:
+
+if P is infeasible then  
+
+> 8:
+
+continue  
+
+> 9:
+
+end if  
+
+> 10:
+
+if ℓ(P ) ≥ zP then  
+
+> 11:
+
+continue ▷ incumbent cutoff  
+
+> 12:
+
+end if  
+
+> 13:
+
+if s(P ) ∈ Q then  
+
+> 14:
+
+if g(s(P )) < z P then  
+
+> 15:
+
+sinc ← s(P ) 
+
+> 16:
+
+zP ← g(s(P ))  
+
+> 17:
+
+end if  
+
+> 18:
+
+continue  
+
+> 19:
+
+end if  
+
+> 20:
+
+Branch on a violation in s(P ) and create children L, R  
+
+> 21:
+
+such that L, R ⊆ P , s(P ) /∈ L∪R, and P ∩Q ⊆ L∪R 
+
+> 22:
+
+Add L and R to OPEN  
+
+> 23:
+
+end while  
+
+> 24:
+
+return sinc 
+
+Remark 2 (Finite MAPF search space) . Proposition 2 is stated for a finite induced search tree, which is also the setting used for the structural analysis in Section V. This assumption is not a claim that every unconstrained MAPF formulation has a finite high-level tree. Rather, it isolates the node-selection question from separate completeness issues such as horizons and objective bounds. Once a finite incumbent value B is avail-able in sum-of-costs MAPF, any strictly improving solution has total cost less than B, so the relevant bounded part of the search is finite. Practical solvers can also impose explicit horizons or rely on standard CBS completeness conditions; these choices are orthogonal to the node-selection order. CBS satisfies the above abstraction directly. 
+
+Proposition 3 (CBS instantiates B&B) . The high-level search of optimal CBS is an instance of the B&B scheme in Algo-rithm 3. 
+
+Proof sketch. Let Q be the set of conflict-free joint plans for the MAPF instance, and let O be the relaxation that keeps individual path feasibility but drops inter-agent collision constraints. A CT node P is defined by a set of agent-specific space-time constraints. Solving P computes an individually optimal path for each agent subject to those constraints; the resulting node key ℓ(P ) is a lower bound on every conflict-free joint plan satisfying the same constraints. If the relaxed joint plan is conflict-free, it is feasible for the original MAPF instance and is optimal within P ∩ Q.Otherwise, CBS branches on a selected conflict. For a vertex conflict, one child forbids the first agent from occupying the conflicted vertex at the conflicted time, and the other child forbids the second agent from doing so. Edge conflicts are handled analogously. These children are subsets of the parent, exclude the current conflicting joint plan, and preserve every conflict-free joint plan in the parent because any conflict-free plan must avoid at least one side of the selected conflict. Thus (2)–(4) hold. 
+
+Proposition 4 (Exactness of DIVE) . DIVE is an exact high-level node-selection policy for optimal CBS. With valid in-cumbent pruning, it returns an optimal solution whenever one exists in the finite induced search tree. 
+
+Proof. DIVE only changes which node in OPEN is selected next. Its pruning test is the incumbent cutoff of Proposition 1, which is exactly the valid lower-bound pruning test used in Algorithm 3. The result follows from Propositions 2 and 3. Importantly, enhancing DIVE with warm starts preserves its correctness. 
+
+Proposition 5 (Warm-start monotonicity) . Initializing DIVE with any feasible warm start preserves exactness and can only shrink the subset of nodes that survive incumbent pruning. 
+
+Proof. A warm start changes only the initial incumbent and primal bound. Any node pruned by the resulting cutoff has lower bound at least the value of a known feasible solution, so by Proposition 1 it cannot contain a strictly better solution. The branch-and-bound certificate is otherwise unchanged. 
+
+Remark 3 (Relation to MIP) . Proposition 3 places CBS in the same abstract family as classical B&B algorithms, including MIPs solved by linear-programming relaxations and branching on fractional variables [20]. We use this connection only as vocabulary and motivation for node selection; the analysis and experiments in this paper remain specific to CBS. 
+
+Remark 4 (Relation to suboptimal CBS variants) . Proposi-tions 2 and 3 imply that the suboptimal CBS variants discussed in Section II-C3 can be adopted to become exact variants by enforcing exact low-level search and restricting their non-admissible node selection to the high-level search. Primal zone exploration can be controlled by incumbent pruning following Proposition 1. 
+
+B. Search Tree 
+
+For the rest of the paper, fix a MAPF instance I and a deterministic branching policy β. Together they induce a conceptual search tree TI,β ; different node-selection policies traverse different subsets of this same tree and in different orders. We usually omit the superscript when the instance and branching policy are clear. 
+
+Definition IV.1 (Search tree) . A search tree is a tuple T =(T , C, ℓ, f ), where T is a finite set of nodes, C : T → 2T
+
+maps each node to its children, ℓ : T → R ∪ { +∞} is a valid lower-bound key, and f : T → {⊤ , ⊥} indicates whether the relaxed solution stored at the node is conflict-free. The tree is 8
+
+rooted, binary, and lower bounds are monotone along parent-child edges: 
+
+ℓ(m) ≥ ℓ(n) ∀n ∈ T , m ∈ C(n). (5) A node with f (n) = ⊤ is a feasible MAPF solution. Low-level infeasible nodes are terminal and can be represented with C(n) = ∅. We assume throughout the technical analysis that the node key ℓ(n) is nondecreasing along every root-to-leaf path. The monotonicity assumption in (5) holds for the standard sum-of-costs key in vanilla CBS, since adding constraints cannot decrease the optimal relaxed cost. The results apply to any keys satisfying the same monotonicity condition, as when admissible high-level heuristics are used. 
+
+C. Tree Traversal 
+
+Let nt denote the node processed at iteration t, with n0 as the root. Let Et ⊆ T be the set of processed nodes after t
+
+iterations and let OPEN t be the open set immediately before iteration t.
+
+Et+1 = Et ∪ { nt},
+
+OPEN t+1 = (OPEN t \ { nt}) ∪ C(nt).
+
+For a low-level infeasible node or a conflict-free node, C(nt) = ∅. Note that a valid pruning rule such as Proposition 1 may allow some of C(nt) to be discarded without adding to OPEN t.A node-selection policy chooses the next processed node from the current open set. 
+
+Definition IV.2 (Node-selection policy) . A node-selection policy π is any rule such that, for every solver state St
+
+with OPEN ̸ = ∅, π(St) ∈ OPEN t. The state St may include the open set, the previously processed node, the incumbent value, queue size, tie-breaking data, or information learned from previous instances. The unexpanded portions of T are not assumed to be known. In Figure 2, solid red nodes are processed nodes, light red nodes are open nodes, and gray nodes are undiscovered nodes in T . Squares indicate nodes with f (n) = ⊤, and the star marks the best such node. 
+
+D. Solve Completion Criteria 
+
+Assume for this subsection that the instance is feasible. The infeasible case is certified by exhausting OPEN without finding an incumbent. Let 
+
+z∗ := min    
+
+> n∈T :f(n)= ⊤
+
+ℓ(n) (6) be the optimal objective value represented in the tree. We partition T into three zones: 
+
+N D := {n ∈ T | ℓ(n) < z ∗} (dual zone) ,N O := {n ∈ T | ℓ(n) = z∗} (optimal zone) ,N P := {n ∈ T | ℓ(n) > z ∗} (primal zone) .
+
+The names describe their roles in the solve. Dual-zone nodes must be ruled out because their lower bounds are still strictly better than the optimum. At least one feasible optimal-zone node must be found. Primal-zone nodes are not needed for the final certificate, but they can provide incumbent solutions before optimality is proved. An exact solve completed in T iterations must satisfy two conditions. First, it must have found an optimal feasible node: 
+
+{n ∈ ET ∩ N O | f (n) = ⊤} ≥ 1. (7) Second, every dual-zone node must have been resolved: 
+
+N D ⊆ ET . (8) Condition (8) is necessary because a node with ℓ(n) < z ∗
+
+cannot be eliminated by an incumbent cutoff before it is processed. Once (7) holds, the incumbent value is z∗. Once (8) also holds, no open node can certify a lower value than 
+
+z∗, so the incumbent is optimal. We extend our definition of zP 
+
+> t
+
+and zD 
+
+> t
+
+from Section III using the new notation. Define the primal bound and open-frontier lower bound at iteration t by 
+
+zP 
+
+> t
+
+:= min   
+
+> n∈Et:f(n)= ⊤
+
+ℓ(n),zt := min 
+
+> n∈OPEN t
+
+ℓ(n),
+
+with the minimum over an empty set interpreted as +∞. The active dual bound is 
+
+zD 
+
+> t
+
+:= min {zP 
+
+> t
+
+, z t}. (9) For a feasible incumbent, zD 
+
+> t
+
+≤ z∗ ≤ zP 
+
+> t
+
+. The solve is certified when zP 
+
+> t
+
+= zD 
+
+> t
+
+, which occurs exactly when the incumbent is no worse than every open-node lower bound. Controlled visits to N P are useful because they can reduce zP 
+
+> t
+
+before (8) has been completed. 
+
+E. Node-Selection Objectives 
+
+Correctness fixes the destination of an exact solve, and node selection determines the route. We use five route-dependent quantities throughout the paper. 
+
+a) Expanded nodes: The total number of processed nodes |ET | is the most direct high-level measure of search effort. It is not a complete runtime model, because different processed nodes can have different low-level costs, but it captures how much of the high-level tree is examined. 
+
+b) Dive breaks: Processing a child immediately after its parent can be substantially cheaper than jumping to an unrelated node, because the child differs from its parent by only one added constraint. Boyarski et al. introduced several ways to exploit this parent-child efficiency in CBS, and their results show that the dive continuity, rather than the raw number of expanded nodes alone, is an important indicator of implementation runtime [5]. We therefore track the number of times the traversal starts or restarts a parent-child chain. 
+
+Definition IV.3 (Dive break count) . For an expansion se-quence (n0, . . . , n T ), the dive-break count is 
+
+BT := 1 + |{ t ∈ { 0, . . . , T − 1} : nt+1 /∈ C(nt)}| .9
+
+The initial 1 counts the start of the first dive at the root. Lower 
+
+BT means that the same processed-node set is covered by longer parent-child chains. Expanded nodes and dive breaks capture two limiting run-time regimes. If parent-child locality provides little benefit, runtime is driven mainly by |ET |. If processing a child after its parent is nearly free, runtime is driven mainly by BT .
+
+c) Maximum queue size: A major practical cost of B&B is the memory required to maintain the queue of open sub-problems, OPEN . We measure it by 
+
+Qmax := max  
+
+> t
+
+|OPEN t|.
+
+Queue size can also affect runtime through node-management overhead, especially when the frontier is frequently reordered or redistributed. 
+
+d) Primal-bound progress (intermediate solutions): Apolicy that enters N P may find feasible but not-yet-certified solutions. Such incumbents are valuable when the solve is interrupted, when a planner is embedded in a real-time system, or when users care about improving feasible solutions before the proof is complete. Relevant measurements include time to first incumbent, incumbent quality at a fixed budget, and the trajectory of zP 
+
+> t
+
+.
+
+e) Dual bound progress (certificate of optimality): The dual bound measures certificate progress. Once an incumbent exists, the primal-dual gap 
+
+Gap t := zP 
+
+> t
+
+− zD
+
+> t
+
+zP
+
+> t
+
+for zP 
+
+> t
+
+> 0 bounds the maximum relative improvement still possible. A policy can therefore be useful even before termination if it provides a good incumbent and a tight gap. 
+
+F. Responsive Node Selection 
+
+The preferred objective trade-off depends on the solve context. A memory-constrained robot may prefer a small open set. An offline benchmark may prioritize expanded-node count. An interactive planner may value an early incumbent and a meaningful gap certificate. A static policy fixes this trade-off in advance. A responsive policy lets the node-selection rule depend on monitored solve behavior while keeping all correctness-critical pruning tests unchanged. We introduce Memory-Constrained DIVE (MC-DIVE) as a minimal example. It follows DIVE while the frontier is below a soft memory threshold and switches to depth-first selection once the threshold is reached: 
+
+πMC -DIVE (St) := 
+
+(
+
+πDIVE (St), |OPEN t| < Q max ,πDFS (St), |OPEN t| ≥ Qmax . (10) The threshold is soft because processing one node can still add children before the next policy decision. Exactness is unaffected: MC-DIVE still selects a node from OPEN at every iteration and relies on the same valid pruning rules as DIVE. This example is intentionally simple. Its purpose is to show how node selection can form a feedback loop with the solve itself: use diversified DIVE when memory allows, then become more depth-oriented when the queue grows too large. More elaborate responsive hybrids could adjust continuously between best-bound and depth-oriented behavior, or learn when long dives are likely to be productive on a given instance family. The next section focuses on the static policies that form the basic tradeoff extremes; Section VI then evaluates MC-DIVE as a proof of concept for responsiveness. 
+
+Remark 5 (Responsive node selection in MIP) . Responsive node selection is already commonplace in MIP. Solvers such as SCIP respond to memory constraints with more depth-focused search similarly to MC-DIVE [21]. V. N ODE -S ELECTION TRADE -OFF ANALYSIS 
+
+This section compares BFS, DFS, ID, and DIVE using the framework of Section IV. We will not identify a uni-versally dominant policy. Instead, the analysis makes explicit which objective each policy is structurally designed to favor: BFS is strongest for expanded-node count and frontier-bound progress, ID is strongest for queue size, and DIVE is strongest for dive continuity while still returning to the best-bound frontier between dives, occupying a unique position in the multi-objective design space. All statements are with respect to the finite induced search tree of Section IV. We assume no external warm start unless stated otherwise, and all policies use the same branching rule, lower-bound key, incumbent cutoff, and deterministic tie-breaking convention. Two assumptions are used below. The 
+
+singleton optimal-zone assumption , |N O | = 1 , is used when comparing the nodes or dive breaks that are unavoidable for exactness. A separate perfect-tree model is used only to obtain closed-form queue and dive-break counts. 
+
+Definition V.1 (Perfect search tree) . A perfect search tree of depth d is a search tree (Definition IV.1) in which the root has depth 0, every leaf has depth d, and every non-leaf node has exactly two children. Its lower-bound key is strictly depth-consistent: for any nodes m, n ∈ T ,
+
+D(n) < D (m) ⇒ ℓ(n) < ℓ (m).
+
+When analyzing traversal counts on a perfect tree, we consider the full-resolution case in which termination requires resolving every node of the tree. This can be viewed as a stylized instance where the only feasible solution is encountered at the end of the final layer, so all nodes remain relevant to the certificate before termination. Perfect-tree statements below describe the traversal of this complete depth-d tree; they isolate structural queue and dive effects from instance-specific feasible-node placement. Note that the perfect-tree model is deliberately stylized. It should not be read as a generative model for every CBS tree. Its purpose is to make the policy trade-offs transparent in a controlled setting, while the experiments in Section VI test whether the same qualitative behavior appears on practical MAPF instances. 10 
+
+A. Best-First Search 
+
+BFS always selects an open node with minimum lower-bound key: 
+
+πBFS (St) ∈ arg min 
+
+> n∈OPEN t
+
+ℓ(n).
+
+Thus, before termination, BFS processes nodes in nondecreas-ing lower-bound order. It never needs to enter the primal zone: 
+
+EBFS  
+
+> T
+
+∩ N P = ∅.
+
+This is the source of its node efficiency, but also the reason it provides no incumbent before the final iteration. 
+
+Proposition 6 (BFS expanded-node optimality) . Assume 
+
+|N O | = 1 . Among exact policies on the same induced search tree, no policy expands fewer nodes than BFS. 
+
+Proof. Every exact policy must process all nodes in N D by (8) and must process at least one feasible node in N O by (7). Under |N O | = 1 , this lower bound is |N D | + 1 processed nodes. Since BFS processes all nodes with ℓ(n) < z ∗ before any node with ℓ(n) = z∗, and then processes the unique optimal-zone node, it attains this lower bound. BFS also gives the strongest possible frontier-bound progress at any fixed processed-node budget. Let zD,π t denote the open-frontier lower bound (9) under policy π.
+
+Proposition 7 (BFS frontier-bound dominance) . For any pol-icy π and any iteration count t,
+
+zD,π t ≤ zD,BFS  
+
+> t
+
+.
+
+Consequently, BFS maximizes the dual bound whenever the active dual bound of (9) is determined by the open frontier. 
+
+Proof. Fix any threshold λ. If a policy has zD,π t ≥ λ,then every node with key below λ must already have been processed; otherwise such a node, or an unprocessed ancestor of it with key below λ, would still be open. BFS never processes a node with key at least λ while a node with key below λ is open. Therefore, whenever any policy can exhaust all nodes below λ within t iterations, BFS can also do so within t iterations. Since this holds for every λ, the claimed dominance follows. The same best-bound behavior is costly for memory. On a perfect tree, BFS sweeps the tree layer by layer. 
+
+Proposition 8 (BFS queue size on a perfect tree) . On a perfect tree of depth d, BFS reaches maximum queue size of 2d.
+
+Proof. Immediately before the first leaf is processed, all 2d
+
+leaves are open and no leaf has yet been removed. No later queue can be larger, because leaves do not generate children. Best-first traversal also produces many short dives, limiting opportunities to exploit parent-child efficiency. 
+
+Proposition 9 (BFS dive breaks on a perfect tree) . On a perfect tree of depth d ≥ 1, BFS requires between 2d+1 −d−1
+
+and 2d+1 − 2 dive breaks. The lower value is attained when tie-breaking makes the first node of each new layer a child of the last processed node in the preceding layer. 
+
+Proof. The perfect tree contains 2d+1 − 1 nodes. By Defini-tion IV.3, the dive-break count equals the number of processed nodes minus the number of consecutive parent-child continu-ations. In a layer-by-layer traversal, parent-child continuations can occur only during transitions between consecutive layers. There are exactly d such transitions, so at most d parent-child continuations are possible, yielding the lower value. At least one continuation is unavoidable, from the root to the first depth-one node, yielding the upper value. Thus, BFS is the policy optimized for the dual side of exact search, as it minimizes unavoidable work under a sin-gleton optimal zone and maximizes frontier-bound progress. Its weaknesses are equally structural, as it can require an exponentially large frontier on broad trees, creates many dive breaks, and does not produce intermediate incumbents before termination. 
+
+B. Depth-First Search 
+
+DFS imposes the exact opposite tradeoffs. DFS selects the node n with the highest depth D(n): 
+
+πDFS (St) ∈ arg max 
+
+> n∈OPEN t
+
+D(n)
+
+This policy is useful as an analytical baseline and as acomponent of ID, DIVE, and MC-DIVE. By prioritizing depth, it produces long dives and very small frontiers, which is attractive for exploiting parent-child efficiency. 
+
+Proposition 10 (DFS dive breaks) . For any rooted binary tree that is fully traversed, DFS attains the minimum possible dive-break count. The count is the number of leaves of the traversed tree, which is 2d on a perfect tree of depth d.
+
+Proof. A parent-child chain can contain at most one leaf, so any traversal needs at least one dive per leaf. DFS continues the current chain until a leaf is reached, and distinct dives terminate at distinct leaves. It therefore uses exactly one dive per leaf. The corresponding memory behavior is the opposite of BFS. 
+
+Proposition 11 (DFS queue size) . In any binary tree with maximum depth d, DFS has maximum queue size at most 
+
+d + 1 .
+
+Proof. After processing a node on the current root-to-node path, the open set contains at most one unprocessed sibling branch for each depth on that path, plus possibly the next child to continue the path. Hence |OPEN t| ≤ k + 1 when the current path has depth k, and k ≤ d.The advantages of DFS are therefore clear: it has excellent dive continuity and a small frontier. Its drawback is also clear. Without best-bound reanchoring or incumbent cutoffs, it can spend arbitrarily much effort in N P before resolving nodes in N D , so it provides weak certificate progress and unreliable node count. 11 
+
+C. Iterative Deepening 
+
+ID uses depth-first passes under increasing lower-bound thresholds. Each pass has the memory profile of DFS, and the sequence of newly discovered nodes follows best-first order when thresholds and tie-breaking match BFS. Its cost is repeated work, as shallow nodes are reprocessed in multiple passes. 
+
+Proposition 12 (ID queue size) . In a binary tree with maxi-mum depth d, ID has maximum queue size at most d + 1 .
+
+Proof. Each threshold pass is a depth-first traversal of asubtree with depth at most d. By Proposition 11, every pass uses queue size at most d + 1 , and the maximum over passes satisfies the same bound. 
+
+Proposition 13 (ID dive breaks on a perfect tree) . On a perfect tree of depth d, ID uses 2d+1 − 1 dive breaks. 
+
+Proof. The pass with depth limit k performs a depth-first traversal of a perfect tree of depth k, which uses 2k dive breaks by Proposition 10. Summing over k = 0 , . . . , d gives 
+
+> d
+
+X
+
+> k=0
+
+2k = 2 d+1 − 1.
+
+This shows why IDCBS is not simply a dive-efficiency improvement over BFS. The long depth-first chains in each individual threshold pass are balanced by the additional dive breaks in repetitive passes. In the perfect-tree model, ID uses 
+
+d more dive breaks than the most favorable BFS tie-breaking. Its primary structural advantage is memory, not parent-child continuity over the complete solve. 
+
+Remark 6 (Memory accounting for iterative deepening) . The queue-size comparison for ID should be interpreted with care. Unlike one-pass policies such as BFS, DFS, and DIVE, ID does not maintain a persistent frontier across the entire solve. Instead, it repeatedly discards the current depth-first frontier and restarts from the root with a larger cost threshold. Thus, part of the information about which regions have already been exhausted is stored implicitly in the threshold rather than explicitly in OPEN. This is precisely why ID can achieve a very small explicit queue, but it is also why the same nodes may be re-expanded across successive passes. Consequently, the linear queue-size bound for ID should be read as a bound on explicit frontier memory, not as a claim that ID stores all information needed for a one-pass traversal of the required subtree ND ∪ NO .
+
+D. DIVE 
+
+DIVE combines best-bound reanchoring with depth-oriented continuation. Let 
+
+CP 
+
+> t
+
+(nt−1) := {c ∈ C(nt−1) ∩ OPEN t : ℓ(c) < z P 
+
+> t
+
+}
+
+be the open children of the previously processed node that can still improve the incumbent. DIVE selects 
+
+πDIVE (St) = 
+
+
+
+arg min  
+
+> c∈CP
+> t(nt−1)
+
+ℓ(c), CP 
+
+> t
+
+(nt−1)̸ = ∅,πBFS (St), CP 
+
+> t
+
+(nt−1) = ∅.
+
+Thus a dive continues only while an open child of the previous node remains capable of improving the incumbent. Otherwise, the next dive restarts from the best-bound frontier. For a processed node set E, define its induced leaf set 
+
+L(E) := {n ∈ E : C(n) ∩ E = ∅} .
+
+Proposition 14 (DIVE number of dive breaks on any tree) . For the rooted tree induced by the nodes processed by DIVE, DIVE attains the minimum possible dive-break count: |L (EDIVE  
+
+> T
+
+)|.
+
+Proof. Any parent-child chain contains at most one induced leaf, so any traversal of the same processed tree requires at least |L (EDIVE  
+
+> T
+
+)| dive breaks. DIVE continues from a node to one of its open children whenever such a child can still be processed by the policy. Therefore, a DIVE dive terminates only at a node with no processed child in the induced tree. Each dive ends at a distinct induced leaf, so DIVE attains the lower bound. The more important exact-search statement concerns the part of the tree that must be resolved to certify optimality. 
+
+Proposition 15 (DIVE number of dive breaks on search tree) .
+
+Assume |N O | = 1 and no external warm start. Let TR := 
+
+N D ∪ N O . Among exact policies on the same induced search tree, no policy completes the solve with fewer dive breaks than DIVE. 
+
+Proof. By monotonicity of ℓ, TR is a rooted subtree: every ancestor of a node with key at most z∗ also has key at most 
+
+z∗. Under |N O | = 1 , every exact policy must process every node in TR. A parent-child chain can contain at most one leaf of TR, so every exact policy needs at least |L (TR)| dive breaks. Before the solve is complete, every new DIVE dive starts from the best-bound open node. If any node in TR remains open, this start node lies in TR. While the current node has a child in TR, that child has lower key than any child in 
+
+N P and is therefore selected by DIVE. Thus each DIVE dive reaches exactly one leaf of TR before either terminating or continuing into N P . DIVE covers all leaves of TR and uses exactly |L (TR)| dive breaks, matching the lower bound. 
+
+Remark 7 (Pareto extreme) . Propositions 6, 12 and 15 identify three different structural extremes. BFS minimizes unavoidable expanded nodes under a singleton optimal zone, ID preserves the linear-depth queue profile of DFS, and DIVE minimizes the dive breaks needed for exact search. This is the core technical reason DIVE should be viewed as a distinct Pareto point rather than as a replacement for either baseline. This formal claim on minimizing dive breaks is not just new to the CBS context but to the broader literature of B&B to the best of our knowledge. 12 0 500 1000 1500 2000      
+
+> Num nodes
+> 2
+> 4
+> 6
+> 8
+> 10
+> Dual bound  DFS BFS ID DIVE 2.55.07.510 .012 .5
+> Tree depth
+> 1.6
+> 1.8
+> 2.0
+> Aπ /ABFS
+> DIVE
+> Fig. 3. Left: Illustrative frontier-bound progression on a unit-increment perfect tree of depth 10 . BFS is pointwise best, but DIVE repeatedly returns to the best-bound frontier and therefore avoids the prolonged certificate stagnation of plain DFS. Right: Illustrative bound-progress of DIVE relative to BFS on unit-increment perfect trees. The curve approaches two as the depth grows, reflecting the cost of DIVE’s depth probes in this stylized setting.
+
+DIVE does not match BFS on pointwise frontier-bound progress; Proposition 7 says no non-best-first policy can. Its advantage over plain DFS is that every dive is followed by a best-bound restart. Consequently, primal-zone excursions are localized, as a poor branch choice can consume at most one dive before the policy reanchors at the global frontier. This reanchoring is also visible at the level of bound trajectories. To make this certificate behavior precise, consider the unit-increment perfect tree in which every node at depth k
+
+has key k and the optimal value is the leaf-layer value z∗ = d.For a policy π, let zD,π t denote the active dual bound after the t-th high-level expansion and let Tπ be the first iteration at which the incumbent is certified. We measure certificate progress by the discrete bound-area metric 
+
+Aπ (d) :=  
+
+> Tπ−1
+
+X
+
+> t=0
+
+ z∗ − zD,π t
+
+. (11) This is the area under the remaining duality gap (smaller values are better). The metric rewards both a high dual bound and reaching certification in few expansions, so it is more informative than comparing only the final certificate time or only the pointwise bound. Figure 3 summarize the resulting stylized calculation. As expected from Proposition 7, BFS is pointwise dominant in dual-bound progress. The more useful observation is that DIVE tracks the certificate frontier much more closely than plain DFS: after each depth probe, it returns to the best-bound layer instead of continuing indefinitely in a single deep region. In the unit-increment perfect tree, a direct enumeration of the traversal gives 
+
+ADIVE (d) = AID (d), ADIVE (d)
+
+ABFS (d) −→ 2.
+
+Thus DIVE and ID pay the same aggregate dual-bound price in this stylized model, but in different ways: DIVE pays it through temporary depth probes, whereas ID pays it through repeated restarts. This equality is not used as a general theorem for arbitrary CBS trees. Its role is to expose a useful structural point, as DIVE’s dive continuity does not come from abandoning the certificate frontier, but from repeatedly making short, controlled departures from it. In general search trees, DIVE’s initial dual-bound lag can be larger when a dive enters the primal zone. The same                            
+
+> TABLE I ON A PERFECT TREE OF DEPTH d, ID SACRIFICES DIVE BREAKS WHILE
+> DIVE SACRIFICES MAXIMUM QUEUE SIZE WHILE IN ORDER TO CONTROL PRIMAL ZONE EXPLORATION .Policy Max queue size Number of dive breaks BFS 2d[2 d+1 −d−1,2d+1 −2]
+> DFS d+12d
+> ID d+12d+1 −1
+> DIVE 2d−1+ 1 2d
+
+excursions, however, are exactly what can produce early incumbents. Once an incumbent exists, DIVE can report a primal–dual gap throughout the remainder of the solve, and if the incumbent is already optimal then the solve terminates as soon as the dual bound catches up. By contrast, BFS and ID usually provide no primal bound before they reach an optimal feasible node, even when their dual bounds are strong. DIVE’s memory behavior lies between BFS and ID. It leaves one unchosen sibling behind at each internal node of a dive, but it does not maintain the entire best-bound layer as BFS does. 
+
+Proposition 16 (DIVE queue size on a perfect tree) . On a perfect tree of depth d ≥ 1, DIVE reaches maximum queue size 2d−1 + 1 under the queue convention of Section IV-E. 
+
+Proof. Call the first node of a dive its start node. The root is the unique start node at depth 0. For each k ≥ 1, there are 2k−1 start nodes at depth k: each internal node at depth 
+
+k − 1 contributes exactly one child that is not followed in its parent’s dive and is therefore saved as a future start node. A dive starting at depth k increases the queue by one for each internal node on the dive and then removes the terminal leaf. Hence its net change after completion is d − k − 1, while its maximum temporary increase during the dive is d − k. Let 
+
+Mk be the largest queue size reached while processing start nodes of depth k. After the root dive and all completed start-node dives of depths 1, . . . , k − 1, direct summation gives 
+
+Mk = d + 1 + 
+
+> k
+
+X
+
+> j=1
+
+2j−1(d − j − 1) , k = 0 , . . . , d − 1,
+
+where the empty sum gives M0 = d + 1 . The increment from 
+
+Mk−1 to Mk is 2k−1(d−k−1) , which is positive for k ≤ d−2
+
+and zero for k = d − 1. Therefore the maximum is attained for k = d − 2 or k = d − 1. Evaluating the sum yields 
+
+Qmax DIVE = d + 1 + 
+
+> d−2
+
+X
+
+> j=1
+
+2j−1(d − j − 1) = 2 d−1 + 1 .
+
+Thus, on the perfect tree, DIVE uses essentially half the frontier of BFS, while ID remains exponentially smaller. This is precisely the intended compromise: DIVE gives up the linear-depth memory guarantee of ID in order to avoid re-peated restarts and preserve best-bound diversification between dives. Table I summarizes the stylized counts. DFS is optimal on dive breaks and queue size when the whole tree must 13 
+
+be traversed, but it lacks a mechanism to control superfluous primal-zone exploration. ID keeps the DFS memory profile but pays for it through repeated threshold passes. DIVE keeps the DFS dive-break profile on the required subtree while restoring best-bound reanchoring between dives. This combination is the structural tradeoff evaluated empirically in Section VI. VI. E XPERIMENTS 
+
+We evaluate DIVE against BFS and ID in a shared CBS implementation to test whether the structural trade-offs de-veloped in previous sections persist in practice. The central prediction is that DIVE should not uniformly dominate the existing policies. Rather, BFS should be strongest in expanded-node count and dual-bound progress, ID should be strongest in explicit queue size, and DIVE should occupy a distinct Pareto point by minimizing dive breaks while retaining best-bound reanchoring and producing quality intermediate solutions. The experiments therefore serve five roles. First, they locate DIVE within the multi-objective design space induced by expanded nodes, dive breaks, queue size, and bound progres-sion. Second, they explain DIVE’s node overhead through zone accounting, showing whether the extra work comes from controlled primal-zone exploration rather than uncontrolled search. Third, they test whether that primal-zone exploration translates into useful anytime behavior, namely early incum-bents together with certified primal-dual gaps before the exact solve is complete. Fourth, they examine whether warm starts stabilize DIVE in dense regimes by activating incumbent pruning early. Finally, they isolate the two mechanisms that make DIVE different from plain depth-first search: diversified search through best-bound reanchoring, and feedback through a simple memory-responsive variant. 
+
+A. Experimental Protocol 1) Implementation: All policies are implemented in the same code base and share the same low-level search, conflict selection, admissible high-level heuristic, bypassing logic, pruning rules, and node data structures. The main comparisons involve BFS, ID, and DIVE. Additional policies are used only for ablations in Sections VI-F and VI-G. The only algorithmic difference in the main comparison is the high-level node-selection rule. All experiments were run single-threaded on a Dell Latitude 5530 with an Intel Core i7-1265U processor and 16 GB RAM under Windows 11 Pro. Wall-clock time is used only as a truncation criterion and, for DIVE, as an operational measure of how quickly the first incumbent is found. 
+
+2) Tie-breaking and shared CBS features: When two nodes have the same lower bound, BFS and DIVE both prefer the deeper node. If depth is also tied, we prefer the node whose selected conflict has higher cardinality. For ID, depth is the primary key within a threshold pass and lower bound is used as the secondary key. This tie-breaking gives BFS and ID substantial opportunity to exploit parent-child locality when-ever the lower bound is indifferent, making the comparison conservative with respect to DIVE’s dive continuity advantage. To avoid evaluating node selection inside an unrealisti-cally weak solver, all policies use the same standard CBS enhancements: cardinal-conflict prioritization, bypassing, and an admissible high-level heuristic based on a greedy matching of independent cardinal conflicts. We also give all policies the same priority for conflict-free nodes once they appear in the queue. This implementation detail can only help the baseline policies in incumbent-related comparisons, because it allows them to process an available feasible node earlier than a strict best-bound-only implementation would. 
+
+3) Benchmarks and instance generation: We evaluate on four standard map families: empty-32-32 ,
+
+random-32-32-20 , room-32-32-4 , and 
+
+warehouse-small [1]. Each map is tested at 3%, 5%, 10%, and 15% robot occupancy. We also use test-5-5 
+
+as a dense stress test in Section VI-E; its small low-level graph makes it possible to evaluate 33% occupancy without making the low-level search itself dominate the experiment. For empty-32-32 , random-32-32-20 , and 
+
+room-32-32-4 , the first 25 instances per robot count are generated from the even scenarios of the standard MAPF benchmark [1]. Additional instances, and all instances for the other maps, are generated by sampling start and goal vertices uniformly without replacement from the free cells and discarding invalid or duplicate draws. The same paired instance set is used for every policy. 
+
+4) Filtering and reported metrics: For complete-solve com-parisons, we exclude instances on which at least one policy solves the problem in at most 100 high-level node expansions. These shallow cases are useful as tests, but they are too small for the structural metrics of Section IV-E to be informative. We also truncate each run after five minutes of wall-clock time. An instance is called complete if all three main policies solve it within the cutoff and the instance is not excluded by the 100-node filter. Table II reports the full accounting. 3 For each map, at least one robot count has at least 30 complete instances, highlighted in bold. The primary reported quantities are expanded nodes, dive breaks, and maximum queue size. These are the implementation-independent quantities that most directly cor-respond to the objectives in Section IV-E: expanded nodes approximate high-level search effort, dive breaks approximate the loss of parent-child locality, and maximum queue size approximates explicit frontier memory. We do not claim that these metrics fully determine wall-clock time for every CBS implementation. Rather, they isolate the algorithmic effect of node selection from lower-level engineering choices. 
+
+B. Complete-Solve Trade-Offs 
+
+Table III gives the main complete-solve comparison. The punchline is that the three policies separate almost exactly as predicted universally across each map. BFS remains the best policy for minimizing expanded nodes. ID gives the smallest explicit queue, reducing the maximum queue by 89– 97% relative to BFS. DIVE is the only policy that consistently reduces dive breaks relative to BFS, with reductions from 6% to 51%, while also reducing the maximum queue by 44–86%. 
+
+> 3The full experimental campaign required five days and fourteen hours of cumulative compute time. 14
+
+TABLE II GENERATED -INSTANCE ACCOUNTING . C OMPLETE (C): ALL MAIN POLICIES SOLVED THE INSTANCE WITHIN THE CUTOFF AND THE INSTANCE PASSED THE 100-NODE FILTER . T IMEOUT (T/O): AT LEAST ONE POLICY HIT THE 5-MINUTE CUTOFF . I NSUFFICIENT NODES (IN): AT LEAST ONE POLICY SOLVED THE INSTANCE IN AT MOST 100 HIGH -LEVEL EXPANSIONS .Map # robots C T/O IN Tot empty-32-32 
+
+31 (3%) 0 1 24 25 
+
+51 (5%) 31 37 33 101 
+
+102 (10%) 0 25 0 25 154 (15%) 0 10 0 10 random-32-32-20 
+
+25 (3%) 3 1 21 25 
+
+41 (5%) 36 20 4 60 
+
+82 (10%) 0 25 0 25 123 (15%) 0 10 0 10 room-32-32-4 
+
+20 (3%) 32 13 15 60 
+
+34 (5%) 0 25 0 25 68 (10%) 0 25 0 25 102 (15%) 0 10 0 10 warehouse-small 
+
+38 (3%) 50 9 40 99 
+
+64 (5%) 0 25 0 25 128 (10%) 0 25 0 25 192 (15%) 0 10 0 10 TABLE III COMPLETE -SOLVE STRUCTURAL METRICS . V ALUES ARE MEAN PERCENTAGE DIFFERENCES RELATIVE TO BFS. L OWER IS BETTER FOR ALL THREE METRICS .# nodes # dive breaks Max queue size BFS DIVE ID BFS DIVE ID BFS DIVE ID empty (51) 0% 0% 13% 0% -6% 3% 0% -86% -89% 
+
+random (41) 0% 57% 118% 0% -40% 47% 0% -52% -95% 
+
+room (20) 0% 55% 134% 0% -51% 26% 0% -44% -97% 
+
+warehouse (38) 0% 18% 89% 0% -23% 54% 0% -66% -92% 
+
+Map (# robots) 
+
+The cost of DIVE is controlled node overhead, as it matches BFS on empty-32-32 and expands 18–57% more nodes on the other complete benchmark groups. This is substantially less than the node overhead of ID, which ranges from 13% to 134%. Thus, DIVE should not be interpreted as a universal replacement for BFS or ID. It is a third operating point, which sacrifices the strict node-minimality of BFS and the near-minimal queue of ID in order to obtain far better parent-child continuity without repeated restarts. Figure 4 provides the corresponding instance-level view. Circles represents individual experiments and stars mark the resulting centroid by policy. For the metric indicated in its label, each axis measures the percentage difference from the mean across policies on the same instance. The scatter confirms that the table averages are not caused by a small number of outliers: BFS clusters toward lower node count and larger queue, ID clusters toward smaller queue and larger node count, and DIVE lies between them while moving toward lower queue than BFS and lower node count than ID. Table IV explains where the node overhead comes from. By construction, BFS resolves the dual zone once and avoids measurable primal-zone work in these complete runs. ID also avoids the primal zone, but its restarts lead to repeated work 
+
+> 4
+
+We skip edge cases with a dual zone size of zero. This happens whenever the root value is optimal. −20% 0% 20%          
+
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> 200%
+> Max queue size  empty (51 robots)
+> BFS DIVE ID −50% 0% 50% 100%
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> Max queue size  random (41 robots)
+> BFS DIVE ID −50% 0% 50% 100%
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> Max queue size  room (20 robots)
+> BFS DIVE ID −50% 0% 50% 100%
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> 200%
+> Max queue size  warehouse (38 robots)
+> BFS DIVE ID
+
+Fig. 4. Instance-level trade-offs between expanded nodes and maximum queue size on complete instances. Each point is one policy-instance pair, shown as a percentage difference from the per-instance mean across policies (lower is better on both axes). Diamonds mark policy centroids. TABLE IV NUMBER OF NODES EXPANDED IN EACH ZONE AS DEFINED IN 
+
+SECTION IV-D, NORMALIZED BY THE SIZE OF THE DUAL ZONE 4 .BFS DIVE ID Dual Opt Prim Dual Opt Prim Dual Opt Prim empty (51) 1.00 0.09 0.00 1.00 0.08 0.01 1.14 0.12 0.00 random (41) 1.00 0.34 0.00 1.00 0.52 0.66 1.73 1.00 0.00 room (20) 1.00 0.25 0.00 1.00 0.36 0.60 2.24 0.55 0.00 warehouse (38) 1.00 0.63 0.00 1.00 0.58 0.40 1.48 1.29 0.00 Map (# robots) 
+
+in the dual zone and additional work in the optimal zone. DIVE resolves the dual zone once, like BFS, and spends its extra effort in the optimal and primal zones. This is precisely the behavior intended in Section III, as DIVE pays for dive continuity and incumbents through controlled primal-side exploration, not through repeated restarts or loss of the certificate frontier. The amount of optimal-zone work varies substantially across maps, which is expected because practical MAPF instances often have many equal-cost nodes and multiple ways to realize the same optimal cost. Nevertheless, the qualitative pattern matches the search-tree analysis in Section V, showing that BFS is node-efficient, ID is memory-efficient, and DIVE is dive-efficient. 
+
+C. Incumbents and Anytime Behavior 
+
+Unlike BFS or ID, DIVE finds intermediate feasible solu-tions before the completion of the solve. Thus, DIVE turns CBS into an anytime algorithm. We analyze incumbents pro-vided by DIVE at two stages of the solve: the first incumbent and the incumbent at the time of BFS completion. These points in the solve show that DIVE finds incumbents quickly and of 
+
+high quality .Table V reports DIVE’s first incumbent on all nontrivial runs, including runs that are later truncated. When an incum-bent is found, it is almost always found in the first dive: the mean number of dive breaks is 1.0 in every row with successful incumbents. For the complete benchmark densities, this first 15 
+
+TABLE V DIVE’ S FIRST INCUMBENT ON NONTRIVIAL RUNS . T RUNCATED RUNS ARE INCLUDED . I NCUMBENT FOUND IS THE PERCENTAGE OF RUNS IN WHICH DIVE FOUND A FEASIBLE SOLUTION BEFORE TRUNCATION .Map # robots Inc found Nodes Seconds Primal −Dual Gap empty 31 100% 51 0.2 1.0 0.2% 51 100% 92 1.4 2.0 0.2% 102 100% 483 29.4 9.3 0.4% 154 100% 1465 191.9 35.6 1.1% random 25 100% 44 0.5 5.2 0.9% 41 100% 74 1.1 14.3 1.5% 82 76% 542 58.1 84.6 4.2% 123 20% 1636 178.8 257.5 8.7% room 20 91% 39 0.2 19.3 3.6% 34 64% 178 5.7 72.2 7.2% 68 4% 1264 216.9 333.0 16.0% 102 0% - - - -warehouse 38 100% 59 0.9 5.3 0.5% 64 100% 185 9.5 21.4 1.1% 128 32% 1274 218.3 137.8 3.6% 192 0% - - - -0.00 0.25 0.50 0.75 1.00 
+
+Num nodes / dual zone 
+
+> 0.0
+> 0.5
+> 1.0
+> Deviation from optimal
+
+empty (51 robots)                
+
+> First sol BFS DIVE ID 0.00.51.01.52.02.5
+> Num nodes / dual zone
+> 0.0
+> 2.5
+> 5.0
+> 7.5
+> Deviation from optimal  random (41 robots)
+> First sol BFS DIVE ID 0.00.51.01.52.02.5
+> Num nodes / dual zone
+> 0
+> 20
+> 40
+> Deviation from optimal  room (20 robots)
+> First sol BFS DIVE ID 012345
+> Num nodes / dual zone
+> 0
+> 5
+> 10
+> Deviation from optimal  warehouse (38 robots)
+> First sol BFS DIVE ID
+
+Fig. 5. First incumbent found by DIVE on complete instances. The horizontal axis is normalized by the dual-zone size. Square markers show the median node budget required by each policy to finish. 
+
+solution appears after only tens to hundreds of high-level nodes. The denser 10% and 15% cases are harder, especially on room-32-32-4 and warehouse-small , but the table shows the expected degradation rather than a hidden failure mode, i.e., as feasible nodes become rarer near the top of the primal region, DIVE needs more nodes and sometimes does not find an incumbent before the five-minute cutoff. The quality of the first incumbent is summarized by the absolute primal-dual difference zP − zD and the relative gap. These are worst-case certificates, not estimates. Even when the first incumbent is not optimal, it comes with a bound on how much improvement remains possible. Figure 5 makes the timing visible. On the complete in-stances, DIVE’s first incumbents are typically found far before any policy reaches its final certificate. On empty-32-32 ,the symmetry of the map creates many equal-cost optimal solutions, so the first dive frequently already reaches an optimal solution. Table VI evaluates DIVE at a second reference point, i.e., 
+
+TABLE VI BEST INCUMBENT FOUND BY DIVE AFTER THE SAME NUMBER OF HIGH -LEVEL EXPANSIONS THAT BFS REQUIRED TO COMPLETE THE CORRESPONDING SOLVE .Map (# robots) Inc found Primal −Dual Gap Primal −Opt Inc is Opt empty (51) 100% 0.5 0.0% 0.0 100% random (41) 100% 2.5 0.3% 0.9 58% room (20) 100% 2.9 0.6% 1.4 47% warehouse (38) 100% 1.1 0.1% 0.4 80% 0.00 0.25 0.50 0.75 1.00 
+
+Num nodes / dual zone 
+
+> −2
+> −1
+> 0
+> Deviation from optimal
+
+empty (51 robots)              
+
+> BFS DIVE ID 0.00.51.01.52.02.5
+> Num nodes / dual zone
+> −5
+> 0
+> Deviation from optimal  random (41 robots)
+> BFS DIVE ID 0.00.51.01.52.02.5
+> Num nodes / dual zone
+> −10
+> 0
+> Deviation from optimal  room (20 robots)
+> BFS DIVE ID 0.00.51.01.5
+> Num nodes / dual zone
+> −4
+> −2
+> 0
+> Deviation from optimal  warehouse (38 robots)
+> BFS DIVE ID
+
+Fig. 6. Median primal and dual bound progression on complete instances. The horizontal axis is normalized by the dual-zone size. Lower curves indicate smaller remaining deviation from the optimal value. 
+
+the number of node expansions required by BFS to finish the same instance. At this budget, DIVE has found an incumbent in every complete instance. The average certified gap is at most 0.6%, and DIVE has already found an optimal solution in 46–100% of instances, depending on the map. Thus, even when DIVE has not yet completed the dual certificate, it often already has the final solution and only lacks proof. This is the practical difference between DIVE and the two baselines. BFS and ID concentrate on the certificate side and provide little pre-termination incumbent information. DIVE instead exposes a meaningful anytime mode for optimal CBS: after the first incumbent, the solver can be interrupted and return both a feasible solution and a certified gap. 
+
+D. Primal-Dual Bound Progression 
+
+Figure 6 shows the median primal and dual trajectories 5.The dual curves confirm the expected ordering from Section V, i.e., BFS closes the dual bound most directly, ID initially follows best-first progress but slows as restarts accumulate, and DIVE remains close to the best-bound frontier because every dive reanchors after termination. The primal curves show the missing dimension, as DIVE establishes a feasible incumbent 
+
+> 5
+
+The median primal curve is computed over runs that have already found an incumbent at the given node budget. Runs with no incumbent are added to the median only after their first feasible solution appears. Because late first incumbents can be worse than earlier incumbents from other runs, a raw median primal curve can increase. We therefore display its monotone envelope, which matches the fact that each individual run’s incumbent value is nonincreasing over time. All tables use ordinary arithmetic means over the relevant instance set. 16 02468         
+
+> zP0−z∗
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> |N P | / |N D|−50% 0% 50% 100%
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> Max queue size
+> DIVE BFS ID
+> Fig. 7. Left: Primal zone expansions of eight instances on room-32-32-4
+> with 20 robots for progressively tighter warm-start values. Right: Relative performance on the dense test-5-5 warm-start experiment with 33% robot occupancy.
+
+early and then alternates between improving the incumbent and closing the certificate gap. The plots also clarify why DIVE can be useful even when it expands more nodes than BFS. A tight dual bound alone is not a usable plan; an incumbent alone is not a proof. DIVE intentionally works on both sides of the gap. In many runs, it finds the optimal solution before the dual bound reaches z∗,so the remaining work is purely certification. 
+
+E. Warm-Starts 
+
+Warm-starts can further reduce DIVE’s node count and queue size by by pruning additional primal zone nodes. Figure 7 highlights DIVE’s responsiveness to tighter warm start values on room-32-32-4 , the map that proved most challenging for DIVE to find its own first incumbents. Warm-starts may cut off dives earlier but maintain the same starting nodes. Thus, the number of dive breaks remains consistent, and optimal zone expansions only reduce if the warm-start value is also optimal. In general, Section VI-C shows that DIVE is adept at quickly finding quality incumbents by itself, but warm-starts provide an effective refinement. In dense instances where feasible solutions are rare near the surface of the primal region, warm-starts become a vital safeguard that allow DIVE to scale to hyper-dense instances. We add test-5-5 at 33% occupancy as a boundary-case stress test rather than as part of the main benchmark suite. All policies are evaluated with and without the same PIBT warm start. A warm start can help every exact policy, because any open node whose lower bound is no better than the warm-start value can be pruned. However, the effect is especially important for DIVE, which intentionally enters deeper regions and therefore benefits strongly from having incumbent pruning active before the first dive. Without a warm start, DIVE solves none of the 40 dense instances within the five-minute cutoff. With the PIBT incum-bent, DIVE solves 35 out of 40 instances, matching BFS and solving one more instance than ID. The structural trade-offs of the warm-started complete runs are shown in Fig. 7. The warm-started dense experiment preserves the same qualitative ordering as the main benchmarks, as shown in Ta-ble VII. DIVE requires more node expansions than BFS, but it cuts dive breaks by 46% and reduces maximum queue size. ID remains the memory extreme, reducing maximum queue −30% −20% −10% 0% 10% 20%         
+
+> Number of nodes
+> 0%
+> 200%
+> Max queue size  empty (51 robots)
+> DFS DIVE BFS ID 0% 100% 200%
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> 200%
+> Max queue size  random (41 robots)
+> DFS DIVE BFS ID 0% 100% 200%
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> 200%
+> Max queue size  room (20 robots)
+> DFS DIVE BFS ID −100% 0% 100% 200%
+> Number of nodes
+> 0%
+> 200%
+> Max queue size  warehouse (38 robots)
+> DFS DIVE BFS ID
+> Fig. 8. Diversified search ablation: The DFS label denotes an incumbent-pruned depth-first policy without diversified best-bound restarts.
+
+by 99% from BFS, but it pays in both nodes and dive breaks. Thus, even in the regime where DIVE needs help from an external incumbent, it returns to the same trade-off profile once the incumbent is available. On lower-density maps, warm starts are less important because DIVE usually finds a better incumbent on its own during the first dive. Outside the dense test-5-5 stress test, only a handfulof instances that timed out without a warm start completed with the PIBT warm start. This supports the intended interpretation that warm starts are not needed for DIVE’s main benchmark behavior, but they are a useful safety mechanism for dense regimes. 
+
+F. Ablation: Diversified Search 
+
+The next experiment isolates diversified search from incum-bent pruning. We compare DIVE with an incumbent-pruned depth-first policy that uses the same incumbent cutoff from Proposition 1, but does not restart each dive from the global best-bound frontier. In Figure 8 and Table VIII, this ablated policy is labeled DFS. The ablation shows that incumbent pruning alone is not enough. Without diversified search, the depth-first policy re-quires substantially more expanded nodes and dive breaks than DIVE on average across each of our studied maps. The reason is visible in the zone accounting summarized in Table IX. Work in the optimal zone and in particular the primal zone increases considerably under the depth-first ablation. Thus, DIVE’s robustness is not merely a consequence of cutting off dives once an incumbent exists. The best-bound restart after each dive is the mechanism that prevents repeated commitment to an unproductive primal-region branch while preserving regular progress on the dual certificate. 
+
+G. Responsive enhancements 
+
+Finally, we evaluate MC-DIVE, introduced in Section IV-F, as a minimal example of responsive node selection. MC-DIVE behaves like DIVE while the queue is below a soft threshold and switches to depth-first behavior once the queue reaches 17 
+
+TABLE VII WARM -STARTED DENSE -INSTANCE PERFORMANCE ON T E S T -5-5 . V ALUES ARE MEAN % DIFFERENCES RELATIVE TO BFS ( LOWER IS BETTER ). Map # robots Num nodes Num dive breaks Max queue size BFS DIVE ID BFS DIVE ID BFS DIVE ID test-5-5 6 (33%) 0% 104% 127% 0% -46% 35% 0% -10% -99% TABLE VIII DIVERSIFIED SEARCH ABLATION : T HE DFS LABEL DENOTES AN INCUMBENT -PRUNED DEPTH -FIRST POLICY WITHOUT DIVERSIFIED BEST -BOUND RESTARTS . V ALUES ARE MEAN PERCENTAGE DIFFERENCES RELATIVE TO DIVE ( LOWER IS BETTER ). # nodes # dive breaks Max queue size DIVE DFS DIVE DFS DIVE DFS empty (51) 0% 3% 0% 6% 0% -16% random (41) 0% 126% 0% 209% 0% -75% room (20) 0% 157% 0% 244% 0% -88% warehouse (38) 0% 132% 0% 187% 0% -69% Map (# robots) TABLE IX NUMBER OF NODES EXPANDED IN EACH ZONE AS DEFINED IN 
+
+SECTION IV-D, NORMALIZED BY THE SIZE OF THE DUAL ZONE . DFS 
+
+> DENOTES THE INCUMBENT
+
+-PRUNED DEPTH -FIRST POLICY WITHOUT DIVERSIFIED BEST -BOUND RESTARTS .Dual Optimal Primal DIVE DFS DIVE DFS DIVE DFS empty (51) 1.00 1.00 0.08 0.12 0.01 0.01 random (41) 1.00 1.00 0.54 0.96 0.68 2.70 room (20) 1.00 1.00 0.37 0.54 0.59 3.45 warehouse (38) 1.00 1.00 0.75 1.15 0.53 2.77 Map (# robots) 
+
+that threshold. The goal is not to tune a final solver variant, but to demonstrate that the node-selection trade-off can be closed-loop rather than fixed before the solve begins. We test MC-DIVE on room-32-32-4 and 
+
+warehouse-small with a soft queue threshold of 50 nodes 6. Respectively, the average DIVE maximum queue size was 1025 and 171 among the 29 and 33 runs where DIVE exceeded this threshold. With MC-DIVE, all of those runs stayed within queue size 60, with the exception of one outlier across the two maps. Figure 9 and Table X show the expected trade-off. Relative to DIVE, MC-DIVE’s reduced maximum queue size comes at the cost of more nodes and more dive breaks. Always using 
+
+> 6
+
+MC-DIVE and DFS produce nearly identical statistics for simple instances, motivating our focus on our two most difficult maps. −50% 0% 50%     
+
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> 200%
+> Max queue size  room (20 robots)
+> DIVE MC-DIVE DFS −50% 0% 50% 100% 150%
+> Number of nodes
+> −100%
+> 0%
+> 100%
+> 200%
+> Max queue size  warehouse (38 robots)
+> DIVE MC-DIVE DFS
+
+Fig. 9. Responsive queue control on warehouse-small and 
+
+room-32-32-4 . MC-DIVE trades some of DIVE’s dive continuity for substantially lower queue size, while remaining less conservative than always using DFS. 
+
+DFS reduces the queue further, but it is over-conservative, as it requires even more nodes and dive breaks than DIVE. We naturally observe the greatest gains of MC-DIVE over DFS on warehouse-small where the 50 node queue size limit is less restrictive than room-32-32-4 . MC-DIVE behaves as intended, using DIVE when memory allows and becoming more depth-oriented only when the queue demands it. 
+
+H. Experimental takeaways 
+
+The experiments support the paper’s central node-selection message. DIVE is not a uniformly better BFS, but a different point in the design space. Its extra nodes are the price of controlled primal-side exploration, and that price buys three things that BFS and ID do not provide together, i.e., far fewer dive breaks, substantially lower queue size than BFS, and early incumbents with certified gaps. The ablation and MC-DIVE experiments further show that the two mechanisms emphasized in Sections III and IV, diversified best-bound restarts and feedback, are active contributors to the observed behavior. VII. C ONCLUSIONS 
+
+This paper studied high-level node selection as a central design choice in exact CBS. The main message is that node selection is not only a device for reducing expanded nodes. It also determines memory pressure, parent-child continuity, incumbent discovery, and certificate progress. Separating node selection from the correctness-critical parts of CBS makes this trade-off explicit while preserving exactness. DIVE demonstrates the value of this perspective. It alter-nates between global best-bound reanchoring and local depth-oriented diving, using incumbents to prune dives that can no longer improve the best solution found so far. The formal analysis shows why this creates a distinct operating point. Best-first search remains the natural policy for minimizing expanded nodes and advancing the frontier bound, iterative deepening remains the explicit-memory extreme, and DIVE targets dive continuity while preserving regular returns to the certificate frontier. The experiments support this trade-off map on practical MAPF instances. DIVE is not a universal replacement for best-first search or iterative deepening, and it is not intended to be one. Its value is that it provides capabilities that the standard exact-CBS policies do not provide together. It substantially reduces dive breaks, keeps a smaller queue than best-first search, exposes early incumbents with certified gaps, and can be stabilized by warm starts in dense regimes. These are precisely the capabilities a deployed robotic planner needs when it operates under an onboard memory budget, must react within a bounded replanning window, and may have to act on 18 
+
+TABLE X STRUCTURAL METRICS OF MC-DIVE AND DFS AS MEAN % DIFFERENCES RELATIVE TO DIVE. L OWER IS BETTER FOR ALL THREE METRICS .Map # robots # nodes # dive breaks Max queue size DIVE MC-DIVE DFS DIVE MC-DIVE DFS DIVE MC-DIVE DFS room-32-32-4 20 0% 145% 163% 0% 235% 259% 0% -82% -93% warehouse-small 38 0% 53% 142% 0% 100% 195% 0% -55% -79% 
+
+a feasible plan before a proof of optimality is available. The ablation experiments further show that diversified best-bound restarts are essential, and the MC-DIVE experiment illustrates how node selection can respond to memory pressure without changing the exactness argument. Several directions follow naturally. The first is to design responsive hybrids that move continuously between best-bound, depth-oriented, and DIVE-like behavior based on queue growth, incumbent quality, and bound progress. The second is to learn such responses from families of related MAPF instances while keeping the underlying pruning rules admissible. The third is to extend the analysis beyond perfect trees by using stochastic tree models or measured CBS search trees from real benchmarks. A final direction is to combine DIVE with stronger warm-start generators and state-of-the-art CBS enhancements, where the same node-selection principles can be used without altering the solver’s low-level compo-nents. REFERENCES [1] R. Stern, N. R. Sturtevant, A. Felner, S. Koenig, H. Ma, T. T. Walker, J. Li, D. Atzmon, L. Cohen, T. K. S. Kumar, E. Boyarski, and R. Bar-tak, “Multi-agent pathfinding: Definitions, variants, and benchmarks,” 
+
+Symposium on Combinatorial Search (SoCS) , pp. 151–158, 2019. [2] R. Morris, C. S. P˘ as˘ areanu, K. S. Luckow, W. Malik, H. Ma, T. K. S. Kumar, and S. Koenig, “Planning, scheduling and monitoring for airport surface operations,” in Planning for Hybrid Systems, Papers from the 2016 AAAI Workshop , ser. AAAI Technical Report, vol. WS-16-12. AAAI Press, 2016. [3] J. Yu and S. M. LaValle, “Structure and intractability of optimal multi-robot path planning on graphs,” in Nat. Conf. on Artificial Intelligence (AAAI) , vol. 27, no. 1, 2013, pp. 1443–1449. [4] G. Sharon, R. Stern, A. Felner, and N. R. Sturtevant, “Conflict-based search for optimal multi-agent pathfinding,” Artificial Intelligence , vol. 219, pp. 40–66, 2015. [5] E. Boyarski, A. Felner, D. Harabor, P. J. Stuckey, L. Cohen, J. Li, and S. Koenig, “Iterative-deepening conflict-based search,” in Intl. Joint Conf. on AI (IJCAI) , 2020, pp. 4084–4090. [6] A. Felner, J. Li, E. Boyarski, H. Ma, L. Cohen, T. K. S. Kumar, and S. Koenig, “Adding heuristics to conflict-based search for multi-agent path finding,” in Proceedings of the International Conference on Automated Planning and Scheduling , vol. 28, no. 1, 2018, pp. 83–87. [7] J. Li, A. Felner, E. Boyarski, H. Ma, and S. Koenig, “Improved heuristics for multi-agent path finding with conflict-based search,” in Intl. Joint Conf. on AI (IJCAI) , 2019, pp. 442–449. [8] K. Brown, O. Peltzer, M. A. Sehr, M. Schwager, and M. J. Kochenderfer, “Optimal sequential task assignment and path finding for multi-agent robotic assembly planning,” in IEEE Intl. Conf. on Robotics and Automation (ICRA) . IEEE, 2020, pp. 441–447. [9] J. Gaber, M. Alharbi, D. Gammelli, and G. Zardini, “Grand: Guidance, rebalancing, and assignment for networked dispatch in multi-agent path finding,” IEEE Robotics and Automation Letters , 2026. [10] J. Li, A. Zanardi, F. Pecora, R. Zhang, and G. Zardini, “Fico: Finite-horizon closed-loop factorization for unified multi-agent path finding,” 
+
+arXiv preprint arXiv:2511.13961 , 2025. [11] E. Boyarski, A. Felner, R. Stern, G. Sharon, O. Betzalel, D. Tolpin, and E. Shimony, “Icbs: The improved conflict-based search algorithm for multi-agent pathfinding,” in Proceedings of the International Symposium on Combinatorial Search , vol. 6, no. 1, 2015, pp. 223–225. [12] M. Barer, G. Sharon, R. Stern, and A. Felner, “Suboptimal variants of the conflict-based search algorithm for the multi-agent pathfinding prob-lem,” in Proceedings of the International Symposium on Combinatorial Search , vol. 5, no. 1, 2014, pp. 19–27. [13] J. Li, W. Ruml, and S. Koenig, “Eecbs: A bounded-suboptimal search for multi-agent path finding,” in Nat. Conf. on Artificial Intelligence (AAAI) , vol. 35, no. 14, 2021, pp. 12 353–12 362. [14] J. Li, F. Pecora, R. Zhang, and G. Zardini, “Adaptive-horizon conflict-based search for closed-loop multi-agent path finding,” arXiv preprint arXiv:2602.12024 , 2026. [15] J. Li, R. Zhang, and G. Zardini, “Certificate-driven closed-loop multi-agent path finding with inheritable factorization,” arXiv preprint arXiv:2604.00428 , 2026. [16] M. Bellusci, N. Basilico, and F. Amigoni, “Multi-agent path finding in configurable environments,” in Proceedings of the 19th International Conference on Autonomous Agents and MultiAgent Systems , 2020, pp. 159–167. [17] N. Zhou, N. W. F. Bode, and E. R. Hunt, “Multi-agent cooperative transportation: Optimal and efficient task allocation and path finding,” 
+
+arXiv preprint arXiv:2605.16097 , 2026. [18] T. Huang, B. Dilkina, and S. Koenig, “Learning node-selection strate-gies in bounded-suboptimal conflict-based search for multi-agent path finding,” in Proceedings of the 20th International Conference on Au-tonomous Agents and MultiAgent Systems , 2021, pp. 611–619. [19] K. Okumura, M. Machida, X. D´ efago, and Y. Tamura, “Priority inheri-tance with backtracking for iterative multi-agent path finding,” Artificial Intelligence , vol. 310, p. 103752, 2022. [20] E. L. Lawler and D. E. Wood, “Branch-and-bound methods: A survey,” 
+
+Operations Research , vol. 14, no. 4, pp. 699–719, 1966. [21] T. Achterberg, “Constraint integer programming,” Ph.D. dissertation, Technische Universit¨ at Berlin, 2007. [22] Gurobi Optimization, LLC, “Parameter guidelines,” https://docs.gurobi. com/projects/optimizer/en/current/concepts/parameters/guidelines.html, 2026, accessed: 2026-06-22. [23] IBM, “Mip emphasis switch,” https://www.ibm.com/docs/en/icos/22.1. 1?topic=parameters-mip-emphasis-switch, 2026, accessed: 2026-06-22. [24] D. Allouche, S. de Givry, G. Katsirelos, T. Schiex, and M. Zytnicki, “Anytime hybrid best-first search with tree decomposition for weighted csp,” in Principles and Practice of Constraint Programming , ser. Lecture Notes in Computer Science, vol. 9255. Springer, 2015, pp. 12–29. [25] H. He, H. Daum´ e III, and J. Eisner, “Learning to search in branch and bound algorithms,” in Advances in Neural Information Processing Systems (NIPS) , vol. 27, 2014, pp. 3293–3301. [26] A. Mattick and C. Mutschler, “Reinforcement learning for node selection in branch-and-bound,” Transactions on Machine Learning Research ,2024. [27] A. G. Labassi, D. Ch´ etelat, and A. Lodi, “Learning to compare nodes in branch and bound with graph neural networks,” in Advances in Neural Information Processing Systems (NIPS) , vol. 35, 2022, pp. 32 000– 32 010. [28] T. Huang, S. Koenig, and B. Dilkina, “Learning to resolve conflicts for multi-agent path finding with conflict-based search,” in Nat. Conf. on Artificial Intelligence (AAAI) , vol. 35, no. 13, 2021, pp. 11 246–11 253. 
+
+APPENDIX 
+
+Proof of Proposition 2. Let zP 
+
+> t
+
+be the incumbent value after iteration t, and let 
+
+Ft := {q ∈ Q : g(q) < z P 
+
+> t
+
+}
+
+be the feasible solutions that would strictly improve the current incumbent. Let 
+
+Ut := [ 
+
+> P∈OPEN t
+
+(P ∩ Q)19 
+
+be the part of the original feasible set still covered by open nodes. We prove the invariant 
+
+Ft ⊆ Ut.
+
+At initialization, OPEN 0 = {O} and Q ⊆ O, so the invariant holds. Consider an iteration that removes node P from OPEN .If P is infeasible, then P ∩ Q = ∅, and removing it cannot remove any member of Ft. If ℓ(P ) ≥ zP 
+
+> t
+
+, then every q ∈ P ∩Q
+
+satisfies g(q) ≥ ℓ(P ) ≥ zP 
+
+> t
+
+by (1). Thus, no point in P ∩ Q
+
+can belong to Ft, and incumbent pruning is safe. Now suppose the relaxed optimizer is feasible, s(P ) ∈ Q.Since s(P ) is the optimum of the relaxation over P , every feasible point in P ∩ Q has objective at least g(s(P )) . If 
+
+s(P ) improves the incumbent, the incumbent is updated to 
+
+g(s(P )) , and no other feasible point in P can improve the new incumbent. If it does not improve the incumbent, no feasible point in P can improve the old incumbent either. In both cases, the whole node P can be fathomed without violating the invariant. It remains to consider the branching case. The incumbent is unchanged. Any improving feasible solution outside P
+
+remains covered by the other open nodes. Any improving feasible solution inside P lies in P ∩ Q and is therefore contained in L ∪ R by (4). After replacing P by its children, all improving feasible solutions remain covered. The invariant therefore holds after every iteration, indepen-dently of the order in which nodes are selected. Because the induced search tree is finite and the policy always selects a node from OPEN , the algorithm eventually terminates with 
+
+OPEN = ∅. At termination the invariant gives FT = ∅. If an incumbent exists, no feasible solution has smaller objective value, so the incumbent is optimal. If no incumbent exists, then zP 
+
+> T
+
+= + ∞ and FT = Q, which implies Q = ∅ and the original problem is infeasible.

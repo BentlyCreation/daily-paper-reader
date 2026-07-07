@@ -1,0 +1,406 @@
+Title: Unassigned Agents in Compilation-based Multi-agent Path Finding
+
+URL Source: https://arxiv.org/pdf/2606.15797v1
+
+Published Time: Tue, 16 Jun 2026 01:14:07 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Unassigned Agents in Compilation-based Multi-agent Path Finding 
+
+Pavel Surynek 
+
+Faculty of Information Technology, Czech Technical University in Prague Thákurova 9, 163 00, Prague, Czechia 
+
+pavel.surynek@fit.cvut.cz 
+
+Abstract. Compilation-based techniques represent an important stream of solvers for multi-agent path finding (MAPF) due to their modularity and adaptability for non-standard variants of the problem. While in the standard MAPF the task is to navigate all agents from their initial positions to given individual goal positions without any collision, variants where a different requirement for agents is used are also relevant. Such a variant is MAPF with unassigned agents (UA-MAPF) where some agents have the same setting as in the standard MAPF with initial positions and goals while the remaining agents have the initial position but have no goal -unassigned agents. Despite unassigned agent do not need to reach any goal posi-tion they have to be moved out of the way of the standard agents if needed which represent a specific challenge. We show in this paper that UA-MAPF can be ex-pressed in recent compilation-based techniques for MAPF based on formulating the problem as Boolean satisfiability, namely we adapt SMT-CBS and NRF-SAT, the recent solvers based on counterexample guided abstraction refinement and non-refined abstractions. 
+
+Keywords: multi-agent path finding · unassigned agents · problem compilation · Boolean satisfiability · counterexample guided abstraction refinement · non-refined abstractions. 
+
+## 1 Introduction 
+
+Multi-agent path finding (MAPF) [11,16,21] is a task of finding non-conflicting paths for m ∈ N agents A = {a1, a 2, ..., a m} that move in an undirected graph G = ( V, E )
+
+across its edges such that each agent reaches its goal vertex from the given start vertex via its path. Starting configuration of agents is defined by a simple assignment s : A →
+
+V and the goal configuration is defined by a simple assignment g : A → V . A conflict between agents is usually defined as simultaneous occupancy of the same vertex by two or more agents or as a traversal of an edge by agents in opposite directions. MAPF with unassigned agents (UA-MAPF) [6] generalizes MAPF via introducing a set of unassigned agents U = {u1, u 2, ..., u m′ }. Starting configuration of agent in 
+
+G is naturally extended for unassigned agents: s : {A ∪ U } → V , however the goal configurations remains defined only for the standard (assigned) agents: g : A → V .Many problems in robotics, urban traffic optimization, circuit design, and computer games can be regarded from the perspective of MAPF as listed by various surveys              
+
+> arXiv:2606.15797v1 [cs.AI] 14 Jun 2026 2P. Surynek path (a1)=
+> [v1,v4,v7,v8,v9]
+> Cost = 4
+> path (a2)=
+> [v3,v6,v5,v4,v7]
+> Cost = 4
+> SoC = 8 s( a1)=
+
+v1
+
+a1 a2
+
+v2 s( a1) = v3
+
+v4 v5 v6  
+
+> g(a1)=
+
+v7 v8 g(a1) = v9
+
+a1 a2
+
+v1
+
+v4
+
+v7
+
+v2
+
+v5
+
+v8
+
+v3
+
+v6
+
+v9   
+
+> Fig. 1: Multi-agent path finding (MAPF) with agents a1and a2.
+
+including [9]. UA-MAPF extends the applicability to other practical cases. Various mo-tivations are listed for UA-MAPF in [6]. Let us name few examples where UA-MAPF is relevant: automated parking lots where we need to put cars out of the way for a car leaving the parking lot, automated warehouses where some robots are not working but need to get out of the way of robots currently working, even packages themselves in warehouses can be treated as unassigned agents that need to make room for agents. Particular aspect that is motivated by practice and makes MAPF challenging is the need to find the optimal solutions with respect to some cumulative cost [23]. Commonly used cumulative costs in MAPF are makespan and sum-of-costs [14]. The makespan corresponds to the length of the longest agent’s path. The sum-of-costs is the sum of costs of individual paths which corresponds to the sum of unit costs of actions, the wait actions including. An example of MAPF problem and its sum-of-costs optimal solution is shown in Figure 1. Cumulative objectives are also important in UA-MAPF, however the presence of unassigned agents allows for more combinations than the standard MAPF. The follow-ing objectives are defined for UA-MAPF in [6]: 
+
+– Sum of Service Time (SST) - this cost is the sum of time steps required to move each assigned agent to its target. SST corresponds maximizing the system through-put. 
+
+– FUEL - this cost is the total number of moves made by all the agents (and waiting does not cost). This cost corresponds to minimizing the energy costs required to move the agents. 
+
+– Number of unassigned agents that move (NUA) - here we do not care about the lengths of the paths but aim to minimize the number of unassigned agents that move. Additional objectives or the combination of previous can be introduced. We intro-duce an objective FUEL+ that adds cost for waiting before the agent’s final move (the motivation for this cost is that waiting still consumes fuel as the engine is on). This objective corresponds to the sum-of-cost objective from the standard MAPF. An example of UA-MAPF is shown in Figure 2, values of abovementioned ob-jectives are shown in the figure (the solution is optimal in SST, but sub-optimal with respect to FUEL, FUAL+, and NUA (alternative path [v1, v 2, v 3, v 6, v 9] for a1 exists). We will address UA-MAPF in this paper from the perspective of compilation-based techniques [18] that represent a major alternative to search-based solvers [13,12] Unassigned Agents in Compilation-based Multi-agent Path Finding 3path (a1) =               
+
+> [v1,v4,v7,v8,v9]
+> Cost = 4
+> path (u1)=
+> [v4,v5,v5,v5,v5]
+> Cost = 1
+> SST =4
+> FUEL = 5
+> FUEL+ = 5
+> NUA = 1
+> s( a1)=
+
+v1
+
+a1
+
+u1
+
+v2
+
+v7
+
+v5 v6
+
+v8 g(a1) = v9
+
+a1
+
+u1
+
+v1
+
+v4
+
+v7
+
+v2
+
+v5
+
+v8
+
+v3
+
+v6
+
+v9  
+
+> s(u 1)=
+
+v4
+
+v3           
+
+> Fig. 2: Multi-agent path finding with unassigned agents (UA-MAPF) where A={a1}and U=
+> {u1}. Unassigned agent u1gets out of the way of standard (assigned) agent a1. Then agent u1
+> does not need to go anywhere so it waits in v5.
+
+for MAPF. Compilation-based solvers reduce the input MAPF instance to an instance in a different well established formalism for which an efficient solver exists. Such formalisms are for example constraint programming (CSP) [5], Boolean satisfiability 
+
+(SAT) [3], or mixed integer linear programming (MILP) [10]. 
+
+1.1 Related Work 
+
+The basic compilation scheme for the sum-of-costs optimal MAPF solving has been introduced by the MDD-SAT solver [20] that uses so called complete models to compile MAPF instances into SAT (see Figure 3). The target Boolean formula of the complete model is satisfiable if and only if the input MAPF has a solution of a specified sum-of-costs. The complete model as introduced in MDD-SAT consists of three group of constraints: 
+
+– Agent propagation constraints - these constraints ensure that if an agent appears in vertex v at time step t then the agent appears in some neighbor of v (including v
+
+itself) at time step t + 1 . The side effect of these constraints is that the agent never disappears. Cost calculation and bounding is done together with agent propagation. 
+
+– Path consistency constraints - these constrains ensure that agents move along proper paths, that is, agents do not duplicate themselves and do not appear sponta-neously. 
+
+– Conflict elimination constraints - to ensure that agents do not conflict with each other according to the MAPF rules (vertex and edge conflicts). Compilation-based techniques experienced significant progress recently via intro-duction of laziness and so called incomplete models . In lazy compilation schemes, con-flict elimination constraints are omitted at the beginning and the (incomplete) model is initially solved without them. This leads to potential conflicts that are iterativelly elimi-nated by refinements of the model with conflict elimination constraints. The advantage is that the model can end-up with significantly fewer constraints than the complete 4 P. Surynek Agent  
+
+> Propagation
+> Constraints
+> Solving Answer
+> Interpretation
+> Solution
+> Path
+> Consistency
+> Constraints
+> Co nflict
+> Elimination
+> Constraints
+> Complete Model Encoding
+> Fig. 3: Schematic diagram of the basic MAPF compilation with complete model.
+
+model. The representatives of incomplete models for various target formalisms include the CSP-based LazyCBS [7], SAT-based SMT-CBS [17], and MILP-based BCP [8]. The idea of laziness is pushed further in [19], where the NRF-SAT solver is intro-duced. NRF-SAT builds on the idea of counterexample guided abstraction refinement 
+
+(CEGAR) [4] (see Figure 4). An abstraction in the context of compilation for MAPF can be understood as constraint omission. NRF-SAT further enhances the CEGAR per-spective of MAPF with so called non-refined abstractions . While the standard CE-GAR corresponds to incomplete models where abstractions and refinements are done with respect to conflicts, non-refined abstractions leave certain abstractions intention-ally non-refined, that is, certain constraints are intentionally never added to the model. NRF-SAT introduces non-refinement with respect to path-consistency constraints. Absence of path-consistency constrains means that agents can duplicate themselves or can appear spontaneously at individual time steps of the resulting plan. A special 
+
+post-processing step is therefore necessary that extracts a valid path for each agent from the resulting plan - see Figure 5. An interpretation offered in [19] suggests that the model with path consistency constraints omitted corresponds to finding trees or directed acyclic graphs (DAG) that connects agents’ initial positions and goals instead of paths. A valid path can be extracted from a tree or from a DAG by a polynomial time post-processing step. 
+
+1.2 Contribution 
+
+The contribution of this paper is an adaptation of the SMT-CBS and NRF-SAT solvers for UA-MAPF. This demonstrates adaptability and modularity of compilation-based ap-proaches in general and specifically those based on SAT. Our experimental evaluation shows important insights about UA-MAPF. The most important observation is counter-intuitive impact of relaxations intruduced by unassigned agents. 
+
+## 2 Time Expansion for Unassigned Agents 
+
+The crucial technique for reducing MAPF to SAT is time expansion using time expanded graphs (TEGs) and multi-valued decision diagrams (MDDs) introduced in [20]. TEG is a structure that represents positions of agents at individual time steps. For a given makespan μ and graph G = ( V, E ) with V = {v1, v 2, ..., v n}, a TEG with respect to μUnassigned Agents in Compilation-based Multi-agent Path Finding 5Solving  Answer   
+
+> Interpretation
+> Abstraction Refinement
+> Counterexample
+> Generation
+> no counterexamples
+> (no conflicts )
+> counterexamples
+> (conflicts )exist
+> Solution
+> Agent
+> Propagation
+> Constraints
+> Path
+> Consistency
+> Constraints
+> Conflic ts
+> Elimination
+> Constraints
+> Initial Abstraction
+
+Fig. 4: Schematic diagram of counterexample guided abstraction refinement (CEGAR) for MAPF. Conflicts between agents are treated as counterexamples and eliminated in the abstraction refinement loop. Solving  Answer    
+
+> Interpretation
+> Counterexample
+> Generation
+> Answer
+> Post -processing
+> Incomplete Abstraction Refinement
+> no counterexamples
+> (no conflicts )
+> counterexamples
+> (conflicts )exist
+> Solution
+> Agent
+> Propagation
+> Constraints
+> Conflict
+> Elimination
+> Constraints
+> Initial Abstraction
+
+Fig. 5: Schematic diagram of a CEGAR problem solver for MAPF with non-refined abstractions. 
+
+and G, or TEG (G, μ ) is a directed acyclic graph (DAG) that contains a copy of vertices of G for each individual time steps t = 0 , 1, ..., μ . That is, vertices vti for vi ∈ V
+
+are introduced. For each undirected edge {vi, v j } ∈ E, directed edges (vti , v t+1  
+
+> j
+
+) and 
+
+(vtj , v t+1  
+
+> i
+
+) are introduced into TEG (G, μ ) for each t = 0 , 1, ..., μ − 1. In addition to this, edges (vti , v t+1  
+
+> i
+
+) are added to TEG (G, μ ) to represent wait actions of agents. TEGs are intuitive tools to establish a correspondence between solutions of MAPF and directed paths in TEGs. A directed path in TEG (G, μ ) connecting v0  
+
+> s(ak)
+
+and vμg(ak )
+
+represents a plan for agent ak of makespan μ. Let us note that unlike a path in the origi-nal G, TEG (G, μ ) allows for multiple visits of the same vertex by an agent thanks to the time expansion. The solution of MAPF coordinating multiple paths in non-conflicting way can be represented in TEG (G, μ ) as multiple directed paths that are vertex and edge disjoint which reflects vertex and edge conflicts, alternatively multiple TEGs can be used, one per agent. An example of TEG is shown in Figure 6. A more detailed description can be found in [20]. 6 P. Surynek s( a1) = v1
+
+a1
+
+v2  
+
+> g(a 1)=
+
+v2
+
+v10
+
+v20
+
+v30
+
+v11
+
+v21
+
+v31
+
+v12
+
+v22
+
+v32
+
+v13
+
+v23
+
+v33
+
+G =  (V,E)  TEG(G,3) 
+
+v11
+
+v21 v22
+
+v32 v33
+
+v10
+
+MDD(G,3)    
+
+> Fig. 6: An example of TEG and MDD for makespan μ= 3 for a graph consisting of three vertices.
+
+TEG (G, μ ) can be directly used to build a Boolean formula that is satisfiable if and only if a solution of a corresponding MAPF exists. The core idea is to introduce a Boolean variable X ti,k for each vertex of TEG (G, μ ) and agent ak ∈ A. The inter-pretation of X ti,k is that it is TRUE if and only if agent ak visits vertex vi at time step t. Boolean variables for edges can be used as well as it helps to express the con-flict avoidance constraints and cost functions. We list a constraint for vertex conflict for illustration, for the full list we refer the reader to [20]: 
+
+¬X ti,k ∧ ¬X ti,k ′ . (1) Constraint 1 forbids simultaneous occurrence of agents ak and ak′ in vertex vi at time step t. TEGs can be understood as a pedagogical aid as they are too inefficient for practical use. This is because TEGs represent unreachable vertices, so corresponding Boolean variables can never be set to TRUE and therefore makes the resulting Boolean formula unnecessarily large. Consider for example time step 1 in TEG (G, μ ) for agent 
+
+ak. Only vertices that are one-step reachable from v0  
+
+> s(ak)
+
+are relevant, that is immediate neighbors of v0  
+
+> s(ak)
+
+in TEG (G, μ ) are relevant for introducing Boolean variables to represent presence of ak at time step 1. Similarly for vertices at time step μ − 1 with respect to the goal vertex vμg(ak ). Again only one-step reachable vertices from vμg(ak )
+
+are relevant for introducing Boolean variables to represent presence of ak at time step 
+
+μ − 1. In general, vertex vti is relevant if: 
+
+dist (s(ak), v i) ≤ t ∧ dist (vi, g (ak)) ≤ μ − t, (2) where dist denotes the shortest path distance . Condition 2 is a basis for MDDs that can be regarded as filtered TEGs. An example of MDD is shown in Figure 6. MDDs results in a significantly smaller formula. Constraints to represent agent propagation ,
+
+path consistency , and conflict elimination can be introduced on top of Boolean vari-ables X ti,k derived from MDDs for individual agents instead of TEGs. All the advanced solvers based on lazy encodings and counterexample guided ab-straction refinements such as SMT-CBS [17] and NRF-SAT [19] are based on the un-derlying encoding derived from MDDs. Unassigned Agents in Compilation-based Multi-agent Path Finding 7s( u1) = v1      
+
+> u1
+> v2
+> v10v11
+> v21
+> v12
+> v22
+> v32
+> v13
+> v23
+> v33
+> G = (V,E) UA -MDD (G,3)
+> v3
+> Fig. 7: An example of UA-MDD for makespan μ= 3 for a graph consisting of three vertices.
+
+2.1 Unassigned Agents in MDDs 
+
+MDD-SAT as well as other SAT-based algorithms iterates makespan μ from the lower bound μ0 determined as: max k∈{ 1,2,...,m } dist (s(ak), g (ak)) (that is the length of longest path connecting agents’ starting position with the goal via shortest path) until a solution is found. For each makespan μ a formula according to the above scheme is constructed and consulted with the SAT solver [2]. In the case of positive answer, a solution is ex-tracted from the truth assignment, otherwise the search continues with makespan μ + 1 .The algorithm is makespan optimal as it searches for the first solvable makespan and 
+
+semi-complete that is, it terminates for solvable instances but not for unsolvable ones 1.Optimality with respect to other cumulative costs is established via additional bound introduced over the edge variables (each edge variable corresponds to agent’s action). For the FUEL+ cost, we augment the above incremental scheme with an additional bound f +. We start with the lower bound f +0 for f + determined as: Pmk=1 dist (s(ak),g(ak)) , this is the lower bound for FUEL+ (unassigned agents are initially assumed to wait only). The number of edge variables that can be set to TRUE is bounded by 
+
+f +. Both μ and f + are incremented after a negative answer from the SAT solver. The algorithm finds a FUEL+ optimal solution. It is important to note, that incrementing both μ and f + allows for all extra FUEL+ above the lower bound f +0 to be consumed by a single agent. Let us also note that MDD contains edges for wait actions so FUEL+ consumption for waiting is reflected in the formula. This is analogous to the incremental scheme for the sum-of-costs objective as introduced in [20]. Unassigned agents represent a difficulty as they are not required to arrive at certain goals. This allows unassigned agents to move freely. The free movement of unassigned agents cannot be easily restricted without affecting soundness of the solving process (for example unassigned agent blocking an assigned agent in a corridor must travel a long distance out of the corridor to free a way for the assigned agent). Directing the standard assigned agents towards their goals is important for reducing the size of MDD via removing unreachable vertices with respect goal vertices as done in equation (2). This size reduction is however not possible for unassigned agents as they have no goals. Removing unreachable vertices with respect to starting vertices is still possible  
+
+> 1Unsolvable cases can be treated by running first a polynomial time complete sub-optimal al-gorithm such as Push-and-Rotate [22].
+
+8 P. Surynek 0,1                                                                   
+
+> 1
+> 10
+> 100
+> 1000
+> 04812 16 20 24 28 32 36 40 44 48 52 56 60
+> Runtime ( seconds )
+> Unassigned agents
+> empty -16 -16 | Mean time
+> SMTCBS
+> NRFSAT
+> 0
+> 5
+> 10
+> 15
+> 0246810 12 14 16 18 20 22 24 26 28 30
+> Runtime ( seconds )
+> Unassigned agents
+> random -32 -32 -20 | Mean time SMTCBS
+> NRFSAT
+> 0
+> 50
+> 100
+> 0246810 12 14 16 18 20 22 24 26 28 30
+> Runtime ( seconds )
+> Unassigned agents
+> room -64 -64 -16 | Mean time
+> SMTCBS
+> NRFSAT
+> 0
+> 100
+> 200
+> 300
+> 012345678910 11 12 13 14 15
+> Runtime ( seconds )
+> Unassigned agents
+> ost003d | Mean time SMTCBS
+> NRFSAT
+
+Fig. 8: Runtime results of SMT-CBS and NRF-SAT in FUEL+ optimal UA-MAPF solving for the increasing number of unassigned agents in four different maps from the movingai.com bench-mark collection: empty-16-16 , random-32-32-20 ,room-64-64-16 , and ost003d .The plot for empty-16-16 uses a logarithmic scale for runtime, the plots of other maps use a linear scale. Each data point is the mean value of 25 random measurements. 
+
+for unassigned agents. The variant of MDD with unassigned agents will be called UA-MDD (for UA-MDD only the first part of equation (2) is applicable, Figure 7). 
+
+## 3 Experimental Evaluation 
+
+We implemented support for unassigned agents in the SMT-CBS and NRF-SAT solvers. Both solvers and unassigned agent support are implemented in C++. The Glucose SAT solver [2] is used as the underlying solver. To support reproducibility of results we pro-vide all source codes and experimental data on github.com/surynek/boOX . All experiments have been performed on a system with CPU AMD Ryzen 7 2700 3.2GHz, 32GB RAM, running Kubuntu Linux 24. 
+
+3.1 Impact of Agent Unassignment 
+
+It is hard to predict what will be the impact of introducing unassigned agents in SAT-based MAPF approaches as it has two contradictory effects. On one hand, unassigned agents represent a relaxation of the problem. On the other hand, unassigned agents induce UA-MDDs that are larger than MDDs for corresponding agents. We measured runtime for the increasing number of unassigned agents on struc-turally different maps from the movingai.com benchmark collection [15]. We present Unassigned Agents in Compilation-based Multi-agent Path Finding 9
+
+part of the results concerning four maps: empty-16-16 - a small baseline bench-mark, random-32-32-20 - a map with random obstacles, room-64-64-16 - a map with many bottlenecks connecting separate rooms, and ost003d - a large map from a computer game. The number of unassigned agents has been increased from 0 to 1 less than the total number of agents (the total number of agents ranged from 16 to 64). Runtime for 25 instances per number of agents with different settings of starting and goal positions was measured. The time limit for the solver was set to 5 minutes. Runtime results for SMT-CBS and NRF-SAT are reported in Figure 8, the mean run-time out of the 25 instances per number of agents is reported. Results across all tested maps indicate that both hypothesized effects are manifested. For the initial increase in the number of unassigned agents, the UA-MAPF problem becomes more complicated for both solvers, evidently due to the increasing number of large UA-MDDs. Relax-ation due to the greater freedom of unassigned agents is not significant enough to man-ifest itself at the beginning. The relaxation effect prevails only for a large number of unassigned agents. These results can be observed for three larger maps: random-32-32-20 , room-64-64-16 , and ost003d . The smallest map empty-16-16 shows a different trend, the effect of relaxation prevails from the beginning which supports the explanation that large UA-MDDs affect runtime negatively since in empty-16-16 
+
+the large size of UA-MDD has a negligible effect. The hypothesized effects are more pronounced in SMT-CBS while in NRF-SAT also observable but are less pronounced. This is due to overall higher efficiency of the NRF-SAT solver that mitigates the large size of the formula via non-refined abstractions. 
+
+## 4 Conclusion 
+
+We study a recently introduced variant of multi-agent path finding (MAPF) with unas-signed agents (UA-MAPF). Specifically we show how to adapt SAT-based solvers for UA-MAPF, two solvers SMT-CBS [17] and NRF-SAT [19] were adapted for UA-MAPF. It was only necessary to change one of the solvers’ components, namely the gen-eration of UA-MDD instead of MDD, which demonstrates the modularity and adapt-ability of SAT-based approaches. The experimental evaluation shows a counterintuitive trend in larger maps where increasing number of unassigned agents causes longer run-times while the intuitive expectation is that unassigned agents will relax the problem. The relaxation eventually prevails with majority of unassigned agents. In future work, we would like to introduce unassigned agents also for continuous variants of the MAPF problem [1]. 
+
+## References   
+
+> 1. Andreychuk, A., Yakovlev, K.S., Surynek, P., Atzmon, D., Stern, R.: Multi-agent pathfinding with continuous time. Artif. Intell. 305 , 103662 (2022) 2. Audemard, G., Simon, L.: On the glucose SAT solver. Int. J. Artif. Intell. Tools 27 (1), 1840001:1–1840001:25 (2018) 3. Biere, A., Heule, M., van Maaren, H.: Handbook of Satisfiability: Second Edition. Frontiers in Artificial Intelligence and Applications, IOS Press (2021)
+
+10 P. Surynek 4. Clarke, E.M., Grumberg, O., Jha, S., Lu, Y., Veith, H.: Counterexample-guided abstraction refinement. In: Computer Aided Verification, 12th International Conference, CAV 2000, Pro-ceedings. LNCS, vol. 1855, pp. 154–169. Springer (2000) 5. Dechter, R.: Constraint processing. Elsevier Morgan Kaufmann (2003) 6. Felner, A., Stern, R.: Multi-agent path finding with unassigned agents (MAPFUA). In: 40th AAAI Conference on Artificial Intelligence, AAAI 2026. pp. 39691–39698. AAAI Press (2026) 7. Gange, G., Harabor, D., Stuckey, P.J.: Lazy CBS: implicit conflict-based search using lazy clause generation. In: Proceedings of the Twenty-Ninth International Conference on Auto-mated Planning and Scheduling, ICAPS 2018. pp. 155–162. AAAI Press (2019) 8. Lam, E., Bodic, P.L., Harabor, D.D., Stuckey, P.J.: Branch-and-cut-and-price for multi-agent pathfinding. In: Proceedings of the Twenty-Eighth International Joint Conference on Artifi-cial Intelligence, IJCAI 2019. pp. 1289–1296. ijcai.org (2019) 9. Ma, H., Koenig, S., Ayanian, N., Cohen, L., Hönig, W., Kumar, T.K.S., Uras, T., Xu, H., Tovey, C.A., Sharon, G.: Overview: Generalizations of multi-agent path finding to real-world scenarios. CoRR abs/1702.05515 (2017) 10. Rader, D.: Deterministic Operations Research: Models and Methods in Linear Optimization. Wiley (2010) 11. Ryan, M.R.K.: Exploiting subgraph structure in multi-robot path planning. J. Artif. Intell. Res. 31 , 497–542 (2008) 12. Sharon, G., Stern, R., Felner, A., Sturtevant, N.R.: Conflict-based search for optimal multi-agent pathfinding. Artif. Intell. 219 , 40–66 (2015) 13. Sharon, G., Stern, R., Goldenberg, M., Felner, A.: The increasing cost tree search for optimal multi-agent pathfinding. Artif. Intell. 195 , 470–495 (2013) 14. Stern, R.: Multi-agent path finding - an overview. In: Artificial Intelligence - 5th RAAI Sum-mer School, Russia, 2019, Tutorial Lectures. LNCS, vol. 11866, pp. 96–115. Springer (2019) 15. Sturtevant, N.R.: Benchmarks for grid-based pathfinding. IEEE Trans. Comput. Intell. AI Games 4(2), 144–148 (2012) 16. Surynek, P.: A novel approach to path planning for multiple robots in bi-connected graphs. In: 2009 IEEE International Conference on Robotics and Automation, ICRA 2009, Kobe, Japan, May 12-17, 2009. pp. 3613–3619. IEEE (2009) 17. Surynek, P.: Unifying search-based and compilation-based approaches to multi-agent path finding through satisfiability modulo theories. In: Proceedings of the 28th International Joint Conference on Artificial Intelligence, IJCAI 2019. pp. 1177–1183. ijcai.org (2019) 18. Surynek, P.: Problem compilation for multi-agent path finding: a survey. In: Proceedings of the Thirty-First International Joint Conference on Artificial Intelligence, IJCAI 2022. pp. 5615–5622. ijcai.org (2022) 19. Surynek, P.: Non-refined abstractions in counterexample guided abstraction refinement for multi-agent path finding. In: 35th IEEE International Conference on Tools with Artificial Intelligence, ICTAI 2023. pp. 333–340. IEEE (2023) 20. Surynek, P., Felner, A., Stern, R., Boyarski, E.: Efficient SAT approach to multi-agent path finding under the sum of costs objective. In: ECAI 2016 - 22nd European Conference on Artificial Intelligence. pp. 810–818. IOS Press (2016) 21. Wang, K.C., Botea, A.: MAPP: a scalable multi-agent path planning algorithm with tractabil-ity and completeness guarantees. J. Artif. Intell. Res. 42 , 55–90 (2011) 22. de Wilde, B., ter Mors, A., Witteveen, C.: Push and rotate: a complete multi-agent pathfinding algorithm. J. Artif. Intell. Res. 51 , 443–492 (2014) 23. Yu, J., LaValle, S.M.: Structure and intractability of optimal multi-robot path planning on graphs. In: Proceedings of the 27th AAAI Conference on Artificial Intelligence 2013. AAAI Press (2013)
