@@ -26,8 +26,8 @@ subscriptions:
     diff_threshold_pct: 15
   keyword_recall_mode: or
   intent_profiles:
-    - tag: lbmap
-      description: learning-based multi-agent pathfinding
+    - tag: lbm
+      description: 多智能体路径规划
       enabled: true
       paper_sources:
         - arxiv
@@ -64,7 +64,7 @@ subscriptions:
           enabled: true
           source: manual
           note: ''
-      updated_at: '2026-07-07T01:28:38.834Z'
+      updated_at: '2026-07-07T01:29:08.337Z'
 source_backends:
   arxiv:
     papers_table: arxiv_papers
