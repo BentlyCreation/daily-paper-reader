@@ -25,3 +25,70 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: lbmap
+      description: learning-based multi-agent pathfinding
+      enabled: true
+      paper_sources:
+        - arxiv
+        - biorxiv
+      keywords:
+        - keyword: MARL MAPF
+          keyword_cn: ''
+          query: M
+        - keyword: MARL
+          keyword_cn: ''
+          query: M
+        - keyword: Decentralized MAPF
+          keyword_cn: ''
+          query: Decentralized MAPF
+        - keyword: MAPF
+          keyword_cn: ''
+          query: MAPF
+        - keyword: Multi-Agent Path Finding
+          keyword_cn: ''
+          query: Multi-Agent Path Finding
+      intent_queries:
+        - query: partially observable
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+        - query: decentralized path planning reinforcement learning
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+        - query: learning based multi agent pathfinding
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-07-07T01:28:38.834Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
+  biorxiv:
+    papers_table: biorxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_biorxiv_papers_exact
+    vector_rpc_exact: match_biorxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_biorxiv_papers_bm25
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
