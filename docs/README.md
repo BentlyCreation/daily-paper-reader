@@ -6,73 +6,85 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-08 ~ 2026-07-07
-- 运行时间：2026-07-07 01:45:11 UTC
+- 最新运行日期：2026-06-28 ~ 2026-07-07
+- 运行时间：2026-07-07 02:18:47 UTC
 - 运行状态：成功
-- 本次总论文数：17
-- 精读区：6
-- 速读区：11
+- 本次总论文数：21
+- 精读区：8
+- 速读区：13
 
 ### 今日简报（AI）
-今日推荐17篇多智能体路径规划与强化学习前沿论文，精读两篇满分MAPF研究。  
-最值得关注：编译式MAPF中未分配智能体问题，以及多目标任意时间冲突搜索的垂直扩展。  
-建议优先精读这两篇满分论文，再从速读中探索生成式预测规划与离线转在线MARL。
-- 详情：[/20260608-20260707/README](/20260608-20260707/README)
+1) 本期日报精选21篇论文，其中《HiComm》以9.0高分领衔，多智能体分层通信成为焦点。
+2) 最值得关注的方向：多智能体通信优化（《HiComm》）和高效多模态推理（《DAIN》），这两篇分别从层次化协作和动态交互网络切入，实用价值高。
+3) 建议优先精读《HiComm》把握多智能体通信设计范式，速读《DAIN》扩展多模态推理思路，为实际系统优化提供参考。
+- 详情：[/20260628-20260707/README](/20260628-20260707/README)
 
 ### 精读区论文标签
-1. [Unassigned Agents in Compilation-based Multi-agent Path Finding](/20260608-20260707/2606.15797v1-unassigned-agents-in-compilation-based-multi-agent-path-finding)  
-   标签：评分：10.0/10、query:lbm
-   evidence：直接处理未分配代理的多智能体路径查找
-2. [Dual-Informed Vertical Expansion for Multi-Objective Node Selection in Anytime Conflict-Based Search](/20260608-20260707/2607.00156v1-dual-informed-vertical-expansion-for-multi-objective-node-selection-in-anytime-conflict-based-search)  
-   标签：评分：10.0/10、query:lbm
-   evidence：改进冲突搜索的节点选择用于多智能体路径规划
-3. [Task Allocation and Motion Planning in Dynamic, Cluttered Environments via CBBA and Graphs of Convex Sets](/20260608-20260707/2606.18516v1-task-allocation-and-motion-planning-in-dynamic-cluttered-environments-via-cbba-and-graphs-of-convex-sets)  
+1. [HiComm: Hierarchical Communication for Multi-agent Reinforcement Learning](/20260628-20260707/2606.29126v1-hicomm-hierarchical-communication-for-multi-agent-reinforcement-learning)  
+   标签：评分：9.0/10、query:marl-comm
+   evidence：多智能体强化学习中的层次化通信
+2. [HiComm: Hierarchical Communication for Multi-agent Reinforcement Learning](/20260628-20260707/2606.29126v2-hicomm-hierarchical-communication-for-multi-agent-reinforcement-learning)  
+   标签：评分：9.0/10、query:marl-comm
+   evidence：多智能体强化学习中的层次化通信
+3. [Learned Coordination Conventions in Cooperative MARL: Measuring the Translation Gap Between Theory-Informed Roles and Learned Routing](/20260628-20260707/2606.29541v1-learned-coordination-conventions-in-cooperative-marl-measuring-the-translation-gap-between-theory-informed-roles-and-learned-routing)  
+   标签：评分：9.0/10、query:marl-comm
+   evidence：合作MARL中基于注意力的路由学习协调惯例
+4. [Multi-UAV Formation Cooperative Obstacle Avoidance and Adaptive Shape Deformation Control in Complex Environments Based on BI-APF-RRT and Affine Transformation](/20260628-20260707/2606.29755v1-multi-uav-formation-cooperative-obstacle-avoidance-and-adaptive-shape-deformation-control-in-complex-environments-based-on-bi-apf-rrt-and-affine-transformation)  
+   标签：评分：9.0/10、query:intent-avoid
+   evidence：多无人机编队协同避障，融合人工势场与RRT，直接对应势场法分散式避碰
+5. [Simulation Based Reward Function Validation for Multi-Agent On Orbit Inspection](/20260628-20260707/2607.01367v1-simulation-based-reward-function-validation-for-multi-agent-on-orbit-inspection)  
    标签：评分：9.0/10、query:lbm
-   evidence：多智能体路径规划与分布式任务分配
-4. [Mobile Target Search with Imperfect Perception: A Partially Observable Stochastic Game Theoretical Approach](/20260608-20260707/2606.20232v1-mobile-target-search-with-imperfect-perception-a-partially-observable-stochastic-game-theoretical-approach)  
-   标签：评分：9.0/10、query:lbm
-   evidence：处理部分可观测随机博弈下的目标搜索
-5. [Cooperative-ORCA*: Real-Time Proactive Deadlock Avoidance for Continuous-Space Multi-Agent Navigation](/20260608-20260707/2606.22757v1-cooperative-orca-real-time-proactive-deadlock-avoidance-for-continuous-space-multi-agent-navigation)  
-   标签：评分：9.0/10、query:lbm
-   evidence：直接的连续空间多智能体路径规划算法
-6. [Decentralized Autonomous Traffic Management through Corridor Networks](/20260608-20260707/2606.23585v1-decentralized-autonomous-traffic-management-through-corridor-networks)  
-   标签：评分：9.0/10、query:lbm
-   evidence：去中心化多智能体强化学习用于空中走廊交通管理，直接相关于去中心化多智能体路径规划
+   evidence：多智能体强化学习用于在轨检查中的路径规划
+6. [SPLC: Social Preference Learning for Crowd Robot Navigation](/20260628-20260707/2607.01925v1-splc-social-preference-learning-for-crowd-robot-navigation)  
+   标签：评分：9.0/10、query:intent-avoid
+   evidence：基于离线强化学习和社会偏好学习的群体机器人导航
+7. [Scene-aware Prediction of Diverse Human Movement Goals](/20260628-20260707/2606.29942v1-scene-aware-prediction-of-diverse-human-movement-goals)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：利用场景和姿态预测多样化的人体运动目标
+8. [PedNStream: Scalable Network Flow Simulation for Pedestrian Traffic Management](/20260628-20260707/2607.01021v1-pednstream-scalable-network-flow-simulation-for-pedestrian-traffic-management)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：行人交通仿真，用于轨迹预测和人群管理
 
 ### 速读区论文标签
-1. [Generative-Model Predictive Planning for Navigation in Partially Observable Environments](/20260608-20260707/2606.18888v1-generative-model-predictive-planning-for-navigation-in-partially-observable-environments)  
-   标签：评分：8.0/10、query:lbm
-   evidence：部分可观测环境中的生成模型预测规划导航
-2. [Sim2O: Efficient Offline-to-Online MARL via Joint Action Composition](/20260608-20260707/2606.21085v1-sim2o-efficient-offline-to-online-marl-via-joint-action-composition)  
-   标签：评分：8.0/10、query:lbm
-   evidence：多智能体强化学习离线到在线适应框架，可应用于去中心化路径规划
-3. [HyPOLE: Hyperproperty-Guided Multi-Agent Reinforcement Learning under Partial Observation](/20260608-20260707/2606.30966v1-hypole-hyperproperty-guided-multi-agent-reinforcement-learning-under-partial-observation)  
-   标签：评分：8.0/10、query:lbm
-   evidence：部分可观测多智能体强化学习框架
-4. [Multi-agent rendezvous in fluid flows via reinforcement learning](/20260608-20260707/2606.11274v1-multi-agent-rendezvous-in-fluid-flows-via-reinforcement-learning)  
+1. [DAIN: Dynamic Agent-Based Interaction Network for Efficient and Collaborative Multimodal Reasoning](/20260628-20260707/2606.30189v1-dain-dynamic-agent-based-interaction-network-for-efficient-and-collaborative-multimodal-reasoning)  
+   标签：评分：8.0/10、query:marl-comm
+   evidence：多智能体动态稀疏通信用于协作推理
+2. [Distributed Containment of a Compromised Agent through Repulsive Cages](/20260628-20260707/2607.01230v1-distributed-containment-of-a-compromised-agent-through-repulsive-cages)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：利用多智能体系统中的避碰机制设计排斥笼实现分布式遏制
+3. [Sparse-Aware Vector Quantization for Bandwidth-Efficient Collaborative 3D Semantic Occupancy Prediction](/20260628-20260707/2607.01928v1-sparse-aware-vector-quantization-for-bandwidth-efficient-collaborative-3d-semantic-occupancy-prediction)  
+   标签：评分：8.0/10、query:marl-comm
+   evidence：稀疏通信用于多智能体协作感知
+4. [LAMP: Long-Horizon Adaptive Manipulation Planning for Multi-Robot Collaboration in Cluttered Space](/20260628-20260707/2606.29358v1-lamp-long-horizon-adaptive-manipulation-planning-for-multi-robot-collaboration-in-cluttered-space)  
    标签：评分：7.0/10、query:lbm
-   evidence：多智能体强化学习用于会合导航
-5. [Tensor-Coord: Algebraic Decomposition of Joint Plan Tensors for Conflict-Free Multi-Agent LLM Planning](/20260608-20260707/2606.16478v1-tensor-coord-algebraic-decomposition-of-joint-plan-tensors-for-conflict-free-multi-agent-llm-planning)  
+   evidence：多机器人操作规划涉及避碰和学习方法，属于多智能体路径规划复合主题
+5. [HUMEMBR: Learning Human Routines for Predictive Embodied Navigation](/20260628-20260707/2606.30404v1-humembr-learning-human-routines-for-predictive-embodied-navigation)  
+   标签：评分：7.0/10、query:intent-avoid
+   evidence：预测人类常规用于具身导航，与多智能体意图预测相关
+6. [Robots Ask the Way: Communication-Enabled Social Navigation](/20260628-20260707/2607.01044v1-robots-ask-the-way-communication-enabled-social-navigation)  
+   标签：评分：7.0/10、query:marl-comm
+   evidence：多智能体社交导航中的通信协议
+7. [Mean Field Reinforcement Learning](/20260628-20260707/2607.01525v1-mean-field-reinforcement-learning)  
    标签：评分：7.0/10、query:lbm
-   evidence：通过张量分解实现无冲突多智能体规划，直接解决MAPF中的碰撞避免
-6. [Distilling Collaborative Dynamics into Latent Space for Implicit Coordination in Decentralized Multi-Agent Manipulation](/20260608-20260707/2606.22982v1-distilling-collaborative-dynamics-into-latent-space-for-implicit-coordination-in-decentralized-multi-agent-manipulation)  
+   evidence：平均场强化学习理论可用于多智能体路径规划中的MARL方法
+8. [Controllable Sim Agents with Behavior Latents](/20260628-20260707/2607.02496v1-controllable-sim-agents-with-behavior-latents)  
    标签：评分：7.0/10、query:lbm
-   evidence：分散式多智能体框架在部分可观测下实现隐式协调
-7. [Sampling-Based Coordination-Informed Multi-Objective Multi-Robot Reinforcement Learning](/20260608-20260707/2606.30893v1-sampling-based-coordination-informed-multi-objective-multi-robot-reinforcement-learning)  
-   标签：评分：7.0/10、query:lbm
-   evidence：分散式多目标多机器人强化学习
-8. [Social Information Quality and Environmental Volatility Shape Collective Foraging Behavior](/20260608-20260707/biorxiv-10-1101-2025-11-14-688412-v3-social-information-quality-and-environmental-volatility-shape-collective-foraging-behavior)  
-   标签：评分：7.0/10、query:lbm
-   evidence：多智能体强化学习用于觅食路径规划
-9. [Safe and Generalizable Hierarchical Multi-Agent RL via Constraint Manifold Control](/20260608-20260707/2606.24010v1-safe-and-generalizable-hierarchical-multi-agent-rl-via-constraint-manifold-control)  
+   evidence：使用模仿学习控制多智能体交通智能体的行为
+9. [Motion Planning in Compressed Representation Spaces](/20260628-20260707/2606.30940v1-motion-planning-in-compressed-representation-spaces)  
    标签：评分：6.0/10、query:lbm
-   evidence：层次化多智能体强化学习，解决协调与安全约束，可应用于分散式路径规划
-10. [GCT-MARL: Graph-Based Contrastive Transfer for Sample-Efficient Cooperative Multi-Agent Reinforcement Learning](/20260608-20260707/2606.25073v1-gct-marl-graph-based-contrastive-transfer-for-sample-efficient-cooperative-multi-agent-reinforcement-learning)  
+   evidence：使用深度学习进行导航的运动规划
+10. [When one protocol fits none: Self-organized network routing through evolutionary game dynamics](/20260628-20260707/2606.31414v1-when-one-protocol-fits-none-self-organized-network-routing-through-evolutionary-game-dynamics)  
+   标签：评分：6.0/10、query:intent-avoid
+   evidence：利用演化博弈动力学实现自组织网络路由以规避拥塞
+11. [Queue-Aware Graph Reinforcement Learning for UAV-ISAC-Assisted Maritime Data Collection](/20260628-20260707/2607.00324v1-queue-aware-graph-reinforcement-learning-for-uav-isac-assisted-maritime-data-collection)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：无人机多智能体通信与路径规划的图强化学习
+12. [Language-Critique Imitation Learning from Suboptimal Demonstrations](/20260628-20260707/2607.01225v1-language-critique-imitation-learning-from-suboptimal-demonstrations)  
    标签：评分：6.0/10、query:lbm
-   evidence：多智能体强化学习与迁移学习框架
-11. [ACPO: Agent-Chained Policy Optimization for Multi-Agent Reinforcement Learning](/20260608-20260707/2606.30072v1-acpo-agent-chained-policy-optimization-for-multi-agent-reinforcement-learning)  
-   标签：评分：6.0/10、query:lbm
-   evidence：分散策略优化多智能体强化学习
+   evidence：从次优演示使用语言批评的模仿学习
+13. [Decentralized Stochastic Subgradient-type Methods with Communication Compression for Nonsmooth Nonconvex Optimization](/20260628-20260707/2607.01755v1-decentralized-stochastic-subgradient-type-methods-with-communication-compression-for-nonsmooth-nonconvex-optimization)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：去中心化优化中的通信压缩与多智能体强化学习稀疏通信相关
 
 
 <div class="dpr-home-promo-card">
