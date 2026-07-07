@@ -1,0 +1,299 @@
+Title: LAEI: Layered Autonomous Edge Intelligence Framework for Robust UAV Swarm Operations
+
+URL Source: https://arxiv.org/pdf/2606.09099v1
+
+Published Time: Tue, 09 Jun 2026 02:17:48 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# LAEI: Layered Autonomous Edge Intelligence Framework for Robust UAV Swarm Operations 
+
+Changmin Park ∗
+
+School of Electrical Engineering Korea University Seoul 02841, Korea 
+
+minpark0120@korea.ac.kr 
+
+Wooyong Jung ∗
+
+School of Electrical Engineering Korea University Seoul 02841, Korea 
+
+jy17347@korea.ac.kr 
+
+Hwangnam Kim †
+
+School of Electrical Engineering Korea University Seoul 02841, Korea 
+
+hnkim@korea.ac.kr 
+
+Abstract: Autonomous UAV swarms require scalable coordination mechanisms that maintain mission performance under limited communication, environmen-tal uncertainty, and component failures. Centralized approaches provide global coordination but suffer from communication bottlenecks and single-node vul-nerabilities, whereas fully decentralized methods often lack mission-level con-sistency. This paper presents Layered Autonomous Edge Intelligence (LAEI), a UAV-swarm framework that combines onboard learned policies with lightweight mission-level supervision. Each UAV performs local perception, obstacle avoid-ance, and action selection onboard, while the supervisory layer provides adaptive goal reassignment, fault-aware recovery, and context-dependent policy guidance without directly controlling low-level actions. LAEI further incorporates recovery strategies, including dynamic reassociation, backup supervisory support, and fall-back local autonomy, to maintain mission continuity under representative failure scenarios. We evaluate LAEI in simulated UAV-swarm scenarios using mission completion time, collision rate, and coverage efficiency. The results show that LAEI reduces mission completion time and improves operational efficiency while maintaining collision-aware distributed UAV-level decision-making. 
+
+Keywords: UAV Swarm, Edge AI, Multi-Agent, Autonomous Robotics, Mission-Level Supervision 
+
+# 1 Introduction 
+
+The use of Unmanned Aerial Vehicles (UAVs) has expanded across surveillance, delivery, disas-ter response, and environmental monitoring [1]. As mission requirements become more complex, UAV systems are increasingly shifting from single-agent operation to collaborative swarm opera-tion, where multiple UAVs cooperate to improve coverage, robustness, and efficiency [2]. However, scalable coordination remains challenging. Centralized swarm-control approaches provide global coordination but are vulnerable to communication bottlenecks and single-node failures [3, 4], while fully decentralized methods improve local autonomy but often struggle to maintain mission-level consistency under limited communication, partial observability, or agent failures [5]. 
+
+> ∗
+
+These first co-authors contributed equally to this work. 
+
+> †
+
+Corresponding author. 
+
+> arXiv:2606.09099v1 [cs.RO] 8 Jun 2026
+
+Recent advances in reinforcement learning and edge intelligence enable UAVs to process local ob-servations and select actions onboard under computational and communication constraints [6, 7]. Nevertheless, onboard autonomy alone is insufficient for maintaining coherent swarm-level behavior when mission objectives change or failures occur. This motivates a layered coordination architecture that preserves UAV-level autonomy while providing lightweight mission-level guidance. To address these challenges, this paper proposes Layered Autonomous Edge Intelligence (LAEI), a UAV-swarm framework that combines onboard edge-AI policies with a lightweight supervisory layer. In LAEI, each UAV performs local perception, obstacle avoidance, and action selection on-board, while the supervisory layer provides adaptive goal reassignment, fault-aware recovery sig-nals, and context-dependent policy recommendations without directly controlling low-level UAV actions. This separation allows LAEI to balance distributed autonomy with mission-level supervi-sion. LAEI also incorporates fault-tolerant recovery strategies, including dynamic reassociation, backup supervisory support, and fallback local autonomy. These mechanisms reduce dependency on a single mission-level supervisor and allow UAVs to maintain safe degraded operation until connectivity is restored or reassignment becomes available. The main contributions of this paper are summarized as follows: • We propose LAEI, a layered UAV-swarm framework that combines onboard edge-AI poli-cies with mission-level supervision while preserving distributed decision-making. • We design supervisory coordination mechanisms for adaptive goal reassignment, context-dependent policy recommendation, and fault-aware recovery without direct action control. • We evaluate LAEI in simulated UAV-swarm scenarios and edge-device inference tests, demonstrating improvements in mission time, collision rate, and coverage efficiency. 
+
+# 2 RELATED WORK 
+
+UAV swarm coordination has been widely studied through centralized, decentralized, and hierarchi-cal control approaches [8]. Centralized or hierarchical control systems can provide global mission awareness and coordinated task allocation, but they often suffer from scalability limitations, com-munication bottlenecks, and vulnerability to central-node failures [9, 10]. In contrast, decentralized and distributed methods allow UAVs to make decisions based on local observations and neighbor interactions, improving autonomy and flexibility [11]. However, purely decentralized control can make mission-level consistency difficult to guarantee when local decisions must remain aligned with global objectives [12]. Learning-based approaches, including reinforcement learning and multi-agent reinforcement learn-ing, have also been investigated for UAV swarm coordination [13, 14]. These methods enable agents to learn adaptive behaviors for coverage, exploration, path planning, and collision avoidance [15]. Hierarchical multi-agent learning further decomposes decision-making into high-level and low-level policies, improving coordination in complex tasks [16]. However, when the high-level policy di-rectly determines subgoals or agent-level behavior, the system may still depend heavily on the avail-ability and reliability of the high-level module [17]. Recent UAV systems increasingly adopt edge AI to support onboard autonomy. Unlike cloud-based approaches, edge intelligence enables local inference and decision-making with reduced latency and communication dependency [18]. Lightweight neural networks have been applied to onboard object detection and tracking on embedded processors [19], and distributed or federated learning methods have been explored for UAV networks [20, 21, 22]. Nevertheless, edge intelligence alone does not fully address swarm-level coordination, particularly when UAVs fail, communication links degrade, or mission objectives change [23]. LAEI is positioned between centralized and distributed approaches. Each UAV performs onboard perception, obstacle avoidance, and action selection through its edge-AI policy, while a lightweight 2Figure 1: System-level architecture of the proposed LAEI framework. supervisory layer provides mission-level guidance, adaptive goal reassignment, fault-aware recov-ery signals, and context-dependent policy recommendations. Unlike centralized or hierarchical con-trollers that directly determine low-level actions or subgoals, LAEI preserves UAV-level autonomy while supporting swarm-level consistency and degraded operation under failures. 
+
+# 3 System Design 
+
+This section presents the proposed LAEI framework. LAEI consists of mission UAVs equipped with onboard edge-AI policies and a lightweight mission-level supervisor. The key design principle is to separate local action selection from mission-level supervision: each UAV selects low-level actions onboard, while the mission-level supervisor provides high-level guidance for reassignment, parameter adaptation, and recovery. 
+
+3.1 System Overview 
+
+The proposed system consists of two main entities: mission UAVs and a mission-level supervisor. Mission UAVs collect local sensor data, exchange limited state information with nearby UAVs, and execute tasks through onboard edge-AI modules. Each UAV independently performs perception, obstacle avoidance, and action selection, enabling distributed swarm behavior without continuous low-level commands from the mission-level supervisor. The mission-level supervisor provides lightweight mission-level supervision rather than direct action control. It updates target assignments, recommends policy-conditioning parameters, and provides recovery signals when mission objectives, UAV states, or failure conditions change. These signals are incorporated into the onboard policies while preserving UAV-level autonomy. As shown in Fig. 1, LAEI combines onboard edge intelligence with mission-level supervision. Dur-ing normal operation, UAVs react to local observations using their onboard policies. During mission updates or abnormal conditions, the mission-level supervisor provides reassignment and recovery information to maintain swarm-level consistency. 
+
+3.2 Mission-Level Supervisory Coordination 
+
+The mission-level supervisory coordination module is implemented on the mothership, whereas each UAV performs local perception, collision avoidance, decision-making, and action execution through its onboard edge-AI module. 33.2.1 Adaptive Goal Reassignment 
+
+Adaptive goal reassignment is performed by the mothership to maintain mission efficiency as UAV positions and mission conditions change. Instead of solving a costly global assignment problem at every update, LAEI uses a lightweight pairwise exchange heuristic. Let π denote the current assignment of UAVs to destinations. For each pair of UAVs (i, j ) with positions pi, p j and assigned destinations dπ(i), d π(j), the current and swapped costs are defined as 
+
+Ccur = |pi − dπ(i)| + |pj − dπ(j)|, Cswap = |pi − dπ(j)| + |pj − dπ(i)|. (1) A swap is accepted when 
+
+Cswap + ϵ < C cur , (2) where ϵ > 0 prevents oscillatory swaps. The updated assignment is transmitted to UAVs as revised mission guidance. The UAVs do not receive direct motion commands from the mothership; instead, each UAV uses its assigned destination as part of its local decision-making process. 
+
+3.2.2 Context-Dependent Parameter Recommendation 
+
+In addition to goal reassignment, the mothership recommends policy-conditioning parameters ac-cording to the current mission context: 
+
+ηi = [ αsafe , α avoid , v max , τ comm , τ reassign , ρ recover ], (3) where the elements represent the safety margin, collision-avoidance weight, velocity bound, com-munication threshold, reassignment threshold, and recovery priority, respectively. These parameters are updated using lightweight rule-based decisions based on mission context, such as communica-tion quality, local congestion, task progress, and detected failure conditions. The recommended parameter vector ηi is delivered to the corresponding UAV and used as a condi-tioning input for the onboard edge-AI policy. Thus, the mothership does not directly determine the action ai of UAV i. Instead, the onboard policy selects the action according to 
+
+ai ∼ πθ (ai | oi, d π(i), η i), (4) where oi is the local observation, dπ(i) is the assigned destination, and ηi is the mission-level con-ditioning vector. This design allows the mothership to influence UAV behavior at the mission level while preserving distributed onboard autonomy. 
+
+3.2.3 Fault-Aware Recovery 
+
+Fault-aware recovery is activated when the mothership detects UAV failure from status updates, missing heartbeats, or abnormal communication states. When a UAV uf fails, its assigned task is redistributed among the remaining UAVs U′ = U \ { uf }. To preserve coverage, the mothership samples candidate points around the original goal region and applies k-means clustering with |U ′|
+
+clusters to generate updated virtual goals D∗. These goals are refined by local stochastic perturba-tions accepted only when coverage improves. Coverage is measured as Coverage (P, ˜D, r ) = 
+
+p ∈ P | min d∈ ˜D |p − d| ≤ r
+
+|P | , (5) where P is the candidate point set and r is the sensing radius. The operational UAVs are then reassigned to the updated destinations by minimizing total travel distance: 
+
+π∗ = arg min 
+
+> π∈S|U ′|
+
+X
+
+> i∈U ′
+
+pi − d∗ 
+
+> π(i)
+
+. (6) The mothership also increases the recovery priority ρrecover and may adjust the velocity bound, safety margin, or reassignment threshold to support stable degraded operation. The remaining UAVs then continue the mission using the updated assignment and policy-conditioning parameters. 4Algorithm 1 Mothership-Based Supervisory Coordination in LAEI  
+
+> 1:
+
+Input: UAV observations oi, positions pi, goals dj , assignment π, status si, communication quality qi 
+
+> 2:
+
+Output: Updated assignment π and parameters ηi 
+
+> 3:
+
+The mothership collects compact mission-state updates from UAVs  
+
+> 4:
+
+if UAVs do not receive updated guidance from the mothership then  
+
+> 5:
+
+UAVs use fallback local autonomy with the last valid π and ηi 
+
+> 6:
+
+else if UAV failure is detected then  
+
+> 7:
+
+Define operational UAV set U′ and update virtual goals D∗ 
+
+> 8:
+
+Reassign goals and update recovery parameters ηi 
+
+> 9:
+
+else  
+
+> 10:
+
+Refine goal assignment π using pairwise exchange  
+
+> 11:
+
+Recommend context-dependent parameters ηi 
+
+> 12:
+
+end if  
+
+> 13:
+
+Transmit π and ηi to UAVs as mission-level guidance  
+
+> 14:
+
+Each UAV selects onboard action using πθ (ai | oi, d π(i), η i)
+
+Algorithm 1 summarizes the overall mothership-based supervisory coordination procedure. The al-gorithm clarifies how the three supervisory functions are integrated into a single mission-level loop. During normal operation, adaptive goal reassignment and context-dependent parameter recommen-dation are executed together. When a UAV failure is detected, the recovery process updates virtual goals, redistributes tasks, and adjusts recovery-related parameters. If the mothership becomes un-available, UAVs continue operating in fallback local autonomy using the last valid mission guidance until mothership connectivity is restored. 
+
+3.3 Onboard Edge-AI Policy 
+
+Each mission UAV contains an onboard edge-AI execution module that autonomously converts mission-level guidance into low-level actions. This module is responsible for local perception, state encoding, goal-conditioned navigation, collision-aware motion selection, and task execution. The onboard edge-AI module directly interacts with the local environment and selects actions using only local observations and lightweight supervisory information. The observation of UAV i is represented as 
+
+oi = [ stask , s abs , ϕ neighbor , η i], (7) where stask includes goal-related information, sabs includes the UAV’s kinematic state, ϕneighbor in-cludes neighboring-agent and obstacle information, and ηi denotes the policy-conditioning param-eters provided by the mothership. Based on this observation, the onboard policy selects an action as 
+
+ai ∼ πθ (ai | oi, d π(i)). (8) To support safe local motion, collision-related interaction risks are encoded as part of the neighboring-agent representation. Specifically, we use a Collision Avoidance Vector ⃗ Rij from neighboring UAV j to UAV i:⃗Rij =
+
+ max(0 , −(⃗v j −⃗v i) · (⃗p j −⃗p i)) 
+
+|⃗p j −⃗p i|3 + ϵ
+
+  ⃗p i −⃗p j
+
+|⃗p i −⃗p j |
+
+
+
+. (9) The total avoidance vector is computed as ⃗Ri = X
+
+> j∈N i
+
+⃗Rij . (10) This vector is not the sole function of the edge-AI module; rather, it provides an additional safety-aware feature that helps the onboard policy account for dynamic interaction risks during local navi-gation and action selection. 5The edge-AI policy is trained using multi-agent PPO (MAPPO). The reward for UAV i combines goal progress, goal completion, collision penalty, and safe-distance maintenance: 
+
+ri = cdDi + cg Gi + ccCi + csSi, (11) where Di is the distance-based reward, Gi is the goal-reaching reward, Ci is the collision penalty, and Si encourages safe separation from neighboring agents. 
+
+Algorithm 2 Training of Onboard Edge-AI Policy  
+
+> 1:
+
+Input: Number of episodes Nepisodes  
+
+> 2:
+
+Output: Trained onboard policies πθ 
+
+> 3:
+
+Initialize policies πθ and replay buffer D 
+
+> 4:
+
+for episode = 1 to Nepisodes do  
+
+> 5:
+
+Reset environment and observe initial UAV states  
+
+> 6:
+
+for each step do  
+
+> 7:
+
+Encode local observations, goal information, neighboring-agent states, and supervisory parameters  
+
+> 8:
+
+Compute safety-aware interaction features such as ⃗ Ri 
+
+> 9:
+
+Select onboard actions using πθ (ai | oi, d π(i), η i) 
+
+> 10:
+
+Execute actions, observe rewards and next states, and store transitions in D 
+
+> 11:
+
+end for  
+
+> 12:
+
+Update policies and value functions using PPO mini-batches  
+
+> 13:
+
+end for 
+
+# 4 Performance Evaluation 
+
+We evaluate LAEI in simulation and edge-device-in-the-loop inference settings to assess mission-level supervision, failure recovery, and onboard edge-AI feasibility. 
+
+4.1 Implementation Setup 
+
+The control policies were evaluated in the VMAS simulation environment, configured as a contin-uous 2D space with 5 mission UAVs and 8 static obstacles. Each UAV was required to reach its assigned goal while avoiding other agents and obstacles. LAEI was compared with five baselines: A*, Information-Gain A*, ORCA, GWO, and PPO without supervisory guidance. To validate onboard feasibility, we used an edge-device-in-the-loop setup in which the VMAS en-vironment ran on a host PC while the trained edge-AI policy was executed on an NVIDIA Jetson Nano [24]. At each control step, the simulator transmitted the observation oi to the Jetson Nano, which computed the action ai and returned it to the simulator. 
+
+4.2 Mission-Level Supervisory Management 
+
+We first evaluated the effectiveness of mission-level supervisory management in adaptive goal as-signment and failure recovery. In the adaptive goal assignment experiment, the mothership period-ically reassigned targets to reduce total travel distance. A single target-swap operation reduced the cumulative distance from 4.9606 to 4.9217, corresponding to a 0.78% improvement without global path replanning. For failure recovery, one UAV was removed from the swarm, and the remain-ing four goal positions were optimized to preserve coverage. As shown in Table 1 and Fig. 2, the proposed optimization increased the coverage ratio from 83.12% to 85.76%, indicating improved coverage retention after UAV loss. 
+
+4.3 Edge-AI Performance 
+
+The reward curves in Fig. 3 show that both PPO and LAEI learn successfully, but LAEI converges to a higher reward value of approximately 18–19, whereas PPO plateaus around 11–12. This suggests that supervisory guidance helps stabilize learning and improve task-level performance. 6Table 1: Coverage ratio before and after optimization. 
+
+Configuration Coverage Ratio (%) 
+
+Before Optimization ( D′) 83.12 After Optimization ( D∗) 85.76   
+
+> (a) Original ( D)(b) Before ( D′)(c) After ( D∗)
+
+Figure 2: Coverage comparison before and after failure-aware goal optimization. We quantitatively evaluated each algorithm using collision count, completion time, coverage, and efficiency, where efficiency is computed as coverage divided by time. As summarized in Table 2, LAEI achieved zero collisions, the shortest completion time of 84 steps, and the highest efficiency of 0.034. Compared with PPO, LAEI reduced completion time by 16% and improved efficiency by approximately 14%, while maintaining zero collisions in the evaluated scenarios The trajectory results in Fig. 4 qualitatively support the quantitative results, showing that LAEI produces direct and smooth paths while avoiding obstacles and other agents. 
+
+4.4 Implementation and Validation 
+
+Beyond the VMAS-based evaluation and hardware-in-the-loop inference test described in Section 4.1, we further validated the VMAS-trained policy in a higher-fidelity Isaac Sim environment with PX4-based UAV models. The policy was integrated into the Isaac Sim validation pipeline and ap-plied to multiple PX4-based mission UAVs during mission execution. As shown in Fig. 5a, the large UAV in the upper region represents the mothership, while the UAVs in the lower mission area rep-resent the mission UAVs. This experiment examined whether the learned edge-AI policy could be transferred to a realistic multi-UAV simulation environment without additional retraining. The validation was conducted on a workstation equipped with two NVIDIA RTX A6000 GPUs and an AMD Ryzen Threadripper PRO 5955WX CPU. Since the policy was trained in the VMAS coordinate space, we applied a coordinate-scale transformation to map policy-level positions and actions to the Isaac Sim mission space while preserving the relative mission geometry learned in VMAS. We also implemented a degraded-operation scenario in which one mission UAV was assumed to be damaged during the mission. As shown in Fig. 5b, the remaining mission UAVs continued mission Table 2: Performance comparison. 
+
+## Metric GWO A∗ Information A ∗ ORCA PPO LAEI 
+
+## Collision 0 0 0 4 0 0Time 140 121 107 116 100 84 Coverage 3.42 2.63 2.76 2.44 2.95 2.85 Efficiency 0.024 0.022 0.026 0.021 0.029 0.034 7(a) Individual PPO (b) LAEI 
+
+Figure 3: Reward comparison between Individual PPO and LAEI.     
+
+> (a) GWO (b) A* (c) Info-A*
+> (d) ORCA (e) IPPO (f) LAEI
+
+Figure 4: Trajectory comparison across baseline algorithms and LAEI. execution using the transferred policy and failure-aware mission configuration. The results confirm that the VMAS-trained edge-AI policy can be transferred to a higher-fidelity Isaac Sim–PX4 multi-UAV simulation environment. 
+
+# 5 Conclusions 
+
+This paper proposed LAEI, a layered UAV swarm framework that integrates onboard edge-AI poli-cies with lightweight mission-level supervision. By separating local action selection from super-visory coordination, LAEI enables UAVs to operate autonomously while supporting adaptive goal assignment and fault-aware recovery. Simulation and edge-device-in-the-loop evaluations showed that LAEI improves mission efficiency and failure-aware recovery performance. In the evaluated scenarios, LAEI increased post-failure coverage from 83.12% to 85.76%, achieved zero collisions, reduced mission completion time to 84 steps, and obtained the highest efficiency score of 0.034 among the compared methods. 8(a) Inference mission (b) Complete mission 
+
+Figure 5: Swarm Drone performs and completes mission in Isaac Sim. 
+
+# 6 Limitations 
+
+Although LAEI demonstrates improved coordination, efficiency, and fault-aware recovery in the evaluated scenarios, several limitations remain. First, the current evaluation is conducted mainly in a 2D simulation environment with a limited number of UAVs and static obstacles, which may not fully capture the complexity of real-world aerial missions. Second, while hardware-in-the-loop experiments with Jetson Nano validate the feasibility of onboard inference, the framework has not yet been deployed on physical UAV platforms. Third, communication degradation, sensing noise, environmental disturbances, and UAV failures are not yet fully modeled. Therefore, future work should extend LAEI to full 3D flight dynamics, larger swarm sizes, more realistic communication and sensing conditions, and real-world flight experiments. 
+
+# References 
+
+[1] H. Shakhatreh, A. H. Sawalmeh, A. Al-Fuqaha, Z. Dou, E. Almaita, I. Khalil, N. S. Othman, A. Khreishah, and M. Guizani. Unmanned aerial vehicles (uavs): A survey on civil applications and key research challenges. IEEE access , 7:48572–48634, 2019. [2] C. Park and H. Kim. A cooperative network management architecture for manned–unmanned aircraft teaming using network drones. Electronics , 15(10):2102, 2026. [3] S. Javed, A. Hassan, R. Ahmad, W. Ahmed, R. Ahmed, A. Saadat, and M. Guizani. State-of-the-art and future research challenges in uav swarms. IEEE Internet of Things Journal , 11(11): 19023–19045, 2024. [4] L. Gupta, R. Jain, and G. Vaszkun. Survey of important issues in uav communication networks. 
+
+IEEE communications surveys & tutorials , 18(2):1123–1152, 2015. [5] F. Bullo, J. Cort´ es, and S. Mart´ ınez. Distributed control of robotic networks: A mathematical approach to motion coordination algorithms. Princeton University Press , 2009. [6] Z. Zuo, C. Liu, Q.-L. Han, and J. Song. Unmanned aerial vehicles: Control methods and future challenges. IEEE/CAA Journal of Automatica Sinica , 9(4):601–614, 2022. [7] I. H. Sarker. Ai-based modeling: techniques, applications and research issues towards automa-tion, intelligent and smart systems. SN computer science , 3(2):158, 2022. [8] Y. Zhou, B. Rao, and W. Wang. Uav swarm intelligence: Recent advances and future trends. 
+
+Ieee Access , 8:183856–183878, 2020. [9] D. Yu, J. Li, Z. Wang, and X. Li. An overview of swarm coordinated control. IEEE Transac-tions on Artificial Intelligence , 5(5):1918–1938, 2023. 9[10] C. Xu, K. Zhang, Y. Jiang, S. Niu, T. Yang, and H. Song. Communication aware uav swarm surveillance based on hierarchical architecture. Drones , 5(2):33, 2021. [11] G. V´ as´ arhelyi, C. Vir´ agh, G. Somorjai, N. Tarcai, T. Sz¨ or´ enyi, T. Nepusz, and T. Vicsek. Outdoor flocking and formation flight with autonomous aerial robots. In 2014 IEEE/RSJ In-ternational Conference on Intelligent Robots and Systems , pages 3866–3873. IEEE, 2014. [12] A. Ryan, J. Tisdale, M. Godwin, D. Coatta, D. Nguyen, S. Spry, R. Sengupta, and J. K. Hedrick. Decentralized control of unmanned aerial vehicle collaborative sensing missions. In 2007 American Control Conference , pages 4672–4677. IEEE, 2007. [13] W. Jung, C. Park, S. Lee, and H. Kim. Enhancing uav swarm tactics with edge ai: Adaptive decision making in changing environments. Drones , 8(10):582, 2024. [14] C. C. Ekechi, T. Elfouly, A. Alouani, and T. Khattab. A survey on uav control with multi-agent reinforcement learning. Drones , 9(7):484, 2025. [15] S. Han, S. Zhou, J. Wang, L. Pepin, C. Ding, J. Fu, and F. Miao. A multi-agent reinforcement learning approach for safe and efficient behavior planning of connected autonomous vehicles. 
+
+IEEE Transactions on Intelligent Transportation Systems , 25(5):3654–3670, 2023. [16] M. Ghavamzadeh, S. Mahadevan, and R. Makar. Hierarchical multi-agent reinforcement learn-ing. Autonomous Agents and Multi-Agent Systems , 13(2):197–229, 2006. [17] S. Brusoni. The limits to specialization: problem solving and coordination in ‘modular net-works’. Organization studies , 26(12):1885–1907, 2005. [18] A. Koubaa, A. Ammar, M. Abdelkader, Y. Alhabashi, and L. Ghouti. Aero: Ai-enabled remote sensing observation with onboard edge computing in uavs. Remote Sensing , 15(7):1873, 2023. [19] S. Hossain and D.-j. Lee. Deep learning-based real-time multiple-object detection and tracking from aerial imagery via a flying robot with gpu-based embedded devices. Sensors , 19(15): 3371, 2019. [20] Y. Ding, Z. Yang, Q.-V. Pham, Y. Hu, Z. Zhang, and M. Shikh-Bahaei. Distributed machine learning for uav swarms: Computing, sensing, and semantics. IEEE Internet of Things Journal ,11(5):7447–7473, 2023. [21] Y. Qu, H. Dai, Y. Zhuang, J. Chen, C. Dong, F. Wu, and S. Guo. Decentralized federated learning for uav networks: Architecture, challenges, and opportunities. IEEE Network , 35(6): 156–162, 2022. [22] B. Yang, X. Cao, K. Xiong, C. Yuen, Y. L. Guan, S. Leng, L. Qian, and Z. Han. Edge intelli-gence for autonomous driving in 6g wireless system: Design challenges and solutions. IEEE Wireless Communications , 28(2):40–47, 2021. [23] A. Khan, S. Gupta, and S. K. Gupta. Emerging uav technology for disaster detection, mitiga-tion, response, and preparedness. Journal of Field Robotics , 39(6):905–955, 2022. [24] M. Bettini, R. Kortvelesy, J. Blumenkamp, and A. Prorok. Vmas: A vectorized multi-agent simulator for collective robot learning. The 16th International Symposium on Distributed Au-tonomous Robotic Systems , 2022. 10
