@@ -65,6 +65,86 @@ subscriptions:
           source: manual
           note: ''
       updated_at: '2026-07-07T01:29:08.337Z'
+    - tag: communicatio
+      description: 通信
+      enabled: true
+      paper_sources:
+        - arxiv
+        - biorxiv
+      keywords:
+        - keyword: transformer communication
+          keyword_cn: ''
+          query: t
+        - keyword: Graph Attention Network MAPF
+          keyword_cn: ''
+          query: Graph Attention Network MAPF
+        - keyword: Attention Mask MARL
+          keyword_cn: ''
+          query: Attention Mask MARL
+        - keyword: Selective Communication
+          keyword_cn: ''
+          query: Selective Communication
+        - keyword: Sparse Communication
+          keyword_cn: ''
+          query: Sparse Communication
+        - keyword: MARL Communication
+          keyword_cn: ''
+          query: MARL Communication
+      intent_queries:
+        - query: selective message passing MARL
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+        - query: sparse attention mechanism reinforcement learning
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+        - query: adaptive communication network multi agent
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-07-07T01:35:12.940Z'
+    - tag: stip
+      description: spatio-temporal-intent-prediction
+      enabled: true
+      paper_sources:
+        - arxiv
+      keywords:
+        - keyword: Artificial Potential Field MARL
+          keyword_cn: ''
+          query: Artificial Potential Field MARL
+        - keyword: Congestion Avoidance
+          keyword_cn: ''
+          query: Congestion Avoidance
+        - keyword: Crowd Perception
+          keyword_cn: ''
+          query: Crowd Perception
+        - keyword: Intent Prediction
+          keyword_cn: ''
+          query: Intent Prediction
+        - keyword: Trajectory Prediction
+          keyword_cn: ''
+          query: Trajectory Prediction
+      intent_queries:
+        - query: congestion aware navigation dynamic environments
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+        - query: spatio temporal occupancy grid reinforcement learning
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+        - query: multi agent trajectory intent prediction
+          query_cn: ''
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-07-07T01:36:36.351Z'
 source_backends:
   arxiv:
     papers_table: arxiv_papers
