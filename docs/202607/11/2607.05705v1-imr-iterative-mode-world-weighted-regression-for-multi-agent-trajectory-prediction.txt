@@ -1,0 +1,131 @@
+Title: IMR: Iterative Mode-World Weighted Regression for Multi-Agent Trajectory Prediction
+
+URL Source: https://arxiv.org/pdf/2607.05705v1
+
+Published Time: Wed, 08 Jul 2026 00:18:19 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# IMR: Iterative Mode-World Weighted Regression for Multi-Agent Trajectory Prediction 
+
+## Honglin Wang EACON Fujian, China 
+
+> wanghonglin921@gmail.com
+
+## Shiyao Pan EACON Fujian, China 
+
+> dcspsy@gmail.com
+
+## Yun-Fu Liu EACON Fujian, China 
+
+> yunfuliu@gmail.com
+
+## Abstract 
+
+Multi-agent motion prediction is essential for automated vehicles to understand the intentions of surrounding vehi-cles. However, previous prediction-based and anchor-based methods have limitations in mode diversity and prediction accuracy, respectively. These limitations may cause in-adequate safety assessments and behavioral deviations in automated vehicles. To address this issue, a mode-world weighted regression loss is proposed to bridge the gap be-tween these features. Specifically, this approach mitigates mode collapse while simultaneously improving world rank-ing and top-1 confidence. Furthermore, the proposed iter-ative decoder improves prediction accuracy by recurrently and segmentally generating trajectories. Experimental re-sults show the proposed method ranks first in the Argoverse 2 multi-agent motion forecasting benchmark against other methods. 
+
+## 1. Introduction 
+
+Motion prediction is crucial for autonomous driving technology, establishing the foundation for achieving high reliability and safety in autonomous vehicles [2], [3]. Through accurate prediction of future trajectories of road entities ( e.g ., vehicles, bicycles, pedestrians), it facilitates real-time environmental perception and dynamic analysis. This capability enhances path planning and obstacle avoid-ance precision, mitigates accident risks, and improves over-all driving safety, contributing to smoother navigation. Previous prediction-based methods ( e.g ., QCNet [10] and Forecast-MAE [1]) in multi-agent motion prediction are prone to mode collapse in complex scenarios. Anchor-based approaches ( e.g ., MTR [5] and TNT [9]) mitigate this issue at the expense of prediction accuracy. To resolve this trade-off, we propose a mode-world weighted regression loss within the prediction-based framework. Experiments demonstrate enhanced mode diversity without compromis-ing accuracy, thereby bridging the performance gap across paradigms. Crucially, it mitigates mode collapse while con-currently improving the accuracy of world ranking and top-1 confidence. Furthermore, we note that the previous state-of-the-art method QCNeXt [11] on the Argoverse 2 [7] multi-agent motion forecasting benchmark, employs a proposal-refinement decoding architecture. This method further re-fines proposed trajectories to generate more accurate predic-tions. However, when initial trajectories substantially devi-ate from ground truth, refinement layers struggle to effec-tively capture correct offsets due to excessive errors. Con-sequently, we propose an iterative decoder, and each itera-tion directly outputs trajectory coordinates rather than off-sets. Simultaneously, encoded features, decoded outputs, and predicted trajectory from each iteration is propagated to next iteration, maximizing intermediate information uti-lization. This recurrent and segmented method facilitates iterative trajectory optimization. 
+
+## 2. Approach 
+
+The proposed method is introduced in this section. First, the scene representation approach and encoder design are described. Second, the architecture and components of the iterative decoder are elaborated. Finally, the mode-world weighted regression loss is presented. 
+
+2.1. Scene representation and encoder 
+
+We treat the historical trajectory of each agent at every timestep as an independent element. Using the element as the origin, we construct a polar coordinate system and select agents within a preset radius as interaction objects. For each interaction pair, we compute 3D spatial relationships (rela-tive distance, azimuth, orientation) to construct a dynamic attention weighted matrix. The graph attention network-based encoder models each element and their interactions as a graph structure. Each el-ement is represented as a node, with inter-node connections arXiv:2607.05705v1 [cs.RO] 6 Jul 2026 Figure 1. The architecture of the proposed iterative decoder. The arrows shown around the top-left corner indicate the transmission of decoding features between different decoding stages.  
+
+> Figure 2. Details of the interaction block shown in Fig. 1, in which the number of layers is denoted as L.
+
+denoting interaction weights. By modeling multi-source in-teractions, this captures implicit relationships between dif-ferent elements. 
+
+2.2. Iterative decoder 
+
+Figure 1 illustrates the architecture of the iterative de-coder. The agent and map features represent the outputs from the encoder. The iterative decoder executes N itera-tions. Each iteration comprises S decoding stages designed to progressively decode trajectory segments, which are then concatenated into a full trajectory. The predicted trajec-tory from each iteration is processed by a temporal attention layer and then combined with the decoding feature to serve as input for the subsequent iteration. As depicted in Fig. 2, each interaction block comprises L
+
+stacked interaction layers and it outputs predicted trajectory through a prediction head as formulated below, 
+
+Fi ∈ RK×D , i = 0 (1) 
+
+Fi = F ′ 
+
+> i−1
+
++ LST M (yi−1), i > 0 (2) where Fi and F ′ 
+
+> i
+
+denote the input and output features of the 
+
+i-th iteration, respectively. K is the number of predicted world, D is the hidden size, LST M indicates the LSTM layer, and yi represents the predicted trajectory of the i-th iteration. In each iteration, predicted trajectory is executed in seg-ments. After the prediction of each segment of the trajectory is completed each time, the segments are connected to gen-erate the complete trajectory. The equation shows below, 
+
+F ′ji = GAT (Fi, A, M ), j = 0 (3) 
+
+F ′ji = GAT (F ′j−1 
+
+> i
+
+, A, M ), j > 0 (4) where GAT denotes the hierarchical multivariate Graph At-tention Networks layer, A and M represent the encoding feature of agents and maps, respectively. F ′ji denotes the decoding feature for the j-th decoding stage in the i-th iter-ation. Segmented processing can break down the complex tra-jectory prediction task into multiple simple sub-tasks, mak-ing the prediction process more controllable. Meanwhile, each prediction segment is known with the result of the pre-vious segment, forming a dynamic interaction relationship. The iterative process model continuously explores the po-tential patterns in the data by constantly reusing the com-plete trajectory generated last time, and further optimizes the prediction results. It is worth noting that we set the output of each decoding stage to the position coordinate value of the predicted tra-jectory instead of the offset relative to the previous decoding stage. This helps to avoid the uncorrectable consequences of the incorrect prediction of the previous decoding stage on the current decoding stage. 
+
+2.3. Mode-world weighted regression loss 
+
+In order to generate the world-wise confidence scores to adapt to the joint trajectory prediction task, each world Method avgMinFDE 6 avgMinFDE 1 actorMR 6 avgMinADE 6 avgMinADE 1 avgBrierMinFDE 6 actorCR 6
+
+LRP 1.21 2.57 0.16 0.58 1.05 1.85 0.01 DONUT 1.17 2.73 0.15 0.58 1.13 1.83 0.01 
+
+SEPT [4] 1.14 3.22 0.15 0.55 1.27 1.80 0.01 LOF [6] 1.25 2.34 0.18 0.58 0.96 1.68 0.02 QCNeXt [11] 1.02 2.29 0.13 0.50 0.94 1.65 0.01 IMR (ours) 1.08 2.29 0.15 0.51 0.92 1.59 0.01 
+
+> Table 1. Quantitative results on the Argoverse 2 multi-agent motion forecasting benchmark.
+
+Method MinFDE 6 MinFDE 1 MinADE 6 MinADE 1 MR 6 MR 1 brier-MinFDE 6
+
+DeMo [8] 1.11 3.70 0.60 1.49 0.12 0.55 1.73 Polaris 1.11 3.70 0.61 1.53 0.12 0.54 1.71 NDPNet 1.09 3.71 0.58 1.47 0.13 0.53 1.71 SEPT++ [4] 1.09 3.51 0.57 1.41 0.13 0.51 1.65 LOF [6] 1.07 3.63 0.58 1.46 0.12 0.51 1.63 IMR (ours) 1.08 3.54 0.57 1.42 0.12 0.51 1.63 
+
+> Table 2. Quantitative results on the Argoverse 2 single agent motion forecasting benchmark.
+
+should contain the joint trajectories of all agents as well as a corresponding confidence score to this world. During the training process, we use laplace loss and focal loss as the regression loss function and classification loss function re-spectively. Among them, the final regression loss value is obtained by the weighted method. The mode-wise regres-sion loss and the world-wise regression loss are calculated together and weighted. The equation is formulated as fol-lows, 
+
+Lreg = ωmode · Lmode reg + ωworld · Lworld reg (5) where Lreg represents the final regression loss value, ωmode 
+
+and ωworld respectively represent the mode-wise and world-wise regression loss weights, Lmode reg and Lworld reg represent the mode-wise regression loss function value and the world-wise regression loss value. For mode regression, a mode winner-takes-all strategy is adopted to minimize losses. The winner is defined as the best mode-wise trajectory in each agent. Among them, the selection method of the optimal mode-wise trajectory is obtained by weighting the minimum maximum displace-ment error and the minimum average displacement error, as shown in the following equation: 
+
+m = ωADE · ADE + ωM DE · M DE (6) where m represents the optimal mode-wise trajectory. 
+
+ωADE and ωM DE represent the weights corresponding to the two kinds of errors, and ADE and M DE are the aver-age and maximum displacement error, respectively. 
+
+## 3. Experiments 
+
+3.1. Implementation details 
+
+The length of the predicted trajectory is supposed to 6s as defined in Argoverse 2. The hidden size D is set to 128, and the number of iterations N is set to 6. For each iteration, the predicted trajectory is set to 3 segments at equal time in-tervals in a chronological order, and the number of stacked interaction layers L is set to 3 as well. Notably, the initial decoding feature is randomly initialized for a cold start. The number of predicted worlds K is 6. ωmode and ωworld are 0.5 and 1, respectively. We train the model using AdamW for 60 epochs on the Argoverse 2 motion forecasting dataset with batch size 32. The initial learning rate is 5×10 −4, with weight decay and dropout both at 0.1. Through cosine an-nealing, the learning rate decays to 0. 
+
+3.2. Ensemble 
+
+We train 10 models with different random seeds, pro-ducing a total of 60 predicted worlds. These world-wise predictions are then integrated using the weighted k-means algorithm introduced in QCNeXt [11]. 
+
+3.3. Quantitative results 
+
+We compare our approach to other methods on the Ar-goverse 2 multi-agent motion forecasting benchmark. As shown in Table 1, our method achieves a 0.06 improvement in avgBrierM inF DE 6 over the previous SOTA QCNeXt. Furthermore, we also verified the effectiveness of the pro-posed method in the Argoverse 2 single agent motion fore-casting benchmark as listed in Table 2. Our model achieves (a) Case 1: mode-wise loss (b) Case 1: world-wise loss (c) Case 1: mode-world loss   
+
+> (d) Case 2: mode-wise loss (e) Case 2: world-wise loss (f) Case 2: mode-world loss
+> Figure 3. Visualization comparison of different types of regression loss on Argoverse 2 validation set. Each row represents a different case, and the results of three types of loss involving mode-wise, world-wise, and the proposed mode-world regression loss are shown in different columns.
+
+a competitive performance in contrast to LOF [6] as well. 
+
+3.4. Qualitative results 
+
+Figure 3 presents a visual comparison of different types of regression losses. In these figures, green lines depict his-torical trajectories of orange-colored interested agents. Or-ange and blue lines indicate ground truth and the predicted future trajectories, respectively. As shown in the mode-wise loss results of Figs. 3(a) and (d), the predicted trajecto-ries exhibit high diversity yet a lower accuracy is introduced due to the length inconsistency with the ground truth. Fig-ures 3(b) and (e) present the results of the world-wise re-gression and they reveal significant mode collapse as rep-resented by absence of predictions matching ground truth. In contrast, the proposed mode-world weighted regression loss mitigates mode collapse while improving prediction ac-curacy as shown in Figs. 3(c) and (f). 
+
+## 4. Conclusions 
+
+In this work, a multi-agent motion prediction method is proposed to address insufficient mode diversity and low pre-diction accuracy. Experimental results demonstrate that the weighted regression loss mitigates mode collapse and re-solves the diversity-accuracy trade-off. Furthermore, it en-hances world ranking accuracy and top-1 confidence. By generating trajectories through a recurrent and segmented method, the decoder enables the model to learn from pre-vious information, gradually improving the prediction ac-curacy. However, this approach incurs high computational complexity in decoding, limiting real-time applicability. As demonstrated in experimental results, our method ranks first on the Argoverse 2 multi-agent motion forecasting bench-mark and achieves first-tier performance on the single-agent benchmark. 
+
+## References   
+
+> [1] Jie Cheng, Xiaodong Mei, and Ming Liu. Forecast-mae: Self-supervised pre-training for motion forecasting with masked autoencoders. In Proceedings of the IEEE/CVF In-ternational Conference on Computer Vision , pages 8679– 8689, 2023. 1 [2] Renbo Huang, Guirong Zhuo, Lu Xiong, Shouyi Lu, and Wei
+
+Tian. A review of deep learning-based vehicle motion pre-diction for autonomous driving. Sustainability (2071-1050) ,15(20), 2023. 1 [3] Yanjun Huang, Jiatong Du, Ziru Yang, Zewei Zhou, Lin Zhang, and Hong Chen. A survey on trajectory-prediction methods for autonomous driving. IEEE Transactions on In-telligent Vehicles , 7(3):652–674, 2022. 1 [4] Zhiqian Lan, Yuxuan Jiang, Yao Mu, Chen Chen, and Shengbo Eben Li. Sept: Towards efficient scene repre-sentation learning for motion prediction. arXiv preprint arXiv:2309.15289 , 2023. 3 [5] Shaoshuai Shi, Li Jiang, Dengxin Dai, and Bernt Schiele. Motion transformer with global intention localization and lo-cal movement refinement. Advances in Neural Information Processing Systems , 35:6531–6543, 2022. 1 [6] Mingkun Wang, Xiaoguang Ren, Ruochun Jin, Minglong Li, Xiaochuan Zhang, Changqian Yu, Mingxu Wang, and Wen-jing Yang. Futurenet-lof: Joint trajectory prediction and lane occupancy field prediction with future context encod-ing. arXiv preprint arXiv:2406.14422 , 2024. 3, 4 [7] Benjamin Wilson, William Qi, Tanmay Agarwal, John Lambert, Jagjeet Singh, Siddhesh Khandelwal, Bowen Pan, Ratnesh Kumar, Andrew Hartnett, Jhony Kaesemodel Pontes, et al. Argoverse 2: Next generation datasets for self-driving perception and forecasting. arXiv preprint arXiv:2301.00493 , 2023. 1 [8] Bozhou Zhang, Nan Song, and Li Zhang. Decoupling motion forecasting into directional intentions and dynamic states. 
+
+arXiv preprint arXiv:2410.05982 , 2024. 3 [9] Hang Zhao, Jiyang Gao, Tian Lan, Chen Sun, Ben Sapp, Balakrishnan Varadarajan, Yue Shen, Yi Shen, Yuning Chai, Cordelia Schmid, et al. Tnt: Target-driven trajectory pre-diction. In Conference on Robot Learning , pages 895–904. PMLR, 2021. 1 [10] Zikang Zhou, Jianping Wang, Yung-Hui Li, and Yu-Kai Huang. Query-centric trajectory prediction. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pat-tern Recognition , pages 17863–17873, 2023. 1 [11] Zikang Zhou, Zihao Wen, Jianping Wang, Yung-Hui Li, and Yu-Kai Huang. Qcnext: A next-generation framework for joint multi-agent trajectory prediction. arXiv preprint arXiv:2306.10508 , 2023. 1, 3

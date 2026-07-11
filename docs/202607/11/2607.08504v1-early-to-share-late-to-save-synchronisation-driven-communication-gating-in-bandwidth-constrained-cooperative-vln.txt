@@ -1,0 +1,211 @@
+Title: Early to Share, Late to Save: Synchronisation-Driven Communication Gating in Bandwidth-Constrained Cooperative VLN
+
+URL Source: https://arxiv.org/pdf/2607.08504v1
+
+Published Time: Fri, 10 Jul 2026 00:57:12 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# Early to Share, Late to Save: Synchronisation-Driven Communication Gating in Bandwidth-Constrained Cooperative VLN 
+
+Arav Gupta ⋆, Nivedan Yakolli, and Avinash Gautam 
+
+Birla Institute of Technology and Science, Pilani Campus, Pilani, Rajasthan 333031, India 
+
+f20231280@pilani.bits-pilani.ac.in p20230032@pilani.bits-pilani.ac.in avinash@pilani.bits-pilani.ac.in 
+
+Abstract. Most cooperative Vision-Language Navigation (VLN) meth-ods assume unlimited communication, not considering real-world appli-cations where bandwidth is restricted and information efficiency is crit-ical. We introduce bandwidth-constrained cooperative VLN and propose hindsight gating : a lightweight supervised gate that labels communication-critical steps post-hoc from navigation failures, avoiding the high variance of REINFORCE. Contrary to the intuition that agents should communicate when uncertain, we observe a consistent counter-intuitive pattern: trained gates fire predominantly in early episode steps and more often when agents are confident, across all budget levels ( B ∈{1, 3, 5}). We explain this through recurrent hidden-state alignment :early communication injects grounded trajectory representations that persist and compound through subsequent Gated Recurrent Unit (GRU) updates, achieving +0 .072 cumulative alignment gain with B=3 trans-missions, approaching unconstrained communication ( +0 .078 ) at 260% greater alignment efficiency than random gating ( +0 .020 ) and 320% greater efficiency than entropy-based gating ( +0 .017 ). Our results es-tablish a new communication regime for bandwidth-limited embodied agents: synchronise representations early, navigate independently later. Our codebase is available at: https://github.com/AravG13/bandwidth -constrained-cooperative-vln .
+
+Keywords: Vision-Language Navigation · Multi-Agent Communication 
+
+· Bandwidth-Constrained Communication · Recurrent Neural Networks 
+
+· Hindsight Supervision. 
+
+# 1 Introduction 
+
+Vision-Language Navigation (VLN) requires an embodied agent to follow natural language instructions through photorealistic indoor environments [1]. Real-world deployments such as search-and-rescue, warehouse automation, and multi-drone  
+
+> ⋆
+
+Corresponding author: f20231280@pilani.bits-pilani.ac.in arXiv:2607.08504v1 [cs.MA] 9 Jul 2026 2 A. Gupta et al. 
+
+inspection naturally involve multiple coordinated robots sharing a building and a goal. Extending VLN to this cooperative setting introduces a fundamental engineering constraint: radio channels, mesh networks, and privacy-constrained systems all impose hard limits on how often agents can communicate. Yet existing cooperative navigation methods [10, 15, 16] assume agents share observations freely at every step. This makes the when of communication – which steps are worth a transmission under a tight budget – an open problem for language-guided navigation. The challenge is compounded by a training dif-ficulty: prior methods [11, 14] learn communication gates with REINFORCE, which suffers from high variance because the causal link between a single gate decision at step t and episode success 15–20 steps later is long and noisy. We address both challenges. First, we propose hindsight gating : rather than learning which steps to communicate through trial-and-error policy gradients, we run agents without communication, observe where each agent failed while its partner succeeded, and use those observations as direct Binary Cross-Entropy (BCE) supervision for a lightweight gate. This converts a high-variance policy gradient problem into a stable supervised classification problem with zero reward variance. Studying what the trained gate learns reveals a surprising finding. Rather than firing when agents are uncertain – the natural uncertainty recovery hypoth-esis – the gate fires predominantly in early episode steps and when agents are confident . We show this reflects hidden-state synchronisation : early commu-nication injects grounded trajectory representations into the GRU hidden state, which then propagates and compounds through subsequent updates, aligning agents’ internal models before trajectories diverge. The remainder of this paper is organised as follows. Section 2 surveys related work. Section 3 formalises the problem. Section 4 describes hindsight gating. Section 5 presents experiments and analysis. Section 6 discusses implications and limitations. 
+
+Contributions. 
+
+1. Bandwidth-constrained cooperative VLN : a new problem formulation extending Room-to-Room (R2R) [1] to two-agent settings with hard per-agent transmission budgets, motivated by realistic deployment constraints absent from prior cooperative VLN work. 2. Hindsight gating : a stable BCE-supervised communication gate trained from post-hoc navigation failure labels, aiming to replace high-variance RE-INFORCE. The gate inputs only the agent’s hidden state and remaining budget, with no explicit uncertainty thresholds, still learning to fire at steps that are communication-critical. 3. Synchronisation-driven communication regime : an empirical charac-terisation showing that bandwidth-constrained VLN agents learn to synchro-nise hidden states early rather than recover from uncertainty late. Learned gating achieves 260% greater cumulative alignment gain per transmission than random gating and 320% greater than entropy-based gating at matched Synchronisation-Driven Communication Gating in Cooperative VLN 3
+
+budget, with the advantage persisting through recurrent propagation even after communication ceases. 
+
+# 2 Related Work 
+
+Vision-Language Navigation. R2R [1] defines the standard VLN benchmark on the Matterport3D simulator [2], where an agent must follow natural lan-guage step-by-step instructions to reach a target location. Seq2Seq [1] encodes instructions with an LSTM and decodes navigation actions sequentially. Speaker-Follower [7] improves generalisation via data augmentation from a learned in-struction generator, providing ∼180 K synthetic instruction–path pairs that sub-stantially improve val-unseen SR; our backbone does not use this augmenta-tion, which accounts for the gap between our single-agent SR (9.2%) and the Speaker-Follower result. DUET [4] builds a topological map on-the-fly and uses dual-scale graph transformers for global and local action planning. HAMT [3] replaces the recurrent state with a history-aware transformer attending over all past observations. VLN-CE [8] extends the task to continuous environments with low-level motor control. All of these are single-agent methods; we study cooperative, bandwidth-limited VLN. 
+
+Cooperative Navigation. Co-NavGPT [16] uses Large Language Models (LLMs) to coordinate multiple robots for visual semantic navigation, broadcasting com-plete observations between agents at every step without any bandwidth con-straint. CAMON [10] similarly applies LLM-based conversation between agents for multi-object navigation, again assuming unconstrained communication through-out the episode. Farooq et al. [6] is the closest prior work to ours: they apply information bottleneck and vector quantisation to reduce message size in Multi-Agent Reinforcement Learning (MARL) navigation. However, their method op-erates without language grounding, where agents navigate to goal coordinates, not natural language descriptions, and they study message compression rather than communication timing . We study a complementary question: given a fixed per-episode transmission budget, when should an agent use each transmission? 
+
+Learned Communication in MARL. CommNet [15] broadcasts continuous av-eraged messages between all agents at every timestep, with no mechanism to suppress uninformative communication or enforce any budget. MADDPG [11] learns joint communication and navigation policies through actor-critic policy gradients, but does not learn a selective gate. IC3Net [14] is the most directly related prior method: it adds a binary communication gate trained with REIN-FORCE, and shows that gated communication helps when agents are already competent at the task. Our hindsight gating replaces REINFORCE with BCE on post-hoc labels, avoiding credit assignment variance across the long horizon between gate decisions and episode outcomes. TarMAC [5] introduces attention-based targeting so agents can direct messages to specific partners; our method is complementary and could incorporate targeting in future work. Critically, none 4 A. Gupta et al. 
+
+of these methods study temporal communication patterns, measure hidden-state alignment, or address language-guided navigation. 
+
+Emergent Communication. Emergent communication work [9, 12] asks what 
+
+agents communicate and how compositional structure emerges from interaction. We contribute a complementary when analysis: given agents that have already learned to communicate via continuous context vectors, we characterise which episode steps they select under bandwidth constraints and why. 
+
+# 3 Problem Formulation 
+
+Setting. We consider N =2 agents navigating Matterport3D indoor environments under a shared natural language instruction L. At each timestep t, agent i
+
+receives a visual observation oi(t) ∈ R512 (CLIP ViT-B/32 features over 36 panoramic directions), any messages from its partner, and the remaining nor-malised transmission budget brem (t) ∈ [0 , 1] .
+
+Asymmetric Path Assignment. A key methodological choice is how to pair agents within a shared environment. Pairing agents on unrelated episodes from the same building (as in Co-NavGPT [16]) produces messages containing irrelevant obser-vations: Agent 1 is observing a different room with no connection to Agent 0’s current navigation challenge. We instead assign complementary sub-paths from the same R2R episode: Agent 0 navigates the full path [v0, . . . , v T ], while Agent 1 starts at the midpoint v⌊T / 2⌋ and navigates the second half [v⌊T / 2⌋, . . . , v T ]. Both receive the full instruction L.This construction creates genuine information asymmetry: Agent 1’s obser-vations near the goal are directly relevant to Agent 0, which has not yet reached that region. Agent 1 functions as an information source with privileged goal-region knowledge, while Agent 0 functions as the primary navigator. This is a role asymmetry chosen to reflect certain realistic deployments (e.g., a scout robot that has reached the goal area relaying context to a trailing search robot). Navigation SR is reported for Agent 0 (full path) as the primary performance indicator; Agent 1’s SR is not directly comparable due to its shorter sub-path. 
+
+Bandwidth Constraint. Each agent may transmit at most B messages per episode: PTt=0 gi(t) ≤ B, where gi(t) ∈ { 0, 1} is a binary per-episode transmission limit, modelling scenarios where communication incurs a fixed cost per message, e.g., energy budget, network slot allocation, or privacy-constrained disclosure limits. The message broadcast at time t is the cross-modal context vector ci(t) ∈ R512 ,the language-conditioned visual representation produced by the agent’s cross-attention module. Synchronisation-Driven Communication Gating in Cooperative VLN 5
+
+# 4 Method 
+
+4.1 Navigation Backbone 
+
+Each agent uses frozen CLIP ViT-B/32 [13] for visual and language encoding. A CrossModalAttention module produces a context vector ci(t) ∈ R512 by attending over language tokens using the current visual observation as query. A GRU maintains the agent’s hidden state: 
+
+hi(t) = GRU  hi(t−1) , ci(t); mi(t); at−1
+
+ , (1) where mi(t) is the aggregated partner message (zero if none received) and at−1 is the previous action embedding. The NavigationHead scores candidates via direct dot product: sk = ⟨hi(t), ϕ k⟩, where ϕk ∈ R512 is the CLIP feature of candidate 
+
+k.
+
+4.2 Hindsight Communication Gating 
+
+Training proceeds in three phases. Algorithm 1 summarises the full procedure. 
+
+Phase 1: Single-Agent Navigation Pre-training. The backbone is trained without messages using imitation learning (cross-entropy against ground-truth paths, teacher forcing). This produces a navigation policy πnav whose failure modes we then exploit to supervise the gate. 
+
+Phase 2: Hindsight Label Collection and Gate Training. We run πnav on paired training episodes without messages and label each step t as communication-critical if agent i predicted the wrong action and its partner already knew the correct one: 
+
+yi(t) = 1ˆai(t)̸ = a∗ 
+
+> i
+
+(t) ∧ 1ˆaj (t) = a∗ 
+
+> j
+
+(t), (2) where ˆai(t) is agent i’s predicted action, a∗ 
+
+> i
+
+(t) is ground truth, and j̸ = i is the partner agent. A step receives label yi(t)=1 only when communication would have provided genuine signal: agent i was wrong but its partner was right. Both-fail steps receive yi(t)=0 because neither agent’s message would help the other; steps where agent i already succeeds also receive yi(t)=0 .The hindsight labelling scheme is a proxy for expected communication value. It is necessary for communication benefit (if neither agent knows the correct action, no message can help), and conservative (both-fail steps receive label 0). We validate the proxy empirically: at label-1 steps, the partner’s ground-truth action ranks first in its action score distribution by construction of Equation 2, whereas at label-0 steps this holds only for the subset where partner was already correct. A lightweight 3-layer MLP gate πgate is then trained with BCE on collected tuples (hi(t), b rem (t), y i(t)) :
+
+Lgate = −Ey log psend + (1 −y) log(1 −psend ), (3) 6 A. Gupta et al. 
+
+Algorithm 1 Hindsight Gate Training                                   
+
+> Require: Paired dataset D, budget B
+> 1: Train πnav via imitation learning (single-agent) 2: H ← ∅
+> 3: for each pair (e0, e 1)∈ D do
+> 4: Roll out πnav on both episodes without messages 5: for each step tdo
+> 6: Compute label yi(t)via Eq. 2 7: Append (hi(t), b rem (t), y i(t)) to H
+> 8: end for
+> 9: end for
+> 10: Train πgate on Hwith BCE loss 11: Fine-tune πnav jointly with frozen πgate
+
+where psend = πgate (hi(t), b rem (t)) . This is a supervised classification problem with no policy gradients and no reward variance. Although the gate is trained as a step-level classifier, it is not blind to episode-level budget allocation: the remaining budget brem (t) is provided as an explicit input, allowing the gate to modulate its firing rate as the budget depletes. This does not fully optimise sequential allocation, but provides a principled approxi-mation that avoids the variance of sequential policy optimisation. 
+
+Gate Inputs and Implicit Uncertainty. The gate receives only hi(t) and brem (t) as inputs, with no explicit entropy or confidence score. The hidden state implicitly encodes navigational uncertainty, and the gate learns to read this signal from the training labels. This is a deliberate design choice: by not providing explicit uncertainty as input, we can test empirically whether the gate learns to fire under high or low uncertainty. 
+
+Inference. At each timestep t: (1) agent i computes hi(t) via Equation 1; (2) the gate computes psend = πgate (hi(t), b rem (t)) ; (3) gi(t) = 1[psend > τ ] with thresh-old τ =0 .4; (4) if gi(t)=1 and budget remains, agent i broadcasts ci(t) and decre-ments its budget counter. 
+
+Phase 3: Joint Fine-Tuning. Both agents fine-tune jointly with the trained gate deployed, allowing the navigation policy to adapt to receiving partner messages at the steps the gate selects. The gate is frozen during this phase to prevent catastrophic forgetting of the learned communication policy. 
+
+# 5 Experiments 
+
+5.1 Setup 
+
+We evaluate on R2R [1] with Matterport3D environments, reporting Success Rate (SR) – the fraction of episodes where the agent stops within 3 metres of Synchronisation-Driven Communication Gating in Cooperative VLN 7                  
+
+> Table 1. Navigation SR (%) and SPL (%) on R2R. Agent 0 navigates the full path; multi-agent SR values are for Agent 0 only. Val-seen tests buildings seen during training; val-unseen tests generalisation. Results are means over 3 random seeds (SR std ≤0.4%). Method Val-Seen Val-Unseen SR SPL SR SPL Seq2Seq [1] 39 33 22 18 Single-agent (ours) 43.2 42.8 9.2 8.5 No Comm ( B=0 )20.9 20.1 8.7 8.2 Full-comm ( B=∞)20.1 19.3 8.9 8.4 Hindsight gate ( B=3 )20.1 19.3 8.9 8.4
+
+the goal – and Success weighted by Path Length (SPL) [1], which penalises un-necessarily long paths. We evaluate on val_seen (buildings seen during training) and val_unseen (novel buildings). Features are CLIP ViT-B/32 (36 panoramic directions × 512 dims, pre-extracted). All models use hidden dim 512 , max path length 20 , max candidates 15 , and budget B=3 unless noted. The asymmetric paired dataset (Section 3) is used for all multi-agent training. 
+
+5.2 Navigation Performance 
+
+Since the backbone is trained using teacher-forced imitation learning without speaker-augmented data [7], val-unseen SR values reflect relative rather than ab-solute performance. The seen/unseen generalisation gap (43.2% vs. 9.2%) means partner messages on unseen buildings carry incorrect trajectory context, limiting SR improvement. We therefore analyse communication effects through hidden-state alignment as the primary metric, using SR as a secondary indicator. Table 1 reports SR and SPL for Agent 0 (full path navigator) under each communication condition. Hindsight-gated communication ( B=3 ) achieves 8.9% Agent 0 SR on val-unseen, exceeding the no-communication baseline (8.7%) and matching full-communication ( B=∞) with only 3 transmissions per episode. Agent 0 also exceeds the single-agent baseline (9.2%), demonstrating that selec-tive early communication from a partner with complementary goal-region knowl-edge can improve individual navigation performance. Agent 1 SR is not reported in Table 1 as it navigates only the second half of each path and is not directly comparable to the full-path baselines. 
+
+5.3 Emergent Communication Patterns 
+
+Two patterns are consistent across all budget levels (Table 2). (1) Early con-centration : communication concentrates heavily in steps 0–2, with near-zero firing from step 3 onwards. (2) High confidence at send : the gate fires at 
+
+higher agent confidence (maximum action softmax probability) when it sends than when it does not: 0.453 vs. 0.413 at B=3 , which is directly opposite to 8 A. Gupta et al.                                 
+
+> Table 2. Gate firing patterns across budget levels ( B∈ { 1,3,5}) on val_unseen .Gates fire predominantly in early steps and at higher agent confidence when sending, the opposite of uncertainty-recovery.
+> BEarly (0–2) Mid (3–6) Conf: send / no-send 130.6% 0.1% 0.476 / 0.422 382.6% 1.3% 0.453 / 0.413 582.4% 12.1% 0.452 / 0.411
+> Table 3. Cumulative hidden-state alignment gain P
+> t∆tacross communication policies at budget B=3 . Learned gating outperforms random and entropy-based heuristics. Results consistent across splits. Policy Val-Seen Val-Unseen None (no communication) +0 .016 +0 .016
+> Random (matched rate) +0 .016 +0 .020
+> Entropy-based (high-Hfirst) +0 .014 +0 .017
+> Learned gate (ours) +0 .056 +0 .072
+> Always (full budget) +0 .062 +0 .078
+
+the uncertainty-recovery hypothesis, which would predict lower confidence at communication steps. These patterns are consistent with a synchronisation regime : agents learn to exchange grounded trajectory representations early to align their internal models, rather than communicating reactively when confused. 
+
+5.4 Hidden-State Alignment Analysis 
+
+To test the synchronisation hypothesis, we measure cosine similarity between Agent 0’s and Agent 1’s GRU hidden states at each timestep, comparing five communication policies at matched budget B=3 : learned (our trained gate), ran-dom (fires at the same rate as the learned gate but at uniformly random steps), 
+
+entropy-based (fires when action entropy is highest, directly implementing the uncertainty-recovery hypothesis as a heuristic baseline), always (communicate every step until budget exhausted), and none (never communicate). We report 
+
+∆ = ( with-comm similarity ) − (no-comm similarity ), measuring the alignment contribution of each policy. Four findings emerge. (1) Learned gating outperforms all heuristics. 
+
+Learned gating achieves +0 .072 cumulative alignment vs. +0 .020 for random (260% improvement) and +0 .017 for entropy-based gating (320% improvement). Entropy-based gating – implementing the uncertainty-recovery hypothesis di-rectly – performs worse than random, providing direct evidence that commu-nicating when uncertain is the wrong strategy under bandwidth constraints. 
+
+(2) Results are consistent across splits. The ordering learned > always >
+
+random > entropy > none holds on both splits. (3) Alignment scales with Synchronisation-Driven Communication Gating in Cooperative VLN 9                
+
+> Table 4. Cumulative alignment gain across budget levels. Firing rates per step confirm early-step concentration.
+> BP
+> t∆tGate@1 Gate@2 Gate@3
+> 1+0 .034 82.7% 7.6% 1.5%
+> 3+0 .057 87.8% 70.0% 3.8%
+> 5+0 .059 87.8% 69.2% 28.2%
+
+budget. Table 4 shows cumulative gain increases sharply from B=1 to B=3 
+
+then saturates, suggesting diminishing returns once early synchronisation is es-tablished. (4) Alignment approaches unconstrained communication effi-ciently. Learned gating ( +0 .072 ) nearly matches always-communicate ( +0 .078 )with only B=3 transmissions. 
+
+Recurrent Propagation Effect. Critically, ∆ increases over the course of each episode despite gate firing concentrating in early steps. At step 5, the learned gate achieves ∆=+0 .020 vs. +0 .006 for random, even though gate rate drops from 70.0% at step 2 to 3.8% at step 3. This is consistent with recurrent propaga-tion : early communication injects alignment into the GRU hidden state, which propagates forward through subsequent updates, compounding without further transmissions. 
+
+5.5 Statistical Significance 
+
+All reported ∆ values at steps 1 and 2 are statistically significant ( p < 0.001 ,paired t-test across episodes). Differences between learned and random gating at step 5 are also significant ( p < 0.01 ), confirming the recurrent propagation effect is not noise. 
+
+# 6 Discussion 
+
+Synchronisation vs. Uncertainty-Recovery. Our findings identify two distinct communication regimes. Prior work implicitly assumes uncertainty recovery :agents communicate when lost. Our results demonstrate synchronisation-driven 
+
+communication: agents communicate early, when confident, to establish shared internal representations before trajectory divergence accumulates. The recur-rent architecture amplifies this: a single early message influences all subsequent hidden states through GRU propagation, making early communication dispro-portionately valuable under tight budgets. The entropy-based baseline, which di-rectly implements uncertainty recovery, achieves lower alignment than random, providing evidence that uncertainty-recovery intuition leads to worse communi-cation timing than an uninformed policy. 10 A. Gupta et al. 
+
+Why SR Does Not Consistently Improve. The base agent achieves 9.2% SR on val-unseen, a consequence of training without speaker-augmented data. When agents cannot reliably navigate independently, partner messages carry incor-rect trajectory context and communication introduces noise. However, Agent 0 achieves 8.9% SR under B=3 , exceeding both the no-communication baseline (8.7%) and the single-agent baseline (9.2%), demonstrating SR improvement is possible when one agent has privileged goal-region knowledge. We hypothesise a 
+
+prerequisite condition : cooperative benefit from communication requires the base agent to exceed a val-unseen SR threshold consistent with IC3Net [14]’s finding that gated communication helps only when agents are already compe-tent. The alignment analysis confirms the gate functions as intended (260% alignment improvement over random) even when this threshold is not met. 
+
+Relationship between Alignment and Navigation. Hidden-state alignment is an indirect proxy: higher alignment does not guarantee better navigation, and could in principle reflect agents becoming similarly wrong. Our claim is more spe-cific: given that communication does not improve SR at this competence level ,the alignment analysis provides evidence that the gate has learned a principled communication policy (synchronise early) rather than a degenerate one. The fact that learned gating substantially outperforms entropy-based gating – despite entropy-based gating implementing the most natural alternative – supports the claim that the synchronisation regime is genuine and non-trivial. 
+
+Limitations. We evaluate with N =2 agents on the R2R discrete navigation graph, with fixed agent roles. Extension to N > 2 agents would introduce ques-tions about message targeting (as in TarMAC [5]) and chain-relay synchroni-sation; our hindsight labelling extends naturally (label a step as critical if any 
+
+partner knows the correct action). Our formulation assumes discrete naviga-tion nodes, ignoring kinematic constraints in continuous environments [8]. The asymmetric role assignment reflects a specific deployment scenario; symmetric settings would require a different pairing strategy. 
+
+# 7 Conclusion 
+
+We introduced bandwidth-constrained cooperative VLN and hindsight gating: a stable BCE-supervised alternative to REINFORCE. Contrary to the uncertainty-recovery hypothesis, trained gates fire early and at high confidence, produc-ing persistent hidden-state alignment gains through recurrent GRU propagation (+260% over random, +320% over entropy-based gating at matched budget). Our results establish a synchronisation-driven communication regime relevant to any bandwidth-limited multi-agent system with recurrent policies.  
+
+> Disclosure of Interests. The authors have no competing interests to declare that are relevant to the content of this article.
+
+Synchronisation-Driven Communication Gating in Cooperative VLN 11 
+
+Dataset License. This work uses the Matterport3D dataset [2], provided for non-commercial academic use under the Matterport End User License Agreement, available at: http://kaldir.vc.in.tum.de/matterport/MP_TOS.pdf .
+
+# References 
+
+1. Anderson, P., Wu, Q., Teney, D., et al.: Vision-and-language navigation: Interpret-ing visually-grounded navigation instructions in real environments. In: Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) (2018) 2. Chang, A., Dai, A., Funkhouser, T., et al.: Matterport3d: Learning from rgb-d data in indoor environments. In: International Conference on 3D Vision (3DV) (2017) 3. Chen, S., Guhur, P.L., Schmid, C., Laptev, I.: History aware multimodal trans-former for vision-and-language navigation. In: Advances in Neural Information Processing Systems (NeurIPS) (2021) 4. Chen, S., Guhur, P.L., Tapaswi, M., Schmid, C., Laptev, I.: Think global, act lo-cal: Dual-scale graph transformer for vision-and-language navigation. In: Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) (2022) 5. Das, A., Gerber, S., Mukherjee, S., Schwing, A.: TarMAC: Targeted multi-agent communication. In: International Conference on Machine Learning (ICML) (2019) 6. Farooq, M.U., Iqbal, S.: Bandwidth-efficient multi-agent communication through information bottleneck and vector quantization. In: IEEE International Conference on Robotics and Automation (ICRA) (2026) 7. Fried, D., Hu, R., Cirik, V., et al.: Speaker-follower models for vision-and-language navigation. In: Advances in Neural Information Processing Systems (NeurIPS) (2018) 8. Krantz, J., Wijmans, E., Majumdar, A., Batra, D., Lee, S.: Beyond the nav-graph: Vision-and-language navigation in continuous environments. In: European Confer-ence on Computer Vision (ECCV) (2020) 9. Lazaridou, A., Baroni, M.: Emergent multi-agent communication in the deep learn-ing era. arXiv preprint arXiv:2006.02419 (2020) 10. Liu, P., Mu, Y., Wu, H., et al.: CAMON: Cooperative agents for multi-object navigation with llm-based conversations. arXiv preprint arXiv:2404.00915 (2024) 11. Lowe, R., Wu, Y., Tamar, A., Harb, J., Abbeel, P., Mordatch, I.: Multi-agent actor-critic for mixed cooperative-competitive environments. In: Advances in Neu-ral Information Processing Systems (NeurIPS) (2017) 12. Mordatch, I., Abbeel, P.: Emergence of grounded compositional language in multi-agent populations. In: Proceedings of the AAAI Conference on Artificial Intelli-gence (2018) 13. Radford, A., Kim, J.W., Hallacy, C., et al.: Learning transferable visual models from natural language supervision. In: International Conference on Machine Learn-ing (ICML) (2021) 14. Singh, A., Jain, T., Sukhbaatar, S.: Learning when to communicate at scale in mul-tiagent cooperative and competitive tasks. In: International Conference on Learn-ing Representations (ICLR) (2019) 15. Sukhbaatar, S., Szlam, A., Fergus, R.: Learning multiagent communication with backpropagation. In: Advances in Neural Information Processing Systems (NeurIPS) (2016) 12 A. Gupta et al. 16. Yu, B., Kasaei, H., Cao, M.: Co-NavGPT: Multi-robot cooperative visual semantic navigation using large language models. arXiv preprint arXiv:2310.07937 (2023)

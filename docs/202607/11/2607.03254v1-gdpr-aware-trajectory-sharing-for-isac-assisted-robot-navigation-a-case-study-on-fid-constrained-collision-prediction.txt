@@ -1,0 +1,278 @@
+Title: GDPR-Aware Trajectory Sharing for ISAC-Assisted Robot Navigation: A Case Study on FID-Constrained Collision Prediction
+
+URL Source: https://arxiv.org/pdf/2607.03254v1
+
+Published Time: Tue, 07 Jul 2026 00:54:44 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# GDPR-Aware Trajectory Sharing for ISAC-Assisted Robot Navigation: A Case Study on FID-Constrained Collision Prediction 
+
+Zexin Fang ∗, Bin Han ∗, Donglin Wang ∗, Fengchen Pei † and Hans D. Schotten ∗‡ ∗RPTU University Kaiserslautern-Landau, Germany; †Technical University of Darmstadt, Germany 
+
+‡German Research Center for Artificial Intelligence (DFKI), Germany. 
+
+Abstract —Integrated sensing and communication (ISAC) en-ables intelligent wireless infrastructure but raises growing regula-tory concern as fine-grained personal trajectory histories become a byproduct of sensing. General Data Protection Regulation (GDPR) Articles 5(1)(c) and 5(1)(f) require that personal data be limited to what is necessary and protected through appropriate technical measures against unauthorised reconstruction. This paper addresses both requirements through a Fisher information density (FID)-constrained trajectory sharing scheme for robot collision avoidance, where sensing estimates are perturbed ac-cording to local information content before sharing. Experiments on real pedestrian traces show that FID-controlled sharing achieves a strictly better privacy-utility tradeoff than fixed-error perturbation: at matched missed-conflict rates, reconstruction leakage and sustained exposure lengths are consistently lower, establishing information-aware perturbation as a principled technical measure aligned with GDPR data minimisation and integrity requirements. 
+
+Index Terms —GDPR, ISAC, 6G, privacy. 
+
+I. I NTRODUCTION 
+
+Integrated sensing and communication (ISAC) is reshaping wireless infrastructure into a shared perception layer, where the same radio measurements that support communication also enable radio mapping, channel and beam prediction, cooperative perception, and mobility-aware resource allocation [1], [2], [3], [4]. For mobile robots and autonomous agents, this creates a compelling operational advantage: rather than reacting to an imminent collision, a robot can access shared trajectory histories of surrounding agents and anticipate path conflicts before they materialize [5], [6], [7]. Trajectory shar-ing thus becomes a useful sensing primitive, not merely a communication-side optimization. This capability, however, introduces a privacy problem that is more immediate and pervasive than the high-resolution risks typically discussed in ISAC literature. Prior work has focused on sensitive inference targets such as human activity recognition, vital-sign estimation, and physiological monitor-ing [8], [9]. These are serious concerns for future deployments, but the most direct risk in mobility-oriented ISAC is already present: repeated radio sensing produces accurate personal trajectory histories that expose not only position, but speed, heading, stopping behavior, route choice, and recurring mo-bility patterns. Recent event-level ISAC work further argues that sensing is shifting from isolated target snapshots toward behavioral semantics and intent prediction [10], meaning that shared trajectory data can support behavior inference even without any biometric classifier. The tension is therefore not only a generic privacy-utility tradeoff, but a General Data Protection Regulation (GDPR)-style data minimisation question: a robot navigating among pedestrians needs enough trajectory information to predict collision risk, but not a precise reconstruction of each person’s motion history. Under data minimisation principles, personal data should not be processed, stored, or shared beyond what the stated purpose strictly requires. The shared trajectory should therefore be no more accurate, dense, or continuous than the safety task demands, and any precision beyond that threshold constitutes an unjustified exposure. Crucially, this remains a privacy concern even when track labels are randomised or rotated across sessions. A trajectory released at high spatial and temporal resolution carries enough internal consistency, in terms of speed profile, turning behavior, and stopping patterns, for an observer to re-identify and link records across time through correlation or similarity analysis, without any stable identifier. The privacy risk therefore does not hinge on whether the same label persists; it hinges on whether the shared data is accurate and consistent enough to make such linkage feasible. We study this tension through a concrete case: predictive collision detection for a robot moving among pedestrians. This task captures the core ISAC advantage, namely that the robot benefits from shared trajectory histories before its own sensors would detect an impending conflict, and it concentrates the privacy risk precisely where useful data and sensitive data co-incide. ISAC-assisted vehicle-to-infrastructure (V2I) systems have shown that sensing supports collision avoidance beyond localization [6], cooperative sensing has been applied to ob-stacle estimation in uncrewed aerial vehicle (UAV) formations [11], and edge-assisted studies rely on trajectory prediction and uncertainty-aware conflict forecasting to trigger braking before imminent collisions [7]. The collision-prediction task used here is therefore not an artificial add-on to simultaneous localization and mapping (SLAM) or mapping; it captures the forecasting layer that connects sensing, shared trajectory data, and safe robot control in dynamic scenes. Our approach builds on the Fisher information density (FID)-constrained sharing framework from prior work. Rather than applying uniform perturbation, we scale added noise 
+
+> arXiv:2607.03254v1 [cs.RO] 3 Jul 2026
+
+to each trajectory segment according to its local informa-tion content: highly informative segments receive stronger perturbation, while already uncertain segments are changed less. This avoids the failure modes of fixed-noise schemes, which are simultaneously too weak where sensing is most accurate and unnecessarily destructive where estimates are already poor. The goal is not to introduce a new privacy metric, but to validate this existing mechanism in a realistic setting, using real pedestrian trajectory traces. Results show that FID-controlled perturbation achieves a better privacy-utility tradeoff than fixed-noise schemes: at the same collision prediction failure rate, significantly stronger privacy protection is retained. The rest of this paper is organized as follows. Sec-tion II summarizes the Fisher information matrix (FIM)/FID-constrained sharing model. Section III describes the scene and dataset. Section IV defines the collision-prediction task and privacy descriptors. Section V presents the results, and Section VI concludes the paper. II. FIM/FID-C ONSTRAINED TRAJECTORY SHARING 
+
+Let mi(tk) denote the ground-truth trajectory sample of agent i, ˆmi(tk) the raw ISAC sensing estimate, and ˜mi(tk)
+
+the trajectory sample shared with the robot or a network entity. As in the previous FID-sharing model [12], the sensing uncertainty is characterized through the Cramer-Rao bound (CRB) [13], [14], or equivalently through the Fisher informa-tion obtained at sensing update k:
+
+Ii(k) = βi(k)ms,i (k)aHi (k)Qs,i (k)ai(k), (1) where βi(k) captures propagation and target-dependent gain, 
+
+ms,i (k) is the sensing resource allocation, ai(k) is the steering vector, and Qs,i (k) is the sensing transmit covariance. The local information density used for privacy control follows the discrete FID definition in the system model, 
+
+Ji(t) = Ii(k)
+
+tk − tk−1
+
+, t ∈ (tk−1, t k]. (2) The shared trajectory is then generated from the raw sensing estimate using the FID-controlled perturbation mechanism from the previous privacy defense model [12]: 
+
+˜mi(tk) = ˆ mi(tk) + ∆ ei(tk),
+
+∆ei(tk) ∼ N (0, (∆ σ(tk)) 2). (3) The additional standard deviation is determined by the local FID threshold ratio 
+
+ρi(k) = Ji(tk)
+
+η , (4) where η is the information-density constraint. The error-control rule used in the simulation is 
+
+∆σi(tk) = 
+
+(
+
+0, ρi(k) ≤ 1,α (β − exp[ −(ρi(k) − 1)]) , ρi(k) > 1, (5) and the shared sensing standard deviation becomes 
+
+σsh  
+
+> i
+
+(tk) = σraw  
+
+> i
+
+(tk) + ∆ σi(tk). (6) Thus, high-FIM segments, which are more accurately sensed and more informative, receive additional perturbation before sharing. In the reported experiments, α = 0 .5 and β = 1 .5.The three privacy descriptors are used because they indi-cate trajectory-level linkability. We do not claim that privacy leakage ratio (PLR), average exposure length (AEL), and mean maximum exposure length (MEL) directly measure civil-identity re-identification. Instead, they quantify whether a pseudonymous track remains continuously reconstructable with enough precision to follow the same agent over time. For a trajectory with K shared samples, define the leakage indicator 
+
+zi(k) = 1 [∥ ˜mi(tk) − mi(tk)∥ < ϵ ] . (7) The privacy leakage ratio is 
+
+PLR i = 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+zi(k). (8) Consecutive nonzero entries of zi(k) form leakage segments. We report AEL as the typical continuous duration of a leaked segment and MEL as the longest continuous exposure within each trajectory before averaging across Monte Carlo trials. Thus, the metrics capture both pointwise leakage and the continuous trajectory evidence needed to infer route, stops, velocity, and motion habits. III. S CENE AND DATASET CONSTRUCTION 
+
+In this paper, each Monte Carlo scene contains one robot and four moving agents. The robot is the decision maker: it receives the shared trajectory histories of nearby agents and checks whether its nominal path will conflict with their pre-dicted motion. The four agents represent surrounding pedes-trians whose motion is not controlled by the robot. Agent motion is drawn from the University of Cyprus (UCY) Students trajectory set distributed through OpenTraj. We use the raw Students03 observation file rather than syn-thetic straight-line tracks. Each pedestrian track is grouped by track ID, converted to metric coordinates, and discarded if it is too short for the history/future split. The remaining tracks are cubically interpolated and sampled using the same adaptive procedure as the prior sensing pipeline. In the re-ported sensitivity setting, the update density is doubled to 
+
+8–16 samples/s while preserving the original temporal scale, yielding an average of 366 shared history points per agent at a mean sampling interval of 0.083 s. For each scene, four pedestrian traces are selected cyclically from the available UCY tracks and each is split into aknown history and a hidden future at a 70% ratio. The last history sample serves as the agent’s current position; the future segment determines the ground-truth conflict label. The robot moves at 1.4 m/s, giving a human-like traversal speed over a short horizon. To obtain both positive and challenging negative cases, each pedestrian trace is translated spatially while preserving its original shape, timing, and velocity profile. In conflict scenes, the first agent is repositioned so that its future path crosses the robot’s nominal trajectory at a randomly chosen time step. In non-conflict scenes, the same agent is repositioned so that its future path passes just outside the 0.9 m safety radius, forming a near miss rather than a collision. The remaining three agents are placed around the robot as background distractors. Because the underlying motion always comes from real pedestrian recordings, the constructed scenes remain behaviorally real-istic while guaranteeing that the evaluation includes nontrivial cases on both sides of the conflict boundary. IV. P REDICTIVE NAVIGATION VALIDATION 
+
+We evaluate whether FID-constrained shared trajectories retain sufficient motion information for predictive collision detection. One robot follows a short nominal path while observing four surrounding agents. For each agent, the robot receives a shared trajectory history and estimates future mo-tion from the most recent samples, then checks whether the predicted path conflicts with its own nominal route over a 12 -step horizon. Let ˜mi(tk) = [˜ xi(tk), ˜yi(tk)] T denote the most recent shared position of agent i. The robot fits two first-order polynomials by least squares over the q = 16 most recent shared samples, 
+
+˜xi(t) = ax,i t + bx,i , ˜yi(t) = ay,i t + by,i , (9) giving the estimated velocity 
+
+˜vi = [ ax,i , a y,i ]T . (10) Future timestamps are generated from the mean sampling interval of the recent window. For horizon index h ∈{0, . . . , H − 1} with H = 12 ,
+
+ˆtk+h = tk + h ¯∆t, ¯∆t = 1
+
+q − 1
+
+> k
+
+X
+
+> ℓ=k−q+2
+
+(tℓ − tℓ−1), (11) and the predicted future position is 
+
+ˆmi(ˆ tk+h) = [ ax,i ˆtk+h + bx,i , a y,i ˆtk+h + by,i ]T . (12) The robot path over the same H steps is 
+
+rh = r0 + min  vrh ¯∆t, ∥d − r0∥ d − r0
+
+∥d − r0∥ , (13) where r0 is the robot’s current position, d is its destination, and vr = 1 .4 m/s. A predicted conflict is declared when the minimum time-aligned separation falls below the safety radius, 
+
+ˆc = 1
+
+
+
+min  
+
+> i,h
+
+rh − ˆmi(ˆ tk+h) < d safe 
+
+
+
+, (14) with dsafe = 0 .9 m. The ground-truth label c is obtained by the same rule applied to the true hidden future trajectories 
+
+mi(tk+h). A missed conflict occurs when c = 1 and ˆc =0. The distance mean absolute error (MAE) is the absolute error between the predicted and true minimum separation. This deliberately simple predictor ensures that any degradation in conflict detection is attributable to the quality of the shared trajectory rather than to predictor complexity.                                                                     
+
+> TABLE I SIMULATION SETUP FOR PREDICTIVE COLLISION VALIDATION
+> Category Parameter Value Remark
+> Dataset/scene Monte Carlo scenes 500 Shared across all schemes Moving agents 4pedestrians + robot Near-miss negatives in-cluded Robot task Robot speed 1.4m/s Human-like speed Prediction horizon H= 12 Future conflict check Velocity window q= 16 Least-squares trend esti-mate Safety radius dsafe = 0 .9mConflict threshold Sensing/channel Base-station posi-tion
+> [5 ,30] T2-D map coordinate Carrier frequency 3.5GHz Bandwidth 100 MHz Sensing bandwidth Multipath number Np= 4 Urban multipath model Max. delay spread 2×10 −7sChannel delay spread Effective power 30 dBm +15 dB sensitivity case Noise floor N0=−91
+> dBm Receiver noise floor Path-loss exponent 2.7Average path-loss com-ponent Beam fluctuation N(0 ,2) dB Beam misalignment ef-fect Privacy control Leakage threshold ϵ= 0 .3mPointwise leakage rule FID thresholds η=1–1000
+> sweep Information constraint Perturbation parameters
+> α= 0 .5,β=1.5
+> Eq. (5) Fixed-error baseline
+> ∆σ=0–1.0
+> m sweep Scheme comparison
+
+V. S IMULATION RESULTS 
+
+The simulation setup is listed in Table I. Results are aver-aged over 500 Monte Carlo scenes. In each scene, pedestrian traces are interpolated to the sensing update grid, corrupted by signal-to-noise ratio (SNR)-dependent CRB noise, and then shared either with a fixed added error or with the FID-controlled perturbation in Eq. (5). The robot estimates local velocity from the shared history and applies Eq. (14). Privacy is evaluated on the same shared samples using PLR, AEL, and MEL. Near-miss negative scenes are included to avoid trivial non-conflict cases. 
+
+A. FID Threshold Sensitivity 
+
+Fig. 1 shows the effect of varying the information thresh-old η. Without privacy perturbation, the raw sensing base-line yields a missed-conflict rate of 10 .5% . Activating FID-controlled sharing raises this to approximately 27% , since stronger perturbation is applied precisely where sensing is most accurate and where the velocity estimate is most in-formative. Sweeping η from 1 to 1000 reveals a monotone tradeoff: the missed-conflict rate falls from 30 .5% at saturated protection to 15 .2% at η = 1000 , while PLR rises from 
+
+18 .4% to 24 .0% and the mean maximum exposure length increases from 0.28 s to 0.35 s. The underlying mechanism is straightforward: a small η activates perturbation whenever the local FID exceeds the threshold, breaking the spatial continuity of the shared track and reducing the chance that consecutive samples fall within the reconstruction threshold ϵ.10            
+
+> 0
+> 10
+> 1
+> 10
+> 2
+> 10
+> 3
+> FID threshold η
+> 0
+> 10
+> 20
+> 30
+> 40
+> Rate  (%)
+> Missed conflict
+> Raw sensing baseline 10
+> 0
+> 10
+> 1
+> 10
+> 2
+> 10
+> 3
+> FID threshold η
+> 0
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> PLR  (%)
+> PLR
+> Raw PLR baseline 1
+> 
+> 1
+> 1
+> 1
+> 
+> 1
+> 
+>  η
+> 1
+>  1
+> 1
+> 
+> ! 
+> ! 
+> !! 
+> 
+> !
+
+Fig. 1. FID-threshold sensitivity of missed-conflict rate, PLR, and exposure lengths. Dashed lines connect sampled FID thresholds; dotted marker lines show raw sensing baselines. 
+
+This weakens linkability even when the pseudonymous label remains available. A large η relaxes the constraint, allowing the shared trajectory to remain closer to the raw sensing output and recovering more reliable short-horizon velocity trends for the robot. Even at η = 1000 , however, all privacy descriptors remain well below the raw sensing baseline (PLR 52 .6% ,average exposure 2.93 s, mean maximum exposure 5.12 s), confirming that a single threshold jointly governs navigation utility and trajectory leakage. 
+
+B. Fixed-Noise Comparison 
+
+Fig. 2 gives the fixed-noise baseline. Small fixed errors up to 0.2 m leave collision prediction close to the raw baseline, while larger errors degrade it sharply: the missed-conflict rate reaches 27 .6% at ∆σ = 0 .7 m and 37 .1% at ∆σ = 1 .0 m. Privacy improves in the opposite direction, with PLR falling from 52 .6% to 15 .0% and mean maximum exposure length from 5.12 s to 0.25 s as the fixed error increases. The key 0.0 0.2 0.4 0.6 0.8 1.0                       
+
+> Fix ed added err or (m)
+> 0
+> 10
+> 20
+> 30
+> 40
+> Rate  (%)
+> Missed conflict
+> Raw sensing baseline 0.0 0.2 0.4 0.6 0.8 1.0
+> Fix ed added err or (m)
+> 0
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> PLR  (%)
+> PLR
+> Raw PLR baseline 00 0 0 0 0 0
+> "  
+> 0
+>  
+> 0
+> 0
+> " 
+> " 
+> "" 
+> ! 
+> !"
+
+Fig. 2. Fixed-error sensitivity of missed-conflict rate, PLR, and exposure lengths under the same scene and sensing configuration. 
+
+limitation of this scheme is that the same additional un-certainty is applied to every shared point regardless of its local information content. Low-information samples, which were already poorly sensed, receive unnecessary distortion that degrades the velocity estimate without meaningfully reducing leakage. High-information samples, where linkage risk is greatest, may still fall within ϵ if the fixed error is too small. FID-controlled sharing avoids both failure modes by tying perturbation strength to the local sensing quality. 
+
+C. Operating-Point Comparison and Design Interpretation 
+
+Fig. 3 places both mechanisms on a common privacy-utility plane by matching them at the same missed-conflict rate. At every operating point, FID-controlled sharing achieves lower PLR and shorter exposure lengths than fixed-noise perturba-tion. This advantage reflects where distortion is placed along the trajectory: information-aware perturbation concentrates added noise on the most accurately sensed segments, precisely those that would otherwise provide the sustained positional 10.0 12.5 15.0 17.5 20.0 22.5 25.0 27.5 30.0                      
+
+> Missed conflict rate (%)
+> 15
+> 20
+> 25
+> 30
+> 35
+> 40
+> 45
+> 50
+> 55
+> PLR  (%)
+> FID constrained
+> Fix ed err or 1 11 1  
+> !!" "
+> 1
+>  1
+> 1
+> 
+> $!#  "!
+>  
+> $  -err or AEL
+> FID MEL
+> Fix ed-err or MEL
+
+Fig. 3. Operating-point comparison between FID-controlled sharing and fixed-error perturbation at matched missed-conflict rates. 
+
+precision needed for correlation-based re-identification. Fixed-noise perturbation, by contrast, spreads distortion uniformly and therefore either over-protects low-information segments or under-protects high-information ones. This interpretation suggests a practical design workflow. The system first selects a target missed-conflict rate compatible with the safety requirement. Among all FID thresholds that satisfy that target, the designer then chooses the smallest η,which yields the strongest privacy protection at acceptable navigation cost. The resulting PLR and exposure lengths can then be checked directly against the applicable data minimi-sation requirement, for instance whether the mean continuous exposure duration falls below a regulatory threshold. This is qualitatively different from tuning a fixed error level, where the privacy outcome at a given utility point is not adjustable without changing the perturbation budget globally. VI. C ONCLUSION 
+
+This paper validates the FID-constrained trajectory sharing mechanism in a concrete ISAC navigation setting. Simulation results on real pedestrian traces confirm that a robot receiving privacy-controlled trajectory histories can still perform reliable collision detection, with the information threshold η providing a single tunable parameter that jointly governs reconstruction leakage and navigation utility. At the same missed-conflict rate, FID-controlled perturbation consistently achieves lower PLR and shorter exposure lengths than fixed-noise schemes, because distortion is concentrated on the most accurately sensed segments rather than applied uniformly. These re-sults support FID-constrained sharing as a principled data minimisation strategy for mobility-aware ISAC deployments where trajectory utility and personal privacy must be balanced simultaneously. ACKNOWLEDGMENT 
+
+This work is supported by the Federal Ministry of Re-search, Technology and Space of Germany via the project Open6GHub+ (16KIS2406). B. Han (bin.han@rptu.de) is the corresponding author. REFERENCES [1] S. Zhou, H. Yang, L. Xiang, and K. Yang, “Temporal-assisted beamform-ing and trajectory prediction in sensing-enabled uav communications,” 
+
+IEEE Transactions on Communications , vol. 73, no. 7, pp. 5408–5419, 2024. [2] X. Yang, Z. Wei, J. Xu, H. Wu, and Z. Feng, “Cooperative sensing-assisted predictive beam tracking for mimo-ofdm networked isac sys-tems,” IEEE Transactions on Wireless Communications , 2025. [3] J. Li, W. Wang, R. Jiang, X. Wang, Z. Fei, and S. Ren, “Attention-based spatial-temporal gcn for sensing-aided beam prediction in ris-assisted isac systems,” IEEE Transactions on Cognitive Communications and Networking , 2026. [4] X. Li, Y. Gao, M. Zeng, X. Lei, W. Hao, A. Nallanathan, and O. A. Dobre, “Recent advances in resource allocation and beam prediction for large language models empowered isac systems,” IEEE Communications Magazine , 2026. [5] W. Liu, Y. Deng, and H. Wymeersch, “Goal-oriented semantic communication for isac-enabled robotic obstacle avoidance,” 2026. [Online]. Available: https://arxiv.org/abs/2603.02291 [6] Z. Ye, C. Yu, H. Zhu, Y. He, M. Gao, and G. Yu, “Isac-assisted collision avoidance mechanism for vehicle-to-infrastructure systems,” 
+
+IEEE Transactions on Intelligent Vehicles , 2024. [7] D. C. Selvaraj, C. Vitale, T. Panayiotou, P. Kolios, C. F. Chiasserini, and G. Ellinas, “Edge-assisted ml-aided uncertainty-aware vehicle collision avoidance at urban intersections,” 2024. [Online]. Available: https://arxiv.org/abs/2404.14523 [8] X. Li, Y. Cui, J. A. Zhang, F. Liu, D. Zhang, and L. Hanzo, “Integrated human activity sensing and communications,” 2022. [Online]. Available: https://arxiv.org/abs/2202.09522 [9] O. G¨ unl¨ u, S. Tomasin, J. P. Vilela, F. Chiti, P. Dass, A. Alexiou, and U. Roedig, “Isac privacy: Challenges and solutions for 6g,” 2026. [Online]. Available: https://arxiv.org/abs/2605.28325 [10] H. Liu, Z. Wei, X. Li, R. Xu, and Z. Feng, “Event-level sensing for intelligent 6g isac,” 2026. [Online]. Available: https://arxiv.org/abs/2606.14223 [11] C. Wang, Z. Wei, W. Jiang, H. Jiang, and Z. Feng, “Cooperative sensing enhanced uav path-following and obstacle avoidance with variable formation,” 2025. [Online]. Available: https://arxiv.org/abs/2508.21316 [12] Z. Fang, B. Han, W. Chen, and H. D. Schotten, “Unauthorized radio sensing and privacy risks: A sampling error-based defense,” in 2025 IEEE 36th International Symposium on Personal, Indoor and Mobile Radio Communications (PIMRC) , 2025, pp. 1–6. [13] Z. Ren, Y. Peng, X. Song, Y. Fang, L. Qiu, L. Liu, D. W. K. Ng, and J. Xu, “Fundamental crb-rate tradeoff in multi-antenna isac systems with information multicasting and multi-target sensing,” IEEE Transactions on Wireless Communications , vol. 23, no. 4, pp. 3870–3885, 2024. [14] Z. Fang, B. Han, Z. Tian, and H. D. Schotten, “Balancing functionality and gdpr-driven privacy in isac trajectory sharing,” arXiv preprint arXiv:2604.08743 , 2026.
