@@ -6,67 +6,52 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-11
-- 运行时间：2026-07-11 21:39:15 UTC
+- 最新运行日期：2026-07-12
+- 运行时间：2026-07-12 21:28:14 UTC
 - 运行状态：成功
-- 本次总论文数：15
-- 精读区：8
-- 速读区：7
+- 本次总论文数：10
+- 精读区：1
+- 速读区：9
 
 ### 今日简报（AI）
-今日精选15篇论文，聚焦多智能体协调与3D占用预测两大核心方向。
-推荐精读《MUTE》中的多智能体通信遗忘机制和《FDR-Occ》的全谱3D占用预测因子化密集路由。
-普通读者可关注多智能体与自动驾驶感知的交叉进展，或速读延迟感知SLAM与轨迹共享应用。
-- 详情：[/202607/11/README](/202607/11/README)
+1) 今日精读《GaP: 图策略多智能体自学习框架》一篇，另速读延迟感知主动三角测量、最优传输Q学习、聚类嵌入模型预测路径积分等三篇强化学习应用论文。  
+2) 最值得关注的方向：图策略（GaP）将图神经网络与策略学习结合，实现多智能体自动化任务的自我优化；延迟感知主动三角测量（DRL）在反无人机系统中通过不确定性驱动协同提升定位精度。  
+3) 建议优先精读GaP论文，理解其图式策略设计思想，并将其与最优传输Q学习的流策略加速方法对比，思考如何迁移至你的多智能体协同场景。
+- 详情：[/202607/12/README](/202607/12/README)
 
 ### 精读区论文标签
-1. [MUTE: Return-Preserving Communication Unlearning for Efficient Multi-Agent Coordination](/202607/11/2607.03473v1-mute-return-preserving-communication-unlearning-for-efficient-multi-agent-coordination)  
-   标签：评分：9.0/10、query:marl-comm
-   evidence：通过价值引导的遗忘实现MARL通信压缩
-2. [FDR-Occ: Factorized Dense Routing for Full-Spectrum 3D Occupancy Prediction](/202607/11/2607.03822v1-fdr-occ-factorized-dense-routing-for-full-spectrum-3d-occupancy-prediction)  
-   标签：评分：9.0/10、query:intent-avoid
-   evidence：具有全局感受野的3D占据预测用于动态环境
-3. [Conflict-Based Lazy Search for Fast Multi-Manipulator Planning](/202607/11/2607.04124v1-conflict-based-lazy-search-for-fast-multi-manipulator-planning)  
-   标签：评分：9.0/10、query:lbm
-   evidence：提出基于CBS的CBLS算法用于多智能体路径规划
-4. [Multi-Robot Open Adaptive Teaming Across Unseen Environments, Partners, and Scales](/202607/11/2607.04972v1-multi-robot-open-adaptive-teaming-across-unseen-environments-partners-and-scales)  
-   标签：评分：9.0/10、query:lbm
-   evidence：基于超图博弈的多机器人开放自适应编队协调
-5. [IMR: Iterative Mode-World Weighted Regression for Multi-Agent Trajectory Prediction](/202607/11/2607.05705v1-imr-iterative-mode-world-weighted-regression-for-multi-agent-trajectory-prediction)  
-   标签：评分：9.0/10、query:intent-avoid
-   evidence：多智能体轨迹预测用于未来运动规划意图理解
-6. [Hierarchical Multi-Agent Reinforcement Learning for Carbon-Aware AI Data Centers in Power Distribution Systems](/202607/11/2607.03324v2-hierarchical-multi-agent-reinforcement-learning-for-carbon-aware-ai-data-centers-in-power-distribution-systems)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：使用多智能体变换器进行通信
-7. [High-Precision Formation Control for Heterogeneous Multi-Robot Systems via Hierarchical Hybrid Physics-Informed Deep Reinforcement Learning](/202607/11/2607.03512v1-high-precision-formation-control-for-heterogeneous-multi-robot-systems-via-hierarchical-hybrid-physics-informed-deep-reinforcement-learning)  
+1. [GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks](/202607/12/2607.05369v1-gap-a-graph-as-policy-multi-agent-self-learning-harness-for-variational-automation-tasks)  
    标签：评分：8.0/10、query:lbm
-   evidence：异构多机器人路径规划的深度强化学习方法
-8. [Anytime Plug-and-Play Control with Contract-Based Distributed MPC](/202607/11/2607.04215v1-anytime-plug-and-play-control-with-contract-based-distributed-mpc)  
-   标签：评分：8.0/10、query:intent-avoid
-   evidence：基于合同的分布式MPC实现多机器人系统碰撞避免
+   evidence：面向变分自动化任务的图即策略多智能体自学习框架
 
 ### 速读区论文标签
-1. [Delay-Aware Active Triangulation with Uncertainty-Driven Multi-Agent Reinforcement Learning for Counter-UAS](/202607/11/2607.05957v1-delay-aware-active-triangulation-with-uncertainty-driven-multi-agent-reinforcement-learning-for-counter-uas)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：使用信息年龄的延迟感知多智能体强化学习协调通信
-2. [GDPR-Aware Trajectory Sharing for ISAC-Assisted Robot Navigation: A Case Study on FID-Constrained Collision Prediction](/202607/11/2607.03254v1-gdpr-aware-trajectory-sharing-for-isac-assisted-robot-navigation-a-case-study-on-fid-constrained-collision-prediction)  
-   标签：评分：7.0/10、query:intent-avoid
-   evidence：基于轨迹共享的机器人碰撞避免与隐私保护
-3. [INTENT: An LSTM Framework for Vehicle Intention Prediction in Intersection Scenarios with Comprehensive Ablation Analysis](/202607/11/2607.08316v1-intent-an-lstm-framework-for-vehicle-intention-prediction-in-intersection-scenarios-with-comprehensive-ablation-analysis)  
-   标签：评分：7.0/10、query:intent-avoid
-   evidence：使用LSTM进行车辆意图预测，与多智能体意图预测相关
-4. [Early to Share, Late to Save: Synchronisation-Driven Communication Gating in Bandwidth-Constrained Cooperative VLN](/202607/11/2607.08504v1-early-to-share-late-to-save-synchronisation-driven-communication-gating-in-bandwidth-constrained-cooperative-vln)  
+1. [Delay-Aware Active Triangulation with Uncertainty-Driven Multi-Agent Reinforcement Learning for Counter-UAS](/202607/12/2607.05957v1-delay-aware-active-triangulation-with-uncertainty-driven-multi-agent-reinforcement-learning-for-counter-uas)  
    标签：评分：7.0/10、query:marl-comm
-   evidence：协作VLN中的稀疏通信门控，与多智能体稀疏通信相关
-5. [GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks](/202607/11/2607.05369v1-gap-a-graph-as-policy-multi-agent-self-learning-harness-for-variational-automation-tasks)  
-   标签：评分：6.0/10、query:lbm
-   evidence：图策略多智能体自学习框架用于自动化任务规划
-6. [Intercepting an Agile Target with Net-Carrying Drones using Competitive Multi-Agent Reinforcement Learning](/202607/11/2607.05939v1-intercepting-an-agile-target-with-net-carrying-drones-using-competitive-multi-agent-reinforcement-learning)  
-   标签：评分：6.0/10、query:lbm
-   evidence：使用MAPPO进行多智能体追逐，与路径规划中的多智能体强化学习相关
-7. [Rapid coordination of followership and leadership roles in homing pigeons navigating with unfamiliar partners](/202607/11/biorxiv-10-64898-2026-07-06-736763-v1-rapid-coordination-of-followership-and-leadership-roles-in-homing-pigeons-navigating-with-unfamiliar-partners)  
+   evidence：多智能体强化学习与延迟感知协调
+2. [Optimal Transport Q-Learning for Flow Policy Steering and Acceleration](/202607/12/2607.06262v1-optimal-transport-q-learning-for-flow-policy-steering-and-acceleration)  
+   标签：评分：7.0/10、query:lbm
+   evidence：基于强化学习微调流策略用于机器人轨迹学习
+3. [Clustering-Embedded Model Predictive Path Integral Control: Avoiding Averaging-Induced Failure and Enabling Efficient Cluster Selection for Dynamic Obstacles](/202607/12/2607.06499v1-clustering-embedded-model-predictive-path-integral-control-avoiding-averaging-induced-failure-and-enabling-efficient-cluster-selection-for-dynamic-obstacles)  
+   标签：评分：7.0/10、query:lbm
+   evidence：通过聚类进行避障的运动规划方法
+4. [Towards Effcient Low Altitude Sensing: A Dual Heterogeneous Graph Learning Method for UAV Task Allocation](/202607/12/2607.04255v1-towards-effcient-low-altitude-sensing-a-dual-heterogeneous-graph-learning-method-for-uav-task-allocation)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：用于多无人机通信与任务分配的图学习方法
+5. [Agent-driven Long-tail Simulation for Autonomous Driving](/202607/12/2607.04331v1-agent-driven-long-tail-simulation-for-autonomous-driving)  
    标签：评分：6.0/10、query:intent-avoid
-   evidence：多智能体导航中的协调与领导-跟随动态
+   evidence：基于LLM的智能体驱动仿真，用于自动驾驶中交互式多智能体场景
+6. [LLM Agents for Deliberative Collaboration: A Study on Joint Decision Making Under Partial Observability](/202607/12/2607.06157v1-llm-agents-for-deliberative-collaboration-a-study-on-joint-decision-making-under-partial-observability)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：通过协商协作进行智能体通信以实现联合决策
+7. [Multi-Agent Robotic Control with Onboard Vision-Language Models](/202607/12/2607.07403v1-multi-agent-robotic-control-with-onboard-vision-language-models)  
+   标签：评分：6.0/10、query:lbm
+   evidence：多机器人控制与路径规划任务
+8. [Open-ended Multi-agent Autocurricula via Visual Inspection of Policies with Multi-modal LLMs](/202607/12/2607.08193v1-open-ended-multi-agent-autocurricula-via-visual-inspection-of-policies-with-multi-modal-llms)  
+   标签：评分：6.0/10、query:lbm
+   evidence：通过视觉策略检测的多智能体强化学习自动课程
+9. [Deep Reinforcement Learning-Empowered Wireless Sensor Networking for 6G Closed-Loop Controls](/202607/12/2607.08272v1-deep-reinforcement-learning-empowered-wireless-sensor-networking-for-6g-closed-loop-controls)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：深度强化学习用于多智能体感知-通信-控制环中的带宽分配
 
 
 <div class="dpr-home-promo-card">

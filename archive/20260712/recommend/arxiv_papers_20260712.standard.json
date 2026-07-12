@@ -1,0 +1,473 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-12T21:23:25.673958+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 1,
+    "deep_cap": 8,
+    "deep_selected": 1,
+    "quick_candidates": 9,
+    "quick_skim_target": 13,
+    "quick_selected": 9
+  },
+  "deep_dive": [
+    {
+      "id": "2607.05369v1",
+      "source": "arxiv",
+      "title": "GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks",
+      "abstract": "For robots to work reliably in commercial and industrial applications, can recent advances in agentic coding systems combine interpretable robot programming with the open-world adaptability of model-free policies? We focus on \"Variational Automation\" (VA), a class of tasks that have larger variations in object geometry and pose than fixed automation. Model-free policies often struggle to close the reliability gap for VA tasks, which must be executed persistently and reliably in commercial and industrial applications. Motivated by prior work on Task and Motion Planning (TAMP) and the Robot Operating System (ROS), we introduce Graph-as-Policy (GaP), a multi-agent coding harness that generates directed computation graphs with perception, planning, and control nodes from a Modular Open Robot Skill Library (MORSL). GaP then generates an internal simulation environment to rehearse task instances with different graphs in parallel to iteratively refine the graph structure and parameters to improve success rates and throughput. Evaluation with 8 new open VA task benchmarks, 4 in-simulation and 4 in real-world, suggests that GaP can achieve success rates that significantly outperform baselines. Details, code, and data can be found online: https://graph-robots.github.io/gap",
+      "authors": [
+        "Kaiyuan Chen",
+        "Shuangyu Xie",
+        "Letian Fu",
+        "Justin Yu",
+        "William Pacini",
+        "Sandeep Bajamahal",
+        "Hudson Kim",
+        "Jaimyn Drake",
+        "Daehwa Kim",
+        "Haoru Xue",
+        "Jonathan Francis",
+        "Christian Juette",
+        "Peter Schaldenbrand",
+        "Muhammet Yunus Seker",
+        "Ruwan Wickramarachchi",
+        "Uksang Yoo",
+        "Guanzhi Wang",
+        "Adithyavairavan Murali",
+        "Balakumar Sundaralingam",
+        "S. Shankar Sastry",
+        "Spencer Huang",
+        "Yuke Zhu",
+        "Linxi \"Jim\" Fan",
+        "Ken Goldberg"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-07-06T17:47:31+00:00",
+      "link": "https://arxiv.org/pdf/2607.05369v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multi-agent self-learning harness using graph-as-policy for variational automation tasks",
+      "llm_evidence_cn": "面向变分自动化任务的图即策略多智能体自学习框架",
+      "llm_evidence": "面向变分自动化任务的图即策略多智能体自学习框架",
+      "canonical_evidence": "面向变分自动化任务的图即策略多智能体自学习框架",
+      "llm_tldr_en": "Introduces GaP, a multi-agent framework that generates directed computation graphs as policies for reliable task execution, combining interpretable programming with self-learning for variational automation.",
+      "llm_tldr_cn": "针对商业和工业应用中变分自动化任务可靠性不足的问题，该论文提出GaP框架，通过生成有向计算图作为策略，将可解释编程与模型无关自学习相结合。多智能体协同学习并执行任务，在对象几何与姿态变化较大的场景中提升了闭环执行的可靠性。",
+      "llm_tldr": "针对商业和工业应用中变分自动化任务可靠性不足的问题，该论文提出GaP框架，通过生成有向计算图作为策略，将可解释编程与模型无关自学习相结合。多智能体协同学习并执行任务，在对象几何与姿态变化较大的场景中提升了闭环执行的可靠性。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.05957v1",
+      "source": "arxiv",
+      "title": "Delay-Aware Active Triangulation with Uncertainty-Driven Multi-Agent Reinforcement Learning for Counter-UAS",
+      "abstract": "Multi-agent active visual triangulation enables precise 3D localization of aerial targets by coordinating mobile observers with controllable cameras. However, existing methods assume instantaneous state feedback, ignoring cumulative latency from detection, communication, and decision propagation. We present a delay-aware, uncertainty-driven multi-agent reinforcement learning framework for target localization in Counter-UAS applications. Our contributions are: (1) a Dec-POMDP formulation with Age-of-Information (AoI) augmented observations enabling delay-aware coordination -- AoI improves triangulation validity by 10.6 percentage points; (2) a controlled comparison showing that perception-consistent rewards outperform privileged clean-state rewards (0.547 m vs.0.633 m RMSE, 27% fewer track losses) -- both policies are trained through identical observation noise but differ in what they are optimized for, producing a stability-robustness tradeoff; and (3) multi-source analytical covariance propagation incorporating pixel, pose, gimbal, and intrinsics uncertainties -- restricting to angular noise alone causes 2.8-fold RMSE degradation. Experiments with MAPPO in 4096 parallel environments achieve 0.547 +- 0.217 m RMSE with 78.1% triangulation validity, while MLP policies achieve near-zero validity (0.7%), confirming recurrent memory as essential for delay compensation.",
+      "authors": [
+        "Seungwook Lee",
+        "David Hyunchul Shim"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.MA"
+      ],
+      "published": "2026-07-07T07:58:13+00:00",
+      "link": "https://arxiv.org/pdf/2607.05957v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multi-agent reinforcement learning with delay-aware coordination",
+      "llm_evidence_cn": "多智能体强化学习与延迟感知协调",
+      "llm_evidence": "多智能体强化学习与延迟感知协调",
+      "canonical_evidence": "多智能体强化学习与延迟感知协调",
+      "llm_tldr_en": "Proposes a delay-aware, uncertainty-driven multi-agent RL framework for active target localization, using Dec-POMDP and Age-of-Information to improve coordination under latency.",
+      "llm_tldr_cn": "现有主动三角测量方法忽略延迟，导致多无人机协同定位精度下降。本文提出延迟感知的不确定性驱动多智能体强化学习框架，通过引入信息年龄（AoI）扩展观测空间，在Dec-POMDP框架下实现延迟感知的协同。实验表明AoI将三角测量有效性提升10.6个百分点，且感知一致性奖励优于基线。该方法为实际多机器人协同感知提供了鲁棒的解决方案。",
+      "llm_tldr": "现有主动三角测量方法忽略延迟，导致多无人机协同定位精度下降。本文提出延迟感知的不确定性驱动多智能体强化学习框架，通过引入信息年龄（AoI）扩展观测空间，在Dec-POMDP框架下实现延迟感知的协同。实验表明AoI将三角测量有效性提升10.6个百分点，且感知一致性奖励优于基线。该方法为实际多机器人协同感知提供了鲁棒的解决方案。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.04255v1",
+      "source": "arxiv",
+      "title": "Towards Effcient Low Altitude Sensing: A Dual Heterogeneous Graph Learning Method for UAV Task Allocation",
+      "abstract": "With the development of low altitude intelligent systems, multiple unmanned aerial vehicles (UAVs) can collaboratively execute more complex tasks. Conventional task allocation methods usually regard tasks and UAVs as isolated entities, making it difficult to capture task dependencies and UAV communication relationships. To address this issue, this paper proposes a dual heterogeneous graph learning based UAV task allocation method. A directed task graph is constructed to represent task dependencies and encode task resource requirements, while an undirected UAV communication graph is built to model communication relationships and encode UAV resource states. The task allocation problem is formulated as a structural matching problem between the task graph and the UAV communication graph. A graph attention network based feature extraction method is introduced to learn structural representations from both graphs through message passing. A cross attention mechanism is further integrated with proximal policy optimization to optimize the matching between task nodes and UAV nodes for task allocation. Simulation results demonstrate that the proposed method achieves a higher task completion rate and shorter task completion time than benchmark methods under different evaluation settings. Furthermore, a UAV sensing and computing application is developed on the AirSim simulation platform. A large language model is employed to convert natural language task requirements into a structured task graph for autonomous UAV task execution, demonstrating the potential of the proposed framework for natural language driven UAV mission planning and execution.",
+      "authors": [
+        "Guangyu Lei",
+        "Tianhao Liang",
+        "Bingyan Xie",
+        "Tingting Zhang"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-07-05T12:12:33+00:00",
+      "link": "https://arxiv.org/pdf/2607.04255v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "graph learning for multi-UAV communication and task allocation",
+      "llm_evidence_cn": "用于多无人机通信与任务分配的图学习方法",
+      "llm_evidence": "用于多无人机通信与任务分配的图学习方法",
+      "canonical_evidence": "用于多无人机通信与任务分配的图学习方法",
+      "llm_tldr_en": "Proposes dual heterogeneous graph learning for UAV task allocation, modeling task dependencies and communication relationships.",
+      "llm_tldr_cn": "针对多无人机任务分配中忽略任务依赖和通信关系的问题，提出双异构图学习方法，通过构建有向任务图和无向通信图来结构化匹配任务与资源。实验验证该方法能有效捕捉复杂交互，为低空协同提供新思路。",
+      "llm_tldr": "针对多无人机任务分配中忽略任务依赖和通信关系的问题，提出双异构图学习方法，通过构建有向任务图和无向通信图来结构化匹配任务与资源。实验验证该方法能有效捕捉复杂交互，为低空协同提供新思路。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.06262v1",
+      "source": "arxiv",
+      "title": "Optimal Transport Q-Learning for Flow Policy Steering and Acceleration",
+      "abstract": "Diffusion and flow policies have recently demonstrated remarkable performance in robotic applications by accurately capturing multimodal robot trajectory distributions, especially in the context of vision language action (VLA) models. However, high quality policy performance also requires fast inference and high quality demonstrations, which are often hard to get. Lack of these leads to suboptimal policy behaviors and failure under distribution shifts. In this work we address the problem of fine-tuning and accelerating suboptimal flow-based policies using the robot's experience through RL post-training. We introduce Optimal Transport Q-Learning (OTQL), a new method for finetuning flow policies using advantage weighted conditional optimal transport flow matching. OTQL can finetune and accelerate flows with an interaction budget of 50-60 episodes while avoiding computationally expensive distillation in simulation and real-world robot tasks. Our results show that OTQL post-trains flow policies using the robot's own experience, increasing average success percentage of single-task policies from 36% to 86% and of a pre-trained VLA from 38% to 76% while reducing the number of inference steps per action generation by 70%.",
+      "authors": [
+        "Andreas Sochopoulos",
+        "Esmeralda S. Whitammer",
+        "Nikolaos Tsagkas",
+        "João Moura",
+        "Michael Gienger",
+        "Sethu Vijayakumar"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-07T13:29:35+00:00",
+      "link": "https://arxiv.org/pdf/2607.06262v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "RL fine-tuning of flow policies for robot trajectory learning",
+      "llm_evidence_cn": "基于强化学习微调流策略用于机器人轨迹学习",
+      "llm_evidence": "基于强化学习微调流策略用于机器人轨迹学习",
+      "canonical_evidence": "基于强化学习微调流策略用于机器人轨迹学习",
+      "llm_tldr_en": "Introduces OTQL, using advantage-weighted conditional optimal transport flow to fine-tune and accelerate suboptimal flow-based policies via RL post-training, improving performance under distribution shift.",
+      "llm_tldr_cn": "流策略因演示不足或分布偏移次优。提出最优传输Q学习OTQL，通过优势加权条件最优传输流进行RL后训练，显著提升策略鲁棒性和推理速度，为机器人轨迹学习提供新的微调范式。",
+      "llm_tldr": "流策略因演示不足或分布偏移次优。提出最优传输Q学习OTQL，通过优势加权条件最优传输流进行RL后训练，显著提升策略鲁棒性和推理速度，为机器人轨迹学习提供新的微调范式。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.04331v1",
+      "source": "arxiv",
+      "title": "Agent-driven Long-tail Simulation for Autonomous Driving",
+      "abstract": "Evaluating autonomous driving systems in closed-loop settings requires realistic and interactive simulation, yet existing simulators largely rely on log replay or rule-based agents, limiting behavioral diversity and long-tail coverage. We propose an agent-driven simulation framework in which surrounding road participants are controlled by instruction-following large language models through a structured action interface, enabling intentional and reactive behaviors while preserving physical plausibility. Furthermore, we introduce SemanticPlan, a benchmark of closed-loop planning in long-tail and semantically rich scenarios that augment real nuPlan scenes with multiple interactive agents following diverse language instructions. Evaluation results show that state-of-the-art planners still struggle to consistently achieve safe and effective task completion, suggesting that these long-tail scenarios remain challenging.",
+      "authors": [
+        "Junru Gu",
+        "Lijin Yang",
+        "Jianing Huang",
+        "Shu Liu",
+        "Zhongzhan Huang",
+        "Hang Zhao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.CV"
+      ],
+      "published": "2026-07-05T14:27:47+00:00",
+      "link": "https://arxiv.org/pdf/2607.04331v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "agent-driven simulation using LLMs for interactive multi-agent scenarios in autonomous driving",
+      "llm_evidence_cn": "基于LLM的智能体驱动仿真，用于自动驾驶中交互式多智能体场景",
+      "llm_evidence": "基于LLM的智能体驱动仿真，用于自动驾驶中交互式多智能体场景",
+      "canonical_evidence": "基于LLM的智能体驱动仿真，用于自动驾驶中交互式多智能体场景",
+      "llm_tldr_en": "Proposes an agent-driven simulation framework where LLM-controlled agents generate diverse interactive behaviors, benchmarked on closed-loop planning tasks, enabling long-tail scenario testing for multi-agent systems.",
+      "llm_tldr_cn": "该论文提出一种由指令跟随大语言模型驱动的智能体仿真框架，用于自动驾驶封闭回路规划评估。框架中的道路参与者由LLM控制，能够产生多样化的交互行为，覆盖长尾场景。这为多智能体系统的路径规划与避碰算法提供了丰富的测试平台和基准。",
+      "llm_tldr": "该论文提出一种由指令跟随大语言模型驱动的智能体仿真框架，用于自动驾驶封闭回路规划评估。框架中的道路参与者由LLM控制，能够产生多样化的交互行为，覆盖长尾场景。这为多智能体系统的路径规划与避碰算法提供了丰富的测试平台和基准。",
+      "llm_tags": [
+        "query:intent-avoid:composite"
+      ],
+      "matched_query_tag": "query:intent-avoid:composite",
+      "matched_query_text": "Papers central to MAS, especially work that connects or combines: multi-agent intent prediction future motion planning; pedestrian trajectory prediction multi-agent system; crowd occupancy grid perception dynamic occupancy; potential field decentralized collision avoidance multi-agent; decentralized collision avoidance multi-agent system coordination; congestion avoidance multi-agent crowd navigation; Multi agent systems for future motion intent prediction and congestion avoidance; Decentralized potential field methods for crowd obstacle avoidance and path planning; Pedestrian trajectory prediction with crowd occupancy grid and diversified routing.",
+      "matched_requirement_id": "req-composite-intent-avoid",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.06499v1",
+      "source": "arxiv",
+      "title": "Clustering-Embedded Model Predictive Path Integral Control: Avoiding Averaging-Induced Failure and Enabling Efficient Cluster Selection for Dynamic Obstacles",
+      "abstract": "With the widespread availability of parallel computing hardware, sampling-based motion planning methods such as Model Predictive Path Integral (MPPI) control have become increasingly powerful for complex nonlinear systems in non-smooth task spaces. However, the sampling and forward-simulation pipeline in MPPI suffers from averaging-induced failure in cluttered environments, where the importance-weighted update averages incompatible rollouts and leads to hesitation or even collision when an obstacle lies directly ahead. This paper proposes Clustering-Embedded MPPI (CE-MPPI), a framework that architecturally resolves the averaging-induced failures inherent in standard MPPI within non-convex environments. Rather than simply mitigating interference, CE-MPPI redefines the control law by integrating a high-fidelity pruning and clustering stage. By leveraging density-based spatial clustering of applications with noise (DBSCAN) alongside a novel geometric direction feature that is extracted from collision-derived reference points, the system isolates feasible trajectory modes from the noise of infeasible rollouts. This is paired with an intelligent selection logic that optimizes for minimum cost in static scenes while actively steering opposite to obstacle flux in dynamic environments. Experiments in 2-D JAX-accelerated simulations show that CE-MPPI alleviates obstacle-front hesitation and avoids persistent coupling with moving obstacles in dynamic scenes. In particular, real-world tests on a 6-DoF UR5e manipulator with CUDA-parallel rollouts in Isaac Gym achieve a 48\\% reduction in time-to-goal and a 12\\% shorter end-effector path.",
+      "authors": [
+        "Zidong Liu",
+        "Kaixin Chang",
+        "Xu Chen"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-07T17:01:00+00:00",
+      "link": "https://arxiv.org/pdf/2607.06499v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "motion planning with clustering for obstacle avoidance",
+      "llm_evidence_cn": "通过聚类进行避障的运动规划方法",
+      "llm_evidence": "通过聚类进行避障的运动规划方法",
+      "canonical_evidence": "通过聚类进行避障的运动规划方法",
+      "llm_tldr_en": "Proposes CE-MPPI, embedding clustering into model predictive path integral control to resolve averaging-induced failures in cluttered dynamic environments.",
+      "llm_tldr_cn": "标准MPPI控制因重要性加权平均导致杂乱环境下碰撞。本文提出聚类嵌入的MPPI框架CE-MPPI，通过架构性分流解决平均诱导失败，实现对动态障碍物簇的高效选择，显著提升采样运动规划的可靠性和安全性。",
+      "llm_tldr": "标准MPPI控制因重要性加权平均导致杂乱环境下碰撞。本文提出聚类嵌入的MPPI框架CE-MPPI，通过架构性分流解决平均诱导失败，实现对动态障碍物簇的高效选择，显著提升采样运动规划的可靠性和安全性。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.06157v1",
+      "source": "arxiv",
+      "title": "LLM Agents for Deliberative Collaboration: A Study on Joint Decision Making Under Partial Observability",
+      "abstract": "Deliberation plays a crucial role in collaboration; when humans work together, they naturally engage in communication to align information and reach an agreement. In this paper, we investigate deliberative large language model (LLM) agents under partially observable joint decision-making tasks. We formalize deliberative collaboration as a cooperative joint decision problem with partial and asymmetric observations, and introduce a scalable benchmark that instantiates this problem across multiple task settings and domains in which agents must exchange information through deliberation to reach a joint decision with a shared reward. We then instantiate a reference scaffold and evaluation protocol for deliberative agents and conduct a systematic evaluation of a range of representative LLMs. The results reveal that complex deliberative collaboration tasks continue to challenge state-of-the-art language models. Even with the aid of external mathematical tools, language models may fail in either the deliberation process for aligning information or the complex reasoning process for making the decision. On the other hand, diagnostic analysis reveals that the deliberation process may also provide opportunities for reflection and error correction, sometimes improving performance over centralized baselines. Altogether, our work establishes a foundation for evaluating and improving LLM agents in deliberative collaboration and provides insights into the strengths, limitations, and properties of current LLM-based multi-agent systems.",
+      "authors": [
+        "Chenxu Wang",
+        "Yongkun Yang",
+        "Boyuan Du",
+        "Shiwei Lin",
+        "Huaping Liu"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "published": "2026-07-07T11:34:10+00:00",
+      "link": "https://arxiv.org/pdf/2607.06157v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "deliberative collaboration with agent communication for joint decision",
+      "llm_evidence_cn": "通过协商协作进行智能体通信以实现联合决策",
+      "llm_evidence": "通过协商协作进行智能体通信以实现联合决策",
+      "canonical_evidence": "通过协商协作进行智能体通信以实现联合决策",
+      "llm_tldr_en": "Studies LLM agents that deliberate via communication to solve partial-observability joint decision tasks, offering a benchmark for collaborative multi-agent communication.",
+      "llm_tldr_cn": "本文研究了在部分可观测环境下，大语言模型（LLM）智能体如何通过协商通信达成一致决策。作者形式化了协商协作问题，并构建了一个可扩展基准，涵盖多种任务领域。通过参考框架和评估协议，展示了通信在协作决策中的关键作用，为多智能体通信研究提供了新视角。",
+      "llm_tldr": "本文研究了在部分可观测环境下，大语言模型（LLM）智能体如何通过协商通信达成一致决策。作者形式化了协商协作问题，并构建了一个可扩展基准，涵盖多种任务领域。通过参考框架和评估协议，展示了通信在协作决策中的关键作用，为多智能体通信研究提供了新视角。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.07403v1",
+      "source": "arxiv",
+      "title": "Multi-Agent Robotic Control with Onboard Vision-Language Models",
+      "abstract": "Vision Language Models (VLMs) and Vision Language Action (VLA) models have shown promise in robotic control. Yet, they face significant challenges regarding explainability, generalization, and compute requirements. This paper presents a Multi-Agent System (MAS) architecture that addresses these limitations by deploying specialized agents on onboard hardware - eliminating dependence on external compute. The system controls a multi-purpose autonomous mobile manipulator in a simulated industrial warehouse, fulfilling five task categories: safety inspection, warehouse maintenance, warehouse search, package quality verification, and responding to human requests. Compact VLMs (3-20B parameters) are used throughout, with fine-tuning applied to improve package inspection accuracy. A novel \"Megamind\" orchestration agent mitigates context retention issues inherent to long-horizon planning with smaller models. The system was validated in a hardware-in-the-loop simulation using an AMD Ryzen(TM) AI mini PC. Results demonstrate that a fully onboard MAS architecture is a viable, cost-efficient alternative to cloud-dependent deployments, with strong potential for real-world transfer. The simulation environment has been released as open source under the Apache 2.0 licence.",
+      "authors": [
+        "Kajetan Rachwał",
+        "Maciej Majek",
+        "Bartłomiej Boczek",
+        "Jakub Matejczyk",
+        "Dominik Matejkowski",
+        "Adam Dąbrowski",
+        "Tim Seyde",
+        "Alexander Amini",
+        "Maria Ganzha"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.RO"
+      ],
+      "published": "2026-07-08T13:37:31+00:00",
+      "link": "https://arxiv.org/pdf/2607.07403v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent robotic control with path planning tasks",
+      "llm_evidence_cn": "多机器人控制与路径规划任务",
+      "llm_evidence": "多机器人控制与路径规划任务",
+      "canonical_evidence": "多机器人控制与路径规划任务",
+      "llm_tldr_en": "Presents a multi-agent system using onboard Vision-Language Models for a mobile manipulator to perform warehouse tasks including search, inspection, and maintenance, implying path planning.",
+      "llm_tldr_cn": "视觉语言模型在机器人控制中存在可解释性和计算需求高等挑战。本文提出多智能体系统架构，在机载硬件上部署专用智能体，控制自主移动机械臂完成仓库中的安全巡检、维护、搜索等任务。该系统使用紧凑型VLM并针对包裹检查进行微调，消除了对外部计算依赖。实验表明该架构在五种任务类别上均能有效执行，为多智能体路径规划与任务协调提供了新思路。",
+      "llm_tldr": "视觉语言模型在机器人控制中存在可解释性和计算需求高等挑战。本文提出多智能体系统架构，在机载硬件上部署专用智能体，控制自主移动机械臂完成仓库中的安全巡检、维护、搜索等任务。该系统使用紧凑型VLM并针对包裹检查进行微调，消除了对外部计算依赖。实验表明该架构在五种任务类别上均能有效执行，为多智能体路径规划与任务协调提供了新思路。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.08193v1",
+      "source": "arxiv",
+      "title": "Open-ended Multi-agent Autocurricula via Visual Inspection of Policies with Multi-modal LLMs",
+      "abstract": "Open-ended curricula in Reinforcement Learning (RL) aim to train generally-capable agents by identifying tasks that facilitate learning increasingly complex skills. A major challenge when designing such curricula is assessing task difficulty relative to the agent's current learning progress. While previous work has explored using scalar task scores or textual summaries of the agent's behavior, here we study a different approach: directly inspecting policy behavior via recorded episode videos. We introduce a simple yet effective instantiation of this approach which leverages a Video Language Model (VLM) to both process these videos and provide curriculum recommendations, which we call Visual Inspection of Policies (VIP). Since videos can naturally contain any number of controllable agents, we empirically study VIP on the StarCraft Multi-Agent Challenge (SMAC). We show that even with a lightweight and openly accessible VLM (VideoLLaMa2-7B), VIP can use policy videos to generate more effective curricula than both its text-only ablation and methods that rely on scalar task scores.",
+      "authors": [
+        "Lorenzo Pantè",
+        "Andrea Fanti",
+        "Roberto Capobianco"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-09T07:48:36+00:00",
+      "link": "https://arxiv.org/pdf/2607.08193v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent RL autocurricula via visual policy inspection",
+      "llm_evidence_cn": "通过视觉策略检测的多智能体强化学习自动课程",
+      "llm_evidence": "通过视觉策略检测的多智能体强化学习自动课程",
+      "canonical_evidence": "通过视觉策略检测的多智能体强化学习自动课程",
+      "llm_tldr_en": "Proposes Visual Inspection of Policies (VIP) using a VLM to automatically design curricula for multi-agent RL, enabling agents to learn increasingly complex skills without manual task design.",
+      "llm_tldr_cn": "该工作针对多智能体强化学习中的自动课程设计问题，提出一种基于视频语言模型（VLM）直接观察策略行为视频的课程推荐方法VIP。通过分析智能体交互视频，VLM自动生成难度递增的训练任务，解决了传统标量分数或文本摘要方法信息不足的局限。实验表明VIP能有效提升多智能体在复杂任务中的技能习得效率。",
+      "llm_tldr": "该工作针对多智能体强化学习中的自动课程设计问题，提出一种基于视频语言模型（VLM）直接观察策略行为视频的课程推荐方法VIP。通过分析智能体交互视频，VLM自动生成难度递增的训练任务，解决了传统标量分数或文本摘要方法信息不足的局限。实验表明VIP能有效提升多智能体在复杂任务中的技能习得效率。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.08272v1",
+      "source": "arxiv",
+      "title": "Deep Reinforcement Learning-Empowered Wireless Sensor Networking for 6G Closed-Loop Controls",
+      "abstract": "Robots are increasingly deployed in remote or hazardous areas for mission-critical control tasks. Due to their limited individual capabilities, they have to rely on other field sensors to obtain the state information of targets, and also a dedicated edge information hub (EIH) to enable information exchange, sensing data analysis and control command generation. Such configuration follows a sensing-communication-computing-control (SC3) closed loop. To optimize the whole closed-loop performance, this paper minimizes the linear quadratic regulator (LQR) control cost by designing the sensor-to-EIH bandwidth allocation. Specifically, we first model the distortion noise caused by limited communication data rate based on the mutual information theory. Next, under the control policy based on the Kalman filter and LQR controller, we formulate the control process as a partially observable Markov decision process (POMDP), and develop a deep reinforcement learning (DRL)-based sensor-to-EIH bandwidth allocation scheme. The proximal policy optimization (PPO) algorithm is utilized to train the DRL agent. Simulation results are provided to show the superiority of the proposed DRL-based scheme.",
+      "authors": [
+        "Chengleyang Lei",
+        "Wei Feng",
+        "Yunfei Chen",
+        "Yongxu Zhu",
+        "Ning Ge",
+        "Shi Jin"
+      ],
+      "primary_category": "cs.IT",
+      "categories": [
+        "cs.IT",
+        "eess.SY"
+      ],
+      "published": "2026-07-09T09:15:36+00:00",
+      "link": "https://arxiv.org/pdf/2607.08272v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "DRL for bandwidth allocation in multi-agent sensing-communication-control loop",
+      "llm_evidence_cn": "深度强化学习用于多智能体感知-通信-控制环中的带宽分配",
+      "llm_evidence": "深度强化学习用于多智能体感知-通信-控制环中的带宽分配",
+      "canonical_evidence": "深度强化学习用于多智能体感知-通信-控制环中的带宽分配",
+      "llm_tldr_en": "Uses deep reinforcement learning to optimize sensor-to-EIH bandwidth allocation, minimizing LQR control cost in a sensing-communication-computing-control closed loop.",
+      "llm_tldr_cn": "针对远程机器人控制中传感器到边缘信息中心的带宽分配问题，利用深度强化学习优化带宽分配以最小化LQR控制成本。通过基于互信息的数据率失真建模，将通信约束纳入控制优化，为6G闭环控制中的通信资源管理提供了DRL解决方案。",
+      "llm_tldr": "针对远程机器人控制中传感器到边缘信息中心的带宽分配问题，利用深度强化学习优化带宽分配以最小化LQR控制成本。通过基于互信息的数据率失真建模，将通信约束纳入控制优化，为6G闭环控制中的通信资源管理提供了DRL解决方案。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
