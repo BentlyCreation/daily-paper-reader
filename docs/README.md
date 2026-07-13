@@ -6,52 +6,52 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-12
-- 运行时间：2026-07-12 21:28:14 UTC
+- 最新运行日期：2026-07-13
+- 运行时间：2026-07-13 21:53:23 UTC
 - 运行状态：成功
 - 本次总论文数：10
-- 精读区：1
-- 速读区：9
+- 精读区：6
+- 速读区：4
 
 ### 今日简报（AI）
-1) 今日精读《GaP: 图策略多智能体自学习框架》一篇，另速读延迟感知主动三角测量、最优传输Q学习、聚类嵌入模型预测路径积分等三篇强化学习应用论文。  
-2) 最值得关注的方向：图策略（GaP）将图神经网络与策略学习结合，实现多智能体自动化任务的自我优化；延迟感知主动三角测量（DRL）在反无人机系统中通过不确定性驱动协同提升定位精度。  
-3) 建议优先精读GaP论文，理解其图式策略设计思想，并将其与最优传输Q学习的流策略加速方法对比，思考如何迁移至你的多智能体协同场景。
-- 详情：[/202607/12/README](/202607/12/README)
+1) 今日聚焦多智能体系统前沿：10篇论文中精读6篇，重点探讨跨环境自适应团队协作与图策略自学习框架。  
+2) 最值得关注两大方向：多机器人开放自适应团队（8.0分）与图作为策略的多智能体自学习框架（8.0分），两者分别解决未知场景合作和自动化任务学习难题。  
+3) 建议优先精读这两篇高分论文，可结合速读中“通信高效数字孪生协调”与“运行时高效具身规划”实践，逐步构建多机器人部署的技术栈。
+- 详情：[/202607/13/README](/202607/13/README)
 
 ### 精读区论文标签
-1. [GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks](/202607/12/2607.05369v1-gap-a-graph-as-policy-multi-agent-self-learning-harness-for-variational-automation-tasks)  
+1. [Multi-Robot Open Adaptive Teaming Across Unseen Environments, Partners, and Scales](/202607/13/2607.04972v1-multi-robot-open-adaptive-teaming-across-unseen-environments-partners-and-scales)  
    标签：评分：8.0/10、query:lbm
-   evidence：面向变分自动化任务的图即策略多智能体自学习框架
+   evidence：多机器人自适应组队，去中心化协调，超图博弈
+2. [GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks](/202607/13/2607.05369v1-gap-a-graph-as-policy-multi-agent-self-learning-harness-for-variational-automation-tasks)  
+   标签：评分：8.0/10、query:lbm
+   evidence：图即策略的多智能体自学习框架用于变分自动化任务；涉及多智能体路径规划
+3. [Dec-MARVEL: Decentralized Multi-Agent Exploration without Communication under Budget Constraints](/202607/13/2607.09060v1-dec-marvel-decentralized-multi-agent-exploration-without-communication-under-budget-constraints)  
+   标签：评分：8.0/10、query:lbm
+   evidence：去中心化多智能体无通信探索
+4. [Empirical Pedestrian Safety Assessment in a Mobile Robot Using a Predictive Social Force Model](/202607/13/2607.09192v1-empirical-pedestrian-safety-assessment-in-a-mobile-robot-using-a-predictive-social-force-model)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：预测社会力模型用于人群避障
+5. [I see you, do you see me? Perception-based crowdedness and behavioral responses in pedestrian dynamics](/202607/13/2607.09221v1-i-see-you-do-you-see-me-perception-based-crowdedness-and-behavioral-responses-in-pedestrian-dynamics)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：行人轨迹预测与人群占用分析
+6. [CoDiMAD: Diffusion-Based Privileged Distillation for Communication-Free Multi-Robot Coordination](/202607/13/2607.09587v1-codimad-diffusion-based-privileged-distillation-for-communication-free-multi-robot-coordination)  
+   标签：评分：8.0/10、query:lbm
+   evidence：基于扩散的特权蒸馏实现无通信多机器人协调，用于去中心化路径规划
 
 ### 速读区论文标签
-1. [Delay-Aware Active Triangulation with Uncertainty-Driven Multi-Agent Reinforcement Learning for Counter-UAS](/202607/12/2607.05957v1-delay-aware-active-triangulation-with-uncertainty-driven-multi-agent-reinforcement-learning-for-counter-uas)  
+1. [Communication-Efficient Digital-Twin Coordination for Heterogeneous LLM Embodied Agents over Computing Power Networks](/202607/13/2607.09330v1-communication-efficient-digital-twin-coordination-for-heterogeneous-llm-embodied-agents-over-computing-power-networks)  
    标签：评分：7.0/10、query:marl-comm
-   evidence：多智能体强化学习与延迟感知协调
-2. [Optimal Transport Q-Learning for Flow Policy Steering and Acceleration](/202607/12/2607.06262v1-optimal-transport-q-learning-for-flow-policy-steering-and-acceleration)  
+   evidence：有限网络资源下通信高效的协调
+2. [Shortcut Trajectory Planning for Efficient Offline Reinforcement Learning](/202607/13/2607.09336v1-shortcut-trajectory-planning-for-efficient-offline-reinforcement-learning)  
    标签：评分：7.0/10、query:lbm
-   evidence：基于强化学习微调流策略用于机器人轨迹学习
-3. [Clustering-Embedded Model Predictive Path Integral Control: Avoiding Averaging-Induced Failure and Enabling Efficient Cluster Selection for Dynamic Obstacles](/202607/12/2607.06499v1-clustering-embedded-model-predictive-path-integral-control-avoiding-averaging-induced-failure-and-enabling-efficient-cluster-selection-for-dynamic-obstacles)  
+   evidence：用于高效离线强化学习的捷径轨迹规划；直接相关于多智能体路径规划
+3. [Mosaic: Runtime-Efficient Multi-Agent Embodied Planning](/202607/13/2607.09603v1-mosaic-runtime-efficient-multi-agent-embodied-planning)  
    标签：评分：7.0/10、query:lbm
-   evidence：通过聚类进行避障的运动规划方法
-4. [Towards Effcient Low Altitude Sensing: A Dual Heterogeneous Graph Learning Method for UAV Task Allocation](/202607/12/2607.04255v1-towards-effcient-low-altitude-sensing-a-dual-heterogeneous-graph-learning-method-for-uav-task-allocation)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：用于多无人机通信与任务分配的图学习方法
-5. [Agent-driven Long-tail Simulation for Autonomous Driving](/202607/12/2607.04331v1-agent-driven-long-tail-simulation-for-autonomous-driving)  
-   标签：评分：6.0/10、query:intent-avoid
-   evidence：基于LLM的智能体驱动仿真，用于自动驾驶中交互式多智能体场景
-6. [LLM Agents for Deliberative Collaboration: A Study on Joint Decision Making Under Partial Observability](/202607/12/2607.06157v1-llm-agents-for-deliberative-collaboration-a-study-on-joint-decision-making-under-partial-observability)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：通过协商协作进行智能体通信以实现联合决策
-7. [Multi-Agent Robotic Control with Onboard Vision-Language Models](/202607/12/2607.07403v1-multi-agent-robotic-control-with-onboard-vision-language-models)  
+   evidence：多智能体规划与协调
+4. [Offline Nash Solvers Meet Online Tree Search in Multi-Agent Games on Graphs](/202607/13/2607.08892v1-offline-nash-solvers-meet-online-tree-search-in-multi-agent-games-on-graphs)  
    标签：评分：6.0/10、query:lbm
-   evidence：多机器人控制与路径规划任务
-8. [Open-ended Multi-agent Autocurricula via Visual Inspection of Policies with Multi-modal LLMs](/202607/12/2607.08193v1-open-ended-multi-agent-autocurricula-via-visual-inspection-of-policies-with-multi-modal-llms)  
-   标签：评分：6.0/10、query:lbm
-   evidence：通过视觉策略检测的多智能体强化学习自动课程
-9. [Deep Reinforcement Learning-Empowered Wireless Sensor Networking for 6G Closed-Loop Controls](/202607/12/2607.08272v1-deep-reinforcement-learning-empowered-wireless-sensor-networking-for-6g-closed-loop-controls)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：深度强化学习用于多智能体感知-通信-控制环中的带宽分配
+   evidence：研究多智能体追逃博弈中的纳什均衡，与分散式MAPF问题相关
 
 
 <div class="dpr-home-promo-card">

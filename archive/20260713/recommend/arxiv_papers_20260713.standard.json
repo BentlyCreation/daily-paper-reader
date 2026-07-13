@@ -1,0 +1,460 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-13T21:48:12.096373+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 6,
+    "deep_cap": 8,
+    "deep_selected": 6,
+    "quick_candidates": 4,
+    "quick_skim_target": 13,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2607.09192v1",
+      "source": "arxiv",
+      "title": "Empirical Pedestrian Safety Assessment in a Mobile Robot Using a Predictive Social Force Model",
+      "abstract": "Mobile robots are going to share the sidewalks with pedestrians. They must ensure their objective safety and respect the walkers' subjective safety/comfort. Computationally efficient Social Force Models (SFM) present interpretable solutions for real-time robot navigation in dynamic crowds. Recent explorations of Projected Time-to-collision (PTTC) integration into SFM variants, for example, PTTC-based SFM (TSFM), improve safety metrics. But the effect of predictive variants is unclear. We introduce Predictive SFM (PSFM) and Predictive TSFM (PTSFM) by integrating predicted social force vectors over a finite time horizon. The paper implements SFM, TSFM, PSFM, and PTSFM on a nonholonomic mobile robot and performs experimental trials with volunteers attending a facing scenario. We systematically study objective and subjective safety across the variants. Minimum PTTC, average speed, minimum distance, lateral distance, and the maximum trajectory curvature benchmark the objective safety. Likert scale post-interaction surveys assess subjective safety by marking comfort, smoothness, distance appropriateness, and speed suitability. We confirm that PTTC integration improves safety metrics. The prediction contribution is limited and occasionally visible in some of the sub-metrics. Some participants perceive smoother movements and safer speed behavior with predictive methods, but Mann-Whitney tests reveal no significant differences in subjective ratings. Therefore, PTTC-based navigation enhances safety, whereas the formulated prediction offers limited additional benefits in single-pedestrian scenarios.",
+      "authors": [
+        "Alireza Jafari",
+        "Yun-Hao Tsai",
+        "Yen-Chen Liu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "eess.SY"
+      ],
+      "published": "2026-07-10T08:33:06+00:00",
+      "link": "https://arxiv.org/pdf/2607.09192v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "predictive social force model for crowd obstacle avoidance",
+      "llm_evidence_cn": "预测社会力模型用于人群避障",
+      "llm_evidence": "预测社会力模型用于人群避障",
+      "canonical_evidence": "预测社会力模型用于人群避障",
+      "llm_tldr_en": "This paper introduces Predictive Social Force Models for mobile robots navigating among pedestrians, improving safety by predicting future social force vectors and testing on real robots.",
+      "llm_tldr_cn": "针对移动机器人需要在行人环境中安全导航的问题，本文引入了预测社会力模型（PSFM）和预测时间-碰撞社会力模型（PTSFM）。这些模型通过在未来时间窗口内积分预测的社会力向量，提高了动态人群中的避障安全指标。实验在非完整移动机器人上进行了验证，评估了不同安全性和舒适性指标。该方法为实时人群导航提供了可解释且高效的解决方案。",
+      "llm_tldr": "针对移动机器人需要在行人环境中安全导航的问题，本文引入了预测社会力模型（PSFM）和预测时间-碰撞社会力模型（PTSFM）。这些模型通过在未来时间窗口内积分预测的社会力向量，提高了动态人群中的避障安全指标。实验在非完整移动机器人上进行了验证，评估了不同安全性和舒适性指标。该方法为实时人群导航提供了可解释且高效的解决方案。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "Decentralized potential field methods for crowd obstacle avoidance and path planning",
+      "matched_requirement_id": "req-28",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.05369v1",
+      "source": "arxiv",
+      "title": "GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks",
+      "abstract": "For robots to work reliably in commercial and industrial applications, can recent advances in agentic coding systems combine interpretable robot programming with the open-world adaptability of model-free policies? We focus on \"Variational Automation\" (VA), a class of tasks that have larger variations in object geometry and pose than fixed automation. Model-free policies often struggle to close the reliability gap for VA tasks, which must be executed persistently and reliably in commercial and industrial applications. Motivated by prior work on Task and Motion Planning (TAMP) and the Robot Operating System (ROS), we introduce Graph-as-Policy (GaP), a multi-agent coding harness that generates directed computation graphs with perception, planning, and control nodes from a Modular Open Robot Skill Library (MORSL). GaP then generates an internal simulation environment to rehearse task instances with different graphs in parallel to iteratively refine the graph structure and parameters to improve success rates and throughput. Evaluation with 8 new open VA task benchmarks, 4 in-simulation and 4 in real-world, suggests that GaP can achieve success rates that significantly outperform baselines. Details, code, and data can be found online: https://graph-robots.github.io/gap",
+      "authors": [
+        "Kaiyuan Chen",
+        "Shuangyu Xie",
+        "Letian Fu",
+        "Justin Yu",
+        "William Pacini",
+        "Sandeep Bajamahal",
+        "Hudson Kim",
+        "Jaimyn Drake",
+        "Daehwa Kim",
+        "Haoru Xue",
+        "Jonathan Francis",
+        "Christian Juette",
+        "Peter Schaldenbrand",
+        "Muhammet Yunus Seker",
+        "Ruwan Wickramarachchi",
+        "Uksang Yoo",
+        "Guanzhi Wang",
+        "Adithyavairavan Murali",
+        "Balakumar Sundaralingam",
+        "S. Shankar Sastry",
+        "Spencer Huang",
+        "Yuke Zhu",
+        "Linxi \"Jim\" Fan",
+        "Ken Goldberg"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-07-06T17:47:31+00:00",
+      "link": "https://arxiv.org/pdf/2607.05369v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Graph-as-Policy multi-agent self-learning harness for variational automation tasks; involves multi-agent path planning",
+      "llm_evidence_cn": "图即策略的多智能体自学习框架用于变分自动化任务；涉及多智能体路径规划",
+      "llm_evidence": "图即策略的多智能体自学习框架用于变分自动化任务；涉及多智能体路径规划",
+      "canonical_evidence": "图即策略的多智能体自学习框架用于变分自动化任务；涉及多智能体路径规划",
+      "llm_tldr_en": "Introduces GaP, a multi-agent coding harness that generates directed computation graphs with perception for reliable robot task execution.",
+      "llm_tldr_cn": "针对变分自动化任务中模型无关策略可靠性不足的问题，本文提出图即策略（GaP）多智能体自学习框架。GaP生成带有感知模块的有向计算图，结合任务与运动规划（TAMP）和ROS思想，实现可解释的机器人编程与开放世界适应性。实验结果验证了GaP在变分自动化任务上的可靠性，为多智能体路径规划提供了灵活且可解释的解决方案。",
+      "llm_tldr": "针对变分自动化任务中模型无关策略可靠性不足的问题，本文提出图即策略（GaP）多智能体自学习框架。GaP生成带有感知模块的有向计算图，结合任务与运动规划（TAMP）和ROS思想，实现可解释的机器人编程与开放世界适应性。实验结果验证了GaP在变分自动化任务上的可靠性，为多智能体路径规划提供了灵活且可解释的解决方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent path finding learning-based approach",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.04972v1",
+      "source": "arxiv",
+      "title": "Multi-Robot Open Adaptive Teaming Across Unseen Environments, Partners, and Scales",
+      "abstract": "Deploying robot teams in the real world requires simultaneous adaptation to unseen environments, unknown partners, and varying team sizes, yet existing approaches often address these challenges in isolation under the closed-world assumption of fixed teammates. We formalize this as open adaptive multi-robot teaming and propose a hypergraphic-form game formulation that captures team-level cooperative relationships beyond pairwise interactions, providing a principled foundation for coordination structure inference when team composition changes dynamically within episodes. Unlike graph neural network architectures, this is a game-theoretic construct for modeling strategic interactions and payoff structures among agents. Building on this formulation, we develop the Hypergraphic Open-ended Learning Algorithm (HOLA), which progressively expands partner and environment diversity during training rather than optimizing for fixed configurations. Evaluated on cooperative pursuit with multi-drone and multi-quadruped platforms, HOLA outperforms all baselines across all three adaptability dimensions. Learned policies transfer directly to physical hardware without fine-tuning, with successful deployments on Crazyflie and Zsibot L1 platforms confirming robust real-world coordination in novel environments with unseen teammates.",
+      "authors": [
+        "Yang Li",
+        "Feng Xue",
+        "Fan Mo",
+        "Yunhao Liu",
+        "Jianhong Wang",
+        "Ying Wen",
+        "Qingrui Zhang",
+        "Shaoshuai Mou",
+        "Wei Pan"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-07-06T12:02:02+00:00",
+      "link": "https://arxiv.org/pdf/2607.04972v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multi-robot adaptive teaming, decentralized coordination, hypergraphic game",
+      "llm_evidence_cn": "多机器人自适应组队，去中心化协调，超图博弈",
+      "llm_evidence": "多机器人自适应组队，去中心化协调，超图博弈",
+      "canonical_evidence": "多机器人自适应组队，去中心化协调，超图博弈",
+      "llm_tldr_en": "Proposes a hypergraphic-form game formulation for open adaptive multi-robot teaming that handles unseen environments, unknown partners, and varying scales, providing a principled foundation for coordination structure inference in dynamic teams.",
+      "llm_tldr_cn": "现有方法通常假设固定队友，难以适应真实世界中环境、伙伴和团队规模的动态变化。本文提出开放自适应多机器人组队问题，并采用超图博弈形式化描述团队级协作关系，超越了传统的两两交互建模。该方法在动态变化的团队组成中能够推断协调结构，为学习型多机器人路径规划提供了理论基础。实验表明该方法在适应性和扩展性上表现优异，有望推动去中心化多智能体路径规划的发展。",
+      "llm_tldr": "现有方法通常假设固定队友，难以适应真实世界中环境、伙伴和团队规模的动态变化。本文提出开放自适应多机器人组队问题，并采用超图博弈形式化描述团队级协作关系，超越了传统的两两交互建模。该方法在动态变化的团队组成中能够推断协调结构，为学习型多机器人路径规划提供了理论基础。实验表明该方法在适应性和扩展性上表现优异，有望推动去中心化多智能体路径规划的发展。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.09221v1",
+      "source": "arxiv",
+      "title": "I see you, do you see me? Perception-based crowdedness and behavioral responses in pedestrian dynamics",
+      "abstract": "Pedestrian traffic is commonly characterized using local density, yet the interactions experienced by individuals depend on the relative positions and perceptual relevance of surrounding pedestrians. This raises the question of whether behavioral relationships inferred from local crowdedness are robust to the representation of perceptual anisotropy, and how interaction geometry shapes pedestrian adaptation over time. We analyze experimental pedestrian crossing flows over angles from 0 to 180 degrees using a distance-weighted measure of local crowdedness. Perceptual anisotropy is varied by reducing the contribution of pedestrians outside the focal pedestrian's field of view. We examine the temporal evolution of crowdedness and its relationships with velocity, directional deviation, and acceleration. Anisotropy primarily changes the numerical scale of crowdedness, while the qualitative dynamics, temporal progression, and crossing-angle dependence remain largely preserved. Pedestrians deviate appreciably from their expected group directions, but changes between successive walking directions remain small, indicating adaptation through smooth, incremental corrections rather than abrupt turns. Acceleration dynamics reveal an asymmetry between disruption and recovery: initial deceleration varies strongly with crossing geometry, whereas recovery accelerations are more similar across angles. Non-retracing trajectories in the behavioral phase spaces show that similar instantaneous conditions can correspond to different phases of the interaction. Overall, interaction geometry has a stronger influence on the organization of crossing flows than the perceptual weighting used to quantify local crowdedness. More broadly, dynamic fundamental diagrams provide a more complete characterization of transient pedestrian interactions than conventional relationships based on instantaneous state variables alone.",
+      "authors": [
+        "Igor Hołowacz",
+        "Pratik Mullick"
+      ],
+      "primary_category": "physics.soc-ph",
+      "categories": [
+        "physics.soc-ph",
+        "physics.comp-ph"
+      ],
+      "published": "2026-07-10T09:12:44+00:00",
+      "link": "https://arxiv.org/pdf/2607.09221v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "query:intent-avoid"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "pedestrian trajectory prediction and crowd occupancy analysis",
+      "llm_evidence_cn": "行人轨迹预测与人群占用分析",
+      "llm_evidence": "行人轨迹预测与人群占用分析",
+      "canonical_evidence": "行人轨迹预测与人群占用分析",
+      "llm_tldr_en": "Analyzes pedestrian crowdedness perception and behavioral responses using distance-weighted measures, revealing anisotropic interaction geometry effects on adaptation.",
+      "llm_tldr_cn": "该论文通过实验分析行人交叉流，使用距离加权的局部拥挤度度量研究感知各向异性对行人行为适应的影响。研究发现行人之间的感知相关性及几何交互形状对拥挤度响应的时变演化至关重要，为基于感知的多智能体碰撞避免和路径规划提供了理论基础。",
+      "llm_tldr": "该论文通过实验分析行人交叉流，使用距离加权的局部拥挤度度量研究感知各向异性对行人行为适应的影响。研究发现行人之间的感知相关性及几何交互形状对拥挤度响应的时变演化至关重要，为基于感知的多智能体碰撞避免和路径规划提供了理论基础。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "pedestrian trajectory prediction multi-agent system",
+      "matched_requirement_id": "req-22",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.09060v1",
+      "source": "arxiv",
+      "title": "Dec-MARVEL: Decentralized Multi-Agent Exploration without Communication under Budget Constraints",
+      "abstract": "Multi-UAV exploration is often constrained by unreliable communication, limited field-of-view sensing (e.g., lightweight onboard camera), and finite travel budgets that require each robot to reserve enough budget to return to its base. We present Dec-MARVEL, a decentralized budget-aware exploration framework for communication-free teams with directional sensing. Rather than exchanging maps, goals, or messages, each robot coordinates through its incidental observations: any teammate trajectory within its field of view serves as a coordination signal. A graph-attention actor fuses local frontier geometry, teammate motion, and budget features to select return-feasible waypoint-heading actions. The actor is trained with phase-conditioned critics, a training-only task-oriented privileged critic, and a mixture-based budget curriculum. Across 900 held-out trials spanning three team sizes (2, 4, 8 robots) and three travel budgets (720, 800, 1024 meters) against four baselines, Dec-MARVEL achieves the highest or tied-highest exploration rate and lowest sensing overlap across all nine team-size budget configurations. Under our tightest 720m budget, it reaches 53%, 94%, and 100% success for 2, 4, and 8 robots, versus 37%, 83%, and 99% for the strongest baseline. Physical-robot experiments demonstrate successful sim-to-real transfer and real-world deployment of Dec-MARVEL.",
+      "authors": [
+        "Janghyun Cho",
+        "Jimmy Chiun",
+        "Guillaume Sartoretti",
+        "Changjoo Nam"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-10T03:06:08+00:00",
+      "link": "https://arxiv.org/pdf/2607.09060v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "decentralized multi-agent exploration without communication",
+      "llm_evidence_cn": "去中心化多智能体无通信探索",
+      "llm_evidence": "去中心化多智能体无通信探索",
+      "canonical_evidence": "去中心化多智能体无通信探索",
+      "llm_tldr_en": "Dec-MARVEL presents a decentralized budget-aware exploration framework for UAVs without communication, using incidental observations as coordination signals and graph-attention actor for waypoint selection, directly relevant to decentralized MAPF.",
+      "llm_tldr_cn": "本论文针对无人机在通信受限和预算约束下的探索问题，提出了去中心化无通信框架Dec-MARVEL。智能体通过视线内同伴轨迹作为协调信号，利用图注意力网络融合局部前沿几何和同伴运动特征来选择可返回的路径点。训练采用分阶段强化学习，在无通信条件下实现有效探索，为去中心化多智能体路径发现提供了直接的方法参考。",
+      "llm_tldr": "本论文针对无人机在通信受限和预算约束下的探索问题，提出了去中心化无通信框架Dec-MARVEL。智能体通过视线内同伴轨迹作为协调信号，利用图注意力网络融合局部前沿几何和同伴运动特征来选择可返回的路径点。训练采用分阶段强化学习，在无通信条件下实现有效探索，为去中心化多智能体路径发现提供了直接的方法参考。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.09587v1",
+      "source": "arxiv",
+      "title": "CoDiMAD: Diffusion-Based Privileged Distillation for Communication-Free Multi-Robot Coordination",
+      "abstract": "Decentralized multi-robot coordination under partial observability remains challenging, especially in communication-free settings where agents must act solely from local sensor observations. Privileged policy distillation provides a promising approach by transferring knowledge from a globally informed oracle to sensor-constrained students. However, in multi-agent systems, the same local observation may correspond to multiple global configurations requiring qualitatively different cooperative actions, making the conditional action distribution inherently multi-modal. Standard deterministic distillation collapses these modes to their mean, often yielding invalid or hesitant actions. To address this issue, we propose CoDiMAD, a three-stage framework that trains a privileged oracle with MAPPO, constructs an offline dataset of local-observation-oracle-action pairs, and distills the oracle into decentralized students parameterized as conditional denoising diffusion probabilistic models. By approximating the conditional oracle-action distribution through the diffusion reverse process, CoDiMAD samples decisive actions from coherent coordination modes rather than averaging across them. Theoretical analysis characterizes the mode-averaging failure of deterministic distillation and the distributional recovery property of diffusion-based distillation. Experiments on three cooperative tasks show that CoDiMAD consistently outperforms direct local MARL and deterministic distillation baselines. The source code will be made publicly available upon acceptance.",
+      "authors": [
+        "Jiyue Tao",
+        "Shunheng Xin",
+        "Tongsheng Shen",
+        "Dexin Zhao",
+        "Feitian Zhang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-10T16:36:45+00:00",
+      "link": "https://arxiv.org/pdf/2607.09587v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "communication-free multi-robot coordination via diffusion-based privileged distillation for decentralized path planning",
+      "llm_evidence_cn": "基于扩散的特权蒸馏实现无通信多机器人协调，用于去中心化路径规划",
+      "llm_evidence": "基于扩散的特权蒸馏实现无通信多机器人协调，用于去中心化路径规划",
+      "canonical_evidence": "基于扩散的特权蒸馏实现无通信多机器人协调，用于去中心化路径规划",
+      "llm_tldr_en": "Proposes CoDiMAD, a diffusion-based privileged distillation method for communication-free decentralized multi-robot coordination, handling multi-modal action distributions.",
+      "llm_tldr_cn": "在无通信条件下，多机器人协调面临局部观测导致的多模态动作分布问题，标准蒸馏会坍缩无效动作。本文提出CoDiMAD，利用扩散模型从全局教师蒸馏策略，保留多模态信息，实现有效的无通信去中心化协调。该方法可应用于多智能体路径规划中的分布式决策。",
+      "llm_tldr": "在无通信条件下，多机器人协调面临局部观测导致的多模态动作分布问题，标准蒸馏会坍缩无效动作。本文提出CoDiMAD，利用扩散模型从全局教师蒸馏策略，保留多模态信息，实现有效的无通信去中心化协调。该方法可应用于多智能体路径规划中的分布式决策。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "learning based multi agent pathfinding",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.09330v1",
+      "source": "arxiv",
+      "title": "Communication-Efficient Digital-Twin Coordination for Heterogeneous LLM Embodied Agents over Computing Power Networks",
+      "abstract": "Embodied agent teams powered by heterogeneous large language models (LLMs) are being widely deployed in physical artificial intelligence such as smart factories, warehouses, and service robotics. To enable collaboration among such an agent team, efficient coordination mechanisms that operate reliably under limited network resources are required. However, existing heterogeneous LLM-agent coordination frameworks that rely on multi-round natural-language-based conversations introduce three coupled challenges. First, inter-agent dialogue incurs communication overhead that grows rapidly with team size. Second, the quality of coordination is constrained by the heterogeneous capabilities of the agent team's LLMs. Third, agents may suffer from action delays due to iterative negotiation. To address these challenges, we propose LDT-Coord, a networked coordination framework built upon a lightweight digital twin (DT). Specifically, each agent independently selects its intended action and reports both the action decision and a structured temporal constraint over shared resources to the DT server, thereby decoupling coordination performance from natural-language reasoning ability. Then, DT executes a training-free, rule-based orchestrator algorithm to resolve cross-agent conflicts and returns coordination instructions to prevent such conflicts. To further reduce communication overhead, we formulate agent reporting control as a constrained partially observable Markov decision process (C-POMDP) and solve it with the PPO-Lagrangian algorithm. Simulation results show that LDT-Coord achieves a task success rate comparable to conventional coordination methods while reducing communication overhead by more than 70x and maintaining robustness under LLM heterogeneity.",
+      "authors": [
+        "Nuocheng Yang",
+        "Sihua Wang",
+        "Zihan Chen",
+        "Tony Q. S. Quek",
+        "Changchuan Yin"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.MA"
+      ],
+      "published": "2026-07-10T12:10:31+00:00",
+      "link": "https://arxiv.org/pdf/2607.09330v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Communication-efficient coordination with limited network resources",
+      "llm_evidence_cn": "有限网络资源下通信高效的协调",
+      "llm_evidence": "有限网络资源下通信高效的协调",
+      "canonical_evidence": "有限网络资源下通信高效的协调",
+      "llm_tldr_en": "This paper proposes a communication-efficient digital-twin coordination framework for heterogeneous LLM-based embodied agents, addressing the challenges of high communication overhead and limited network resources. It uses digital twins to reduce inter-agent dialogue.",
+      "llm_tldr_cn": "针对异构LLM具身智能体团队在有限网络资源下的协作问题，本文提出了一种通信高效的数字孪生协调框架。该方法通过数字孪生建模减少智能体间的自然语言对话开销，并利用计算功率网络优化资源分配。实验表明，该框架在保持协作质量的同时显著降低了通信成本，为大规模多智能体系统的高效部署提供了新思路。",
+      "llm_tldr": "针对异构LLM具身智能体团队在有限网络资源下的协作问题，本文提出了一种通信高效的数字孪生协调框架。该方法通过数字孪生建模减少智能体间的自然语言对话开销，并利用计算功率网络优化资源分配。实验表明，该框架在保持协作质量的同时显著降低了通信成本，为大规模多智能体系统的高效部署提供了新思路。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.08892v1",
+      "source": "arxiv",
+      "title": "Offline Nash Solvers Meet Online Tree Search in Multi-Agent Games on Graphs",
+      "abstract": "Computing Nash equilibrium policies in multi-agent Pursuit-Evasion games (PEG) is challenging due to the exponential growth of the joint state and action spaces with the number of agents. Existing approaches either rely on offline equilibrium approximations, which may lack adaptability during execution, or online planning methods, which suffer from large branching factors. In this work, we propose Primitive-Guided Tree Search (PGTS), a hybrid framework that integrates offline exact Nash equilibrium computation with online tree search: PGTS first solves a collection of smaller, tractable sub-games offline; at deployment, PGTS performs online tree search at each time step, using the optimal sub-game policies and value functions to guide tree expansion and estimate leaf-node values. Extensive experiments on varied graph topologies, including real-world networks, demonstrate that PGTS significantly outperforms state-of-the-art learning and heuristic baselines, while maintaining robust performance against adversaries.",
+      "authors": [
+        "Mukesh Kumar",
+        "Yue Guan",
+        "Panagiotis Tsiotras"
+      ],
+      "primary_category": "cs.GT",
+      "categories": [
+        "cs.GT",
+        "cs.MA"
+      ],
+      "published": "2026-07-09T19:33:01+00:00",
+      "link": "https://arxiv.org/pdf/2607.08892v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "addresses multi-agent pursuit-evasion games with tree search, relevant to decentralized MAPF",
+      "llm_evidence_cn": "研究多智能体追逃博弈中的纳什均衡，与分散式MAPF问题相关",
+      "llm_evidence": "研究多智能体追逃博弈中的纳什均衡，与分散式MAPF问题相关",
+      "canonical_evidence": "研究多智能体追逃博弈中的纳什均衡，与分散式MAPF问题相关",
+      "llm_tldr_en": "Proposes Primitive-Guided Tree Search (PGTS) that integrates offline Nash equilibrium computation with online tree search for multi-agent pursuit-evasion games, relevant to multi-agent path planning.",
+      "llm_tldr_cn": "在多智能体追逃博弈中，联合状态-动作空间随智能体数量指数增长，现有离线方法缺乏适应性，而在线规划分支因子过高。论文提出原语引导树搜索（PGTS），将离线精确纳什均衡求解与在线树搜索相结合：离线求解小规模子博弈，在线利用这些策略引导扩展。实验表明，PGTS在多种图博弈中优于纯离线或纯在线方法，为多智能体路径规划中的博弈问题提供了有效解决方案。",
+      "llm_tldr": "在多智能体追逃博弈中，联合状态-动作空间随智能体数量指数增长，现有离线方法缺乏适应性，而在线规划分支因子过高。论文提出原语引导树搜索（PGTS），将离线精确纳什均衡求解与在线树搜索相结合：离线求解小规模子博弈，在线利用这些策略引导扩展。实验表明，PGTS在多种图博弈中优于纯离线或纯在线方法，为多智能体路径规划中的博弈问题提供了有效解决方案。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.09336v1",
+      "source": "arxiv",
+      "title": "Shortcut Trajectory Planning for Efficient Offline Reinforcement Learning",
+      "abstract": "Diffusion-based trajectory planners have shown strong performance in offline reinforcement learning, but their iterative denoising process often incurs high inference cost. Consistency-based planners reduce the number of sampling steps, yet they typically rely on a two-stage teacher--student distillation pipeline that increases training cost and may introduce instability. We propose Shortcut Trajectory Planning (STP), an offline model-based reinforcement learning framework that incorporates shortcut models as efficient trajectory generators. STP trains a conditional shortcut trajectory model in a single stage, supports adjustable one-step and few-step inference through step-size conditioning, and selects candidate plans using a critic augmented with feasibility-aware correction. Across standard D4RL benchmarks, including locomotion, navigation, manipulation, and dexterous control tasks, STP achieves strong performance while simplifying the training pipeline for fast generative planning.",
+      "authors": [
+        "Guanquan Wang",
+        "Yoshimasa Tsuruoka"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-07-10T12:17:43+00:00",
+      "link": "https://arxiv.org/pdf/2607.09336v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Shortcut trajectory planning for efficient offline RL; directly relevant to path planning in multi-agent systems",
+      "llm_evidence_cn": "用于高效离线强化学习的捷径轨迹规划；直接相关于多智能体路径规划",
+      "llm_evidence": "用于高效离线强化学习的捷径轨迹规划；直接相关于多智能体路径规划",
+      "canonical_evidence": "用于高效离线强化学习的捷径轨迹规划；直接相关于多智能体路径规划",
+      "llm_tldr_en": "Proposes STP, a single-stage offline model-based RL framework using shortcut models for efficient trajectory generation.",
+      "llm_tldr_cn": "针对扩散轨迹规划器推理成本高、一致性规划器训练不稳定且需两阶段蒸馏的问题，本文提出捷径轨迹规划（STP）。STP在单阶段中训练条件捷径轨迹模型，支持可调节的一步或多步推理，并通过结合价值函数筛选候选计划。实验表明STP在离线RL任务上达到高效高质规划，为多智能体路径规划中的轨迹优化提供了可扩展的方法。",
+      "llm_tldr": "针对扩散轨迹规划器推理成本高、一致性规划器训练不稳定且需两阶段蒸馏的问题，本文提出捷径轨迹规划（STP）。STP在单阶段中训练条件捷径轨迹模型，支持可调节的一步或多步推理，并通过结合价值函数筛选候选计划。实验表明STP在离线RL任务上达到高效高质规划，为多智能体路径规划中的轨迹优化提供了可扩展的方法。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.09603v1",
+      "source": "arxiv",
+      "title": "Mosaic: Runtime-Efficient Multi-Agent Embodied Planning",
+      "abstract": "LLM-based multi-agent embodied planning remains impractical due to prohibitively high execution latency. We identify failed actions as the dominant bottleneck, stemming from two core challenges: inaccurate state tracking under partial observability and inefficient coordination that produces redundant or conflicting actions. We introduce Mosaic, a runtime-efficient multi-agent planning framework that addresses both challenges. Mosaic maintains accurate yet lightweight state tracking through agent-centric semantic memory that stores objects in relative coordinates, enabling geometric transformations and coordination. It ensures efficient coordination through Integer Linear Programming that allocates actions at every planning step, enforcing physical feasibility and inter-agent coordination constraints. Across AI2-THOR and search-and-rescue benchmarks, Mosaic achieves 27-32% faster execution, 30-33% fewer LLM calls, 25-31% fewer steps, and 4-10% points higher success rates. These results demonstrate that efficient memory and constraint-guided coordination are critical for scalable, low-latency multi-agent planning.",
+      "authors": [
+        "Kunjal Panchal",
+        "Saayan Mitra",
+        "Sunav Choudhary",
+        "Victor Bursztyn",
+        "Somdeb Sarkhel",
+        "Hui Guan"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA"
+      ],
+      "published": "2026-07-10T16:57:37+00:00",
+      "link": "https://arxiv.org/pdf/2607.09603v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multi-agent planning with coordination",
+      "llm_evidence_cn": "多智能体规划与协调",
+      "llm_evidence": "多智能体规划与协调",
+      "canonical_evidence": "多智能体规划与协调",
+      "llm_tldr_en": "Mosaic addresses latency in LLM-based multi-agent embodied planning via agent-centric semantic memory and integer linear programming for action coordination, enabling runtime efficiency and transferable to multi-agent path planning.",
+      "llm_tldr_cn": "本论文针对基于大语言模型的多智能体具身规划执行延迟过高的问题，提出了Mosaic框架。通过智能体中心语义记忆维护轻量级状态跟踪，并利用整数线性规划在每一步分配动作，确保了物理可行性并消除冗余冲突。实验表明该方法显著降低了规划延迟，其协调策略可迁移至多智能体路径规划任务，为学习型路径规划提供了高效协调思路。",
+      "llm_tldr": "本论文针对基于大语言模型的多智能体具身规划执行延迟过高的问题，提出了Mosaic框架。通过智能体中心语义记忆维护轻量级状态跟踪，并利用整数线性规划在每一步分配动作，确保了物理可行性并消除冗余冲突。实验表明该方法显著降低了规划延迟，其协调策略可迁移至多智能体路径规划任务，为学习型路径规划提供了高效协调思路。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
