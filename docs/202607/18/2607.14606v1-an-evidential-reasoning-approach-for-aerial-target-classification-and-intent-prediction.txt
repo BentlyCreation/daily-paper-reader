@@ -1,0 +1,948 @@
+Title: An Evidential Reasoning Approach for Aerial Target Classification and Intent Prediction
+
+URL Source: https://arxiv.org/pdf/2607.14606v1
+
+Published Time: Fri, 17 Jul 2026 00:59:59 GMT
+
+Number of Pages: 35
+
+Markdown Content:
+# An Evidential Reasoning Approach for Aerial Target Classification and Intent Prediction 
+
+Tenzing Thiley Bhutia ∗, Subash Kumaraguru † and Devaprakash Muniraj ‡
+
+Department of Aerospace Engineering, Indian Institute of Technology, Madras-600036, India 
+
+Timely classification and intent prediction of aerial targets is crucial for a combat aircraft to make informed tactical decisions. The prevailing approach for aerial target classification relies on data-driven models using time-series data. These models perform well with long-duration data; however, this is impractical in combat situations involving rapidly evolving threats that demand quick decisions. Minimizing false predictions is essential, as uncertainty is preferable to incorrect assessments in high-risk environments. Here, we propose an integrated approach to target classification and intent prediction that enables decisions from partial data in settings where threats require rapid response. In the proposed method, predictions are generated from short sequential sub-samples instead of the entire time series, and the results are refined by propagating beliefs across sub-samples. Outputs from classifiers are combined through an evidential reasoning framework to manage uncertainty. Target intent is inferred using rule-based techniques and a distance-based combination method to fuse information over time. Due to lack of publicly available datasets, a dataset for aerial target classification was generated for evaluation. A case study involving eight targets is used to demonstrate the effectiveness of the approach, whereby accuracies of 88% and 93% are achieved for target type classification and intent prediction, respectively. 
+
+# I. Introduction 
+
+Modern aerial combat environments are characterized by high-speed maneuvers, evolving threats, and the necessity for rapid decision making, thereby making accurate and timely identification of aerial targets, along with predicting their intent, a crucial requirement. For combat aircraft, maintaining situational awareness of surrounding aerial targets offers a decisive tactical edge during combat engagements. These targets can range from multi-role fighters and bombers to commercial aircraft and missiles, each potentially displaying a spectrum of behaviors, including hostile, non-hostile, or suspicious actions toward the ownship. The problem of aerial target classification is addressed by analyzing prior knowledge and real-time information 
+
+> ∗M.S Research Scholar, Department of Aerospace Engineering, tenzinthinley561@gmail.com.
+> †Ph.D Candidate, Department of Aerospace Engineering, subashkumara1999@gmail.com.
+> ‡Assistant Professor, Department of Aerospace Engineering, deva@smail.iitm.ac.in. arXiv:2607.14606v1 [eess.SY] 16 Jul 2026
+
+collected from various sensors on board the ownship. The input data is in the form of a time series and includes parameters of the target such as position, altitude, velocity, climb rate, turn rate, acceleration, etc. Together, these parameters create a vector-valued time series that is used to classify the identified target into one of several predefined categories of aerial targets. Each type of target - be it a highly maneuverable multi-role fighter, a large payload-carrying bomber, a civilian commercial aircraft, or a supersonic missile - exhibits distinct characteristics that aid in target classification. Some of these targets could exhibit hostile behavior towards the ownship. In this paper, we present an integrated approach for aerial target classification and intent prediction that employs evidential reasoning. The method involves a two-step hierarchical process. In the first step, the system classifies the target type, such as a multirole fighter or a civilian commercial airliner etc. The second step determines the target’s intent or activity by utilizing information about the identified target type and its relative position to ownship. The target classification module, which constitutes the first step, takes time-series measurements as input and generates class probabilities for the identified aerial targets. Formally, a time-series sample is represented by 
+
+𝑇 = {𝑝 1, 𝑝 2, 𝑝 3, · · · , 𝑝 𝑡 }, where 𝑡 is the number of time steps and 𝑝 𝑖 is the feature vector pertaining to time instance 𝑖 .The underlying application determines the nature and dimensionality of the feature vector. The task is modeled as a multi-dimensional time series classification problem that uses attributes such as target position (𝑥, 𝑦, 𝑧 ), velocity 
+
+(𝑢 𝑥 , 𝑢 𝑦 , 𝑢 𝑧 ), acceleration (𝑎 𝑥 , 𝑎 𝑦 , 𝑎 𝑧 ), turn rate ( ¤ 𝜙 ), and radar cross-section (RCS) to classify the target type. The predictions are done on sub-samples of small duration and an ensemble classification approach using multiple classifiers is employed. A belief distribution is computed from the output of each classifier, and the beliefs are combined across classifiers as well as sub-samples using a modified belief combination technique. The target intent prediction module, representing the second step, identifies the intent of the target relative to the ownship. Belief predictions from the target classification module for each sub-sample are first converted into membership values, enabling categorization of the target based on its capabilities and typical mission profiles. Using a set of predefined rules, new labels are assigned by integrating target type information with target behavior. A standard rule-based decision tree classifier is then used to classify target intent. Finally, a distance-based combination technique is proposed to combine the belief distributions over time, providing a robust prediction of target type and intent. We demonstrate the effectiveness of this approach through a case study that involves classifying eight different aerial targets exhibiting three types of behavior (intent) towards the ownship: hostile, non-hostile, and suspicious. The experimental results show a classification accuracy of 88% for target type identification and 93% for target intent prediction. Image-based target type classification [ 1 , 2] in combat is limited by sensor constraints, occlusions, and the difficulty of generating realistic datasets. Time-series kinematic data captures dynamic target behavior more reliably. Hence, to the best of our knowledge, this study is the first to implement a time-series-based approach using target kinematic and dynamic features for target type classification in combat environments. The key contributions of this work are as follows: 21) We introduce a time-series-based approach using kinematic features for target type classification, which, to the best of our knowledge, has not been explored in prior works. 2) We proposed an early classification framework that utilizes sub-samples of the target’s kinematic trajectory data, rather than relying on the entire time series as is common in the existing works on target classification. This approach enables faster decision-making and helps reduce the pilot’s reaction time. 3) We developed an ensemble approach for aerial target classification that integrates predictions from multiple standard machine learning (ML) classifiers as well as across time. We present a new approach to reduce misclassification when combining predictions from multiple classifiers and across time. When the predictions are conflicting, rather than making a potentially incorrect classification, our method redistributes belief to a set of classes that reflect uncertainty in the prediction. This ensures that when the evidence is inconclusive, the approach makes a prediction with uncertainty instead of making an erroneous classification. 4) We proposed a rule-based classifier to predict the intent of aerial targets, categorizing them as hostile, non-hostile, or suspicious. This module leverages target type predictions from the target classification module, along with the kinematics of the target relative to the ownship. 5) In combat scenarios where target intent can shift rapidly, the well-established Dempster’s rule of combination often struggles to handle highly conflicting evidence effectively. To address this limitation, we proposed a combination technique that incorporates a distance metric to quantitatively assess the degree of conflict between sources. When this metric exceeds a predefined threshold, our method adaptively modifies the combination rule to better manage the conflict. By doing so, we prevent the propagation of incorrect predictions over time, thereby resulting in reliable information fusion in dynamic environments. The remainder of this paper is organized as follows. In Section II, we review related works on time-series classification and combination techniques for aerial target classification and other related applications. Section III provides background information on time-series classification and combination techniques. Section IV describes the proposed integrated target classification and intent prediction approach. Section V outlines the dataset used in this paper, along with the procedures for data generation and preprocessing. Section VI presents the findings from the experimental evaluation. Finally, Section VII discusses conclusions and suggestions for future work. 
+
+# II. Related Work 
+
+Existing research on time series classification for aerial applications can be broadly categorized based on the primary classification objective. Authors in [ 1, 2] focus on classifying aerial target types using image features, while [ 3– 6] emphasize classifying the intent of aerial targets using kinematic features. These studies, however, have been conducted under diverse experimental conditions and utilize non-publicly accessible time-series datasets, thereby limiting reproducibility. [ 1, 7] leverage images as features for target type classification. However, image-based methods 3can be unreliable in combat environments due to limitations of sensors, issues with occlusions, and the challenges of generating realistic data under dynamic conditions. Despite the progress made in these distinct areas, there is a notable absence of an integrated framework that jointly addresses target classification and intent prediction. This gap highlights the need for a comprehensive approach that can effectively unify these two critical aspects of aerial target classification. In aerial target classification, there could be inherent uncertainty due to missing or ambiguous information from multiple sensors [ 8]. Further, the time taken for classification given an input time-series, called the response time ,should be low for time-critical applications such as air combat. In the present work, we address the aforementioned issues and present an integrated aerial target classification and intent prediction algorithm. Classification, when performed on partial time-series data, is known as early classification [9 ]. A popular approach to solving the early classification problem is through the use of shapelets [ 10 ]. Shapelet transform [ 11 , 12 ] converts time-series data into local-shape pattern space, with each feature denoting the pattern match score/distance between a time series and a shapelet. Other approaches for early classification include dictionary-based approaches [ 13 ] that transform raw data to another domain based on frequency, using Fourier transform, Cosine transform, etc. However, these frequency-domain and shapelet-based methods are computationally expensive and are not suitable for onboard implementation on an aircraft. By making use of sub-samples rather than a time series of long duration for prediction, the proposed approach makes an early prediction with only a short time duration of time-series data, and the predictions are continuously refined as new sub-samples are fed to the algorithm. In other words, the prediction at the current time not only considers the most recent sub-sample but also information from all the past sub-samples. Approaches that employ standard ML methods have been extensively applied for target classification. Authors in [14 ] make use of instance-based learning, such as K-Nearest Neighbour (KNN), where the class label is classified based on a similarity or distance measure. Though Dynamic Time Warping (DTW) and its variants have been shown to be the best method theoretically, it is computationally demanding and might not be suitable for near-real-time applications such as aerial target classification. Recently, decision trees [ 15 ] and their variants have been extensively used in predicting the behavior or strategies of one or more opponents in adversarial environments. Ginoulhac et al. [ 16 ] used the gradient boosting algorithm to classify aerial targets. While the approach presented in this work is agnostic to the specific type of classifier, herein, Feed Forward Neural Networks (FFNN) [ 17 ], Support Vector Machine (SVM) [ 18 , 19 ], Long Short Term Memory (LSTM) [ 2, 20 ] and Decision Tree [ 21 ] have been used for their simplicity and complementary advantages. The output from each classifier is a probability distribution over the set of target classes. To handle uncertainty in the classifier prediction, each classifier is designed to generate a probability distribution over a subset of the power set of the output classes instead of a single class point estimate. These distributions are then combined using a combination rule based on Dempster-Shafer (DS) theory [ 4, 22 , 23 ] to create a final composite belief. Since Dempster’s combination rule is found to produce counterintuitive results due to conflict among the sources, Yager’s rule [ 24 ] has been proposed to redistribute the conflicting beliefs to the overall uncertainty, offering a more 4robust combination strategy. However, this often leads to a lack of actionable insights when it comes to applications such as aerial target classification. In the approach proposed herein, the conflict is reallocated to specific focal sets representing distinct hypotheses, as multiple aerial targets may share similar features. This approach aids in better decision-making by shifting the uncertainty to the focal sets while highlighting uncertainties. In situations where a target’s intent evolves over time, naive application of existing belief combination rules will lead to incorrect conclusions due to the combination of conflicting temporal evidence. To address this issue, we propose a method that utilizes a distance metric [ 25 ] to quantify the differences between the evidence. If the distance metric remains within a predefined range, belief combination continues, improving belief updates and enhancing confidence in target intent prediction. If the metric exceeds a predefined threshold, belief combination is stopped and a new evidence set is initialized to prevent misclassification. By making use of early prediction from partial data, and evidence combination across multiple sources and across time, the proposed approach strikes a balance between response time and accuracy of prediction. Military target intention recognition studies [ 3– 6] use highly specialized, custom datasets created from different simulated battle environments with unique features and targets. Each dataset differs greatly in how data is collected, the features measured, and how target behaviors or intents are defined and labeled. Due to these differences, models designed for one dataset heavily depend on its specific input features, data formats, and label definitions. At the same time, there is no common, publicly available benchmark dataset used across these studies, making direct comparisons difficult. Thus, prior work in this area [ 3 –6 ] typically involves comparing the proposed approach only against baseline methods adapted or re-implemented for their own specific datasets, rather than directly comparing it against other works. 
+
+# III. Preliminaries 
+
+A. Dempster-Shafer Theory 
+
+Dempster-Shafer Theory (DST) is a mathematical framework for analyzing evidence. The foundational work on this subject is detailed in [ 26 ]. In traditional probability theory, evidence is linked to a single possible event. In contrast, DST allows evidence to be associated with multiple potential events, such as sets of events. This means that evidence in DST can operate at a higher level of abstraction without requiring specific assumptions such as the events to reside within the evidential set. When the evidence is sufficient to assign probabilities to individual events, the Dempster-Shafer model simplifies and aligns with traditional probability theory. A key feature of DST is its ability to handle varying levels of precision in information, without necessitating additional assumptions for representation. There are three important functions in DST: the basic belief assignment function ( 𝑏𝑏𝑎 or 𝑚 ), the Belief function 𝐵𝑒𝑙 , and the Plausibility function 
+
+𝑃𝑙 . Since the proposed approach relies on these functions, they are defined in the sequel for completeness. Let 𝛺 be the universe of all the 𝑁 hypothesis, i.e., 𝛺 = {𝑋 1, 𝑋 2, . . . , 𝑋 𝑁 }. 𝛺 is also called the frame of discernment. Given 𝛺 , we can define a power set 2𝛺 that contains all possible subsets of 𝛺 , including the empty set ∅.5Definition 1 (Basic Belief Assignment (𝐵𝐵𝐴 )) The theory of evidence assigns to each element of the power set 2𝛺 , a belief mass, denoted by 𝑚 , called basic belief assignment. Formally, 𝑚 is defined as 
+
+𝑚 : 2 𝛺 → [ 0, 1], such that 𝑚 (∅) = 0 and ∑︁ 
+
+> 𝐴 ∈2𝛺
+
+𝑚 ( 𝐴 ) = 1. (1) Given two BBAs 𝒎 1 and 𝒎 2, the combined belief, denoted as 𝑚 1 ⊕ 
+
+> 𝐷𝑆
+
+𝑚 2, can be written using Dempster’s rule of combination as 
+
+𝑚 1 ⊕ 
+
+> 𝐷𝑆
+
+𝑚 2 =
+
+Í𝐵 ∩𝐶 =𝐴 ≠∅ 𝑚 1 (𝐵 ) · 𝑚 2 (𝐶 )
+
+1 − 𝐾 , ∀𝐴 ⊆ 𝛺, where 𝐾 =∑︁ 
+
+> 𝐵 ∩𝐶 =∅
+
+𝑚 1 (𝐵 ) · 𝑚 2 (𝐶 ). (2) In the preceding expression, 𝐾 is a measure of conflict between the two given mass sets. However, Dempster’s rule will produce counter-intuitive results when the conflict is high. To overcome this issue, the Yager combination rule [ 24 ] was proposed, whereby the conflicting belief is moved to 𝛺 as shown below 
+
+𝑚 1 ⊕ 
+
+> 𝑌 𝐺
+
+𝑚 2 ( 𝐴 ) =∑︁ 
+
+> 𝐵 ∩𝐶 =𝐴
+
+𝑚 1 (𝐵 ) 𝑚 2 (𝐶 ) for 𝐴 ≠ ∅
+
+𝑚 1 ⊕ 
+
+> 𝑌 𝐺
+
+𝑚 2 (𝛺 ) =∑︁ 
+
+> 𝐵 ∩𝐶 =𝛺
+
+𝑚 1 (𝐵 ) 𝑚 2 (𝐶 ) + 𝐾, where 𝐾 =∑︁ 
+
+> 𝐵 ∩𝐶 =∅
+
+𝑚 1 (𝐵 ) 𝑚 2 (𝐶 ) .
+
+(3) A common method for quantifying the degree of conflict between pieces of evidence is through the evidence distance, which is defined as follows. 
+
+Definition 2 (Evidence Distance) Suppose that 𝑚 1 and 𝑚 2 are two BBAs defined on 𝜣 , then the evidence distance between 𝑚 1 and 𝑚 2 is defined as 
+
+𝑑 (𝑚 1, 𝑚 2) =√︂ 12 (𝑚 1 − 𝑚 2)𝑇 𝐷 (𝑚 1 − 𝑚 2) (4) 
+
+where 𝒎 1 and 𝒎 2 are column vectors of length 2𝑵 corresponding to 𝒎 1 and 𝒎 2, respectively, and 𝑁 is the size of the set 𝜣 . 𝐷 is a 2𝑁 × 2𝑁 matrix whose elements are defined as 
+
+𝐷 ( 𝐴, 𝐵 ) = | 𝐴 ∩ 𝐵 || 𝐴 ∪ 𝐵 | , where 𝐴 ⊆ 𝛩 and 𝐵 ⊆ 𝛩. 
+
+The transferable belief model (TBM) represents beliefs using belief functions or BBAs instead of classical probability distributions [ 27 ]. However, when a decision must be made, it is desirable that these beliefs are expressed as probabilities so that they can be integrated into the decision-making frameworks. This conversion is achieved by the pignistic transformation, which converts the BBA into a probability distribution known as the pignistic probability. 6Definition 3 (Pignistic Probability) Give a basic belief assignment 𝒎 , its corresponding pignistic probability, denoted by 𝑏𝑒𝑡 𝑝 , is defined as 
+
+𝑏𝑒𝑡 𝑝 ({ 𝜔 }) =∑︁  
+
+> 𝐴 ⊆𝛺, 𝜔 ∈𝐴
+
+𝑚 ( 𝐴 )| 𝐴 |( 1 − 𝑚 (∅)) , ∀𝜔 ∈ 𝛺 (5) 
+
+where 𝐴 is a focal set, | 𝐴 | is its cardinality, and (1 − 𝑚 (∅)) is a normalization factor that accounts for conflict. 𝜔 is a singleton element in 𝛺 .
+
+B. Fuzzy set theory 
+
+Fuzzy set theory, introduced in [ 28 ], extends classical set theory by incorporating the principle of partial membership, allowing elements to belong to a set in varying degrees. This enables effective handling of uncertainty and imprecision, which is especially valuable in engineering applications where precise reasoning and sharp classifications are often impractical. A fuzzy set ˜𝐴 over a universe of discourse 𝑋 = {𝑥 1, 𝑥 2, . . . , 𝑥 𝑛 } is defined through a membership function 𝜇 ˜𝐴 and is represented as 
+
+˜𝐴 = {⟨ 𝑥, 𝜇 ˜𝐴 (𝑥 )⟩ | 𝑥 ∈ 𝑋 }, where 𝜇 ˜𝐴 : 𝑋 → [ 0, 1]. (6) 
+
+𝜇 ˜𝐴 (𝑥 ) indicates the degree to which each element 𝑥 ∈ 𝑋 belongs to the fuzzy set ˜𝐴 .
+
+# IV. Proposed Approach 
+
+In aerial target classification and intent prediction, a key requirement is to classify the target and infer its intent with a low response time, providing timely and actionable information to the other subsystems. Needless to say, minimising false predictions is essential to reduce operational risk and enhance decision-making accuracy. This section outlines the proposed methodology for aerial target classification and intent prediction. The methodology described here addresses aerial target classification and intent prediction as a time-series classification problem. Conventional time-series classification methods outlined in Section II, typically require analyzing longer temporal windows to make accurate predictions. However, this increases response times, delaying critical decisions, which is something undesirable in aerial target classification and intent prediction. The proposed approach leverages the idea of early classification. Instead of analyzing the complete time series, predictions are made on shorter subsamples. These early predictions by themselves could be less accurate due to lack of sufficient data, therefore, the predicted beliefs from the subsamples are propagated over time using an evidential reasoning framework. Thus, the proposed approach enables faster predictions supporting rapid responses, improved accuracy and confidence in the prediction over time as the belief is continually updated with subsequent evidences. The proposed methodology balances the trade-off between rapid response and prediction accuracy, making it well-suited for dynamic environments demanding near-real-time aerial target classification and intent prediction. The proposed 7approach consists of two main modules: 1 Target type classification. 2 Target intent prediction. The schematic of the proposed approach, including the two modules, is shown in Fig. 1. 
+
+A. Target Type Classification 
+
+The target type classification module classifies the aerial targets into one of the eight predefined class of aerial targets, including multi-role fighter, small unmanned aircraft, bomber, etc. using kinematic input features such as altitude, velocity, acceleration, turn rate, etc. The input to the module is a time-series subsample of window size 𝑤 , i.e., the subsample has 𝑤 real-valued observations. Each observation consists of 𝑘 distinct measurements (features) obtained from sensors such as accelerometers, gyroscopes, radar, etc. Formally, a time-series 𝑋 = {𝑋 1, 𝑋 2, 𝑋 3, . . . } is represented as an ordered collection of subsamples. Each subsample, 𝑋 𝑖 , consists of 𝑤 ordered real-valued observations, i.e., 
+
+𝑋 𝑖 = [𝑥 𝑖, 1, 𝑥 𝑖, 2, . . . , 𝑥 𝑖,𝑤 ]. We assume that the measurements from various sensors are fused, and the time-synchronized measurements are available to the target type classification module as a discrete-time signal. For instance, 𝑥 𝑖, 𝑗 denotes the measurements (features) corresponding to the time instant 𝑡 𝑖, 𝑗 , where 𝑡 𝑖, 𝑗 = (𝑖 − 1)𝑤 𝛥𝑡 + ( 𝑗 − 1) 𝛥𝑡 for 𝑖 = 1, 2, . . . 
+
+and 𝑗 = 1, 2, . . . , 𝑤 , and 𝛥𝑡 is the sampling time. At each time step, there are 𝑘 distinct features, i.e., 𝑥 𝑖, 𝑗 ∈ R𝑘 , where 
+
+𝑖 = 1, 2, . . . and 𝑗 = 1, 2, . . . , 𝑤 . Thus, a subsample 𝑋 𝑖 is a matrix of size 𝑘 × 𝑤 . It is noted that the target type classification module utilizes only a subset of the 𝑘 features, specifically, the first ℎ features, where ℎ < 𝑘 . The rest of the (𝑘 − ℎ) features are employed in the target intent prediction module, which will be described in the next section. For each instance or subsample 𝑋 𝑖 , the target type classification module predicts a target class label 𝑐 𝑖 , where 𝑐 𝑖 ∈ 𝛺 and 𝛺 
+
+is the set of target type class labels. The target type classification module, depicted in the left half of Fig. 1, takes the subsample 𝑋 𝑖 as input. The subsample includes time-synchronized features such as altitude (𝑧 ), velocity (𝑣 𝑥 , 𝑣 𝑦 , 𝑣 𝑧 ), acceleration (𝑎 𝑥 , 𝑎 𝑦 , 𝑎 𝑧 ),turn rate ( ¤ 𝜙 ) and RCS of the target. The Statistical Feature Extraction block transforms each subsample into a compact representation using statistical descriptors (e.g., mean, standard deviation, skewness). This step reduces the dimensionality of the subsample while preserving key temporal patterns, thereby reducing the computational effort involved in learning and inference. The subsample or the extracted features are fed into an ensemble classifier consisting of a bank of classifiers. While the proposed approach is general and can be applied to different types of classifiers, in this work, we utilize three classifiers: Support Vector Machine (SVM), Feedforward Neural Network (FFNN), and Long Short-Term Memory (LSTM). The SVM and FFNN work on the reduced statistical features, capturing discriminative patterns, while the LSTM directly processes the subsample to capture temporal dependencies within the subsample. Each classifier provides a probability distribution over the set of target classes. These probability outputs are subsequently converted into BBA using a mapping that explicitly incorporates uncertainty in prediction. The Fusion 8Fig. 1 The schematic of the proposed integrated target classification approach. 
+
+9Across Classifier block combines BBAs from multiple classifiers to provide a fused BBA for the current subsample. The resulting BBA is then fused with the BBA corresponding to the previous subsample in the Fusion Across Time block to result in the final BBA. It is emphasized that the final BBA resulting from the Fusion Across Time block not only uses information from the current subsample for prediction, but all the previous subsamples through the combination of the BBAs across time. In the subsequent paragraphs, each of the blocks depicted in Fig. 1 is explained in detail, starting with the Statistical Feature Extraction block. 
+
+1. Statistical Feature Extraction 
+
+For computational efficiency, in some classifiers such as the FFNN and SVM, instead of directly using the raw features or subsample, we make use of statistical features such as mean, variance, skewness, kurtosis, etc. that are derived from each subsample. This reduction in dimensionality results in a matrix representation of size ℎ × 𝑝 for each subsample, where 𝑝 represents the number of statistical features and 𝑝 < 𝑤 . To extract compact and discriminative features, we choose 11 statistical descriptors independently for each feature dimension over the 𝑤 time steps. Given the subsample 𝑋 𝑖 , 𝑥 ( 𝑓 ) 
+
+> 𝑖, 𝑗
+
+denotes the feature 𝑓 ∈ { 1, 2, . . . , ℎ } at measurement 𝑗 in subsample 𝑖 . Given the measurements 
+
+𝑥 ( 𝑓 ) 
+
+> 𝑖, 𝑗
+
+for 𝑗 = 1, . . . , 𝑤 , let ¯𝑥 ( 𝑓 ) 
+
+> 𝑖, 𝑗
+
+for 𝑗 = 1, . . . , 𝑤 denote the ordered set of measurements that are ordered from lowest to highest. The chosen statistical features along with their mathematical description are presented in Table 1. In the sequel, 
+
+⌊𝑚 ⌋ denotes the integer part of 𝑚 . The output of the Statistical Feature Extraction block is denoted by 𝑌 𝑖 , where 𝑌 𝑖 is a matrix of size ℎ × 𝑝 .
+
+Table 1 Statistical Features Used in Target Type Classification 
+
+Feature Name Mathematical Description Maximum ¯𝑥 ( 𝑓 )
+
+> 𝑖,𝑤
+
+Minimum ¯𝑥 ( 𝑓 )
+
+> 𝑖, 1
+
+Median ¯𝑥 ( 𝑓 ) 
+
+> 𝑖, (𝑤 +1)
+> 2
+
+, if 𝑤 is odd 
+
+> 12
+
+  ¯𝑥 ( 𝑓 ) 
+
+> 𝑖, 𝑤
+> 2
+
++ ¯𝑥 ( 𝑓 )  
+
+> 𝑖, 𝑤
+> 2+1
+
+, if 𝑤 is even Mean ( 𝜇 ( 𝑓 ) 
+
+> 𝑖
+
+) 1
+
+> 𝑤
+
+Í𝑤 𝑗 =1 ¯𝑥 ( 𝑓 )
+
+> 𝑖, 𝑗
+
+Standard deviation ( 𝜎 ( 𝑓 ) 
+
+> 𝑖
+
+)√︂ 1
+
+> 𝑤
+
+Í𝑤 𝑗 =1
+
+
+
+𝑥 ( 𝑓 ) 
+
+> 𝑖, 𝑗
+
+− 𝜇 ( 𝑓 )
+
+> 𝑖
+
+2
+
+Range ¯𝑥 ( 𝑓 ) 
+
+> 𝑖,𝑤
+
+− ¯𝑥 ( 𝑓 )
+
+> 𝑖, 1
+
+Skewness 1
+
+> 𝑤
+
+Í𝑤 𝑗 =1
+
+ 𝑥 ( 𝑓 )      
+
+> 𝑖, 𝑗 −𝜇 (𝑓 )
+> 𝑖
+> 𝜎 (𝑓 )
+> 𝑖
+
+3
+
+Kurtosis 1
+
+> 𝑤
+
+Í𝑤 𝑗 =1
+
+ 𝑥 ( 𝑓 )      
+
+> 𝑖, 𝑗 −𝜇 (𝑓 )
+> 𝑖
+> 𝜎 (𝑓 )
+> 𝑖
+
+4
+
+First quartile ( 𝑄 1) (1 − 𝛼 ) ¯𝑥 ( 𝑓 ) 
+
+> 𝑖,𝑚
+
++ 𝛼 ¯𝑥 ( 𝑓 )
+
+> 𝑖,𝑚 +1
+
+, where 𝑚 = ⌊ 𝑤 +14 ⌋ and 𝛼 = 𝑤 +14 − ⌊ 𝑤 +14 ⌋
+
+Third quartile ( 𝑄 3) (1 − 𝛼 ) ¯𝑥 ( 𝑓 ) 
+
+> 𝑖,𝑚
+
++ 𝛼 ¯𝑥 ( 𝑓 )
+
+> 𝑖,𝑚 +1
+
+, where 𝑚 = ⌊ 3(𝑤 +1) 
+
+> 4
+
+⌋ and 𝛼 = 3(𝑤 +1) 
+
+> 4
+
+− ⌊ 3(𝑤 +1) 
+
+> 4
+
+⌋
+
+Inter-quartile range (IQR) 𝑄 3 − 𝑄 1
+
+10 2. Ensemble Classification and Belief Mapping 
+
+Once the statistical features 𝑌 𝑖 are extracted, 𝑋 𝑖 and 𝑌 𝑖 are fed to the bank of classifiers. Classifiers such as SVM and FFNN take the extracted statistical features 𝑌 𝑖 , while LSTM models directly process the subsample 𝑋 𝑖 to capture temporal dependencies. The classification process is a mapping that takes either 𝑋 𝑖 or 𝑌 𝑖 as input and gives the probability distribution over the set of target type class labels as output. Suppose there are 𝑞 target types 𝑐 1, 𝑐 2, . . . , 𝑐 𝑞 to be classified, the frame of discernment 𝛺 can be constructed as 𝛺 = {𝑐 1, 𝑐 2, . . . , 𝑐 𝑞 }. The probability distribution from classifier C 𝑗 for subsample 𝑋 𝑖 is given as P𝑖, 𝑗 (𝛺 ) = {𝑃 𝑖, 𝑗  
+
+> 1
+
+, 𝑃 𝑖, 𝑗  
+
+> 2
+
+, . . . , 𝑃 𝑖, 𝑗 𝑞 }. These probability distributions P𝑖, 𝑗 must be effectively combined to establish a comprehensive prediction. To combine the evidences ( P𝑖, 𝑗 ) from the classifiers, we employ Dempster-Shafer theory of evidential reasoning. Unlike the Bayesian approach [ 29 ] that requires prior probabilities and can only assign belief to singleton hypotheses, DS theory allows for modeling incomplete, uncertain, or ambiguous information through Basic Belief Assignment as discussed in Section III.A. This enables combining beliefs over both singleton and composite class subsets. To leverage the benefits of evidential reasoning provided by DS theory, we first need to convert the probability distribution P𝑖, 𝑗 from each classifier into a belief distribution 𝑚 𝑖, 𝑗 . To that end, we introduce an additional variable 
+
+err _rate 𝑗 , which represents the complement of the accuracy of classifier C 𝑗 , i.e., 
+
+err _rate 𝑗 = 1 − 𝑎𝑐𝑐𝑢𝑟𝑎𝑐𝑦 C 𝑗 . (7) The error rate indicates uncertainty or in other words, belief over the complete frame of discernment. The map from 
+
+P𝑖, 𝑗 to 𝑚 𝑖, 𝑗 accounting for the error rate is defined as given below: 
+
+𝑚 𝑖, 𝑗 (𝑐 ) =
+
+
+
+0, if 𝑐 = ∅(1 − err _rate 𝑗 ) × 𝑃 𝑖, 𝑗  
+
+> 1
+
+, if 𝑐 = 𝑐 1
+
+(1 − err _rate 𝑗 ) × 𝑃 𝑖, 𝑗  
+
+> 2
+
+, if 𝑐 = 𝑐 2
+
+...
+
+(1 − err _rate 𝑗 ) × 𝑃 𝑖, 𝑗 𝑞 , if 𝑐 = 𝑐 𝑞 
+
+err _rate 𝑗 , if 𝑐 = 𝛺 . (8) Let F = {𝑐 1, 𝑐 2, . . . , 𝑐 𝑞 , 𝛺, ∅} denote the domain of 𝑚 𝑖, 𝑗 , where 𝑚 𝑖, 𝑗 (𝛺 ) represents the uncertainty in prediction of classifier C 𝑗 . Certain groups of target classes often exhibit highly similar characteristics, resulting in considerable classification ambiguity due to overlapping features, as illustrated in Table 2. For instance, Bomber and Civilian commercial airliner possess comparable kinematic and dynamic characteristics, with even their RCS values 11 falling within similar ranges. Similarly, Military helicopter and Civilian helicopter can be challenging to distinguish, as they share closely related features that make it difficult for the classifiers to discriminate between them. In combat scenarios, providing an uncertain prediction is often more beneficial to the pilot than an incorrect one. For instance, if the actual target is a Bomber but the classifier erroneously identifies it as a Civilian commercial airliner —owing to the challenge of distinguishing between these similar classes—this misclassification could have serious consequences. In safety-critical applications such as the one addressed in this study, it is preferable for the target type prediction algorithm to communicate uncertainty, indicating that the target may be either a Bomber or a Civilian commercial airliner , until additional evidence is available to make a confident and accurate identification. This approach prioritizes operational safety by preventing potentially hazardous decisions based on unreliable predictions. Let 𝜃 𝑥 ⊆ 2𝛺 for 𝑥 = 1, 2, . . . , 𝑙 denote a predefined set of focal elements representing target types that share similar characteristics and thereby could potentially lead to erroneous predictions as discussed in the previous paragraph. In this work, we assume that a target type can be part of at most one focal set. The definition of 𝜃 𝑥 would be problem-specific and can either be inferred apriori by an expert or during the training process. For example, 𝜃 𝑙 = {𝑐 2, 𝑐 3 } represents a two-element set consisting of targets 𝑐 2 and 𝑐 3 with similar characteristics and RCS signatures. An appealing feature of the evidential reasoning framework is that such focal sets can be explicitly included in the belief prediction as outlined below. We modify the BBA 𝑚 𝑖, 𝑗 presented in (8) to account for the focal sets 𝜃 𝑥 for 𝑥 = 1, 2, . . . , 𝑙 to result in the belief distribution 𝑚 𝑖, 𝑗 as shown below. With the 𝑙 focal sets 𝜃 𝑥 , the belief distribution 𝑚 𝑖, 𝑗 will have (𝑞 + 𝑙 + 2) elements, which includes 𝑞 singleton sets, 𝑙 focal sets, the empty set ∅, and the frame of discernment 𝛺 . The belief distribution 
+
+𝑚 𝑖, 𝑗 is defined as 
+
+𝑚 𝑖, 𝑗 (𝑐 ) =
+
+
+
+0, for 𝑐 = ∅
+
+𝑚 𝑖, 𝑗 (𝑐 ), for 𝑐 ∉ 𝜃 𝑥 and 𝑐 ≠ 𝛺 for 𝑥 = 1, 2, . . . , 𝑙 𝛼 𝑥 𝑖, 𝑗 × 𝑚 𝑖, 𝑗 (𝑐 ), for 𝑐 ∈ 𝜃 𝑥 for 𝑥 = 1, 2, . . . , 𝑙 
+
+(1 − 𝛼 𝑥 𝑖, 𝑗 ) × Í𝑐 𝑘 ∈ 𝜃 𝑥 𝑚 𝑖, 𝑗 (𝑐 𝑘 ), for 𝑐 = 𝜃 𝑥 for 𝑥 = 1, 2, . . . , 𝑙 𝑚 𝑖, 𝑗 (𝑐 ), for 𝑐 = 𝛺 . (9) In the preceding expression, 𝛼 𝑥 𝑖, 𝑗 ∈ [ 0, 1] is a weighting term given by 
+
+𝛼 𝑥 𝑖, 𝑗 = max 𝑐 𝑝 ∈ 𝜃 𝑥 ,𝑐 𝑞 ∈ 𝜃 𝑥 ,𝑐 𝑝 ≠𝑐 𝑞 𝑚 𝑖, 𝑗 
+
+ 𝑐 𝑝 
+
+ − 𝑚 𝑖, 𝑗 
+
+ 𝑐 𝑞 
+
+Í𝑐 𝑘 ∈ 𝜃 𝑥 𝑚 𝑖, 𝑗 (𝑐 𝑘 ) . (10) Let F = {𝑐 1, 𝑐 2, . . . , 𝑐 𝑞 , 𝜃 1, 𝜃 2, . . . , 𝜃 𝑙 , 𝛺, ∅} denote the domain of 𝑚 𝑖, 𝑗 . In the following lemma, we show that the updated belief distribution 𝑚 𝑖, 𝑗 defined in (9) results in a valid BBA that satisfies the non-negativity and normalization 12 properties as outlined in (1). 
+
+Lemma 1 The belief distribution 𝑚 𝑖, 𝑗 defined in (9) results in a BBA that satisfies the following properties: 
+
+𝑚 𝑖, 𝑗 ( 𝐴 ) ∈ [ 0, 1] ∀ 𝐴 ∈ F , 𝑚 𝑖, 𝑗 (∅) = 0, and ∑︁ 
+
+> 𝐴 ∈ F
+
+𝑚 𝑖, 𝑗 ( 𝐴 ) = 1.
+
+Proof. We begin by showing that 𝑚 𝑖, 𝑗 (∅) = 0 and 𝑚 𝑖, 𝑗 ( 𝐴 ) ∈ [ 0, 1] for all 𝐴 ∈ F . We observe that 𝑚 𝑖, 𝑗 ( 𝐴 ) ∈ [ 0, 1]
+
+for 𝐴 = ∅ and 𝐴 = 𝛺 since 𝑚 𝑖, 𝑗 (∅) = 0 and 𝑚 𝑖, 𝑗 (𝛺 ) = 𝑚 𝑖, 𝑗 (𝛺 ) = 𝑒𝑟𝑟 _𝑟𝑎𝑡𝑒 𝑗 , where 𝑒𝑟𝑟 _𝑟𝑎𝑡𝑒 𝑗 ∈ [ 0, 1]. Now, let us consider three cases, namely 𝐴 ∉ 𝜃 𝑥 , 𝐴 ∈ 𝜃 𝑥 , and 𝐴 = 𝜃 𝑥 , for 𝑥 = 1, 2, . . . , 𝑙 . Since 𝑚 𝑖, 𝑗 ( 𝐴 ) = 𝑚 𝑖, 𝑗 ( 𝐴 ) for 𝐴 ∉ 𝜃 𝑥 ,from (8) , we have 𝑚 𝑖, 𝑗 ( 𝐴 ) ∈ [ 0, 1] for 𝐴 ∉ 𝜃 𝑥 . Recognizing that 0 ≤ 𝛼 𝑥 𝑖, 𝑗 ≤ 1, we can conclude from (8) and (9) that 
+
+𝑚 𝑖, 𝑗 ( 𝐴 ) ∈ [ 0, 1] for 𝐴 ∈ 𝜃 𝑥 , where 𝑥 = 1, 2, . . . , 𝑙 . For 𝐴 = 𝜃 𝑥 , i.e., 𝐴 is one of the focal sets, from (9), we see that 
+
+𝑚 𝑖, 𝑗 ( 𝐴 ) =∑︁   
+
+> 𝑐 𝑘 ∈𝜃 𝑥
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) − max        
+
+> 𝑐 𝑝 ∈𝜃 𝑥 ,𝑐 𝑞 ∈𝜃 𝑥 ,𝑐 𝑝 ≠𝑐 𝑞
+
+𝑚 𝑖, 𝑗 
+
+ 𝑐 𝑝 
+
+ − 𝑚 𝑖, 𝑗 
+
+ 𝑐 𝑞 
+
+ , for 𝐴 = 𝜃 𝑥 and 𝑥 = 1, 2, . . . , 𝑙. (11) Since Í𝑐 𝑘 ∈ 𝜃 𝑥 𝑚 𝑖, 𝑗 (𝑐 𝑘 ) ≤ Í  
+
+> 𝑐 𝑘 ∈ F
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ), where 𝑥 = 1, 2, . . . , 𝑙 , and Í  
+
+> 𝑐 𝑘 ∈ F
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) = 1, we can conclude that 
+
+𝑚 𝑖, 𝑗 ( 𝐴 ) ∈ [ 0, 1] for 𝐴 = 𝜃 𝑥 .Now, we will show the normalization property Í𝐴 ∈ F 𝑚 𝑖, 𝑗 ( 𝐴 ) = 1. Without loss of generality, let us assume that the set {𝑐 1, 𝑐 2, . . . , 𝑐 𝑞 } is partitioned as S1 = {𝑐 1, 𝑐 2, . . . , 𝑐 𝑚 } and S2 = {𝑐 𝑚 +1, . . . , 𝑐 𝑞 }, where 1 ≤ 𝑚 < 𝑞 .The set S1 is such that if 𝐴 ∈ S 1, then 𝐴 ∉ 𝜃 𝑥 for 𝑥 = 1, 2, . . . , 𝑙 . For the set S2, if 𝐴 ∈ S 2, then 𝐴 ∈ 𝜃 𝑥 
+
+for 𝑥 = 1, 2, . . . , 𝑙 . Recall that F has (𝑞 + 𝑙 + 2) elements, summing the belief values for all 𝐴 ∈ F , we get 
+
+Í𝐴 ∈ S 1 𝑚 𝑖, 𝑗 ( 𝐴 ) + Í𝐴 ∈ S 2 𝑚 𝑖, 𝑗 ( 𝐴 ) + 𝑚 𝑖, 𝑗 (∅) + 𝑚 𝑖, 𝑗 (𝛺 ). Using (9), this sum can be written as ∑︁ 
+
+> 𝐴 ∈ F
+
+𝑚 𝑖, 𝑗 ( 𝐴 ) =∑︁  
+
+> 𝑐 𝑘 ∉𝜃 𝑥
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + 𝛼 1
+
+> 𝑖, 𝑗
+
+∑︁ 𝑐 𝑘 ∈ 𝜃 1
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + 𝛼 2
+
+> 𝑖, 𝑗
+
+∑︁ 𝑐 𝑘 ∈ 𝜃 2
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + . . . + 𝛼 𝑙 𝑖, 𝑗 ∑︁ 𝑐 𝑘 ∈ 𝜃 𝑙 
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + 𝑚 𝑖, 𝑗 (𝛺 ). (12) Using (9) and summing up the belief contributions from the 𝑙 focal sets, we have ∑︁ 
+
+> 𝐴 ∈ F\F
+
+𝑚 𝑖, 𝑗 ( 𝐴 ) = (1 − 𝛼 1 
+
+> 𝑖, 𝑗
+
+)∑︁   
+
+> 𝑐 𝑘 ∈𝜃 1
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + ( 1 − 𝛼 2 
+
+> 𝑖, 𝑗
+
+)∑︁   
+
+> 𝑐 𝑘 ∈𝜃 2
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + . . . + ( 1 − 𝛼 𝑙 𝑖, 𝑗 )∑︁   
+
+> 𝑐 𝑘 ∈𝜃 𝑙
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ). (13) From (12) and (13), we get ∑︁ 
+
+> 𝐴 ∈ F
+
+𝑚 𝑖, 𝑗 ( 𝐴 ) =∑︁  
+
+> 𝑐 𝑘 ∉𝜃 𝑥
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + ∑︁   
+
+> 𝑐 𝑘 ∈𝜃 1
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + ∑︁   
+
+> 𝑐 𝑘 ∈𝜃 2
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + . . . +∑︁   
+
+> 𝑐 𝑘 ∈𝜃 𝑙
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ) + 𝑚 𝑖, 𝑗 (𝛺 ). (14) Recognizing that the right hand side of the preceding equation can be reduced to Í  
+
+> 𝑐 𝑘 ∈ F
+
+𝑚 𝑖, 𝑗 (𝑐 𝑘 ), which equals 1, we have Í𝐴 ∈ F 𝑚 𝑖, 𝑗 ( 𝐴 ) = 1, thus proving the normalization property. □
+
+13 3. Belief Fusion Across Classifiers and Time 
+
+In this block, the beliefs 𝑚 𝑖, 𝑗 from the classifiers C 𝑗 are fused to result in a combined belief distribution. Since the backbone of the proposed approach is the DS theory of evidence, it is reasonable to adopt one of the many combination rules proposed in the literature. The Dempster rule of combination, one of the widely adopted combination rules, is found to result in counter-intuitive results when the evidences are highly conflicting [ 30 ], which is likely to be the case for the aerial target identification and intent prediction problem. To overcome the issue of conflict, the Yager combination rule was proposed in [ 24 ], wherein the conflicting belief is moved to 𝛺 as shown in (3) . However, Yager’s rule tends to allocate the conflict mass to the frame of discernment 𝛺 , which does not offer useful decision insight. To address this shortcoming, we propose a combination rule that is applicable to belief distributions with focal sets, whereby instead of assigning conflict to 𝛺 , we redistribute it to specific focal sets 𝜃 1, 𝜃 2, . . . , 𝜃 𝑙 based on the nature of conflict. The combined belief from the proposed rule provides conclusive and interpretable decisions, especially in scenarios where evidence clearly supports certain groups of targets (focal sets), but remains uncertain between them (elements of the focal sets). Given two belief distributions 𝑚 𝑖, 1 and 𝑚 𝑖, 2 that are defined over the domain F , the proposed combination rule is defined as 
+
+𝑚 𝑖, 1∩2 ( 𝐴 ) =∑︁ 
+
+> 𝐵 ∩𝐶 =𝐴
+
+𝑚 𝑖, 1 (𝐵 )𝑚 𝑖, 2 (𝐶 ), ∀𝐴 ≠ ∅ and 𝐴 ≠ 𝜃 𝑥 , for 𝑥 = 1, 2, . . . , 𝑙 𝑚 𝑖, 1∩2 ( 𝐴 ) =∑︁ 
+
+> 𝐵 ∩𝐶 =𝐴
+
+𝑚 𝑖, 1 (𝐵 )𝑚 𝑖, 2 (𝐶 ) + 𝐾 𝑥 , for 𝐴 = 𝜃 𝑥 , for 𝑥 = 1, 2, . . . , 𝑙, where 
+
+𝐾 𝑥 =∑︁      
+
+> 𝐵 ∩𝐶 =∅𝐵 ∈𝜃 𝑥 ,𝐶 ∈𝜃 𝑥
+
+𝑚 𝑖, 1 (𝐵 )𝑚 𝑖, 2 (𝐶 ).
+
+(15) Since the preceding belief distribution does not satisfy the property Í𝐴 ∈ F 𝑚 𝑖, 1∩2 ( 𝐴 ) = 1, the combined belief is normalized as follows: 
+
+𝑚 ′ 
+
+> 𝑖, 1∩2
+
+( 𝐴 ) = 𝑚 𝑖, 1∩2 ( 𝐴 )
+
+Í𝐴 ∈ F 𝑚 𝑖, 1∩2 ( 𝐴 ) . (16) When no conflict exists within a focal set 𝜃 𝑥 , the corresponding conflict 𝐾 𝑥 becomes zero, and the generalized combination rule reduces to the standard Dempster-Shafer rule. In contrast, when significant conflict arises among elements of a predefined focal group, the proposed modification redistributes the conflicting mass within that group. This targeted redistribution preserves class specificity and avoids dilution of belief into the global uncertainty set 𝛺 .Following this fusion step, the resulting belief distributions corresponding to the 𝑖 𝑡 ℎ subsample 𝑋 𝑖 are combined across the three classifiers to obtain the distribution 𝑚 ′
+
+> 𝑖, 1∩2∩3
+
+, where 
+
+𝑚 ′ 
+
+> 𝑖, 1∩2∩3
+
+= 𝑚 𝑖, 1 ⊕ 𝑚 𝑖, 2 ⊕ 𝑚 𝑖, 3 . (17) 14 In the preceding expression, ⊕ denotes the combination operation defined in (15) . The distribution 𝑚 ′ 
+
+> 𝑖, 1∩2∩3
+
+is then combined with the belief distribution from the (𝑖 − 1)𝑡 ℎ subsample to result in the distribution 𝑀 𝑖 , which is the output of the target type classification module for the subsample 𝑋 𝑖 . Specifically, 𝑀 𝑖 is given by 
+
+𝑀 𝑖 = 𝑚 ′ 
+
+> 𝑖, 1∩2∩3
+
+⊕ 𝑀 𝑖 −1 (18) where 𝑀 𝑖 −1 is the output of the target type classification module for subsample 𝑋 𝑖 −1 and is defined over the domain F .
+
+B. Target Intent Prediction 
+
+The objective of the target intent prediction module is to infer the intent of an approaching target with respect to the ownship. In this work, target intent is categorized into three classes: hostile, non-hostile, and suspicious. In addition to the output from the target type classification module, this module incorporates combat geometric features derived from both the target and the ownship. As shown in the right half of Fig. 1, the module processes the same set of subsamples 
+
+𝑋 𝑖 , but focuses on the last (𝑘 − ℎ) features in each 𝑥 𝑖, 𝑗 . Specifically, it uses four relative geometric features: range, attacker deviation angle, off angle, and aspect angle. These features are formally defined in the sequel. A decision tree classifier forms the core of the module. It utilizes handcrafted rules and fuzzy membership degrees to produce a probability distribution across the three intent classes. These probability distributions are then converted into belief distributions using a mapping similar to the one described earlier. Finally, the module applies a belief combination rule–akin to the one employed in the target type classification module–to fuse beliefs across the subsamples. In combat scenarios, the true intent of a target may change over time; consequently, the belief combination rule proposed in the previous section will lead to incorrect conclusions due to the combination of conflicting temporal evidence. To overcome this problem, we propose a method to quantify the differences between the evidence using a distance metric introduced in [ 25 ]. When the calculated distance remains within a predefined range, belief combination proceeds, thereby refining updates and increasing confidence in intent prediction. If the distance exceeds the threshold, the belief combination is terminated and a new evidence set is initiated to avoid misclassification. 
+
+1. Features Derived From Combat Geometry 
+
+In an aerial combat engagement, the target will strive to position itself in such a manner to gain air superiority. We identify four features that characterize the relative position and orientation of the target with respect to the ownship in an aerial combat scenario [ 31 ]. The aerial combat geometry involving the ownship and a target is depicted in Fig. 2. The four combat geometry features are range, attacker deviation angle, off angle, and aspect angle. Range ( 𝑟 ) represents the distance from the target to the ownship. Aspect angle ( 𝜖 ) is the angle between the ownship’s 6’O clock line and the line-of-sight (LOS) vector. It provides information about whether the target is ahead or behind 15 Fig. 2 Combat geometry involving the ownship and a target. 
+
+the ownship. If 𝜖 < 90 deg , the attacker is behind the ownship. If 𝜖 > 90 deg , the attacker is ahead of the ownship. The attacker deviation angle ( 𝜆 𝐴 ) is the angle between the target’s velocity vector and the LOS vector. It provides information on whether the target’s nose is pointed towards the ownship. Off angle ( 𝜂 ) is the angle between the velocity vectors of the target and the ownship. Let ®𝑅 represent the position vector of the ownship relative to the target, and 
+
+®𝑣 𝑂 and ®𝑣 𝑇 denote the velocity vectors of the ownship and target, respectively. While ®𝑣 𝑂 is obtained from navigation sensors onboard the ownship, ®𝑅 and ®𝑣 𝑇 are typically estimated by a target tracking module that processes data from radar mounted on the ownship. The mathematical expressions for these four features are provided below: 
+
+𝑟 = | ® 𝑅 |, 𝜖 = cos −1 ®𝑣 𝑂 · ® 𝑅 
+
+|® 𝑣 𝑂 || ® 𝑅 |
+
+!
+
+, 𝜆 𝐴 = cos −1 ®𝑣 𝑇 · ® 𝑅 
+
+|® 𝑣 𝑇 || ® 𝑅 |
+
+!
+
+, and 𝜂 = cos −1
+
+ ®𝑣 𝑇 · ® 𝑣 𝑂 
+
+|® 𝑣 𝑇 ||® 𝑣 𝑂 |
+
+
+
+. (19) 
+
+2. Membership Degree Based on Target Type 
+
+The belief distribution generated by the target-type classification module offers valuable insight into the potential intent of the target. For example, a fighter aircraft is generally more likely to be hostile than a civilian commercial airliner. To quantify the threat level of the target, we aggregate the belief distributions from the target-type classification module over semantically grouped target classes. Inspired from the conversion method proposed in [ 2 ], wherein probability distributions are used to derive fuzzy membership degrees for threat classification, herein, we employ belief distributions from the target-type classification module to compute the membership degrees. We categorize the targets into three threat levels: low, medium, and high. A class (or set of classes) in F is mapped to one of three threat levels by aggregating the belief mass assigned to the relevant focal elements. Let C1, C2, C3 ∈ F denote the predefined subsets of 
+
+F corresponding to low, medium, and high threat levels, respectively. The membership values are computed as given 16 below: 
+
+𝜇 𝐼 (𝑀 𝑖 ) =∑︁ 
+
+> 𝐴 ∈ C 1
+
+𝑀 𝑖 ( 𝐴 ) (Low threat) 
+
+𝜇 𝐼 𝐼 (𝑀 𝑖 ) =∑︁ 
+
+> 𝐴 ∈ C 2
+
+𝑀 𝑖 ( 𝐴 ) (Medium threat) 
+
+𝜇 𝐼 𝐼 𝐼 (𝑀 𝑖 ) =∑︁ 
+
+> 𝐴 ∈ C 3
+
+𝑀 𝑖 ( 𝐴 ) (High threat) (20) 
+
+3. Rules Derived From Combat Geometry Features 
+
+The decision rules for the decision tree classifier are outlined next. The basic fighter maneuver doctrine offers tactical guidelines pilots use in close-range air combat to achieve a positional advantage over an opponent [ 32 ]. Based on this doctrine, we derive three rules using the four previously described combat geometry features: range, attacker deviation angle, off angle, and aspect angle. When these three rules are satisfied, they indicate that the target is executing an attacking maneuver relative to the ownship. The three rules are detailed below. 
+
+R1: The distance between the target and the ownship is decreasing. Mathematically, 𝑑𝑟 𝑑𝑡 < 0.
+
+R2: The target is pointing towards the ownship, i.e., 𝜆 𝐴 < 𝑓 (𝜖 ).
+
+R3: The target points toward the ownship when it is behind. Mathematically, 𝜂 < 90 ◦, when 𝜖 < 90 ◦.where 𝑓 (𝜖 ) =
+
+
+
+𝜖, 𝜖 < 90 0
+
+180 0 − 𝜖, 𝜖 > 90 0
+
+. With an objective to reduce the computational demand on the decision tree classifier, we define three additional variables, 𝑅 𝑖 , for 𝑖 = 1, 2, 3, to denote the fraction of time steps within a subsample during which the rule R𝑖 is satisfied. The fraction 𝑅 𝑖 is computed as 
+
+𝑅 𝑖 = 1
+
+𝑤 
+
+> 𝑤
+
+∑︁ 
+
+> 𝑡 =1
+
+1(R 𝑖 (𝑡 )) (21) where 1(·) is the indicator function that equals one if its argument is true, and zero otherwise. This transformation reduces the dimensionality of the training data from 𝑛 × 3𝑤 to 𝑛 × 3. Combined with the three previously defined membership degrees, we now form a feature vector of size 6 × 1 consisting of 𝜇 𝐼 , 𝜇 𝐼 𝐼 , 𝜇 𝐼 𝐼 𝐼 , and 𝑅 𝑖 for 𝑖 = 1, 2, 3. This feature vector serves as input to the rule-based decision tree classifier. The output probability distribution from the classifier is converted to BBA using a mapping similar to (8) . The resulting belief distribution that corresponds to the 𝑖 𝑡 ℎ subsample 
+
+𝑋 𝑖 is denoted as 𝑛 𝑖 , where 𝑛 𝑖 is defined over the domain G = {Hostile , Non-hostile , Suspicious , 𝛺, ∅} .
+
+4. Distance-Based Combination Rule 
+
+In dynamic scenarios where target intent evolves rapidly over time, applying the DS combination rule or the Yager rule or the combination rule proposed in (15) across successive subsamples can be problematic. The primary challenge arises from the fact that conflicting evidence may be amplified through repeated combinations, potentially resulting in 17 unreliable conclusions. This highlights the need for alternative strategies to mitigate the cumulative effects of dynamic inconsistencies in rapidly evolving environments. Let us consider the belief distributions 𝑛 𝑖 and 𝑁 𝑖 −1, where 𝑁 𝑖 −1 is the output of the target intent prediction module corresponding to subsample 𝑋 𝑖 −1. The degree of conflict between the two pieces of evidence can be quantified using the evidence distance [ 25 ], denoted as 𝑑 (𝑛 𝑖 , 𝑁 𝑖 −1) and defined in (4) . We propose a modification to the standard DS combination rule (2) by integrating a distance-based stopping criterion. The underlying idea is that if 𝑑 (𝑛 𝑖 , 𝑁 𝑖 −1) ≥ 𝑥 ∗, where 𝑥 ∗ is a predefined threshold, the high level of conflict indicates that the combination process should be restarted from that point onward rather than carried forward. The threshold 𝑥 ∗ is determined by solving an optimization problem, which aims to maximize the classification accuracy. The modified combination rule is formally defined as 
+
+𝑛 𝑖 ⊕ 
+
+> 𝐶𝐷
+
+𝑁 𝑖 −1 =
+
+
+
+𝑛 𝑖 ⊕ 
+
+> 𝐷𝑆
+
+𝑁 𝑖 −1, if 𝑑 (𝑛 𝑖 , 𝑁 𝑖 −1) < 𝑥 ∗
+
+𝑛 𝑖 , if 𝑑 (𝑛 𝑖 , 𝑁 𝑖 −1) ≥ 𝑥 ∗
+
+. (22) The output of the target intent prediction module for the 𝑖 𝑡 ℎ subsample 𝑋 𝑖 is denoted as 𝑁 𝑖 , where 𝑁 𝑖 = 𝑛 𝑖 ⊕ 
+
+> 𝐶𝐷
+
+𝑁 𝑖 −1.Algorithm 1 provides the pseudocode for the aerial target classification and intent prediction algorithm. 
+
+# V. Synthetic Dataset Generation 
+
+A large and diverse training dataset is key to achieving good performance for the classifiers discussed in the previous section. However, in the context of aerial combat, access to such datasets is often limited and not publicly available due to security concerns. Moreover, collecting experimental data in this domain can be highly impractical. Consequently, there is a need for a simplified method to generate a synthetic dataset containing trajectories of various aerial vehicles operating in a combat environment. In the domain of aerial target classification, existing studies typically rely on simulated datasets; however, to the best of our knowledge, none of these works [ 2–6 ] provide details on how the data was generated or the specific conditions under which the simulations were performed. The lack of publicly available datasets prevents reproducibility and poses challenges for further research progress in this domain. To overcome these limitations, we generate our own dataset, enabling precise control over the simulation process and ensuring that it is tailored to the operational scenarios relevant to this study. The dataset generation process has been detailed in our previous work [32]. In [ 32 ], we introduced an optimization-based technique that uses basic kinematic target motion models to produce diverse trajectories of various aerial targets operating in a combat environment. In this study, we employ that approach to generate a dataset of aerial target trajectories encompassing multiple target types, as listed in Table 2. For completeness, a brief overview of the method from [ 32 ] is provided before detailing the dataset used to train and evaluate the aerial target classification and intent prediction modules. 18 Algorithm 1 Aerial Target Classification and Intent Prediction  
+
+> 1:
+
+Input: A multivariate time series 𝑋 = {𝑋 1, 𝑋 2, 𝑋 3, . . . } consisting of subsamples 𝑋 𝑖 = [𝑥 𝑖, 1, 𝑥 𝑖, 2, . . . , 𝑥 𝑖,𝑤 ]. 
+
+> 2:
+
+Output: Target type ( 𝑀 𝑖 ) and intent ( 𝑁 𝑖 ) belief distributions.  
+
+> 3:
+
+procedure Target type classification (𝑋 𝑖 , 𝑀 𝑖 −1) 
+
+> 4:
+
+Extract statistical features 𝑌 𝑖 from 𝑋 𝑖 (Section IV.A.1).  
+
+> 5:
+
+Obtain probability distributions P𝑖, 𝑗 (·) for 𝑗 = 1, 2, 3 using trained FFNN, SVM, and LSTM classifiers.  
+
+> 6:
+
+Convert P𝑖, 𝑗 (·) to BBA 𝑚 𝑖, 𝑗 using (9).  
+
+> 7:
+
+Fuse 𝑚 𝑖, 𝑗 across classifiers using the combination rule in (15) to obtain 𝑚 ′ 
+
+> 𝑖, 1∩2∩3
+
+using (16) and (17).  
+
+> 8:
+
+Combine evidence across time by fusing 𝑚 ′ 
+
+> 𝑖, 1∩2∩3
+
+with 𝑀 𝑖 −1 to get 𝑀 𝑖 using (18).  
+
+> 9:
+
+return Target type belief distribution 𝑀 𝑖 . 
+
+> 10:
+
+end procedure  
+
+> 11:
+
+procedure Target intent prediction (𝑋 𝑖 , 𝑀 𝑖 , 𝑁 𝑖 −1) 
+
+> 12:
+
+Extract features from combat geometry using (19) (Section IV.B.1).  
+
+> 13:
+
+Convert target type beliefs 𝑀 𝑖 to membership values 𝜇 𝐼 , 𝜇 𝐼 𝐼 , 𝜇 𝐼 𝐼 𝐼 using (20) (Section IV.B.2).  
+
+> 14:
+
+Derive rules from combat geometry features using (21) (Section IV.B.3).  
+
+> 15:
+
+Form feature vector using rules and membership degrees; obtain belief distribution 𝑛 𝑖 (Section IV.B.3).  
+
+> 16:
+
+Fuse evidence across time by fusing 𝑛 𝑖 and 𝑁 𝑖 −1 using the combination rule in (22) (Section IV.B.4).  
+
+> 17:
+
+Return target intent belief distribution 𝑁 𝑖 . 
+
+> 18:
+
+end procedure A. Optimization-Based Approach For Dataset Generation 
+
+Kinematic motion models are employed to generate the aerial target trajectories, with dynamic feasibility ensured by incorporating target-specific dynamic constraints. We consider eight distinct aerial target types: Air-to-air missile ,
+
+Bomber , Civilian commercial airliner , Civilian helicopter , Military helicopter , Multi-role fighter , Small civilian aircraft , and Small unmanned aircraft . For each target type, operational limits on parameters such as altitude, velocity, climb rate, turn rate, and acceleration are defined based on typical mission profiles. These constraints are either provided by domain experts or derived from historical data for the respective target. The specific constraint values for the eight target types are provided in Table 2. The objective is to generate a dataset of trajectories representing one-versus-one engagements between the ownship and a single target. In a combat scenario, a target may or may not engage in an “attack” on the ownship. Additional engagement-specific constraints, derived from aerial combat geometry analogous to those studied in [ 31 ], are formulated to synthesize attacking trajectories. The trajectory generation process is formulated as an optimization problem, wherein the goal is to determine kinematic model parameters and initial positions that minimize constraint violations while 19 satisfying the target-specific constraints. To ensure diversity in the resulting trajectory database, a coverage metric based on cell occupancy is utilized to systematically explore the state space. Inspired by the coverage-guided test generation system proposed in [ 33 ], the metric directs the input signal generation process toward previously unexplored regions of the search space. In this context, the state space comprises velocity, climb rate, and acceleration. In this work, four  
+
+> (a) A representative attacking scenario. (b) A representative non-attacking scenario.
+
+Fig. 3 Aerial combat scenarios considered in this work. 
+
+different motion models — Singer model, Curvilinear model, 3D constant turn model, and Generalized coordinated turn model — are used to generate diverse trajectories by suitably adjusting the model parameters. The aerial combat parameters used to formulate the combat-specific constraints are shown in Fig. 2. A trajectory segment where the target is pointing towards and closing on the ownship is considered an attacking trajectory; otherwise, the trajectory segment is considered non-attacking . For further details on the specific parameters used in each model and the combat-specific constraints, the interested reader is referred to [ 32 ]. The target trajectories are generated by enforcing target-specific constraints, denoted as g(x(·)) , where x(·) represents the target state comprising position, velocity, acceleration, and turn rate. The constraints for the eight target types considered in this work are listed in Table 2. In addition to these constraints, the generated trajectories are designed to include both attacking and non-attacking segments. The attacker-specific constraints, expressed as h(x(·) , x𝑜 (·)) , are defined in terms of four combat geometry features—range, attacker deviation angle, off-angle, and aspect angle—where x𝑜 (·) denotes the ownship state. Both target-specific and attacker constraints are subject to upper and lower bounds, represented by G𝑈𝐵 , G𝐿𝐵 , H𝑈𝐵 , and H𝐿𝐵 , respectively. The primary objective of the proposed trajectory generation algorithm is to identify suitable target motion model parameters and initial target positions such that the resulting trajectory satisfies these constraints with minimal violations. The objective function to minimize the target-specific constraint violations is given by 
+
+J𝑇 =
+
+> 𝑘
+
+∑︁ 
+
+> 𝑖 =1
+
+𝜆 𝑖 ©«
+
+> 𝑁
+
+∑︁ 
+
+> 𝑗 =1
+
+F ( 𝑔 𝑖 (x( 𝑗 )) − 𝐺 𝑈𝐵 𝑖 ) + F ( 𝐺 𝐿𝐵 𝑖 − 𝑔 𝑖 (x( 𝑗 ))) ª®¬
+
+(23) where 𝑘 is the number of target-specific constraints and 𝑁 is the maximum number of time samples in the trajectory. For 20 an attacking trajectory segment, the following objective function is minimized within an attack window 𝑤 𝑎 = 𝑛 𝑏 − 𝑛 𝑎 :
+
+J𝐴 =
+
+> 𝑚
+
+∑︁ 
+
+> 𝑖 =1
+
+𝜆 ′
+
+> 𝑖
+> 𝑛 𝑏
+
+∑︁ 
+
+> 𝑗 =𝑛 𝑎
+
+F ( ℎ𝑖 (x( 𝑗 )) − 𝐻 𝑈𝐵 𝑖 ) + F ( 𝐻 𝐿𝐵 𝑖 − ℎ𝑖 (x( 𝑗 ))) 
+
+!
+
+(24) where 𝑚 is the number of attacker constraints. F ( 𝑥 ) is an indicator function used to quantify constraint violations and is defined as F ( 𝑥 ) = 0, if 𝑥 < 0 and F ( 𝑥 ) = 𝑥, if 𝑥 ≥ 0. 𝜆 and 𝜆 ′ represent the weights associated with each constraint. To generate an attacking trajectory, the sum of both the objective functions given by (23) and (24) is minimized. Thus, the objective function for the optimization problem is given by 
+
+J = J𝑇 + J 𝐴 . (25) 
+
+Table 2 Table showing the various targets considered in this work and their associated constraints used for dataset generation. Target Type Altitude (ft) Velocity (m/s) Climb Rate (m/s) Turn Rate (rad/s) Acceleration (g) 
+
+Air-to-air missile 100 to 100,000 200 to 500 100 to 200 0.3 to 0.4 1 to 10 Bomber 0 to 50,000 75 to 105 2 to 25 0.05 to 0.2 -1 to 4 Civilian commercial airliner 0 to 45,000 75 to 105 2 to 40 0.05 to 0.2 0 to 3 Civilian helicopter 0 to 15,000 0 to 200 2 to 20 0.05 to 0.1 0 to 2 Military helicopter 0 to 20,000 0 to 250 2 to 28 0.05 to 0.1 0 to 3 Multi-role fighter 0 to 50,000 50 to 390 2 to 110 0.05 to 0.4 -3 to 9 Small civilian aircraft 0 to 36,000 75 to 105 2 to 35 0.05 to 0.2 0 to 3 Small unmanned aircraft 0 to 10,000 20 to 50 2 to 10 0.05 to 0.1 0.5 to 4 In addition to features derived from target kinematics, the target RCS is also used as an input feature for target type classification. RCS is the measure of the incident electromagnetic energy reflected or scattered back towards the radar source. Several software tools are available for computing the RCS of complex-shaped objects, as discussed in [ 34 ]. In this work, we employ the MGL-FASTRCS tool [ 35 , 36 ], chosen for its computational efficiency and parallelization capabilities, to estimate the RCS of various aerial targets under consideration. 
+
+# VI. Experimental Analysis 
+
+This section presents a comprehensive analysis of the proposed integrated target type classification and intent prediction framework. As discussed in Section II, since there is no common, publicly available benchmark dataset for military target intention recognition, and each study uses highly specialized custom datasets with unique features 21 and labeling conventions, it is not feasible to directly compare our approach with existing techniques. Therefore, performance of the framework is evaluated against baseline approaches using key metrics such as classification accuracy, intent prediction accuracy, effectiveness of belief combination, and computational efficiency. The evaluation is carried out on the aerial target dataset described in the preceding section, which consists of time-series data representing one-to-one engagements between the ownship and an aerial target in a combat scenario. All classifiers were trained and tested on a system running Ubuntu 22.04.3 LTS, equipped with a 11th Gen Intel ® Core ™ i9-11900 CPU @ 2.50 GHz and 31 GB of RAM. 
+
+A. Input Dataset 
+
+The aerial target dataset comprises 500 trajectories for each target class. Each trajectory is sampled at 50 Hz over a duration of 20 seconds, resulting in 1000 time steps per trajectory. Every trajectory is characterized by 13 distinct features: velocity components (𝑢 𝑥 , 𝑢 𝑦 , 𝑢 𝑧 ), acceleration components (𝑎 𝑥 , 𝑎 𝑦 , 𝑎 𝑧 ), altitude (𝑧 ), turn rate ( ¤ 𝜙 ), radar cross-section (RCS), range (𝑟 ), attacker deviation angle (𝜆 𝐴 ), off-angle (𝜂 ), and aspect angle (𝜖 ). These features are either directly obtained from onboard sensors such as accelerometers, gyroscopes, and radar, or derived from such measurements. Collectively, they provide strong discriminative power by capturing the physical and dynamic characteristics of different targets. For ease of reference, the eight target classes are labeled as follows: Bomber -
+
+𝑐 1, Civilian commercial airliner - 𝑐 2, Civilian helicopter - 𝑐 3, Air-to-air missile - 𝑐 4, Military helicopter - 𝑐 5, Multi-role fighter - 𝑐 6, Small civilian aircraft - 𝑐 7, and Small unmanned aircraft 
+
+- 𝑐 8. In addition to the target class, each trajectory is also characterized by its engagement state, which can be either 
+
+attacking or non-attacking . It is emphasized that, although the true target class remains invariant over the entire trajectory, the engagement state is dynamic and may transition between attacking and non-attacking modes within a trajectory. The generated trajectory dataset is partitioned into training set ( 70% ), testing set ( 20% ), and validation set (10% ). Each trajectory, consisting of 1000 time steps with 13 distinct features per step, is divided into non-overlapping subsamples of length 50 , resulting in 20 subsamples per trajectory. 
+
+B. Target Type Classification 
+
+The target type classification module uses only a subset of the 13 features, namely 𝑢 𝑥 , 𝑢 𝑦 , 𝑢 𝑧 , 𝑎 𝑥 , 𝑎 𝑦 , 𝑎 𝑧 , 𝑧 , ¤𝜙 , and 
+
+𝑅𝐶𝑆 . Statistical features are extracted from each subsample as mentioned in section IV.A.1. After feature extraction, the resulting representations are used to train the three classifiers used in the target type classification module. FFNN and SVM are trained on the derived statistical features, while the LSTM classifier directly processes raw subsamples. The optimal hyper-parameters for each classifier are summarized in Table 3. To evaluate each classifier’s performance, 22 the average classification accuracy on the test set is computed using the following metric: 
+
+𝐴𝑐𝑐𝑢𝑟𝑎𝑐𝑦 = 𝑁𝑢𝑚𝑏𝑒𝑟 𝑜 𝑓 𝑆𝑢𝑏𝑠𝑎𝑚 𝑝𝑙𝑒𝑠 𝐶𝑜𝑟𝑟𝑒𝑐𝑡𝑙𝑦 𝑃𝑟𝑒𝑑𝑖𝑐𝑡𝑒𝑑 𝑇 𝑜𝑡𝑎𝑙 𝑁𝑢𝑚𝑏𝑒𝑟 𝑜 𝑓 𝑆𝑢𝑏𝑠𝑎𝑚 𝑝𝑙𝑒𝑠 . (26) 
+
+Table 3 Optimized hyper-parameters for classifiers used in the target type classification module. Classifier Hyperparameter Optimal Value 
+
+SVM Regularization Parameter ( 𝐶 ) 2Kernel Function RBF FFNN Activation Function Sigmoid Hidden Layer 1 Size 99 Hidden Layer 2 Size 99 Optimizer Adam Dropout Rate 0.2 Maximum Iterations 300 Early Stopping Enabled LSTM LSTM Layer 1 Size 9LSTM Layer 2 Size 9Maximum Epochs 300 Early Stopping Patience 5Based on the metric defined in (26) , the FFNN classifier achieves the highest accuracy of 81% , followed by the SVM classifier at 76% , and the LSTM classifier at 74% on the testing set. These classifiers generate a probability distribution over the set of eight target classes 𝑐 𝑖 for 𝑖 = 1, 2, . . . , 8. The probability distribution from classifier 
+
+C 𝑗 for subsample 𝑖 is mapped to a belief distribution using (8) resulting in 𝑚 𝑖, 𝑗 , which is a 10 × 1 vector given by {𝑚 𝑖, 𝑗 (𝑐 1), 𝑚 𝑖, 𝑗 (𝑐 2), . . . , 𝑚 𝑖, 𝑗 (𝑐 8), 𝑚 𝑖, 𝑗 (𝛺 ), 𝑚 𝑖, 𝑗 (∅)} . It is found that targets such as Bomber and Civilian commercial airliner exhibit low classification accuracy as they possess closely aligned kinematic features and RCS values, as shown in Table 2. A similar observation is made for the target group consisting of Civilian helicopter 
+
+and Military helicopter . The similarity in the features presents significant challenges and to overcome this issue, we create additional focal sets 𝜃 1 = {𝑐 3, 𝑐 5 } and 𝜃 2 = {𝑐 1, 𝑐 2 } to represent uncertainty within these two target groups as discussed in Section IV.A.2. The BBA with the new focal elements is created using (9) , which results in {𝑚 𝑖, 𝑗 (𝑐 1), 𝑚 𝑖, 𝑗 (𝑐 2), . . . , 𝑚 𝑖, 𝑗 (𝑐 8), 𝑚 𝑖, 𝑗 (𝜃 1), 𝑚 𝑖, 𝑗 (𝜃 2), 𝑚 𝑖, 𝑗 (𝛺 ), 𝑚 𝑖, 𝑗 (∅)} . The resulting belief distributions are combined across multiple classifiers and over subsamples using (15) . Now that the classifiers are trained, we evaluate the performance of the target type classification module over entire trajectories. We employ additional trajectory-level evaluation criteria beyond standard accuracy metrics. Specifically, we define the following two criteria to quantify the average classification accuracy for a trajectory: 23 (a) Non-Consecutive (NC) criterion - A trajectory is said to be correctly classified if the target type classification module in Algorithm 1 makes a correct prediction in more than ten subsamples, regardless of whether these correctly predicted subsamples are consecutive. Since the output of the target classification algorithm is a belief distribution, a prediction is deemed correct if the class or focal set pertaining to the maximum belief value contains the true target class. The average accuracy with the NC criterion is then defined as 
+
+𝐴𝑐𝑐𝑢𝑟𝑎𝑐𝑦 𝑁 𝐶 = 𝛽 𝑛 × 100% (27) where 𝛽 is the number of trajectories in which more than ten non-consecutive windows are correctly predicted, and 𝑛 is the total number of trajectories tested. 
+
+(b) Consecutive (C) criterion - If the algorithm makes a correct prediction in more than ten consecutive subsamples, the trajectory is said to be correctly classified. The resulting average accuracy is defined as 
+
+𝐴𝑐𝑐𝑢𝑟𝑎𝑐𝑦 𝐶 = 𝛾 𝑛 × 100% (28) where 𝛾 is the number of trajectories in which more than ten consecutive windows are correctly predicted. 
+
+Table 4 Average accuracies of different approaches on the aerial target dataset. Method Accuracy Accuracy 𝑪 Accuracy 𝑵𝑪 
+
+FFNN 0.81 0.73 0.82 LSTM 0.74 0.68 0.78 SVM 0.76 0.65 0.77 
+
+𝐷𝑆 𝐿𝑆𝑇 𝑀 É 𝑆𝑉 𝑀 0.79 0.70 0.81 
+
+𝐷𝑆 𝐹𝐹 𝑁 𝑁 É 𝐿𝑆𝑇 𝑀 0.81 0.75 0.82 
+
+𝐷𝑆 𝐹𝐹 𝑁 𝑁 É 𝑆𝑉 𝑀 0.81 0.72 0.82 
+
+𝐷𝑆 𝐹𝐹 𝑁 𝑁 É 𝑆𝑉 𝑀 É 𝐿𝑆𝑇 𝑀 0.84 0.81 0.84 
+
+𝐷𝑆 (1: 𝑡 )   
+
+> 𝐹𝐹 𝑁 𝑁 É𝑆𝑉 𝑀
+
+0.84 0.83 0.84 
+
+𝐷𝑆 (1: 𝑡 )   
+
+> 𝐹𝐹 𝑁 𝑁 É𝐿𝑆𝑇 𝑀
+
+0.83 0.82 0.84 
+
+𝐷𝑆 (1: 𝑡 )   
+
+> 𝑆𝑉 𝑀 É𝐿𝑆𝑇 𝑀
+
+0.83 0.82 0.83 
+
+𝐷𝑆 (1: 𝑡 )     
+
+> 𝐹𝐹 𝑁 𝑁 É𝑆𝑉 𝑀 É𝐿𝑆𝑇 𝑀
+
+0.85 0.83 0.85 Proposed Approach 0.88 0.85 0.89 
+
+With both the evaluation criteria defined, we now compare the performance of our proposed framework with a baseline method that employs the DS combination rule. In this baseline, the evidences are fused using the DS combination rule defined in (2) , instead of the proposed rule in (15) . The results, as shown in Table 4 and Fig. 5, indicate 24 (a) Baseline DS Method ( 𝐷𝑆 𝐹𝐹 𝑁 𝑁 É 𝑆𝑉 𝑀 É 𝐿𝑆𝑇 𝑀 ) (b) Proposed Approach 
+
+Fig. 4 Confusion matrices resulting from evaluations using the proposed approach and the baseline DS method. 
+
+that our approach outperforms the baseline in several key areas. 
+
+1. Ablation Study 
+
+In Table 4, the second column corresponds to the accuracy metric defined in (26), evaluated over subsamples following belief fusion. The ablation study reveals that individual classifiers (FFNN, LSTM, SVM) provide only moderate performance when used in isolation. However, progressively introducing DS-based fusion yields consistent improvements across all accuracy measures, demonstrating the complementary nature of the classifiers. The proposed approach achieves the highest average accuracy over the test trajectories, surpassing all individual and pairwise fusion baselines. With respect to standard DS fusion, the gain under the standard accuracy metric appears marginal; the improvements become substantially more pronounced under the NC criterion, where robustness to non-category samples is critical. In contrast, performance under the more restrictive C criterion remains comparable to the DS fusion, indicating that the primary benefits of the proposed architecture are realized in more challenging, ambiguity-driven scenarios. Second, a major benefit of our approach is the reduction in false predictions, which is clearly illustrated in the confusion matrix shown in Fig. 4. For instance, the number of misclassified subsamples for the trajectories pertaining to the bomber decreases from 475 to 251 , highlighting improved reliability in target classification with the proposed approach. We also assessed the early prediction capability of the proposed framework by looking at the subsample starting from which Algorithm 1 correctly predicts the target class. Figure 5 depicts a bar graph, where the 𝑥 -axis represents different targets and the 𝑦 -axis indicates the number of trajectories that are correctly classified under the C criterion starting from a specific subsample. The results are particularly promising for Air-to-air missile and Small unmanned 
+
+25 Fig. 5 The bar graph shows the number of trajectories with consistent predictions starting from 1𝑠𝑡 and 
+
+(2𝑛𝑑 − 10 𝑡 ℎ ) subsample. 
+
+aircraft , where more than 95% of trajectories are correctly classified from the first subsample itself. For targets such as Bomber , Civilian helicopter , Multi-role fighter , and Small civilian aircraft , over 75% of trajectories are correctly classified from the first subsample. For other cases, consistent correct classification is observed somewhere between the 2𝑛𝑑 and 10 𝑡 ℎ subsample. These findings demonstrate the capability of the proposed approach in achieving early and stable predictions. Consequently, it can provide reliable predictions without the need to analyze the complete trajectory, a key advantage in aerial combat scenarios where timely threat assessment and rapid response are critical. In the subsequent sections, we show that as time progresses (i.e., with more subsamples), the proposed approach yields predictions with increasingly higher belief values, and therefore, greater confidence. 
+
+C. Target Intent Prediction 
+
+The target intent prediction module uses the four features– 𝑟 , 𝜆 𝐴 , 𝜂 , and 𝜖 –along with the belief distribution generated by the target type classification module. As discussed in Section IV.B.1, these features are easily extracted from the combat geometry using (19) . In the aerial target dataset, the subsamples are labeled as either attacking or 
+
+non-attacking using the rules mentioned in Section IV.B.3. With the availability of target type belief distribution, we categorize each target into one of three threat levels as shown in Table 5. The threat levels are determined based on the target’s known weapon capabilities, operational roles, and strategic intent. With the threat levels defined, the belief output from the target type classification module is converted into a membership value using (20) . Besides the three-level membership degree, three rule-based features are defined using the combat geometry features (see Section IV.B.3), resulting in a feature vector of size 6 × 1. Based on information about the target type and the behavioral labels, i.e., attacking or non-attacking , we define the following three intent labels: 26 Table 5 The main parameters of the three target type levels. Level Target Type Weapons Goals 
+
+IBomber Missiles, Bombs Strategic & Tactical Air-to-air missile Guns Multi-role fighter Electronic Warfare II Small unmanned aircraft Reconnaissance Military helicopter Drop munitions Surveillance 
+
+𝜃 1, 𝜃 2 Gun 
+
+𝛺 Target Acquisition III Civilian commercial airliner No Weapon Goods & Civilian Transport Civilian helicopter Recreational & Small civilian aircraft Surveillance (1) Hostile : Target behavior is attacking and it belongs to either Level I or Level II. Example: If the target is 
+
+attacking and is either a Multi-role fighter or a Military helicopter , the possibility of the target being hostile towards the ownship is high. (2) Non Hostile : Target behavior is non-attacking and it belongs to Level II or Level III. Example: If the target is a Civilian commercial airliner or Military helicopter , and it is non-attacking , the target should be classified as non-hostile. (3) Suspicious : A target is classified as suspicious if it meets either of the following conditions: it exhibits attacking 
+
+behavior and belongs to either Level II or Level III; or it exhibits non-attacking behavior and belongs to Level I. Example: A Civilian commercial airliner displaying attacking behavior is considered suspicious. Although the target is a Level III entity, its behavior strongly suggests a potential threat. Using the six element feature vector (three membership values and the three rule-base features), a rule-based decision tree model is trained, and an accuracy of 93% is achieved for the testing set. The resulting probability distribution from the classifier is converted to a belief distribution using (8) . Subsequently, the belief distribution is combined across subsamples using (22) (see Section IV.B.4). To evaluate the effectiveness of the intent prediction module, we compare the performance of the following three approaches: a baseline decision tree classifier, the conventional DS combination method, and our proposed distance-based adaptive fusion method. For comparison, the belief is converted back to a probability distribution using 𝑏𝑒𝑡 𝑝 , which is defined in (5) . Fig. 6 presents a comparative evaluation of class probability distributions across a sequence of subsamples for the three approaches. Each subplot illustrates how these distributions evolve over the subsamples, with the horizontal axis indicating the subsample index and the vertical axis representing the predicted probabilities. The ground-truth label for each subsample is shown in the bottom row using distinct markers. Notably, the conventional DS framework begins to misclassify as early as the fifth subsample. Its rigid fusion rule, which 27 is sensitive to highly conflicting evidence, causes a gradual deterioration in classification performance. In contrast, our proposed framework introduces a novel distance-based adaptive belief fusion mechanism. By dynamically adjusting the fusion process based on evolving belief divergence, it significantly improves the robustness of intent inference over time. This approach not only reduces misclassification but also maintains high predictive confidence across subsamples, as evidenced in Table 6. Although the baseline decision tree classifier achieves a high initial accuracy of 93% , its static nature limits performance consistency. Or in other words, even when the decision tree classifier makes the correct prediction, the confidence in the prediction is low compared to the proposed approach, as observed from the first subplot in Fig. 6. The conventional DS method achieves only 85% accuracy due to overcommitment to early evidence. In contrast, our method maintains both high accuracy 93% and resilience to temporal misclassifications, demonstrating the advantage of adaptive belief combination in dynamic combat scenarios. 
+
+Fig. 6 Comparison of outputs from the Decision tree, DS combination method, and the proposed method across successive subsamples. Table 6 Performance metrics for intent prediction. Methods Accuracy 
+
+Decision Tree 0.93 
+
+𝐷𝑆 1: 𝑡 𝐷𝑒𝑐𝑖𝑠𝑖𝑜𝑛 𝑇𝑟 𝑒𝑒 0.85 Proposed Approach 0.93 28 1. Sensitivity Analysis of the Proposed Approach 
+
+A detailed sensitivity analysis is performed in which the test data are corrupted with either additive Gaussian noise or multiplicative noise prior to prediction. Let 𝑥 ∈ R𝑑 denote a clean, scaled input feature vector. For additive Gaussian noise, the perturbed input is defined as 
+
+˜𝑥 = 𝑥 + 𝑛, 𝑛 ∼ N 
+
+
+
+0, 𝜎 2 𝐼 
+
+
+
+, (29) where 𝜎 ∈ [ 0, 1] denotes the perturbation level and 𝐼 is the identity matrix, indicating that independent Gaussian perturbations are applied to each feature. For multiplicative noise, the corrupted feature vector is given by 
+
+˜𝑥 = 𝑥 ⊙ ( 1 + 𝜖 ), 𝜖 ∼ N 
+
+
+
+0, 𝜎 2 𝐼 
+
+
+
+, (30) where ⊙ denotes element-wise multiplication. In this case, 𝜂 again controls the normalized noise intensity, inducing proportional distortions in each feature dimension. Table 7 reports the classification performance under progressively increasing values of 𝜎 . The results indicate that the proposed approach maintains high predictive accuracy for small and moderate 𝜎 , with a gradual and interpretable degradation as 𝜎 increases. When 𝜎 ≥ 0.6, the magnitude of the perturbations becomes comparable to the scaled feature values, resulting in a pronounced decline in accuracy. These high-noise cases thus characterize the robustness limits of the method, whereas smaller values of 𝜎 correspond to operationally realistic sensing conditions. To demonstrate the effectiveness of the integrated target classification and intent prediction approach, two combat scenarios are considered, as shown in Fig.7. In the first scenario shown in Figs.7a-7c, a one-to-one combat engagement between the ownship and an Air-to-air missile is presented. The corresponding classification results, also shown in Fig.7b, indicate that the Air-to-air missile is correctly classified, with the confidence in prediction increasing over time. The corresponding intent, depicted in Fig.7c, is initially identified as Hostile since the Air-to-air missile 
+
+is approaching the ownship. However, once the target’s trajectory deviates away from the ownship, the intent is reassessed as Suspicious . In the second scenario shown in Figs.7d-7f, a combat engagement between the ownship and a Multi-role fighter is illustrated. As observed in Fig.7e, the target is correctly classified as a Multi-role fighter , with prediction confidence increasing over time. The intent is initially classified as Suspicious because the does not display an attacking maneuver (Fig. 7f). Later, as it begins to head towards the ownship, the intent is correctly reclassified as Hostile . Subsequently, when the target moves away and no longer poses a threat, its predicted intent reverts to Suspicious for the remainder of the observation period. Finally, we analyze the execution time of Algorithm 1 to assess its computational efficiency. All reported run times correspond to the average per-subsample decision time (each subsample representing a 1-second segment), and the 29 Table 7 Sensitivity analysis of target-type classification and intent prediction under different noise types and perturbation levels (%). Noise Type Perturbation Level Accuracy Type Classification Accuracy Intent Prediction 
+
+Gaussian 0.00 87.49 93.16 0.10 87.19 92.66 0.20 86.79 89.88 0.30 85.87 87.24 0.40 83.88 83.35 0.50 82.05 80.98 0.60 77.77 77.62 0.70 72.56 74.73 Multiplicative 0.00 87.49 93.16 0.10 87.41 92.63 0.20 87.36 90.64 0.30 87.18 88.41 0.40 86.44 85.81 0.50 86.58 84.75 0.60 84.10 83.33 0.70 83.43 83.00 measured time reflects the total cost obtained after combining all processing stages—feature extraction, evaluation by the three classifiers, and fusion of their outputs. The proposed approach is implemented in two widely used programming languages: Python and C++. As expected, the C++ implementation achieves faster execution, with an average runtime of 0.01 , s compared to 0.02 , s for Python. The experiments were conducted on a system equipped with an 11th Gen Intel(R) Core(TM) i9-12900 @ 2.50 GHz processor, an NVIDIA RTX 3060 GPU, and 32 GB RAM. The superior performance of C++ can be attributed to its compiled, low-level structure, which enables more efficient memory access and execution. This efficiency is especially critical in real-time applications, such as onboard aircraft platforms, where both processing speed and resource utilization are constrained. Beyond system-level evaluation, we also benchmarked the Python implementation across a range of computing platforms, from high-end to resource-limited devices, as shown in Fig. 8. The results indicate that on high-end platforms, both classification time and memory usage are significantly reduced, highlighting the framework’s adaptability and efficiency across diverse computational environments. These findings not only validate the accuracy of the proposed method but also demonstrate its practical viability for real-time deployment in safety-critical systems. 30 (a) Trajectory: Air-to-air missile vs Own-ship (b) Type classification (c) Intent prediction    
+
+> (d) Trajectory: Multi-role fighter vs Ownship (e) Type classification (f) Intent prediction
+
+Fig. 7 Online classification results for (a–c) Air-to-air missile and (d–f) Multi-role fighter against ownship. 
+
+# VII. Conclusion and Future Work 
+
+In this work, we address the challenge of aerial target classification and intent prediction under real-time constraints, where rapid and accurate decisions are essential. Conventional time-series classification approaches are unsuitable for combat scenarios, as they require full trajectory analysis and consequently introduce unacceptable delays. To overcome this limitation, we propose an integrated framework that enables target classification and intent prediction from partial data, supporting timely decision-making in situations that demand rapid tactical response. Instead of relying on complete time-series signals, predictions are generated on short sequential subsamples and refined through belief propagation. This approach enables both target type identification and behavioral intent prediction, categorizing aerial targets as hostile, non-hostile, or suspicious. To handle conflicting evidence in dynamic environments, we introduced a distance-based conflict-aware fusion mechanism that adaptively modulates the combination rule based on the level of disagreement among sources. Extensive simulations demonstrate that the proposed framework consistently outperforms traditional methods, maintaining high accuracy even in the presence of data ambiguity and enabling early detection of aerial targets. Beyond accuracy improvements, the core advantage of the framework lies in its ability to 31 Fig. 8 Computation time and memory usage across different computing platforms. 
+
+make stable, early predictions with limited observations—an essential requirement for real aerial combat, where pilots and autonomous systems must react within seconds. The conflict-aware fusion mechanism also offers a principled means to manage uncertainty, improving interpretability and trustworthiness of the predicted intent.Nevertheless, the current method assumes single-target engagement and does not explicitly model cooperative or deceptive behaviors, which are common in real combat situations. Sensor noise characteristics and maneuver unpredictability may also vary across platforms, requiring adaptive or learning-based calibration strategies. These limitations point toward promising research directions. Future work includes extending the framework to multi-target environments to support team-level tactical inference, incorporating online learning to adapt to evolving threat behaviors, and integrating domain-specific constraints from real combat operations to enhance deployment readiness. 
+
+# Acknowledgment 
+
+We sincerely thank the Aeronautical Development Agency, India, for funding this work and for providing valuable inputs on the behavior of various aerial targets. We greatly appreciate the contributions of Dr. Pavan Kumar Perepu, whose insights were invaluable to the successful completion of this study. We would also like to thank Kirtik Soni for implementing the proposed approach in C++. 
+
+# References      
+
+> [1] Wu, Z.-Z., Wan, S.-H., Wang, X.-F., Tan, M., Zou, L., Li, X.-L., and Chen, Y., “A benchmark data set for aircraft type recognition from remote sensing images,” Applied Soft Computing , Vol. 89, 2020, p. 106132. [2] Zhang, Z., Wang, H., Geng, J., Jiang, W., Deng, X., and Miao, W., “An information fusion method based on deep learning and fuzzy discount-weighting for target intention recognition,” Engineering Applications of Artificial Intelligence , Vol. 109, 2022, p. 104610. [3] Wang, Y., Wang, J., Fan, S., and Wang, Y., “Quick intention identification of an enemy aerial target through information
+
+32 classification processing,” Aerospace Science and Technology , Vol. 132, 2023, p. 108005. [4] Zhang, Z., Wang, H., Jiang, W., and Geng, J., “A target intention recognition method based on information classification processing and information fusion,” Engineering Applications of Artificial Intelligence , Vol. 127, 2024, p. 107412. [5] Wang, X., Yang, Z., Piao, H., Chai, S., Huang, J., and Zhou, D., “Intelligent recognition method of target tactical behavior intention in air combat based on deep learning,” Engineering Applications of Artificial Intelligence , Vol. 138, 2024, p. 109460. [6] Singh, U. K., Padmanabhan, V., and Agarwal, A., “Dynamic classification of ballistic missiles using neural networks and hidden Markov models,” Applied Soft Computing , Vol. 19, 2014, pp. 280–289. [7] Zhang, C., Zhou, Y., Li, H., Liang, F., Song, Z., and Yuan, K., “Combat Intention Recognition of Air Targets Based on 1DCNN-BiLSTM,” IEEE Access , Vol. 11, 2023, pp. 134504–134516. [8] Frey, T. L., Aguilar, C., Engebretson, K., Faulk, D., and Lenning, L. G., “F-35 information fusion,” 2018 Aviation Technology, Integration, and Operations Conference , 2018, p. 3520. [9] Gupta, A., Gupta, H. P., Biswas, B., and Dutta, T., “Approaches and applications of early classification of time series: A review,” 
+
+IEEE Transactions on Artificial Intelligence , Vol. 1, No. 1, 2020, pp. 47–61. [10] Ye, L., and Keogh, E., “Time series shapelets: a new primitive for data mining,” Proceedings of the 15th ACM SIGKDD international conference on Knowledge discovery and data mining , 2009, pp. 947–956. [11] Hills, J., Lines, J., Baranauskas, E., Mapp, J., and Bagnall, A., “Classification of time series by shapelet transformation,” Data mining and knowledge discovery , Vol. 28, 2014, pp. 851–881. [12] AlDhanhani, A., Damiani, E., Mizouni, R., and Wang, D., “Framework for traffic event detection using Shapelet Transform,” 
+
+Engineering Applications of Artificial Intelligence , Vol. 82, 2019, pp. 226–235. [13] Schäfer, P., “The BOSS is concerned with time series classification in the presence of noise,” Data Mining and Knowledge Discovery , Vol. 29, 2015, pp. 1505–1530. [14] Souza, V. M., “Asphalt pavement classification using smartphone accelerometer and Complexity Invariant Distance,” Engineering Applications of Artificial Intelligence , Vol. 74, 2018, pp. 198–211. https://doi.org/https://doi.org/10.1016/j.engappai.2018.06.003, URL https://www.sciencedirect.com/science/article/pii/S0952197618301349. [15] Visser, U., and Weland, H.-G., “Using online learning to analyze the opponent’s behavior,” RoboCup 2002: Robot Soccer World Cup VI 6 , Springer, 2003, pp. 78–93. [16] Ginoulhac, R., Barbaresco, F., Schneider, J.-Y., Pannier, J.-M., and Savary, S., “Target classification based on kinematic data from AIS/ADS-B, using statistical features extraction and boosting,” 2019 20th International Radar Symposium (IRS) , IEEE, 2019, pp. 1–10. 
+
+33 [17] Fukushima, T., Nakashima, T., and Akiyama, H., “Online opponent formation identification based on position information,” 
+
+RoboCup 2017: Robot World Cup XXI 11 , Springer, 2018, pp. 241–251. [18] Dihel, L., Dolph, C., Holbrook, H. T., and Roy, S., “Classifying Aircraft using Velocity Data with Support Vector Machines and Likelihood Ratio Tests,” AIAA SCITECH 2023 Forum , 2023, p. 0898. [19] Hui, K. H., Lim, M. H., Leong, M. S., and Al-Obaidi, S. M., “Dempster-Shafer evidence theory for multi-bearing faults diagnosis,” Engineering Applications of Artificial Intelligence , Vol. 57, 2017, pp. 160–170. [20] Cemiloglu, A., and Akay, B., “Handling heterogeneity in Human Activity Recognition data by a compact Long Short Term Memory based deep learning approach,” Engineering Applications of Artificial Intelligence , Vol. 153, 2025, p. 110788. [21] Gupta, K., Khajuria, A., Chatterjee, N., Joshi, P., and Joshi, D., “Rule based classification of neurodegenerative diseases using data driven gait features,” Health and Technology , Vol. 9, 2019, pp. 547–560. [22] Kessentini, Y., Burger, T., and Paquet, T., “A Dempster–Shafer theory based combination of handwriting recognition systems with multiple rejection strategies,” Pattern recognition , Vol. 48, No. 2, 2015, pp. 534–544. [23] Oukhellou, L., Debiolles, A., Denœux, T., and Aknin, P., “Fault diagnosis in railway track circuits using Dempster–Shafer classifier fusion,” Engineering Applications of Artificial Intelligence , Vol. 23, No. 1, 2010, pp. 117–128. [24] Yager, R. R., “On the Dempster-Shafer framework and new combination rules,” Information sciences , Vol. 41, No. 2, 1987, pp. 93–137. [25] Jousselme, A.-L., Grenier, D., and Bossé, É., “A new distance between two bodies of evidence,” Information fusion , Vol. 2, No. 2, 2001, pp. 91–101. [26] Shafer, G., A mathematical theory of evidence , Vol. 42, Princeton university press, 1976. [27] Smets, P., and Kennes, R., “The transferable belief model,” Classic Works of the Dempster-Shafer Theory of Belief Functions ,2008, pp. 693–736. [28] Zadeh, L. A., “Fuzzy sets,” Information and Control , Vol. 8, No. 3, 1965, pp. 338–353. [29] Verbert, K., Babuška, R., and De Schutter, B., “Bayesian and Dempster–Shafer reasoning for knowledge-based fault diagnosis–A comparative study,” Engineering Applications of Artificial Intelligence , Vol. 60, 201ftar7, pp. 136–150. [30] Zadeh, L. A., “A simple view of the Dempster-Shafer theory of evidence and its implication for the rule of combination,” AI magazine , Vol. 7, No. 2, 1986, pp. 85–85. [31] Shin, H., Lee, J., Kim, H., and Shim, D. H., “An autonomous aerial combat framework for two-on-two engagements based on basic fighter maneuvers,” Aerospace Science and Technology , Vol. 72, 2018, pp. 305–315. 
+
+34 [32] Kumaraguru, S., and Muniraj, D., “An Optimization-Based Approach for Generating Diverse Aerial Target Trajectories in a Combat Environment,” AIAA AVIATION FORUM AND ASCEND 2024 , American Institute of Aeronautics and Astronautics, 2024. https://doi.org/10.2514/6.2024-4582. [33] Dang, T., and Nahhal, T., “Coverage-guided test generation for continuous and hybrid systems,” Formal Methods in System Design , Vol. 34, 2009, pp. 183–213. [34] Sehgal, B., Shekhawat, H. S., and Jana, S. K., “Automatic target recognition using recurrent neural networks,” 2019 International Conference on Range Technology (ICORT) , IEEE, 2019, pp. 1–5. [35] Cakir, G., Cakir, M., and Sevgi, L., “Radar cross section (RCS) modeling and simulation, Part 2: A novel FDTD-based RCS prediction virtual tool for the resonance regime,” IEEE Antennas and Propagation Magazine , Vol. 50, No. 2, 2008, pp. 81–94. [36] Cakir, G., Cakir, M., and Sevgi, L., “An FDTD-based parallel virtual tool for RCS calculations of complex targets,” IEEE Antennas and Propagation Magazine , Vol. 56, No. 5, 2014, pp. 74–90. 
+
+35
