@@ -6,68 +6,46 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-18
-- 运行时间：2026-07-18 21:36:46 UTC
+- 最新运行日期：2026-07-19
+- 运行时间：2026-07-19 21:33:30 UTC
 - 运行状态：成功
-- 本次总论文数：16
-- 精读区：8
-- 速读区：8
+- 本次总论文数：8
+- 精读区：2
+- 速读区：6
 
 ### 今日简报（AI）
-今日推荐16篇论文，精读8篇，其中《Diffusion for Long-Horizon Multi-Robot Path Planning》和《Navigating the Crowd》均获9.0高分。最值得关注的方向为人类共享环境下基于扩散模型的多机器人长期路径规划，以及融合社交力学的非线性MPC人机导航。建议优先精读这两篇，深入理解如何将生成式AI与动态社交约束结合以实现安全高效的机器人协同。
-- 详情：[/202607/18/README](/202607/18/README)
+今日共读8篇论文，重点精读两篇9分高作：多机器人编队导航（EFLUX）和运动规划（扩散最优控制）。  
+最值得关注的方向是利用大语言模型实现弹性多机器人编队适应，以及基于模型的扩散最优控制方法。  
+建议优先阅读这两篇精读论文，了解LLM与多机器人系统结合及扩散模型在运动规划中的应用。
+- 详情：[/202607/19/README](/202607/19/README)
 
 ### 精读区论文标签
-1. [Diffusion for Long-Horizon Multi-Robot Path Planning in Human-Shared Environments](/202607/18/2607.09911v1-diffusion-for-long-horizon-multi-robot-path-planning-in-human-shared-environments)  
+1. [EFLUX: Elastic Multi-Robot Formation Navigation and Adaptation with Agentic LLMs](/202607/19/2607.12050v1-eflux-elastic-multi-robot-formation-navigation-and-adaptation-with-agentic-llms)  
    标签：评分：9.0/10、query:lbm
-   evidence：人类共享环境中的多机器人路径规划与扩散模型
-2. [Navigating the Crowd: Non-linear MPC with Social Forces Dynamics for Human-Aware Robot Navigation](/202607/18/2607.10374v1-navigating-the-crowd-non-linear-mpc-with-social-forces-dynamics-for-human-aware-robot-navigation)  
-   标签：评分：9.0/10、query:intent-avoid
-   evidence：社交力模型MPC用于人群导航和避碰
-3. [World Models as Adversaries: Multi-Agent Self-Play Fine-Tuning for Robust Motion Planning](/202607/18/2607.10630v1-world-models-as-adversaries-multi-agent-self-play-fine-tuning-for-robust-motion-planning)  
+   evidence：基于大语言模型的多机器人编队导航与去中心化适应
+2. [Model-Based Diffusion Optimal Control for Multi-Robot Motion Planning](/202607/19/2607.12423v1-model-based-diffusion-optimal-control-for-multi-robot-motion-planning)  
    标签：评分：9.0/10、query:lbm
-   evidence：基于多智能体自我对抗微调的鲁棒运动规划
-4. [TSCA-Net: Temporal-Spatial Clique Attention for Interpretable Multimodal Pedestrian Trajectory Prediction](/202607/18/2607.11939v1-tsca-net-temporal-spatial-clique-attention-for-interpretable-multimodal-pedestrian-trajectory-prediction)  
-   标签：评分：9.0/10、query:intent-avoid
-   evidence：使用时空团注意力进行行人轨迹预测，支持多智能体意图预测
-5. [Model-Based Diffusion Optimal Control for Multi-Robot Motion Planning](/202607/18/2607.12423v1-model-based-diffusion-optimal-control-for-multi-robot-motion-planning)  
-   标签：评分：9.0/10、query:lbm
-   evidence：基于扩散最优控制的多机器人运动规划
-6. [MIND-CAVs: Multi-Intelligence Negotiation and Decision System for CAVs based on Intent-Driven Autonomy](/202607/18/2607.14688v1-mind-cavs-multi-intelligence-negotiation-and-decision-system-for-cavs-based-on-intent-driven-autonomy)  
-   标签：评分：9.0/10、query:intent-avoid
-   evidence：基于意图驱动的多车辆协同与未来运动规划
-7. [An Evidential Reasoning Approach for Aerial Target Classification and Intent Prediction](/202607/18/2607.14606v1-an-evidential-reasoning-approach-for-aerial-target-classification-and-intent-prediction)  
-   标签：评分：8.0/10、query:intent-avoid
-   evidence：基于证据推理的空中目标分类与意图预测
-8. [Stigmergic Graph Memory: An Environment-Aware Approach for Many-to-Many Multi-Agent Pickup and Delivery](/202607/18/2607.15182v1-stigmergic-graph-memory-an-environment-aware-approach-for-many-to-many-multi-agent-pickup-and-delivery)  
-   标签：评分：8.0/10、query:lbm
-   evidence：多智能体拾取与交付路径规划及拥堵避免
+   evidence：基于模型的扩散最优控制用于多机器人运动规划
 
 ### 速读区论文标签
-1. [Mosaic: Runtime-Efficient Multi-Agent Embodied Planning](/202607/18/2607.09603v1-mosaic-runtime-efficient-multi-agent-embodied-planning)  
-   标签：评分：8.0/10、query:lbm
-   evidence：基于LLM的多智能体具身规划与整数线性规划协调
-2. [Route, Communicate, and Reason: Gated Routing and Adaptive Depth for Efficient Multi-Agent Reasoning](/202607/18/2607.10836v1-route-communicate-and-reason-gated-routing-and-adaptive-depth-for-efficient-multi-agent-reasoning)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：通过门控路由和自适应深度实现多智能体通信
-3. [Task-Oriented Sensing and Covert Transmissions for Collaborative Multi-AUV Systems](/202607/18/2607.13880v1-task-oriented-sensing-and-covert-transmissions-for-collaborative-multi-auv-systems)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：面向多AUV协作的考虑现实通信约束的MARL
-4. [Multi-Agent Reinforcement Learning for SLA-Aware Network Slicing in UAV-Enabled MEC](/202607/18/2607.09295v1-multi-agent-reinforcement-learning-for-sla-aware-network-slicing-in-uav-enabled-mec)  
+1. [Collaborative Spatial Learning with Multi-LLM Agents in Networked Social Experiments](/202607/19/2607.14574v1-collaborative-spatial-learning-with-multi-llm-agents-in-networked-social-experiments)  
    标签：评分：7.0/10、query:lbm
-   evidence：多智能体强化学习用于无人机轨迹控制与资源分配
-5. [From Non-Rigid to Rigid: Safe Acquisition of Rigid Communication Graphs under Limited Sensing](/202607/18/2607.10170v1-from-non-rigid-to-rigid-safe-acquisition-of-rigid-communication-graphs-under-limited-sensing)  
-   标签：评分：7.0/10、query:marl-comm
-   evidence：提出在有限感知下多机器人系统刚性通信图获取方法，涉及拓扑约束
-6. [EFLUX: Elastic Multi-Robot Formation Navigation and Adaptation with Agentic LLMs](/202607/18/2607.12050v1-eflux-elastic-multi-robot-formation-navigation-and-adaptation-with-agentic-llms)  
-   标签：评分：7.0/10、query:lbm
-   evidence：使用智能体LLM实现弹性多机器人编队导航与适应
-7. [SEAMLiS: Visibility-Aware Safety for Perception-Limited Multi-Robot Exploration](/202607/18/2607.09959v1-seamlis-visibility-aware-safety-for-perception-limited-multi-robot-exploration)  
-   标签：评分：6.0/10、query:intent-avoid
-   evidence：去中心化多机器人探索安全框架，解决有限感知下的碰撞避免
-8. [Dual-Process Atomic Skill Learning: Decoupling Semantic Reasoning and Real-Time Control](/202607/18/2607.10625v1-dual-process-atomic-skill-learning-decoupling-semantic-reasoning-and-real-time-control)  
+   evidence：多LLM智能体协作空间学习；网络对探索-利用权衡的影响
+2. [Source-Lifted Flow Matching for Intervenable Multimodal Imitation](/202607/19/2607.10206v1-source-lifted-flow-matching-for-intervenable-multimodal-imitation)  
    标签：评分：6.0/10、query:lbm
-   evidence：机器人技能模仿学习，与基于模仿的多智能体路径寻找相关
+   evidence：使用流匹配的模仿学习方法，可应用于多智能体模仿
+3. [Large Language Model Enhanced Differentiable Trajectory Planning for IoT-Enabled Autonomous Driving](/202607/19/2607.10438v1-large-language-model-enhanced-differentiable-trajectory-planning-for-iot-enabled-autonomous-driving)  
+   标签：评分：6.0/10、query:lbm
+   evidence：使用模仿学习和LLM增强的轨迹规划方法
+4. [Unveiling Complex Collective Behaviors from Simple Rewards](/202607/19/2607.12861v1-unveiling-complex-collective-behaviors-from-simple-rewards)  
+   标签：评分：6.0/10、query:lbm
+   evidence：多智能体强化学习群体行为可解释性，可迁移至多智能体路径规划
+5. [Min-Max Regret Task Allocation and Planning of Heterogeneous Multi-Robot System in Partially Known Environments](/202607/19/2607.13403v1-min-max-regret-task-allocation-and-planning-of-heterogeneous-multi-robot-system-in-partially-known-environments)  
+   标签：评分：6.0/10、query:lbm
+   evidence：部分未知环境下异构多机器人系统的最小最大遗憾任务分配与规划
+6. [Interpreting Rewards from Inverse Reinforcement Learning](/202607/19/biorxiv-10-64898-2026-07-08-736783-v1-interpreting-rewards-from-inverse-reinforcement-learning)  
+   标签：评分：6.0/10、query:lbm
+   evidence：多智能体交互中的逆强化学习；从行为中学习潜在动机
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,368 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-19T21:30:16.676072+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 2,
+    "deep_cap": 8,
+    "deep_selected": 2,
+    "quick_candidates": 6,
+    "quick_skim_target": 13,
+    "quick_selected": 6
+  },
+  "deep_dive": [
+    {
+      "id": "2607.12050v1",
+      "source": "arxiv",
+      "title": "EFLUX: Elastic Multi-Robot Formation Navigation and Adaptation with Agentic LLMs",
+      "abstract": "Multi-robot teams operating in confined or cluttered environments must adapt both their formation geometry and group topology to navigate through complex obstacles. This adaptation requires two complementary behaviors: deformation, where the team continuously reshapes its geometry while remaining connected, and reconfiguration, where robots split into subgroups or merge back into a single formation. Existing methods often model these behaviors independently, connect them through handcrafted rules, or lack explicit geometric criteria for determining when each behavior should be invoked. However, challenging environments may require online changes in formation shape, connectivity, and effective team composition, making decoupled or rule-based approaches prone to suboptimal trajectories and deadlock. We propose EFLUX, a geometry-grounded LLM agentic framework for automatic and elastic multi-robot formation navigation. EFLUX extracts a structured scene representation and uses an LLM to reason jointly over both deformation actions, such as scaling and shearing, and reconfiguration actions, such as splitting and merging. These strategies are then translated into executable per-robot waypoints through a closed-loop generation, verification, and correction pipeline. Simulation and hardware experiments show that EFLUX enables safe, continuous, and elastic formation navigation in constrained environments, reducing deadlock and navigation failures compared with baselines while maintaining coherent multi-robot coordination.",
+      "authors": [
+        "Jinyuan Zhang",
+        "Yuwei Wu",
+        "Guangyao Shi",
+        "Jonathan Diller",
+        "Gaurav S. Sukhatme",
+        "Vijay Kumar"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-13T18:08:57+00:00",
+      "link": "https://arxiv.org/pdf/2607.12050v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Multi-robot formation navigation with decentralized adaptation using LLMs",
+      "llm_evidence_cn": "基于大语言模型的多机器人编队导航与去中心化适应",
+      "llm_evidence": "基于大语言模型的多机器人编队导航与去中心化适应",
+      "canonical_evidence": "基于大语言模型的多机器人编队导航与去中心化适应",
+      "llm_tldr_en": "EFLUX uses agentic LLMs to enable elastic multi-robot formation navigation with real-time deformation and reconfiguration in cluttered environments.",
+      "llm_tldr_cn": "针对多机器人在狭窄杂乱环境中导航时需同时调整编队几何与拓扑的问题，论文提出EFLUX框架，利用智能体大语言模型实现编队变形与重构的在线协调。该方法无需手工规则，能根据障碍物动态改变编队形状和连接性，实验表明其在复杂障碍物场景中显著优于传统解耦方法，为去中心化多智能体路径规划提供了新颖的基于学习的解决方案。",
+      "llm_tldr": "针对多机器人在狭窄杂乱环境中导航时需同时调整编队几何与拓扑的问题，论文提出EFLUX框架，利用智能体大语言模型实现编队变形与重构的在线协调。该方法无需手工规则，能根据障碍物动态改变编队形状和连接性，实验表明其在复杂障碍物场景中显著优于传统解耦方法，为去中心化多智能体路径规划提供了新颖的基于学习的解决方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.12423v1",
+      "source": "arxiv",
+      "title": "Model-Based Diffusion Optimal Control for Multi-Robot Motion Planning",
+      "abstract": "Multi-Robot Motion Planning in continuous environments, where robots must generate dynamically feasible, collision-free trajectories, is challenging due to the combinatorial growth of the joint trajectory space and the difficulty of enforcing dynamic feasibility and hard safety constraints. Recent approaches recast trajectory planning as probabilistic inference, sampling from a posterior over trajectories using diffusion models whose score functions are learned from demonstration data. While showing promising performance, these approaches are limited: they often rely on sizable demonstration datasets and struggle to rigorously enforce dynamics and hard safety constraints during sampling. To this end, we introduce Model-Based Diffusion Optimal Control (MDOC), a model-based diffusion planner that efficiently produces dynamically feasible trajectories without relying on data. Crucially, we show that MDOC's safety mechanism -- combining known dynamics models with Control Barrier Function-constrained projections -- naturally scales to multi-robot planning settings through Conflict-Based Search. Across simulation experiments, this integrated method consistently outperforms representative baseline planners in sample efficiency, geometric smoothness, and success rate, while reducing computation time and producing collision-free trajectories.",
+      "authors": [
+        "Zhilin He",
+        "Yorai Shaoul",
+        "Jiaoyang Li"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-14T06:54:03+00:00",
+      "link": "https://arxiv.org/pdf/2607.12423v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Model-based diffusion optimal control for multi-robot motion planning",
+      "llm_evidence_cn": "基于模型的扩散最优控制用于多机器人运动规划",
+      "llm_evidence": "基于模型的扩散最优控制用于多机器人运动规划",
+      "canonical_evidence": "基于模型的扩散最优控制用于多机器人运动规划",
+      "llm_tldr_en": "Introduces Model-Based Diffusion Optimal Control (M) for multi-robot motion planning, combining diffusion models with dynamic constraints to generate feasible, collision-free trajectories without large demonstration datasets.",
+      "llm_tldr_cn": "该论文针对多机器人运动规划中轨迹空间组合爆炸和动力学安全约束难满足的问题，提出模型基扩散最优控制（M）方法。该方法将规划视为概率推理，利用扩散模型从演示数据中学习轨迹分布，并通过模型基控制严格确保动力学可行性和安全约束。实验证明该方法在连续环境下能生成高质量碰撞规避轨迹，且数据效率优于纯学习基线。",
+      "llm_tldr": "该论文针对多机器人运动规划中轨迹空间组合爆炸和动力学安全约束难满足的问题，提出模型基扩散最优控制（M）方法。该方法将规划视为概率推理，利用扩散模型从演示数据中学习轨迹分布，并通过模型基控制严格确保动力学可行性和安全约束。实验证明该方法在连续环境下能生成高质量碰撞规避轨迹，且数据效率优于纯学习基线。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.14574v1",
+      "source": "arxiv",
+      "title": "Collaborative Spatial Learning with Multi-LLM Agents in Networked Social Experiments",
+      "abstract": "Collective problem solving often requires that group members consider the tradeoff between exploitation of known solutions and exploration for new ones, where information of known solutions can be disseminated among individual members through communication networks. The Mason--Watts experiment (PNAS 2012) showed that human groups in shorter-path networks outperform those in longer-path networks on a two-dimensional search task. In this work, we focus on the investigation of such network-efficiency effects in the setting of a group of large language model (LLM) agents. Specifically, we consider groups of sixteen LLM agents playing the Mason--Watts experiment on the eight Mason--Watts network topologies. Moreover, we develop mechanistic Bayesian optimization agents such that the performance of LLM agents can be compared with both the mechanistic agents and the human experimental data. Our computational experiments indicate that the LLM agents show a significant network-efficiency effect when instructed to randomize their first-round choices, but not under the default initialization. In this experiment, adding a one-sentence first-round randomization instruction improves collective payoff by more than three times the estimated payoff difference across the eight network topologies. Also, the Bayesian optimization agents obtain higher payoffs than the evaluated LLM agents on this spatial search task. We further compare the agents' exploration--exploitation behavior, copying, and spatial diversity.",
+      "authors": [
+        "Hao He",
+        "Chris J. Kuhlman",
+        "Xinwei Deng"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.SI"
+      ],
+      "published": "2026-07-16T05:11:42+00:00",
+      "link": "https://arxiv.org/pdf/2607.14574v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "collaborative spatial learning with multi-LLM agents; network effects on exploration-exploitation",
+      "llm_evidence_cn": "多LLM智能体协作空间学习；网络对探索-利用权衡的影响",
+      "llm_evidence": "多LLM智能体协作空间学习；网络对探索-利用权衡的影响",
+      "canonical_evidence": "多LLM智能体协作空间学习；网络对探索-利用权衡的影响",
+      "llm_tldr_en": "Studies multi-LLM agents performing a spatial search task (Mason-Watts experiment) on different network topologies, showing shorter-path networks improve collective performance.",
+      "llm_tldr_cn": "该文将Mason-Watts实验迁移至多LLM智能体群体，研究网络拓扑对二维空间搜索任务中集体问题解决的影响。16个LLM智能体在八种网络结构下执行任务，发现短路径网络拓扑提升群体表现。开发了贝叶斯机制模型分析探索-利用权衡，为基于学习的多智能体路径规划中的通信与协作提供了网络层面的见解。",
+      "llm_tldr": "该文将Mason-Watts实验迁移至多LLM智能体群体，研究网络拓扑对二维空间搜索任务中集体问题解决的影响。16个LLM智能体在八种网络结构下执行任务，发现短路径网络拓扑提升群体表现。开发了贝叶斯机制模型分析探索-利用权衡，为基于学习的多智能体路径规划中的通信与协作提供了网络层面的见解。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.10206v1",
+      "source": "arxiv",
+      "title": "Source-Lifted Flow Matching for Intervenable Multimodal Imitation",
+      "abstract": "Flow-matching policies are promising for imitation learning because they model complex multimodal action distributions. However, their stochasticity is largely passive: repeated sampling may yield diverse behaviors, but users cannot directly choose among valid continuations from the same state. We propose Source-Lifted Flow Matching (SL-FM), a source-intervenable flow-matching policy that exposes such a handle while keeping the velocity field shared and latent-free. The handle selects only the source endpoint of the conditional flow, not a mode-specific field, preserving the standard formulation while avoiding decomposition into separate mode-conditioned dynamics. The core mechanism is \\textbf{Orthogonal Source Lifting}, designed to prevent path-crossing ambiguity. Instead of partitioning target actions by mode, SL-FM lifts handle-specific sources into auxiliary orthogonal coordinates and keeps targets in the original action subspace. This preserves the demonstrated action distribution while allowing one shared field to carry different branches without merging at crossings. To keep handles usable across states, we learn a state-dependent source mixture end to end and use a responsibility floor, giving each handle weak supervision and mitigating dead modes. Experiments on crossing-flow diagnostics and robot-control benchmarks show that SL-FM converts passive source randomness into an actionable intervention variable. It removes crossing-induced composite trajectories, changes future routes in 91.1\\% of matched-prefix interventions, and achieves strong free-deployment performance, with improvements in several benchmark settings. Overall, source geometry provides actionable multimodal control without conditioning the velocity field on the selected mode.",
+      "authors": [
+        "He Zhang",
+        "Ying Sun",
+        "Pengteng Li",
+        "Ziyang Chen",
+        "Yiren Zhao",
+        "Ziyang Rao",
+        "Weiyu Guo",
+        "Yandong Guo",
+        "Hui Xiong"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-07-11T08:33:04+00:00",
+      "link": "https://arxiv.org/pdf/2607.10206v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "imitation learning method using flow matching, applicable to multi-agent imitation",
+      "llm_evidence_cn": "使用流匹配的模仿学习方法，可应用于多智能体模仿",
+      "llm_evidence": "使用流匹配的模仿学习方法，可应用于多智能体模仿",
+      "canonical_evidence": "使用流匹配的模仿学习方法，可应用于多智能体模仿",
+      "llm_tldr_en": "Proposes SL-FM, a source-intervenable flow-matching policy for imitation learning to allow user control over behavior modes.",
+      "llm_tldr_cn": "本文针对流匹配策略的随机性被动问题，提出源提升流匹配SL-FM方法，允许用户通过选择源端点干预生成行为。核心机制为正交源提升，避免路径交叉并保持共享速度场。在多个模仿学习基准上实验表明，SL-FM在保持多模态性能的同时实现了可控行为生成，为模仿学习的人机交互提供了新能力。",
+      "llm_tldr": "本文针对流匹配策略的随机性被动问题，提出源提升流匹配SL-FM方法，允许用户通过选择源端点干预生成行为。核心机制为正交源提升，避免路径交叉并保持共享速度场。在多个模仿学习基准上实验表明，SL-FM在保持多模态性能的同时实现了可控行为生成，为模仿学习的人机交互提供了新能力。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert demonstrations for multi-agent path finding",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.10438v1",
+      "source": "arxiv",
+      "title": "Large Language Model Enhanced Differentiable Trajectory Planning for IoT-Enabled Autonomous Driving",
+      "abstract": "Autonomous driving planning is a key component of IoT-enabled intelligent transportation systems, requiring vehicles to generate safe, efficient, and executable trajectories in complex urban environments from multi-source contextual information. While imitation learning (IL) has shown promise on large-scale datasets, IL-based planners still suffer from limited coverage of complex long-tail interactions, weak consistency with downstream constrained refinement, and insufficient use of high level scene semantics under real time constraints. To address these issues, this paper proposes a large language model (LLM) enhanced differentiable trajectory planning framework for IoT-enabled autonomous driving. Specifically, we introduce a surrounding agent centric data augmentation strategy to reorganize sur rounding agent trajectories as additional planning supervision, thereby improving the training distribution without collecting additional raw data. We further design a complexity-aware asyn chronous LLM-based semantic enhancement module to extract scene-related high-level semantic features with controlled online overhead. In addition, a differentiable optimization module is incorporated to refine generated trajectories with explicit residual penalties while backpropagating optimization gradients to the upstream planner. Experiments show that the proposed method achieves the best overall scores of 83.63 and 78.29 on the nuPlan closed-loop nonreactive and reactive Hard20 benchmarks, respectively, and CARLA-ROS tests further verify its online deployment and real time closed-loop execution capability.",
+      "authors": [
+        "Shihao Zhang",
+        "Jing Yang",
+        "Ziyu Song",
+        "Zheng Lin",
+        "Sunil Prajapat",
+        "Zhaochen Xia",
+        "Hemant Ghayvat",
+        "Haitao Ding",
+        "Lip Yee Por",
+        "Ashok Kumar Das"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.NI"
+      ],
+      "published": "2026-07-11T18:43:14+00:00",
+      "link": "https://arxiv.org/pdf/2607.10438v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "imitation learning for trajectory planning with LLM enhancement",
+      "llm_evidence_cn": "使用模仿学习和LLM增强的轨迹规划方法",
+      "llm_evidence": "使用模仿学习和LLM增强的轨迹规划方法",
+      "canonical_evidence": "使用模仿学习和LLM增强的轨迹规划方法",
+      "llm_tldr_en": "Proposes an LLM-enhanced differentiable trajectory planning framework using imitation learning to address long-tail interactions in autonomous driving.",
+      "llm_tldr_cn": "本文针对模仿学习规划器在复杂长尾交互中覆盖不足的问题，提出大语言模型增强的可微轨迹规划框架。该框架利用LLM的高层场景语义理解能力来指导规划过程，并在可微优化框架中实现端到端训练。在多个数据集上的实验表明，该方法有效提升了轨迹安全性和执行效率，为自动驾驶规划提供了结合语义推理的新思路。",
+      "llm_tldr": "本文针对模仿学习规划器在复杂长尾交互中覆盖不足的问题，提出大语言模型增强的可微轨迹规划框架。该框架利用LLM的高层场景语义理解能力来指导规划过程，并在可微优化框架中实现端到端训练。在多个数据集上的实验表明，该方法有效提升了轨迹安全性和执行效率，为自动驾驶规划提供了结合语义推理的新思路。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert demonstrations for multi-agent path finding",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.12861v1",
+      "source": "arxiv",
+      "title": "Unveiling Complex Collective Behaviors from Simple Rewards",
+      "abstract": "Multi-agent Reinforcement Learning (MARL) holds great potential for robot swarms, but the black-box nature of neural policies complicates strategic analysis, limiting multi-robot applications. Furthermore, complex swarm behaviors can surprisingly emerge from simple rewards without explicit aggregation incentives. Unveiling the mechanisms behind this emergence is critical, but the disconnection between simple rewards and collective behaviors exacerbates interpretability challenges. This paper aims to reveal the hidden mechanisms in this process. We propose a two-stage EEC (\\LinkIII) explanatory framework. This includes a novel analytical tool called the Agent Response Map (ARM), which reveals agents' decision-making patterns across space and identifies regions of aggregation and avoidance. ARM reveals that the robots implicitly learn the geometric fields of the environment and utilize these structures as desired targets for coordinated movement. We validate this finding across two distinct tasks: a cooperative multi-robot shape assembly and a competitive predator-prey pursuit-evasion. 1) In the cooperative task, ARM identifies the unoccupied target interior as the desired destination for robot navigation. As the center becomes occupied, this target region automatically shifts toward the boundary, demonstrating the robots' capacity to autonomously explore unoccupied areas. 2) In the competitive task, ARM surprisingly identifies the boundary of the predators' Voronoi diagram as the convergence destination for prey agents. Together, these two tasks demonstrate the capability of ARM to discover the hidden geometric structures underlying MARL policies in robot swarms.",
+      "authors": [
+        "Yize Mi",
+        "Jianan Li",
+        "Liang Li",
+        "Shiyu Zhao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "eess.SY"
+      ],
+      "published": "2026-07-14T15:11:26+00:00",
+      "link": "https://arxiv.org/pdf/2607.12861v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "MARL swarm behavior interpretability, transferable to multi-agent path planning",
+      "llm_evidence_cn": "多智能体强化学习群体行为可解释性，可迁移至多智能体路径规划",
+      "llm_evidence": "多智能体强化学习群体行为可解释性，可迁移至多智能体路径规划",
+      "canonical_evidence": "多智能体强化学习群体行为可解释性，可迁移至多智能体路径规划",
+      "llm_tldr_en": "Proposes EEC explainability framework and Agent Response Map (ARM) to reveal emergent collective behaviors in MARL robot swarms from simple rewards.",
+      "llm_tldr_cn": "针对多智能体强化学习（MARL）中神经策略黑箱性质限制群体机器人应用的问题，论文提出两阶段EEC可解释框架及代理响应图（ARM），用于揭示简单奖励下涌现的复杂集体行为机制。该工具可分析智能体在空间中的决策模式，为理解和设计多智能体路径规划策略提供方法论支持，对学习型多智能体路径规划领域具有重要启发意义。",
+      "llm_tldr": "针对多智能体强化学习（MARL）中神经策略黑箱性质限制群体机器人应用的问题，论文提出两阶段EEC可解释框架及代理响应图（ARM），用于揭示简单奖励下涌现的复杂集体行为机制。该工具可分析智能体在空间中的决策模式，为理解和设计多智能体路径规划策略提供方法论支持，对学习型多智能体路径规划领域具有重要启发意义。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.13403v1",
+      "source": "arxiv",
+      "title": "Min-Max Regret Task Allocation and Planning of Heterogeneous Multi-Robot System in Partially Known Environments",
+      "abstract": "Efficient task allocation for large-scale Heterogeneous Multi-Robot Systems (HMRS) is critical, yet dealing with complex temporal logic tasks in partially known environment (PKE) remains a computational bottleneck. Existing approaches often struggle to balance exploring uncertain regions and exploiting known resources, while also suffering from exponential computational complexity. To address these issues, this paper presents a robust planning framework that simultaneously handles high-level logical constraints and environmental uncertainty without sacrificing scalability. We formulate the problem as a min-max regret optimization, proposing a Region-Binding Atomic Proposition (RbAP) to capture resource uncertainty within the automaton structure. To solve this, we propose the Extended Planning Decision Tree (E-PDT) equipped with a novel Regret-based Branch-and-Bound (BnB) strategy. Unlike traditional methods that rely on prior probabilities or worst-case analysis, our approach dynamically prunes suboptimal policies, effectively balancing the need for information gathering (exploration) and task completion (exploitation). Theoretical analysis confirms the feasibility and completeness of our approach. Extensive numerical and physical experiments demonstrate that the proposed framework achieves near-linear scalability with respect to the number of robots and types, significantly outperforming MILP-based baselines in both solution quality and computational efficiency.",
+      "authors": [
+        "Xinkai Liang",
+        "Huixuan Chan",
+        "Ying Liu",
+        "Yangxi Shi",
+        "Hao Fang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-15T02:59:38+00:00",
+      "link": "https://arxiv.org/pdf/2607.13403v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Min-max regret task allocation and planning for heterogeneous multi-robot systems in partially known environments",
+      "llm_evidence_cn": "部分未知环境下异构多机器人系统的最小最大遗憾任务分配与规划",
+      "llm_evidence": "部分未知环境下异构多机器人系统的最小最大遗憾任务分配与规划",
+      "canonical_evidence": "部分未知环境下异构多机器人系统的最小最大遗憾任务分配与规划",
+      "llm_tldr_en": "Presents a robust planning framework for heterogeneous multi-robot systems using min-max regret optimization with Region-Binding Atomic Proposition to handle uncertainty and temporal logic tasks.",
+      "llm_tldr_cn": "该论文针对部分未知环境下异构多机器人系统的任务分配与规划问题，提出基于最小最大遗憾优化的鲁棒规划框架。通过区域绑定原子命题（RbAP）刻画资源不确定性，在探索未知区域与利用已知资源之间取得平衡，同时满足复杂时序逻辑约束。实验表明该方法在规模化场景下具有可扩展性和鲁棒性，优于现有基线。",
+      "llm_tldr": "该论文针对部分未知环境下异构多机器人系统的任务分配与规划问题，提出基于最小最大遗憾优化的鲁棒规划框架。通过区域绑定原子命题（RbAP）刻画资源不确定性，在探索未知区域与利用已知资源之间取得平衡，同时满足复杂时序逻辑约束。实验表明该方法在规模化场景下具有可扩展性和鲁棒性，优于现有基线。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "biorxiv-10-64898-2026-07-08-736783-v1",
+      "source": "biorxiv",
+      "title": "Interpreting Rewards from Inverse Reinforcement Learning",
+      "abstract": "Inverse reinforcement learning can recover reward functions from observed behavior, but interpreting those rewards remains a fundamental challenge for understanding intelligent behavior and decision-making. To address this challenge, we introduce a novel framework for reward interpretation that combines reward-function analysis, latent mode assignments, and short-history behavioral analysis to infer latent motivations and behavioral dynamics. As a proof-of-concept, we instantiated the framework using switching inverse reinforcement learning on a large-scale dataset of multi-agent social interactions. Our framework interpreted the learned latent modes as  cautious and  volatile motivational profiles, demonstrating that recovered reward functions can reveal distinct patterns of behavioral dynamics. More broadly, these findings suggest that the proposed framework provides a promising approach for reverse-engineering and interpreting latent rewards underlying intelligent behavior and decision-making.",
+      "authors": [
+        "Chow, J.",
+        "Yang, Y.",
+        "Laschowski, B."
+      ],
+      "primary_category": "neuroscience",
+      "categories": [
+        "neuroscience"
+      ],
+      "published": "2026-07-13T00:00:00+00:00",
+      "link": "https://www.biorxiv.org/content/10.64898/2026.07.08.736783v1.full.pdf",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "inverse reinforcement learning on multi-agent interactions; learning latent motivations from behavior",
+      "llm_evidence_cn": "多智能体交互中的逆强化学习；从行为中学习潜在动机",
+      "llm_evidence": "多智能体交互中的逆强化学习；从行为中学习潜在动机",
+      "canonical_evidence": "多智能体交互中的逆强化学习；从行为中学习潜在动机",
+      "llm_tldr_en": "Introduces a framework combining reward-function analysis and latent mode assignment to interpret rewards from inverse RL, demonstrated on multi-agent social interaction data.",
+      "llm_tldr_cn": "该文针对逆强化学习奖励解释难题，提出一个融合奖励函数分析、潜在模式分配和短历史行为分析的解释框架。以切换逆强化学习为实例，在多智能体社交交互数据集上验证，成功将潜在模式解释为谨慎和易变等动机特征。该方法可用于学习多智能体路径规划中的专家演示行为，提取隐含奖励，从而支持模仿学习策略。",
+      "llm_tldr": "该文针对逆强化学习奖励解释难题，提出一个融合奖励函数分析、潜在模式分配和短历史行为分析的解释框架。以切换逆强化学习为实例，在多智能体社交交互数据集上验证，成功将潜在模式解释为谨慎和易变等动机特征。该方法可用于学习多智能体路径规划中的专家演示行为，提取隐含奖励，从而支持模仿学习策略。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
