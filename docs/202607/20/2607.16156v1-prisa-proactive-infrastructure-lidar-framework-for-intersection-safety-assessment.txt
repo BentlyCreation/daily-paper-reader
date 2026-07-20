@@ -1,0 +1,434 @@
+Title: PRISA: Proactive Infrastructure LiDAR Framework for Intersection Safety Assessment
+
+URL Source: https://arxiv.org/pdf/2607.16156v1
+
+Published Time: Mon, 20 Jul 2026 01:24:31 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# PRISA: Proactive Infrastructure LiDAR Framework for Intersection Safety Assessment 
+
+Tam Bang ∗, Hussam Abubakr ∗, Emiliano de la Garza Villarreal ∗, Truc Phuong Nguyen ∗, Austin Harris ∗
+
+Toru Hirano †, Mina Sartipi ∗, Yunfei Xu †, Hoang H. Nguyen ∗∗Center for Urban Informatics and Progress, University of Tennessee at Chattanooga, USA 
+
+†DENSO International America, Inc., Southfield, MI 48033, USA 
+
+Abstract —Urban intersections are among the most hazardous locations in road networks, posing significant risks to vehicles and vulnerable road users (VRUs) such as pedestrians and cyclists. The complexity of multi-agent interactions demands continuous, real-time monitoring systems capable of anticipating conflicts before they escalate into crashes. We present PRISA, a modular infrastructure LiDAR framework leveraging privacy-preserving, low-light-robust roadside sensors for long-term traffic observa-tion and real-time risk detection at the edge. The framework com-prises two core components: a sensing and perception layer and a plug-and-play risk assessment module. The latter automatically curates site-specific training data from accumulated perception outputs to train a trajectory prediction model without manual annotation. It then deploys the trained model for continuous motion forecasting and dual surrogate safety evaluation, using Time-to-Collision (TTC) for longitudinal conflicts and Predicted Post-Encroachment Time (PPET) for crossing and VRU-involved interactions. PRISA is evaluated on the public R-LiViT dataset and deployed on an NVIDIA Jetson AGX Thor at a live signalized intersection in Chattanooga, Tennessee. PPET-based assessment operates at 194 ms end-to-end latency over a 2.4-second predictive horizon, with TTC-based detection and perception remaining within real-time constraints, demonstrating practical feasibility for proactive multi-agent intersection safety monitoring. 
+
+Index Terms —Intersection safety monitoring, surrogate safety measures, trajectory prediction, vulnerable road users, edge computing 
+
+I. I NTRODUCTION 
+
+Urban intersections are among the most hazardous loca-tions in road networks, accounting for a significant share of traffic fatalities and severe injuries. The increasing presence of vulnerable road users (e.g., pedestrians, cyclists) further compounds the safety challenge, as these groups are highly susceptible to injury in conflict events [1]. Infrastructure-mounted proactive safety monitoring systems capable of de-
+
+This research was partially supported by the Federal Highway Administra-tion under Agreement No. 693JJ32350028. It was also partially supported by the Transportation Network Growth Opportunity (TNGO) initiative, funded by the Tennessee Department of Economic and Community Development in collaboration with the University of Tennessee at Chattanooga and industry partners. Any opinions, findings, and conclusions or recommendations ex-pressed in this publication are those of the authors and do not necessarily reflect the view of the Federal Highway Administration. © 2026 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any current or future media, including reprinting/republishing this material for advertising or promotional purposes, creating new collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other works. 
+
+tecting potential conflicts in real time and issuing early warn-ings are therefore critical for evidence-based intervention. Such systems must be deployable with minimal technical expertise across diverse roadside environments. Roadside sensors offer a persistent, wide-area perspective that is well suited for intersection monitoring. LiDAR is well suited for roadside perception due to its robustness in low-light environments and its precise 3D spatial measurements, en-abling accurate localization, heading, and velocity estimation independent of illumination [2]. Critically, LiDAR captures no visually identifiable information, making it privacy-preserving. Proactive conflict detection requires not only observing current road user states, but anticipating future interactions. Surrogate Safety Measures (SSMs) — quantitative metrics of near-miss severity widely adopted as surrogate indicators of crash risk [3] — form the foundation of such systems. Predictive SSMs, such as PPET [4], computed from forecast trajectories provide earlier and more reliable warnings than reactive metrics alone. However, deploying this pipeline in practice introduces two key challenges. First, learning-based prediction models require site-specific trajectory data. How-ever, raw perception outputs often contain noisy, fragmented, and incomplete tracks that degrade model performance. This necessitates automated, self-supervised data curation from accumulated observations to generate reliable training sam-ples without manual annotation. Second, safety-critical real-time operation demands deterministic execution, which cloud offloading cannot guarantee due to variable network delays, making on-device edge deployment a practical necessity. Existing work addresses these challenges in isolation. Many methods are designed solely for offline analysis of pre-recorded datasets [5], while others face challenges in bridging upstream perception outputs to deployable conflict detection, limiting their generalization across heterogeneous intersec-tion environments [6]. Furthermore, prior work often adopts vehicle-centric evaluations, whereas safe urban intersections demand a system-wide infrastructure perspective capturing complex multi-agent interactions across all road users. To overcome these limitations, we present PRISA (PRoactive Infrastructure LiDAR Framework for Intersection Safety Assessment), a real-time, edge-deployable, modular framework for intersection safety monitoring using infras-tructure LiDAR. Trajectory prediction and conflict evaluation arXiv:2607.16156v1 [cs.LG] 17 Jul 2026 are centralized into a cohesive, plug-and-play risk assessment module, fully decoupled from the upstream perception layer and compatible with any compliant detection and tracking system. The key contributions of PRISA are as follows:  
+
+> •
+
+Modular, edge-deployable safety framework: An end-to-end pipeline that transforms raw roadside LiDAR data into actionable conflict metrics, operating in real time on embedded edge hardware without cloud dependency.  
+
+> •
+
+Plug-and-play risk assessment module: A self-contained module integrating self-supervised trajectory prediction and dual-SSM conflict evaluation, operating on a standardized state vector and independent of the upstream perception system.  
+
+> •
+
+Real-world validation: The proposed pipeline is vali-dated on a public roadside dataset and further deployed on an NVIDIA Jetson AGX Thor edge device at a live urban intersection in Chattanooga, Tennessee, demonstrating its real-time operational feasibility. II. R ELATED WORK 
+
+A. Surrogate Safety Measures and Conflict Assessment 
+
+Surrogate Safety Measures offer a lightweight yet effective proactive alternative to crash-based evaluation, quantifying the severity of traffic conflicts and near-misses without requiring actual crash event data. The FHWA Surrogate Safety Assess-ment Model (SSAM) established the foundational method-ology, defining algorithms for computing TTC for rear-end conflicts and Post-Encroachment Time (PET) for crossing con-flicts from simulated vehicle trajectories [7], [8]. Subsequent validation studies confirmed that simulation-derived conflict metrics correlate significantly with field-measured crash data at signalized intersections [9]. Beyond simulation, both mea-sures have been extended to field deployments at unsignalized intersections under mixed traffic conditions, where TTC is most appropriate for longitudinal rear-end interactions and PET is best suited for lateral crossing events involving di-verging or merging paths [10], [11]. Reactive SSMs are, however, inherently constrained to observed states, limiting the intervention lead time available to safety systems. Predicted Post-Encroachment Time extends the classical PET concept to forecast trajectories, enabling proactive rather than reactive conflict detection [12]. Adopting a dual-measure strategy — TTC for longitudinal following conflicts and PPET for crossing and VRU-involved interac-tions — therefore provides both broader conflict coverage and earlier warning capability than either metric alone [13]. Despite the maturity of learning-based trajectory prediction methods with demonstrated accuracy, such as MID [14] and Trajectron++ [15], their integration into infrastructure-side risk assessment pipelines has remained limited. Raw perception outputs from roadside sensors are inherently noisy, frag-mented, and incomplete, requiring careful data curation before they can serve as reliable training inputs, while the substan-tial computational resources required for real-time roadside deployment further constrain practical adoption [16]. 
+
+B. Infrastructure-Based Risk Assessment Frameworks 
+
+Intersection safety monitoring has been approached across a range of sensing modalities and computational paradigms, with the shared goal of translating raw sensor data into actionable conflict indicators. Camera and UAV-based systems have been widely adopted for SSM computation, leverag-ing accessible deployment and broad spatial coverage: UAV platforms enable accurate bird’s-eye trajectory extraction for PET-based behavioral conflict analysis at both signalized and unsignalized locations [17], [18], while fixed roadside camera systems support real-time computation of TTC and PET directly from live video streams [19]. Learning-based methods have advanced conflict detection further by applying deep learning to vehicle trajectory data at signalized intersections, moving beyond purely reactive metrics toward anticipatory conflict prediction [20]. Infrastructure LiDAR offers precise 3D spatial measurement independent of lighting conditions and has been deployed for intersection monitoring across several contexts, ranging from work-zone safety and VRU conflict detection [21], [22] to the integration of trajectory prediction with SSM-based risk assessment using roadside-mounted sensors [23]. Despite this progress, existing frameworks face several challenges. Camera-based systems remain constrained by per-spective distortion and limited depth accuracy, while learning-based approaches typically depend on large-scale manually annotated datasets and cloud-level computational resources, limiting their feasibility for edge deployment. More funda-mentally, perception and risk assessment are often treated as isolated concerns: SSM-based systems assume clean trajectory inputs derived from simulation or manual annotation, rather than raw outputs from an operational perception pipeline. To the best of our knowledge, no prior work has integrated a self-supervised training pipeline with a modular risk assessment module capable of interfacing directly with heterogeneous upstream perception layers while operating in real time on embedded edge hardware at a live urban intersection. The proposed framework directly addresses these gaps. III. M ETHODOLOGY 
+
+PRISA comprises two components, as illustrated in Fig. 1. The first is the sensing and perception layer, which pro-cesses raw LiDAR point clouds into standardized tracked object states. The second is the plug-and-play risk assessment module , operating in two sequential phases. In Phase I, site-specific training data are automatically curated from accumu-lated perception outputs to train a trajectory prediction model without manual annotation. In Phase II, the trained model runs continuous real-time inference, with predicted trajectories fed directly into surrogate safety evaluation using TTC and PPET. Requiring only a standardized state vector as input, the module is fully decoupled from the upstream perception layer and compatible with any compliant detection and tracking system. Sensing    
+
+> LiDAR
+> Detection
+> LiDAR
+> Tracking
+> Perception
+> Trajectory
+> Database
+> Trajectory
+> Prediction
+> Phase I Phase II Phase I , II
+> Risk Assessment
+> LiDAR Data
+> Processing
+> Conflict Results
+> SSA
+
+Fig. 1: Overview of PRISA, comprising the upstream Sensing and Perception layer and the Plug-and-Play Risk Assessment module with its two operational phases. 
+
+A. LiDAR Sensing and Perception 
+
+The sensing layer uses LiDAR sensors to provide contin-uous 3D point cloud coverage of the intersection area. The perception module applies 3D object detection and multi-object tracking directly on the point cloud data to identify and track road users, extracting bounding box parameters (center position, dimensions, heading) and semantic class labels c ∈ { Vehicle , VRU }, where VRU encompasses pedes-trians, cyclists, and other vulnerable road users. While the perception operates in full 3D, downstream modules consume only the bird’s-eye-view (BEV) coordinates (x, y ). This two-dimensional representation is sufficient for road-level conflict analysis, where longitudinal and lateral positions are the pri-mary factors governing interactions, and substantially reduces computational overhead. For each tracked object i at frame t, the perception module produces a state vector 
+
+sti =  xti, y ti , v tx,i , v ty,i , θ ti , l i, w i, c i
+
+ , (1) where (xti, y ti ) denotes the 2D center position in the global coordinate frame, vti = ( vtx,i , v ty,i ) is the 2D velocity vector, 
+
+θti is the heading angle, (li, w i) are the length and width of the bounding box, and ci is the semantic class. The scalar speed is defined as vti = ∥vti ∥2. The set of all tracked states St = {sti}
+
+serves as input to the plug-and-play risk assessment module. 
+
+B. Plug-and-Play Risk Assessment Module 1) Phase I: Self-Supervised Data Curation and Model Training: In Phase I, the perception output St is processed through a data curation pipeline (Algorithm 1) that accumu-lates object trajectories over extended observation periods. The pipeline filters out incomplete or noisy tracks, interpolates brief gaps, and downsamples stationary objects to create a clean trajectory database. This automated curation eliminates the need for manual ground-truth labeling: the large volume of accumulated data, combined with track quality filtering, pro-vides sufficient supervision for training the prediction model in a self-supervised manner. A learning-based prediction model is trained on this curated database to forecast Tpred future positions from Tobs historical positions. Phase I terminates when the model converges, after which the trained weights are frozen and deployed in Phase II. 
+
+2) Phase II: Real-Time Trajectory Prediction: To reduce computational overhead, a speed-based filtering step is applied to vehicles before trajectory prediction. The average speed of object i over the observation window, ¯vi, is then used to partition objects into three categories:  
+
+> •
+
+Dynamic vehicles (ci = Vehicle , ¯vi > v thr ): The predic-tion model forecasts the future trajectory ˆTi, and these objects proceed to risk assessment.  
+
+> •
+
+Slow / Stationary vehicles (ci = Vehicle , ¯vi ≤ vthr ): Prediction is skipped to save computation. For risk as-sessment, their current state is held constant ( ˆst+ki = sti), treating them as static obstacles (e.g., queued or parked cars) for collision checking.  
+
+> •
+
+VRUs : Trajectory prediction is always applied regardless of speed, as VRU motion is inherently less predictable and their trajectories are essential for PPET calculation. This class-dependent filtering strategy balances computa-tional efficiency with safety: trajectory prediction — the most computationally expensive step — is applied selectively for vehicles based on motion, while all VRUs receive full trajec-tory forecasting to capture their potentially erratic movement patterns. 
+
+Algorithm 1 Data Processing for Trajectory Prediction 
+
+Require: Perception outputs St, observation window Tobs , prediction horizon Tpred 
+
+Phase I (Training):  
+
+> 1:
+
+Accumulate frames over TDB to build trajectory database D 
+
+> 2:
+
+Group detections by track ID to obtain per-object sequences {τ i} 
+
+> 3:
+
+Filter: Discard tracks with length < T obs + Tpred or gaps > T obs  
+
+> 4:
+
+Interpolate remaining gaps using linear interpolation  
+
+> 5:
+
+Downsample stationary tracks (standing duration > τstand ) to reduce redundancy  
+
+> 6:
+
+Train prediction model on processed dataset until convergence 
+
+Phase II (Inference):  
+
+> 1:
+
+Maintain sliding window of Tobs frames for each active track  
+
+> 2:
+
+Filter: Remove tracks with < 2 consecutive detections  
+
+> 3:
+
+Interpolate brief gaps ( ≤ 1 frame) in active tracks  
+
+> 4:
+
+Extract observation sequence (xt−Tobs +1 , . . . , x t) for each track  
+
+> 5:
+
+Apply prediction model to generate the future trajectory ˆTi =
+
+{(ˆ xt+ki , ˆyt+ki )}Tpred 
+
+> k=1
+
+3) Surrogate Safety Assessment (SSA): The Surrogate Safety Assessment (SSA) block, as the final stage of the risk assessment module, evaluates pairwise conflict risk among dynamic objects using two complementary SSMs. Object pairs are first classified by interaction type, the appropriate metric is applied, and the result is compared against a configurable threshold to determine conflict status. 
+
+a) Interaction Classification: For each object i, potential conflict partners are identified within a velocity-dependent region of interest (ROI): 
+
+ROI i = (x, y ) : ∥(x − xti , y − yti )∥2 ≤ Rmax + ¯ vi · Tpred , (2) 
+
+where (x, y ) is any candidate position in the BEV plane, 
+
+(xti, y ti ) is the current position of object i, Rmax is a base detection radius, and ¯vi · Tpred extends the search range pro-portionally to object speed. For each pair (i, j ) within mutual ROIs, interaction type is determined by combining heading alignment and spatial position. The heading difference 
+
+∆θij = min ( |θi − θj |, 360 ◦ − | θi − θj |) , (3) measures angular alignment. To separate true following scenar-ios from side-by-side motion, the relative displacement pj −pi
+
+is decomposed into longitudinal and lateral components with respect to i’s heading: 
+
+dij  
+
+> long
+
+= ( pj − pi) ·
+
+cos θi
+
+sin θi
+
+
+
+, (4) 
+
+dij  
+
+> lat
+
+= ( pj − pi) ·
+
+− sin θi
+
+cos θi
+
+
+
+. (5) We define an adaptive corridor width wcorr =max (( wi + wj )/2, w lane ), where wlane = 3.66 m, ensuring a physically meaningful minimum based on standard lane width [24]. Objects are then classified into three categories based on thresholds αlong (e.g., 30°) and αcross (e.g., 60°):  
+
+> •
+
+Longitudinal (Following) : Vehicle pairs where ∆θij <αlong , dij  
+
+> long
+
+> 0 (leader is ahead), and |dij 
+
+> lat
+
+| < w corr .Evaluated using TTC.  
+
+> •
+
+Crossing / Lane-change : All other vehicle pairs, in-cluding oblique merging ( αlong ≤ ∆θij ≤ αcross ) and perpendicular crossings ( ∆θij > α cross ). Evaluated using PPET.  
+
+> •
+
+VRU-involved : Interactions involving at least one VRU, evaluated using PPET irrespective of heading alignment. Pedestrian–pedestrian pairs are excluded from conflict assessment. Vehicle–VRU pairs are also excluded when the vehicle is stationary or near-stationary (speed ≤ vthr ), as stopped vehicles (e.g., buses at stops or parked cars) do not represent a genuine collision risk despite geometric proximity. A single object may participate in multiple interactions simultaneously. Each pairwise interaction is evaluated inde-pendently, and the conflict with the highest severity (lowest TTC or PPET value) is prioritized for alert generation. All classification thresholds ( αlong , αcross , τTTC , τPPET ) are config-urable at runtime, enabling plug-and-play deployment across different intersection geometries. 
+
+b) Time-to-Collision: For a longitudinal vehicle-to-vehicle pair (follower f , leader ℓ), TTC is computed by accounting for vehicle dimensions rather than using centroids. The gap distance df ℓ is measured from the front-center of the follower to the rear-center of the leader, and the closing speed 
+
+∆vf ℓ = |vf − vℓ| is the difference in scalar velocities. TTC is then defined as: TTC =
+
+
+
+df ℓ 
+
+∆vf ℓ 
+
+if ∆vf ℓ > 0,
+
+∞ otherwise, (6) where a finite TTC indicates that the follower is approaching the leader; a conflict is flagged when TTC < τ TTC .Each dynamic object is compared to its immediate leader — the nearest object ahead along its heading direction within the velocity-dependent ROI — avoiding redundant pairwise comparisons. 
+
+c) Predicted Post-Encroachment Time: For crossing and lateral interactions, we adopt PPET, which extends the clas-sical PET concept to forecast trajectories by propagating each object’s predicted bounding boxes forward in time and identifying where and when their spatial extents intersect. Given a non-empty conflict zone Cij , the entry and exit times of each object are identified from the predicted swept volumes, and PPET is defined as: PPET =
+
+
+
+tj 
+
+> entry
+
+− ti 
+
+> exit
+
+if ti 
+
+> exit
+
+< t j
+
+> entry
+
+,ti 
+
+> entry
+
+− tj 
+
+> exit
+
+if tj 
+
+> exit
+
+< t i
+
+> entry
+
+,
+
+0 otherwise (temporal overlap). (7) Algorithm 2 formalizes the procedure for swept volume generation, dynamic conflict zone detection, and PPET eval-uation based on Eq. 7. A conflict is declared when PPET <τPPET .
+
+Algorithm 2 PPET Computation for a Crossing Object Pair 
+
+Require: Predicted trajectories ˆTi, ˆTj ; prediction horizon Tpred 
+
+Output: PPET value for pair (i, j ) at time t 
+
+> 1:
+
+for each object o ∈ { i, j } do  
+
+> 2:
+
+for k = 1 to Tpred do  
+
+> 3:
+
+Generate time-stamped bounding box Bt+ko 
+
+> 4:
+
+end for  
+
+> 5:
+
+end for  
+
+> 6:
+
+Cij ← { k | Bt+ki ∩ Bt+kj̸ = ∅, k ∈ { 1, . . . , T pred }}  
+
+> 7:
+
+if Cij = ∅ then  
+
+> 8:
+
+return ∞ (pair declared safe)  
+
+> 9:
+
+end if  
+
+> 10:
+
+Identify ti
+
+> entry
+
+, t i 
+
+> exit
+
+and tj
+
+> entry
+
+, t j 
+
+> exit
+
+from Cij  
+
+> 11:
+
+if neither object clears Cij within Tpred then  
+
+> 12:
+
+return 0 (unresolved conflict, treated as critical)  
+
+> 13:
+
+end if  
+
+> 14:
+
+Compute PPET via Eq. 7  
+
+> 15:
+
+if multiple conflict zones exist then  
+
+> 16:
+
+return min( PPET across all zones ) 
+
+> 17:
+
+end if  
+
+> 18:
+
+return PPET 
+
+IV. E XPERIMENTS AND FIELD DEPLOYMENT 
+
+The proposed framework is evaluated across two comple-mentary settings. In the first, the risk assessment module is assessed in isolation on a public roadside LiDAR dataset us-ing ground-truth trajectory inputs, enabling direct comparison against prior SSM-based methods on clean data. In the second, the complete end-to-end pipeline is deployed at a live urban intersection to validate real-world operational feasibility. All experiments are conducted on an NVIDIA Jetson AGX Thor operating in maximum performance mode to evaluate compu-tational efficiency under target edge hardware conditions, and Fig. 2: RGB camera (top) and LiDAR point cloud (bottom) samples from one representative location within R-LiViT Int.2 and Int.3, and from the Georgia & M.L.K. deployment site. the perception module is treated as an interchangeable com-ponent throughout, demonstrating the plug-and-play design of the risk assessment module. 
+
+A. Datasets and Experimental Setup 1) R-LiViT Dataset: The R-LiViT dataset [25] is a publicly available roadside LiDAR benchmark featuring high-density mixed traffic, including VRUs (pedestrian, cyclist, motorcycle) and vehicles (car, truck, bus, tramway), collected at three intersections. We utilize Intersection 2 (Locations 3, 4, 5) and Intersection 3 (Locations 6, 7), as both represent signalized urban settings with dense interactions. For each intersection, sequences are sorted chronologically per location and split 70%/30% by order: the first 70% are used for trajectory predic-tion training and the last 30% for risk assessment evaluation. Trajectory prediction metrics (ADE/FDE) are averaged across locations within each intersection, while conflict counts are summed across locations to reflect the total number of conflict events observed. The dataset’s fragmented structure, consisting of short se-quences of 50–200 frames collected across multiple separated sub-locations, is structurally incompatible with Phase I self-supervised training, which requires continuous long-duration streams from a fixed sensor deployment. We therefore use ground-truth trajectory annotations directly as inputs to the risk assessment module, consistent with established SSM evalua-tion practice [7], [19], isolating the dual-SSM contribution and enabling fair comparison against prior methods that operate on clean trajectory inputs. 
+
+2) Field Deployment Site: The full pipeline is deployed at the Georgia Avenue and M.L.K. Boulevard intersection in Chattanooga, Tennessee, a four-leg signalized intersection with mixed vehicle and VRU traffic. Two Ouster LiDAR sensors are mounted at a height of 5 meters at opposite corners, with point clouds unified by the Ouster BlueCity backend to provide 360 ◦
+
+coverage [26], supporting subclassification of vehicles (car, truck, bus, trailer) and VRUs (pedestrian, bicycle). Although the BlueCity API delivers perception outputs at 10 Hz, data are downsampled to 5 Hz to reduce inference frequency on the edge device and maintain a consistent frame interval across all experiments. Perception outputs are received via API and passed directly to the plug-and-play risk assessment module for downstream data curation, trajectory prediction, and conflict assessment. A total of 30 minutes of perception data are collected without manual annotation: 20 minutes for Phase I self-supervised training and 10 minutes for Phase II evaluation, with the two sessions recorded on separate days to ensure traffic pattern variability across training and evaluation. Figure 2 illustrates representative sensor views from both datasets, and Table I summarizes their key statistics. TABLE I: Dataset overview at 5 Hz.                                       
+
+> Metric R-LiViT Field Int. 2 Int. 3 Georgia & M.L.K. Train Eval Train Eval Train Eval
+> Sequences 28 13 35 15 ––Duration (min) 6.8 3.5 8.3 4.0 20 10 Frames 2050 1050 2500 1200 6000 3000 Vehicle tracks 772 207 873 123 1046 842 VRU tracks 607 222 886 142 445 106
+
+B. Trajectory Prediction Performance 
+
+FlowChain [27], MID [14], and Trajectron++ [15] are trained on all road user types jointly using Tobs = 8 frames and Tpred = 12 frames with a 70/15/15 train/validation/test split following [27]. Training data are prepared using the automated curation pipeline described in Algorithm 1. All experiments adopt a uniform 5 Hz frame rate ( ∆t = 0 .2 s), yielding 1.6 s of observation history and a 2.4 s prediction horizon, applied consistently across both the R-LiViT dataset and the downsampled field deployment data. Models are evaluated using Average Displacement Error (ADE) and Final Displacement Error (FDE). Table II presents prediction performance across all sites. Two kinematic baselines are included for reference: Constant Velocity (CV) [28], which extrapolates the last observed ve-locity in a straight line, and Constant Acceleration (CA) [28], which additionally accounts for the most recent acceleration. CV achieves competitive ADE/FDE across all sites due to the straight-path-dominant nature of intersection traffic. However, both baselines degrade substantially for turning maneuvers, which constitute the primary conflict scenarios at intersections. Furthermore, both methods produce a single deterministic trajectory, making them incompatible with the distribution-aware PPET metric used in risk assessment. Among the learned models, FlowChain achieves the lowest ADE and FDE across all sites, outperforming both MID and Trajectron++ by a substantial margin. Prediction time is measured for an average of 40 objects per frame with data already in the required input format, excluding preprocessing. Based on accuracy and computational efficiency, FlowChain is selected as the trajectory prediction backbone for all downstream risk assessment experiments. TABLE II: Trajectory prediction ADE / FDE (metres) at 5 Hz.                           
+
+> Model R-LiViT Field Pred. Time Int. 2 Int. 3 Georgia & M.L.K. (ms) CV 2.432 / 4.656 2.239 / 4.167 1.796 / 3.625 0.05
+> CA 5.001 / 12.707 5.262 / 13.422 4.410 / 11.282 0.11 MID 2.638 / 4.740 2.847 / 5.180 3.683 / 6.641 230 Trajectron++ 1.085 / 2.007 1.173 / 2.189 0.920 / 1.744 22 FlowChain 0.646 / 1.111 0.491 / 0.710 0.505 / 0.928 28
+
+C. Risk Assessment Threshold Configuration 
+
+Risk assessment thresholds are selected based on established traffic safety literature [8], [29]. To identify appropriate oper-ating thresholds, we perform a sensitivity analysis sweeping 
+
+τTTC from 0.5 s to 4.0 s and τPPET from 0.5 s to 2.4 s, where the upper bound of the PPET sweep is governed by both our model’s maximum prediction horizon and the FHWA guide-line that PET > 2.5 s indicates a conflict-free interaction [7]. Conflict type is classified by approach angle following the geometry-based conflict taxonomy of Laureshyn et al. [30]: pairs with α < α long = 30 ◦ are treated as following conflicts and pairs with α > α cross = 60 ◦ as crossing conflicts. Near-stationary detections are suppressed using a speed threshold of 
+
+vthr = 2 .0 m/s and an ROI of 15.0 m. For each threshold, we report total conflict instances and conflict rate (total conflict instances / total evaluation frames) across all sites in Table III. As shown in Table III, at τTTC = 1 .5 s the conflict rate remains below 100% across all sites, indicating fewer than one simultaneous TTC conflict per frame on average, consistent with the standard TTC conflict criterion adopted in SSAM [7] and recent surrogate safety literature [31]. Beyond 2.0 s, rates exceed 100% at Int.2 and Int.3 (e.g., 102.7% and 113.3% at 2.5 s), reflecting overlapping conflict windows from simultane-ous multi-pair interactions rather than distinct critical events. For PPET, the number of detected conflicts is already largely saturated at low thresholds, with only modest increases from 0.5 s to 2.4 s across all sites. Very small PPET values may arise not only from genuinely critical interactions, but also from limitations of finite-horizon prediction. First, if a conflict is detected near the end of the prediction horizon and the object does not leave the conflict zone within that horizon, the interaction is assigned PPET = 0 by definition. Second, the predictor may temporarily extend an approaching vehicle straight through the intersection or produce a turning trajectory that overlaps with stopped vehicles or nearby roadside objects, thereby yielding artificially low PPET values despite limited actual risk. We therefore select τPPET = 1 .5 s as a practical operating threshold, as it captures most detected conflicts while providing a more stable operating point than very small thresholds, which are more sensitive to near-zero PPET cases, and remains well within the model’s 2.4 s prediction horizon. TABLE III: Conflict detection sensitivity across thresholds (30% evaluation split). Bold rows mark the selected thresholds (τTTC = τPPET = 1 .5 s).                                                                                        
+
+> Thresh. (s) R-LiViT Field Int. 2 Int. 3 Georgia & M.L.K. Conflicts Rate (%) Conflicts Rate (%) Conflicts Rate (%)
+> Time-to-Collision (TTC)
+> 0.5 192 18.3 168 14.0 169 5.6 1.0 406 38.7 520 43.3 753 25.1
+> 1.5 597 56.9 800 66.7 1190 39.7
+> 2.0 756 72.0 1041 86.8 1553 51.8 2.5 915 87.1 1232 102.7 1944 64.8 3.0 1082 103.0 1359 113.3 2320 77.3 3.5 1232 117.3 1479 123.3 2595 86.5 4.0 1353 128.9 1575 131.3 2861 95.4
+> Predicted Post-Encroachment Time (PPET)
+> 0.5 597 56.9 729 60.8 1125 37.5 1.0 612 58.3 753 62.8 1133 37.8
+> 1.5 631 60.1 774 64.5 1145 38.2
+> 2.0 636 60.6 782 65.2 1152 38.4 2.4 639 60.9 784 65.3 1152 38.4
+
+D. Conflict Type Analysis 
+
+To better understand the nature of detected conflicts, Ta-ble IV breaks down conflict pairs and frames by interaction type at the selected thresholds ( τTTC = τPPET = 1 .5 s), dis-tinguishing Vehicle–Vehicle, Vehicle–VRU, and VRU–VRU interactions across all sites. Vehicle–Vehicle (TTC) conflicts dominate across all sites, with 284, 307, and 257 distinct pairs at Int.2, Int.3, and Georgia & M.L.K., respectively. At the R-LiViT intersections, VRU-involved conflicts constitute a substantial portion of PPET detections (Int.2: 246 of 464 pairs and Int.3: 387 of 483 pairs), reflecting dense mixed-traffic conditions and the high VRU presence in the evaluation sets (222 and 142 VRU tracks). Similarly, the elevated VRU–VRU counts at R-LiViT (78 pairs at Int.2 and 212 at Int.3) require careful interpretation. Many of these cases involve co-moving agents, such as a cyclist traveling alongside a pedestrian, whose trajectories satisfy the geometric PPET threshold without representing genuinely safety-critical interactions. TABLE IV: Conflict counts by interaction type at the selected thresholds ( τTTC = τPPET = 1.5 s). Pairs denotes unique object-pair combinations flagged as conflicting and Frames 
+
+denotes total conflict instances across all frames.                                 
+
+> Conflict Type R-LiViT Field Int. 2 Int. 3 Georgia & M.L.K. Pairs Conflicts Pairs Conflicts Pairs Conflicts
+> Vehicle–Vehicle (TTC) 284 597 307 800 257 1190 Vehicle–Vehicle (PPET) 218 287 96 130 783 1139 Vehicle–VRU (PPET) 168 243 175 241 66VRU–VRU (PPET) 78 101 212 403 00
+
+In contrast, the Field site records only six Vehicle–VRU pairs and no VRU–VRU pairs, despite 106 VRU tracks in eval-uation. The low Vehicle–VRU conflict count reflects dedicated pedestrian signal phases that temporally separate conflicting flows, whereas the absence of VRU–VRU conflicts results from cyclists and pedestrians traveling in distinct streams at the Field site, removing the primary source of co-moving agent pairs observed at R-LiViT. The Field site nonetheless exhibits a higher Vehicle–Vehicle (PPET) count (783 pairs) compared to R-LiViT (Int.2: 218 and Int.3: 96). This is partially attributable to a straight-motion bias in the prediction model, whereby decelerating or turning vehicles are initially predicted to continue straight, generating false cross-traffic conflicts in the early frames of a maneuver. 
+
+E. Computational Performance and Real-Time Operation 
+
+We evaluate computational performance on the NVIDIA Jetson AGX Thor under two LiDAR perception modes. In the deployed configuration, LiDAR perception is provided by the Ouster BlueCity API at 10 Hz. We additionally bench-mark a fully on-device configuration that replaces BlueCity with PointPillars [32] using the CUDA-accelerated TensorRT (FP16) implementation from the NVIDIA LiDAR AI So-lution [33] and AB3DMOT [34] for multi-object tracking. Table V presents the per-frame runtime breakdown of the fully on-device pipeline for an average scene density of 20–30 objects per frame. The reported trajectory prediction time includes data preparation (environment construction and DataLoader initialization), whereas Table II reports model inference time only. TABLE V: Per-Frame Processing Time on Jetson AGX Thor      
+
+> Module Time (ms)
+> Perception (PointPillars + AB3DMOT) 21 Trajectory Prediction 143 SSA 30
+> Total 194
+
+Specifically, perception, trajectory prediction, and SSA con-tribute 21 ms, 143 ms, and 30 ms, respectively, yielding a total end-to-end latency of δ = 194 ms. A risk assessment derived from observations at time t therefore becomes available at t+δ.Since FlowChain predicts trajectories over a 2.4 s horizon, the usable prediction window for downstream decision-making is 
+
+2.4 − δ ≈ 2.21 s. Of the two safety metrics, only PPET relies on predicted trajectories, while TTC is computed directly from observed positions and velocities and is therefore unaffected by prediction latency. V. A BLATION STUDY 
+
+To validate the system’s ability to operate without manual intervention, we conduct an ablation study evaluating the ef-fectiveness of the proposed automated data processing module. Table VI compares trajectory prediction accuracy between ground-truth annotations and the proposed data processing pipeline operating on raw perception outputs, evaluated on 4,000 field data frames at 5 Hz under the same experimental configuration. The ADE and FDE gaps are 24.1 % and 26.2 %, respectively, demonstrating that the data processing module produces inputs of sufficient quality for reliable trajectory prediction without requiring any manual annotation. TABLE VI: Trajectory prediction accuracy of the proposed data processing pipeline versus ground-truth annotations.         
+
+> Input ADE (m) FDE (m)
+> Ground-Truth Annotations 0.194 0.272 Raw Perception + Data Processing 0.255 0.369 Gap (%) 24.1 26.2
+
+VI. C ONCLUSION 
+
+We presented PRISA, a modular infrastructure LiDAR framework for proactive intersection safety assessment, inte-grating a self-supervised data curation pipeline, a learning-based trajectory prediction model, and a dual-SSM risk as-sessment module into a cohesive end-to-end system. By decoupling the plug-and-play risk assessment module from the upstream perception layer, PRISA is compatible with any compliant detection and tracking system, enabling de-ployment across heterogeneous roadside environments without perception-specific adaptation. Experiments on the R-LiViT dataset and a live field de-ployment at the Georgia Avenue and M.L.K. Boulevard inter-section in Chattanooga, Tennessee, demonstrate the practical viability of the proposed approach. The dual-SSM strategy — applying TTC for longitudinal conflicts and PPET for crossing and VRU-involved interactions — provides broad conflict cov-erage with configurable thresholds across diverse intersection geometries. While the end-to-end pipeline operates at 194 ms latency on an NVIDIA Jetson AGX Thor, this delay affects only PPET-based assessment; TTC and perception remain within real-time constraints, confirming the system’s feasibility for continuous edge deployment. Several directions remain open for future work. Incorporat-ing maneuver-aware or intent-conditioned prediction models could reduce the straight-motion bias observed at the field site, while adding interaction-intent classification could help dis-tinguish genuinely safety-critical encounters from co-moving agents in VRU-dense environments. Integrating lane geometry into the interaction classifier could further suppress false crossing detections and improve robustness. In addition, more detailed trajectory-level analysis under dense traffic flow and partial occlusion conditions would help characterize failure cases more systematically and guide further improvements in prediction robustness. Beyond LiDAR, the modular design could naturally accommodate camera-based or sensor-fusion perception systems, opening a pathway toward more robust multi-modal intersection safety monitoring. REFERENCES [1] W. H. Organization, Global status report on road safety 2023: country and territory profiles . World Health Organization, 2024. [2] J. Zhang, C. Ge, W. Xiao, M. Tang, J. Mills, B. Coifman, and N. Chen, “Roadside lidar-based scene understanding toward intelligent traffic per-ception: A comprehensive review,” ISPRS Journal of Photogrammetry and Remote Sensing , vol. 233, pp. 69–88, 2026. [3] A. Arun, M. M. Haque, A. Bhaskar, S. Washington, and T. Sayed, “A systematic mapping review of surrogate safety assessment using traffic conflict techniques,” Accident Analysis & Prevention , vol. 153, p. 106016, 2021. [4] W. Qi, W. Wang, B. Shen, and J. Wu, “A modified post encroachment time model of urban road merging area based on lane-change charac-teristics,” IEEE Access , vol. 8, pp. 72 835–72 846, 2020. [5] D. Nikolaou, A. Ziakopoulos, and G. Yannis, “A review of surrogate safety measures uses in historical crash investigations,” Sustainability ,vol. 15, no. 9, p. 7580, 2023. [6] A. Kumar and A. Mudgal, “Surrogate safety assessment in heteroge-neous traffic environment prevailing in developing countries: a system-atic literature review,” International Journal of Injury Control and Safety Promotion , vol. 32, no. 2, pp. 182–200, 2025. [7] D. Gettman and L. Head, “Surrogate safety measures from traffic simulation models: Final report,” Federal Highway Administration, Tech. Rep. FHWA-RD-03-050, 2003. [8] D. Gettman, L. Pu, T. Sayed, and S. Shelby, “Surrogate safety assess-ment model and validation: Final report,” Federal Highway Administra-tion, Tech. Rep. FHWA-HRT-08-051, 2008. [9] M. Essa and T. Sayed, “Identifying if VISSIM simulation model and SSAM provide reasonable estimates for field measured traffic conflicts at signalized intersections,” Accident Analysis & Prevention , vol. 45, pp. 684–694, 2013. [10] P. Singh et al. , “Conflict-based safety evaluations at unsignalized inter-sections under mixed traffic conditions,” Safety Science , 2024. [11] A. Arun et al. , “A review of surrogate safety measures on road infrastructure,” Accident Analysis & Prevention , vol. 191, p. 107222, 2023. [12] Y. Li et al. , “A real-time evaluation framework for pedestrian’s potential risk at signalized intersections,” arXiv preprint arXiv:2404.15635 , 2024. [13] F. Pascucci et al. , “Before–after safety analysis of a shared space implementation,” arXiv preprint arXiv:2307.01058 , 2023. [14] T. Gu, G. Chen, J. Li, C. Lin, Y. Rao, J. Zhou, and J. Lu, “Stochastic trajectory prediction via motion indeterminacy diffusion,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,2022, pp. 17 113–17 122. [15] T. Salzmann, B. Ivanovic, P. Chakravarty, and M. Pavone, “Trajectron++: Dynamically-feasible trajectory forecasting with heterogeneous data,” in 
+
+European conference on computer vision . Springer, 2020, pp. 683–700. [16] Y. Huang et al. , “Trajectory prediction for autonomous driving: Progress, limitations, and future directions,” arXiv preprint arXiv:2503.03262 ,2025. [17] P. Chen, W. Zeng, G. Yu, and Y. Wang, “Surrogate safety analysis of pedestrian-vehicle conflict at intersections using unmanned aerial vehicle videos,” Journal of advanced transportation , vol. 2017, no. 1, p. 5202150, 2017. [18] S. Lamsal, R. Pradhananga, and S. Pandey, “Post encroachment time-based behavioral analysis of vehicle-pedestrian interactions at unsignal-ized midblock crosswalks,” Transportation Research Interdisciplinary Perspectives , vol. 34, p. 101681, 2025. [19] M. Jalayer, N. C. Bouaynaya, D. Patel, and P. Hosseini, “A real-time proactive intersection safety monitoring system based on video data,” 2022. [20] G. Zhang, J. Jin, F. Chang, and H. Huang, “Real-time traffic conflict prediction at signalized intersections using vehicle trajectory data and deep learning,” International Journal of Transportation Science and Technology , 2024. [21] National Renewable Energy Laboratory, “Development of a roadside LiDAR-based situational awareness system,” U.S. Department of En-ergy, Tech. Rep., 2024. [22] SPIE Sensors and Imaging, “Real-time LiDAR applications for assessing the safety of vulnerable road users at urban intersections,” in Proceedings of SPIE , vol. 13671, 2025. [23] H. Xu et al. , “Enhancing vehicle sensing for traffic safety and mobility performance using roadside LiDAR sensors,” National Transportation Library, Tech. Rep., 2024. [24] G. D. C. Initiative and N. A. of City Transportation Officials, Global street design guide . Island Press, 2016. [25] J. Mirlach, L. Wan, A. Wiedholz, H. E. Keen, and A. Eich, “R-livit: A lidar-visual-thermal dataset enabling vulnerable road user focused roadside perception,” arXiv preprint arXiv:2503.17122 , 2025. [26] Ouster Inc., “Ouster BlueCity: AI-Driven Lidar for Smarter Cities,” https://ouster.com/products/software/bluecity, 2025, accessed: Nov. 1, 2025. [27] T. Maeda and N. Ukita, “Fast inference and update of probabilistic density estimation on trajectory prediction,” in Proceedings of the IEEE/CVF international conference on computer vision , 2023, pp. 9795– 9805. [28] C. Sch¨ oller, V. Aravantinos, F. Lay, and A. Knoll, “What the constant velocity model can teach us about pedestrian motion prediction,” IEEE Robotics and Automation Letters , vol. 5, no. 2, pp. 1696–1703, 2020. [29] D. Yang, K. Ozbay, K. Xie, H. Yang, F. Zuo, and D. Sha, “Proactive safety monitoring: A functional approach to detect safety-related anoma-lies using unmanned aerial vehicle video data,” Transportation research part C: emerging technologies , vol. 127, p. 103130, 2021. [30] A. Laureshyn, ˚ A. Svensson, and C. Hyd´ en, “Evaluation of traffic safety, based on micro-level behavioural data: Theoretical framework and first implementation,” Accident Analysis & Prevention , vol. 42, no. 6, pp. 1637–1646, 2010. [31] T. Lin, Z. Jin, S. Choi, and H. Yeo, “Predicted lane-based time to collision: A novel surrogate safety measure for pedestrian potential risk evaluation at non-signalized intersections,” Transportation Research Interdisciplinary Perspectives , vol. 34, p. 101705, 2025. [32] A. H. Lang, S. Vora, H. Caesar, L. Zhou, J. Yang, and O. Beijbom, “Pointpillars: Fast encoders for object detection from point clouds,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2019, pp. 12 697–12 705. [33] NVIDIA AI IOT, “Lidar AI Solution,” https://github.com/ NVIDIA-AI-IOT/Lidar AI Solution, 2023, accessed: 2026. [34] X. Weng, J. Wang, D. Held, and K. Kitani, “Ab3dmot: A baseline for 3d multi-object tracking and new evaluation metrics,” arXiv preprint arXiv:2008.08063 , 2020.

@@ -1,0 +1,455 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-20T21:53:02.401360+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 3,
+    "deep_cap": 8,
+    "deep_selected": 3,
+    "quick_candidates": 7,
+    "quick_skim_target": 13,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2607.13403v1",
+      "source": "arxiv",
+      "title": "Min-Max Regret Task Allocation and Planning of Heterogeneous Multi-Robot System in Partially Known Environments",
+      "abstract": "Efficient task allocation for large-scale Heterogeneous Multi-Robot Systems (HMRS) is critical, yet dealing with complex temporal logic tasks in partially known environment (PKE) remains a computational bottleneck. Existing approaches often struggle to balance exploring uncertain regions and exploiting known resources, while also suffering from exponential computational complexity. To address these issues, this paper presents a robust planning framework that simultaneously handles high-level logical constraints and environmental uncertainty without sacrificing scalability. We formulate the problem as a min-max regret optimization, proposing a Region-Binding Atomic Proposition (RbAP) to capture resource uncertainty within the automaton structure. To solve this, we propose the Extended Planning Decision Tree (E-PDT) equipped with a novel Regret-based Branch-and-Bound (BnB) strategy. Unlike traditional methods that rely on prior probabilities or worst-case analysis, our approach dynamically prunes suboptimal policies, effectively balancing the need for information gathering (exploration) and task completion (exploitation). Theoretical analysis confirms the feasibility and completeness of our approach. Extensive numerical and physical experiments demonstrate that the proposed framework achieves near-linear scalability with respect to the number of robots and types, significantly outperforming MILP-based baselines in both solution quality and computational efficiency.",
+      "authors": [
+        "Xinkai Liang",
+        "Huixuan Chan",
+        "Ying Liu",
+        "Yangxi Shi",
+        "Hao Fang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-15T02:59:38+00:00",
+      "link": "https://arxiv.org/pdf/2607.13403v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Heterogeneous multi-robot task allocation and planning with min-max regret",
+      "llm_evidence_cn": "异构多机器人任务分配与规划，最小化遗憾优化",
+      "llm_evidence": "异构多机器人任务分配与规划，最小化遗憾优化",
+      "canonical_evidence": "异构多机器人任务分配与规划，最小化遗憾优化",
+      "llm_tldr_en": "A robust planning framework for heterogeneous multi-robot systems that handles temporal logic tasks in partially known environments via min-max regret optimization and region-binding atomic propositions.",
+      "llm_tldr_cn": "该论文针对大型异构多机器人系统在部分已知环境中的复杂时序逻辑任务分配与规划问题，提出了一种鲁棒规划框架。通过最小化遗憾优化和区域绑定原子命题（RbAP）来平衡不确定区域的探索和已知资源的利用，有效降低了计算复杂度，同时保证了可扩展性。实验结果表明该方法能够在不确定性下高效完成任务分配与路径规划。",
+      "llm_tldr": "该论文针对大型异构多机器人系统在部分已知环境中的复杂时序逻辑任务分配与规划问题，提出了一种鲁棒规划框架。通过最小化遗憾优化和区域绑定原子命题（RbAP）来平衡不确定区域的探索和已知资源的利用，有效降低了计算复杂度，同时保证了可扩展性。实验结果表明该方法能够在不确定性下高效完成任务分配与路径规划。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.12293v1",
+      "source": "arxiv",
+      "title": "Adaptive Cross-Modal Fusion with Sparse Attention for Pedestrian Crossing Intention Prediction",
+      "abstract": "Predicting pedestrian crossing intention is a safety-critical task for autonomous driving, yet existing approaches often rely on single-modal inputs or dense multimodal fusion strategies that inadequately capture complementary visual and kinematic information while introducing redundant inter-modal interactions. We propose ADAPT (Adaptive Domain-Aware Pedestrian Crossing Transformer), a multimodal framework that jointly models local and global visual context together with temporal motion dynamics for accurate pedestrian crossing intention prediction. ADAPT processes four spatially aligned visual modalities, including RGB images, local depth maps, global semantic maps, and global depth maps, together with ego-vehicle speed, pedestrian bounding boxes, and skeleton pose information through five specialized modules: a weight-shared Swin Transformer V2 backbone for visual feature extraction, a Cross-Modality Guided Attention module for hierarchical visual fusion, a Mamba-based Motion Feature Encoding module for efficient temporal modeling, a Sparse Cross-Modal Attention module that selectively preserves the most informative inter-modal interactions, and a Vision Transformer-based Temporal Feature Fusion module for sequence-level prediction. Extensive experiments on the JAAD and PIE benchmark datasets demonstrate that ADAPT consistently outperforms existing state-of-the-art methods while maintaining low computational complexity. On JAAD, the proposed method achieves an AUC of 0.73 on JAADbeh and 0.85 on JAADall, while on PIE it achieves an accuracy of 0.92 and an AUC of 0.90. Furthermore, ADAPT performs inference in only 17.23 ms per sample, offering an effective balance between predictive accuracy and real-time deployment efficiency for intelligent transportation and autonomous driving applications.",
+      "authors": [
+        "Md Mahfuzur Rahman",
+        "Pengzhan Zhou",
+        "A F M Abdun Noor",
+        "Md Imam Ahasan",
+        "Kah Ong Michael Goh",
+        "S. M. Hasan Mahmud",
+        "Md Mustafizur Rahman",
+        "Kaixin Gao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-14T03:05:09+00:00",
+      "link": "https://arxiv.org/pdf/2607.12293v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "pedestrian crossing intention prediction, sparse attention multimodal fusion",
+      "llm_evidence_cn": "行人过街意图预测，稀疏注意多模态融合",
+      "llm_evidence": "行人过街意图预测，稀疏注意多模态融合",
+      "canonical_evidence": "行人过街意图预测，稀疏注意多模态融合",
+      "llm_tldr_en": "Proposes ADAPT, a multimodal transformer for pedestrian crossing intention prediction using sparse cross-modal attention to fuse visual and kinematic data, achieving accurate predictions.",
+      "llm_tldr_cn": "该论文针对自动驾驶中行人过街意图预测任务，指出现有方法在多模态融合中未能充分捕获互补信息且存在冗余交互。提出ADAPT框架，利用稀疏注意力机制自适应融合RGB、深度图、语义图等多模态视觉信息与车速数据，联合建模局部和全局上下文。实验表明该方法显著提升了预测准确性，为安全关键的自动驾驶决策提供了高效手段。",
+      "llm_tldr": "该论文针对自动驾驶中行人过街意图预测任务，指出现有方法在多模态融合中未能充分捕获互补信息且存在冗余交互。提出ADAPT框架，利用稀疏注意力机制自适应融合RGB、深度图、语义图等多模态视觉信息与车速数据，联合建模局部和全局上下文。实验表明该方法显著提升了预测准确性，为安全关键的自动驾驶决策提供了高效手段。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.12861v1",
+      "source": "arxiv",
+      "title": "Unveiling Complex Collective Behaviors from Simple Rewards",
+      "abstract": "Multi-agent Reinforcement Learning (MARL) holds great potential for robot swarms, but the black-box nature of neural policies complicates strategic analysis, limiting multi-robot applications. Furthermore, complex swarm behaviors can surprisingly emerge from simple rewards without explicit aggregation incentives. Unveiling the mechanisms behind this emergence is critical, but the disconnection between simple rewards and collective behaviors exacerbates interpretability challenges. This paper aims to reveal the hidden mechanisms in this process. We propose a two-stage EEC (\\LinkIII) explanatory framework. This includes a novel analytical tool called the Agent Response Map (ARM), which reveals agents' decision-making patterns across space and identifies regions of aggregation and avoidance. ARM reveals that the robots implicitly learn the geometric fields of the environment and utilize these structures as desired targets for coordinated movement. We validate this finding across two distinct tasks: a cooperative multi-robot shape assembly and a competitive predator-prey pursuit-evasion. 1) In the cooperative task, ARM identifies the unoccupied target interior as the desired destination for robot navigation. As the center becomes occupied, this target region automatically shifts toward the boundary, demonstrating the robots' capacity to autonomously explore unoccupied areas. 2) In the competitive task, ARM surprisingly identifies the boundary of the predators' Voronoi diagram as the convergence destination for prey agents. Together, these two tasks demonstrate the capability of ARM to discover the hidden geometric structures underlying MARL policies in robot swarms.",
+      "authors": [
+        "Yize Mi",
+        "Jianan Li",
+        "Liang Li",
+        "Shiyu Zhao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "eess.SY"
+      ],
+      "published": "2026-07-14T15:11:26+00:00",
+      "link": "https://arxiv.org/pdf/2607.12861v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "MARL for robot swarms, reveals collective behaviors from simple rewards",
+      "llm_evidence_cn": "多智能体强化学习用于机器人群体，从简单奖励揭示集体行为",
+      "llm_evidence": "多智能体强化学习用于机器人群体，从简单奖励揭示集体行为",
+      "canonical_evidence": "多智能体强化学习用于机器人群体，从简单奖励揭示集体行为",
+      "llm_tldr_en": "Proposes an explanatory framework EEC with Agent Response Map (ARM) to interpret emergent collective behaviors in MARL for robot swarms from simple rewards without explicit aggregation incentives.",
+      "llm_tldr_cn": "针对多智能体强化学习在机器人群体中策略黑箱和简单奖励导致复杂集体行为涌现但难以解释的问题，提出两阶段EEC解释框架，包括新颖的智能体响应图(ARM)工具，揭示智能体在空间上的决策模式并识别关键区域。实验证明该方法有效解析了涌现行为的机制，增进了对多智能体系统的理解，为设计可解释的群体策略提供了有力工具。",
+      "llm_tldr": "针对多智能体强化学习在机器人群体中策略黑箱和简单奖励导致复杂集体行为涌现但难以解释的问题，提出两阶段EEC解释框架，包括新颖的智能体响应图(ARM)工具，揭示智能体在空间上的决策模式并识别关键区域。实验证明该方法有效解析了涌现行为的机制，增进了对多智能体系统的理解，为设计可解释的群体策略提供了有力工具。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.11739v1",
+      "source": "arxiv",
+      "title": "AutoPath: Learning Transferable Goal-Conditioned Stochastic Path Prior for Safe Navigation Without Human Demonstrations",
+      "abstract": "Real-time navigation in cluttered and dynamic environments requires collision-free and dynamically feasible motion under limited perception. However, feasible navigation behaviors are inherently multimodal because multiple paths may exist around obstacles. In this paper, we formulate navigation as learning a transferable goal-conditioned stochastic path prior that models a reusable distribution over goal-aligned geometry-consistent local paths conditioned on local observations. This formulation enables structured sampling of navigation candidates, allowing multiple feasible paths to be explored through sampling without relying on robot-specific motion constraints. To this end, we introduce a goal-aligned canonical state representation that removes in-plane rotational ambiguity and normalizes local geometry with respect to the goal, enabling rotation-invariant path distribution learning. We further develop a structured prior learning framework that parameterizes local paths using a geometry-aware polar action manifold and incorporates risk-sensitive utility shaping with multi-goal distributional rollouts for stable and safety-aware planning. Extensive experiments in dense static environments and dynamic pedestrian scenarios demonstrate that the proposed method achieves consistently high success rates with competitive efficiency while enabling cross-platform transfer of a single path prior learned on differential-drive robots to quadruped platforms without retraining.",
+      "authors": [
+        "Ziyang Zhang",
+        "Boyang Zhou",
+        "Zesong Yang",
+        "Haocheng Peng",
+        "Zeming Gai",
+        "Xiao Liang",
+        "Yujun Shen",
+        "Danping Zou",
+        "Ruizhen Hu",
+        "Hujun Bao",
+        "Zhaopeng Cui"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-13T16:00:41+00:00",
+      "link": "https://arxiv.org/pdf/2607.11739v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "learning-based path prior for safe navigation in cluttered environments",
+      "llm_evidence_cn": "基于学习的路径先验用于杂乱环境安全导航",
+      "llm_evidence": "基于学习的路径先验用于杂乱环境安全导航",
+      "canonical_evidence": "基于学习的路径先验用于杂乱环境安全导航",
+      "llm_tldr_en": "AutoPath learns a transferable, goal-conditioned stochastic path prior from interactions, enabling safe navigation in clutter without human demonstrations, by sampling multimodal feasible paths.",
+      "llm_tldr_cn": "该论文针对杂乱动态环境下实时导航需要碰撞安全和动态可行运动的问题，提出AutoPath方法。该方法通过学习可迁移的、目标条件下的随机路径先验，对观测条件下的局部路径分布进行建模，通过采样生成多条可行路径。无需人类演示，即可在未知环境中实现安全导航。实验验证了该方法在多种机器人平台上的有效性和泛化能力。",
+      "llm_tldr": "该论文针对杂乱动态环境下实时导航需要碰撞安全和动态可行运动的问题，提出AutoPath方法。该方法通过学习可迁移的、目标条件下的随机路径先验，对观测条件下的局部路径分布进行建模，通过采样生成多条可行路径。无需人类演示，即可在未知环境中实现安全导航。实验验证了该方法在多种机器人平台上的有效性和泛化能力。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.10601v1",
+      "source": "arxiv",
+      "title": "Agentic-DPO: From Imitation to Agentic Policy Optimization on Expert Trajectories",
+      "abstract": "Large Language Model (LLM) agents are commonly trained from expert trajectories using supervised fine-tuning (SFT), which treats multi-turn agent behavior as ordinary text imitation. This recipe is simple and low-cost, but it only learns to imitate the sequence of expert actions, rather than training the agent to choose the right action against plausible mistakes at each state. Existing methods to mitigate this problem include preference learning or reinforcement learning, but they usually need high-cost environment rollouts and reward models. We propose Agentic-DPO, a lightweight offline agent policy optimization method that turns expert trajectories into state-conditioned preference supervision. At each expert action state, Agentic-DPO samples a one-step action from the current state, treats plausible wrong actions as negatives, and contrasts them with the expert action using a DPO-style preference objective. To avoid mixing both policy and schema in preference learning, we introduce Policy-Preserving Augmentation (PPA), which renders the same latent trajectory under multiple schemas while keeping the expert policy fixed. Agentic-DPO requires no online environment rollout, reward model, or full-trajectory student exploration. We conduct experiments across StableToolBench, tau-bench retail, and Mind2Web, where Agentic-DPO consistently improves agents at different model scales beyond imitation. In particular, it raises tau-bench accuracy from 21.7% (SFT) to 41.4% for a 9B model, matching online GRPO under the same backbone with only step-level rollouts and without environment interaction during gradient steps. The results suggest that expert trajectories can support low-cost agentic policy optimization when converted from demonstrations into state-level action preferences. Code for Agentic-DPO is released at https://github.com/Schuture/Agentic-DPO.",
+      "authors": [
+        "Yixiong Chen",
+        "Alan Yuille"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-12T06:38:55+00:00",
+      "link": "https://arxiv.org/pdf/2607.10601v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "imitation learning from expert trajectories for agent policy optimization via DPO",
+      "llm_evidence_cn": "通过DPO从专家轨迹进行智能体策略优化的模仿学习",
+      "llm_evidence": "通过DPO从专家轨迹进行智能体策略优化的模仿学习",
+      "canonical_evidence": "通过DPO从专家轨迹进行智能体策略优化的模仿学习",
+      "llm_tldr_en": "Proposes Agentic-DPO, a lightweight offline policy optimization that converts expert trajectories into state-conditioned preference data, avoiding costly rollouts.",
+      "llm_tldr_cn": "该论文提出Agentic-DPO，一种轻量级离线智能体策略优化方法。它利用专家轨迹生成状态条件偏好监督，避免了传统强化学习需要高昂环境回滚和奖励模型的问题。通过在每步状态比较专家动作与替代动作，训练智能体正确选择动作。实验证明，Agentic-DPO在多个具身智能体和工具使用基准上优于监督微调和现有偏好优化方法，且训练成本更低。为从专家示范中高效学习多步决策提供了新思路。",
+      "llm_tldr": "该论文提出Agentic-DPO，一种轻量级离线智能体策略优化方法。它利用专家轨迹生成状态条件偏好监督，避免了传统强化学习需要高昂环境回滚和奖励模型的问题。通过在每步状态比较专家动作与替代动作，训练智能体正确选择动作。实验证明，Agentic-DPO在多个具身智能体和工具使用基准上优于监督微调和现有偏好优化方法，且训练成本更低。为从专家示范中高效学习多步决策提供了新思路。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert demonstrations for multi-agent path finding",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.15036v1",
+      "source": "arxiv",
+      "title": "Learning Agile Navigation in Crowded Environments for Quadruped Robots",
+      "abstract": "Navigating dynamic and crowded environments presents significant challenges for quadruped robots due to severe sensor occlusion and unpredictable human motion. Existing approaches face a trade-off: model-based methods, such as Velocity Obstacles (VO), theoretically guarantee safety but rely on accurate obstacle motion estimates that often fail in dense crowds, while end-to-end learning methods offer robustness but lack motion prediction capability of obstacles, leading to collisions or conservative behaviors. To solve this, we propose VOP-Nav, a novel navigation system that combines the geometric safety of VO with the agile adaptability of end-to-end learning. Using only local onboard observations, our system avoids explicit obstacle detection and tracking pipelines. The VOP-Net processes multi-frame LiDAR data to implicitly encode dynamic constraints and predict a safe velocity region derived from Velocity Obstacle theory. Importantly, the VO predictions serve a dual role: they are used as input to the navigation policy during inference and as a reward signal during training to encourage safe motion. Evaluations in Isaac Gym demonstrate that VOP-Nav achieves higher success rates than all baselines while balancing locomotion speed and collision avoidance. Real-world deployment on a Unitree Go2 quadruped robot further validates the system's robustness and efficiency in complex indoor and outdoor dynamic environments.",
+      "authors": [
+        "Shuyu Wu",
+        "Zeyu Liu",
+        "Tianbao Zhang",
+        "Fanxing Li",
+        "Fangyu Sun",
+        "Mingkang Xiong",
+        "Wei Xi",
+        "Wenxian Yu",
+        "Danping Zou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-16T14:16:19+00:00",
+      "link": "https://arxiv.org/pdf/2607.15036v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "combines VO and learning for agile crowd navigation",
+      "llm_evidence_cn": "结合速度障碍与学习实现拥挤环境敏捷导航",
+      "llm_evidence": "结合速度障碍与学习实现拥挤环境敏捷导航",
+      "canonical_evidence": "结合速度障碍与学习实现拥挤环境敏捷导航",
+      "llm_tldr_en": "VOP-Nav combines geometric safety of Velocity Obstacles with end-to-end learning for agile quadruped navigation in crowded environments, using only local observations.",
+      "llm_tldr_cn": "本文针对四足机器人在动态拥挤环境中的导航难题，提出VOP-Nav系统，融合速度障碍的几何安全性与端到端学习的敏捷适应性。该系统仅依靠局部机载观测，避免显式障碍检测，实现了在密集人群中的高效、安全导航。实验证明VOP-Nav在多种拥挤场景下优于现有方法，为机器人避障提供了新思路。",
+      "llm_tldr": "本文针对四足机器人在动态拥挤环境中的导航难题，提出VOP-Nav系统，融合速度障碍的几何安全性与端到端学习的敏捷适应性。该系统仅依靠局部机载观测，避免显式障碍检测，实现了在密集人群中的高效、安全导航。实验证明VOP-Nav在多种拥挤场景下优于现有方法，为机器人避障提供了新思路。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "congestion avoidance multi-agent crowd navigation",
+      "matched_requirement_id": "req-26",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.13354v1",
+      "source": "arxiv",
+      "title": "A Hybrid Sampling-Based Trajectory Planner with Game-Theoretic Guidance for Autonomous Racing",
+      "abstract": "Autonomous racing demands planning algorithms that balance vehicle dynamics at the limits of handling with strategic decision-making in competitive multi-agent scenarios. Game theory provides a mathematical framework for modeling these interactions, enabling interactive trajectory planning and strategic behaviors, such as blocking. However, directly solving full dynamic games online is computationally prohibitive and challenging to integrate into robust, high-frequency autonomous software stacks. This paper proposes a hybrid architecture that integrates game-theoretic reasoning into a sampling-based motion planner, combining strategic interactions with robust trajectory generation. Building upon an $α$-potential game formulation, we utilize an offline-learned potential function to capture multi-agent interactions. During online operation, a gradient-based optimization dynamically refines interaction parameters to generate an \\textit{Interaction Reference Path}. This path serves as a dynamic cost bias within a high-frequency sampling planner. We evaluate our approach in a high-fidelity simulation environment on the Yas Marina Circuit. Qualitative and quantitative results demonstrate that our approach successfully induces defensive behaviors like blocking without carrying the computational burden of full dynamic game solvers.",
+      "authors": [
+        "Alexander Langmann",
+        "Frederico Pita de Araujo",
+        "Mattia Piccinini",
+        "Johannes Betz"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-15T00:27:36+00:00",
+      "link": "https://arxiv.org/pdf/2607.13354v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent trajectory planning with game theory guidance",
+      "llm_evidence_cn": "多智能体轨迹规划与博弈论指导",
+      "llm_evidence": "多智能体轨迹规划与博弈论指导",
+      "canonical_evidence": "多智能体轨迹规划与博弈论指导",
+      "llm_tldr_en": "Proposes a hybrid sampling-based trajectory planner that integrates game-theoretic reasoning for multi-agent autonomous racing, balancing vehicle dynamics and strategic interactions.",
+      "llm_tldr_cn": "该论文针对自主赛车中多智能体轨迹规划问题，提出了一种混合采样架构，将博弈论推理集成到采样规划器中，以平衡车辆动力学极限与竞争性交互策略。该方法以α-势博弈为理论基础，在无需完全求解动态博弈的情况下生成鲁棒轨迹。实验表明该方法能在高频自主驾驶软件栈中实现战略行为如阻挡，并满足实时性能需求。",
+      "llm_tldr": "该论文针对自主赛车中多智能体轨迹规划问题，提出了一种混合采样架构，将博弈论推理集成到采样规划器中，以平衡车辆动力学极限与竞争性交互策略。该方法以α-势博弈为理论基础，在无需完全求解动态博弈的情况下生成鲁棒轨迹。实验表明该方法能在高频自主驾驶软件栈中实现战略行为如阻挡，并满足实时性能需求。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.16133v1",
+      "source": "arxiv",
+      "title": "When Do Multi-Agent Systems Help? An Information Bottleneck Perspective",
+      "abstract": "LLM powered multi-agent systems (MAS) have emerged as a promising paradigm for complex tasks. However, their advantages over single-agent systems (SAS) remain unclear, with performance varying inconsistently across settings. Here, we provide an information bottleneck perspective on elucidating the differences between MAS and SAS. Specifically, our key observation is that a SAS accumulates its full reasoning trace in one shared context, while a MAS uses isolated local contexts connected by bounded relay messages. We show that, under infinite relay bandwidth, any SAS can be simulated by a MAS that transmits the full upstream context. Thus, the nontrivial advantage of MAS arises under bounded relays, where compression introduces a fundamental trade-off: reducing redundant context can improve efficiency, but may also incur loss of task-relevant information. We formalize this trade-off as an information bottleneck controlled by an effective parameter $β$, which captures how the balance shifts with model capability, and shows that MAS gains arise when context reduction outweighs relay information loss. We conduct 18 controlled experiments across five benchmarks and three model scales to validate our theoretical studies. We observe that MAS consistently helps when relays are near-sufficient, especially for weaker models. In contrast, MAS gains shrink or reverse when relays incur information loss, especially for stronger models that can already extract useful information from redundant context and thus gain little from compression. Our study shows that multi-agent design is fundamentally an information-bottleneck optimization problem. This perspective explains when bounded inter-agent communication helps or hurts.",
+      "authors": [
+        "Wendi Yu",
+        "Lianhao Zhou",
+        "Xiangjue Dong",
+        "Sai Sudarshan Barath",
+        "Declan Staunton",
+        "Byung-Jun Yoon",
+        "Xiaoning Qian",
+        "James Caverlee",
+        "Shuiwang Ji"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-17T17:13:44+00:00",
+      "link": "https://arxiv.org/pdf/2607.16133v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "information bottleneck perspective on multi-agent communication under bounded relays",
+      "llm_evidence_cn": "从信息瓶颈视角分析有限中继下的多智能体通信",
+      "llm_evidence": "从信息瓶颈视角分析有限中继下的多智能体通信",
+      "canonical_evidence": "从信息瓶颈视角分析有限中继下的多智能体通信",
+      "llm_tldr_en": "Provides an information bottleneck analysis of multi-agent systems vs single-agent systems, revealing that bounded relay communication is key to MAS advantage, with implications for communication-efficient MARL.",
+      "llm_tldr_cn": "本文从信息瓶颈视角分析了多智能体系统（MAS）相对于单智能体系统（SAS）的优势来源。关键观察是MAS使用隔离的局部上下文并通过有限中继消息通信，而SAS在共享上下文中累积推理轨迹。理论分析表明，在中继带宽有限时，消息压缩引入的权衡赋予MAS独特优势。该工作为理解MARL中的稀疏通信和通信拓扑设计提供了理论基石。",
+      "llm_tldr": "本文从信息瓶颈视角分析了多智能体系统（MAS）相对于单智能体系统（SAS）的优势来源。关键观察是MAS使用隔离的局部上下文并通过有限中继消息通信，而SAS在共享上下文中累积推理轨迹。理论分析表明，在中继带宽有限时，消息压缩引入的权衡赋予MAS独特优势。该工作为理解MARL中的稀疏通信和通信拓扑设计提供了理论基石。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.16156v1",
+      "source": "arxiv",
+      "title": "PRISA: Proactive Infrastructure LiDAR Framework for Intersection Safety Assessment",
+      "abstract": "Urban intersections are among the most hazardous locations in road networks, posing significant risks to vehicles and vulnerable road users (VRUs) such as pedestrians and cyclists. The complexity of multi-agent interactions demands continuous, real-time monitoring systems capable of anticipating conflicts before they escalate into crashes. We present PRISA, a modular infrastructure LiDAR framework leveraging privacy-preserving, low-light-robust roadside sensors for long-term traffic observation and real-time risk detection at the edge. The framework comprises two core components: a sensing and perception layer and a plug-and-play risk assessment module. The latter automatically curates site-specific training data from accumulated perception outputs to train a trajectory prediction model without manual annotation. It then deploys the trained model for continuous motion forecasting and dual surrogate safety evaluation, using Time-to-Collision (TTC) for longitudinal conflicts and Predicted Post-Encroachment Time (PPET) for crossing and VRU-involved interactions. PRISA is evaluated on the public R-LiViT dataset and deployed on an NVIDIA Jetson AGX Thor at a live signalized intersection in Chattanooga, Tennessee. PPET-based assessment operates at 194~ms end-to-end latency over a 2.4-second predictive horizon, with TTC-based detection and perception remaining within real-time constraints, demonstrating practical feasibility for proactive multi-agent intersection safety monitoring.",
+      "authors": [
+        "Tam Bang",
+        "Hussam Abubakr",
+        "Emiliano de la Garza Villarreal",
+        "Truc Phuong Nguyen",
+        "Austin Harris",
+        "Toru Hirano",
+        "Mina Sartipi",
+        "Yunfei Xu",
+        "Hoang H. Nguyen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "eess.SY"
+      ],
+      "published": "2026-07-17T17:35:23+00:00",
+      "link": "https://arxiv.org/pdf/2607.16156v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "query:intent-avoid"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "real-time risk detection and conflict anticipation in multi-agent traffic",
+      "llm_evidence_cn": "多智能体交通中的实时风险检测与冲突预测",
+      "llm_evidence": "多智能体交通中的实时风险检测与冲突预测",
+      "canonical_evidence": "多智能体交通中的实时风险检测与冲突预测",
+      "llm_tldr_en": "PRISA proposes a modular infrastructure LiDAR framework for intersection safety, integrating perception and risk assessment modules to proactively detect potential collisions among vehicles and pedestrians in real time.",
+      "llm_tldr_cn": "该论文针对城市交叉路口多智能体交互复杂、事故风险高的问题，提出PRISA基础设施激光雷达框架。框架包含感知层和即插即用风险评估模块，能够实时监测车辆与行人运动，自动积累训练数据并提前预警冲突。实验表明该系统在边缘设备上实现高效的风险检测，提升了交通安全性。",
+      "llm_tldr": "该论文针对城市交叉路口多智能体交互复杂、事故风险高的问题，提出PRISA基础设施激光雷达框架。框架包含感知层和即插即用风险评估模块，能够实时监测车辆与行人运动，自动积累训练数据并提前预警冲突。实验表明该系统在边缘设备上实现高效的风险检测，提升了交通安全性。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "biorxiv-10-64898-2026-07-08-736783-v1",
+      "source": "biorxiv",
+      "title": "Interpreting Rewards from Inverse Reinforcement Learning",
+      "abstract": "Inverse reinforcement learning can recover reward functions from observed behavior, but interpreting those rewards remains a fundamental challenge for understanding intelligent behavior and decision-making. To address this challenge, we introduce a novel framework for reward interpretation that combines reward-function analysis, latent mode assignments, and short-history behavioral analysis to infer latent motivations and behavioral dynamics. As a proof-of-concept, we instantiated the framework using switching inverse reinforcement learning on a large-scale dataset of multi-agent social interactions. Our framework interpreted the learned latent modes as  cautious and  volatile motivational profiles, demonstrating that recovered reward functions can reveal distinct patterns of behavioral dynamics. More broadly, these findings suggest that the proposed framework provides a promising approach for reverse-engineering and interpreting latent rewards underlying intelligent behavior and decision-making.",
+      "authors": [
+        "Chow, J.",
+        "Yang, Y.",
+        "Laschowski, B."
+      ],
+      "primary_category": "neuroscience",
+      "categories": [
+        "neuroscience"
+      ],
+      "published": "2026-07-13T00:00:00+00:00",
+      "link": "https://www.biorxiv.org/content/10.64898/2026.07.08.736783v1.full.pdf",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "uses inverse RL to infer motivations from multi-agent social interactions, method transferable to imitation learning for multi-agent path finding",
+      "llm_evidence_cn": "利用逆强化学习从多智能体社交互动中推断动机，方法可迁移至多智能体路径规划的模仿学习",
+      "llm_evidence": "利用逆强化学习从多智能体社交互动中推断动机，方法可迁移至多智能体路径规划的模仿学习",
+      "canonical_evidence": "利用逆强化学习从多智能体社交互动中推断动机，方法可迁移至多智能体路径规划的模仿学习",
+      "llm_tldr_en": "Proposes a framework combining reward-function analysis, latent mode assignments, and behavioral analysis to interpret inverse RL rewards, demonstrated on multi-agent social interactions.",
+      "llm_tldr_cn": "逆强化学习虽能恢复奖励函数，但解释奖励仍是理解智能行为的关键挑战。本文提出一种结合奖励函数分析、潜在模式分配和短历史行为分析的解释框架，并利用切换逆强化学习在多智能体社交交互数据集上进行验证。框架将学习到的潜在模式解读为“谨慎”和“易变”动机特征，表明恢复的奖励函数可以揭示不同的行为动态。该工作为将逆强化学习应用于多智能体路径规划中的模仿学习提供了方法论桥梁。",
+      "llm_tldr": "逆强化学习虽能恢复奖励函数，但解释奖励仍是理解智能行为的关键挑战。本文提出一种结合奖励函数分析、潜在模式分配和短历史行为分析的解释框架，并利用切换逆强化学习在多智能体社交交互数据集上进行验证。框架将学习到的潜在模式解读为“谨慎”和“易变”动机特征，表明恢复的奖励函数可以揭示不同的行为动态。该工作为将逆强化学习应用于多智能体路径规划中的模仿学习提供了方法论桥梁。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert demonstrations for multi-agent path finding",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
