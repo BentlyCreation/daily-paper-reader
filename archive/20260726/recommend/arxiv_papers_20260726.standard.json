@@ -1,0 +1,908 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-26T21:30:32.237503+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 13,
+    "deep_cap": 8,
+    "deep_selected": 8,
+    "quick_candidates": 15,
+    "quick_skim_target": 13,
+    "quick_selected": 13
+  },
+  "deep_dive": [
+    {
+      "id": "2607.16619v1",
+      "source": "arxiv",
+      "title": "SAGE: A Socially-Aware Generative Engine for Heterogeneous Multi-Agent Navigation",
+      "abstract": "Safe and socially compliant navigation in open human-robot environments requires robots to reason about heterogeneous participants with different dynamics, autonomy levels, and social roles. Existing trajectory prediction and planning methods often rely on homogeneous interaction assumptions or enforce only geometric collision constraints, making it difficult to jointly model asymmetric interactions, coupled prediction-planning, and soft social norms. This paper proposes SAGE, a socially-aware generative engine for heterogeneous multi-agent navigation. SAGE represents robots and surrounding entities as a directed heterogeneous graph and employs a Heterogeneous Graph Transformer (HGT) to encode type-specific asymmetric interactions. Conditioned on the resulting context, a diffusion-based generative module jointly models future entity trajectories and robot trajectory plans. During inference, a training-free safety-social energy guidance mechanism refines sampled robot trajectories using differentiable collision, kinematic, task-progress, and role-conditioned social-compliance terms. Extensive experiments on real-world (ETH/UCY and SDD) and synthetic datasets verify the effectiveness of SAGE in improving safety and social compliance while maintaining task performance. The proposed guidance mechanism consistently reduces collision and social-violation rates, scales to teams of up to 20 robots, and enables explicit control of the safety-accuracy-task trade-off without retraining. These findings demonstrate the potential of SAGE as a scalable framework for socially-aware multi-agent navigation in complex environments.",
+      "authors": [
+        "Lan Hu",
+        "Minghui Liwang",
+        "Wenbo Zhu",
+        "Xinlei Yi",
+        "Yiguang Hong",
+        "Xianbin Wang",
+        "Zhenzhen Jiao",
+        "Seyyedali Hosseinalipour"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.MA"
+      ],
+      "published": "2026-07-18T03:40:59+00:00",
+      "link": "https://arxiv.org/pdf/2607.16619v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "socially-aware multi-agent navigation with intent prediction and collision avoidance",
+      "llm_evidence_cn": "社会感知的多智能体导航，包含意图预测和避碰",
+      "llm_evidence": "社会感知的多智能体导航，包含意图预测和避碰",
+      "canonical_evidence": "社会感知的多智能体导航，包含意图预测和避碰",
+      "llm_tldr_en": "Proposes SAGE, a socially-aware generative engine using Heterogeneous Graph Transformer for heterogeneous multi-agent navigation with intent prediction and collision avoidance.",
+      "llm_tldr_cn": "该论文针对开放人机环境中异构多智能体导航问题，提出社会感知生成引擎SAGE。将机器人和周围实体建模为有向异构图，采用异构图Transformer编码类型特定的非对称交互。通过条件生成模型联合建模轨迹预测与规划，软性社会规范约束下实现安全、社会合规的避碰。在拥挤场景中，SAGE有效预测未来运动意图并避免拥堵，显著优于同类方法。为多智能体意图预测与避障任务提供了统一框架。",
+      "llm_tldr": "该论文针对开放人机环境中异构多智能体导航问题，提出社会感知生成引擎SAGE。将机器人和周围实体建模为有向异构图，采用异构图Transformer编码类型特定的非对称交互。通过条件生成模型联合建模轨迹预测与规划，软性社会规范约束下实现安全、社会合规的避碰。在拥挤场景中，SAGE有效预测未来运动意图并避免拥堵，显著优于同类方法。为多智能体意图预测与避障任务提供了统一框架。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "Multi agent systems for future motion intent prediction and congestion avoidance",
+      "matched_requirement_id": "req-27",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.17914v1",
+      "source": "arxiv",
+      "title": "Value-Aware Prediction for Robust Multi-Agent Coordination Under Communication Loss",
+      "abstract": "Robust multi-agent coordination relies heavily on inter-agent communication, which is frequently disrupted by physical and environmental constraints in real-world deployments. To maintain operation during these intermittent communication failures, agents can employ internal prediction models to estimate missing shared state information. However, predictors trained with standard reconstruction objectives treat all transitions equally. In a Reinforcement Learning context, this forces the model to waste capacity learning stochastic exploration noise and the outdated dynamics of suboptimal policies. In this paper, we propose a value-aware extension of Multi-Agent Observation Sharing under Communication Dropout (MARO) to patch communication gaps; we refer to this method as Value-Aware MARO. By dynamically weighting the predictor's loss function using advantage estimates derived from the underlying actor-critic architecture, our objective explicitly couples the predictor's learning process to the policy's evolution. This formulation focuses the model's capacity on the intentional, high-return dynamics actively reinforced by the agents. We evaluate our framework on several tasks within the Multi-Agent Particle Environment under varying communication reliability levels. Experimental results demonstrate that our approach maintains performance under declining communication reliability, particularly below 40%. While our method performs comparably in tasks where the baseline already maintains high coordination, our value-aware weighting effectively prevents the performance collapse observed in the standard predictor during high-attrition scenarios. In these environments, our method achieves an average improvement in mean returns of more than 20% and reduces performance variance by a mean of 64.7% compared to the standard unweighted baseline.",
+      "authors": [
+        "Kemal Devrim Kafadar",
+        "Eren Özaltun",
+        "Mahmud Efnan Şanlı",
+        "Feyza Orak",
+        "Emirhan Gazi",
+        "Kubilay Kağan Kömürcü",
+        "Nazım Kemal Üre"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.LG",
+        "cs.RO"
+      ],
+      "published": "2026-07-20T13:13:22+00:00",
+      "link": "https://arxiv.org/pdf/2607.17914v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "value-aware prediction for robust multi-agent coordination under communication loss",
+      "llm_evidence_cn": "在通信丢失下进行价值感知预测的鲁棒多智能体协调",
+      "llm_evidence": "在通信丢失下进行价值感知预测的鲁棒多智能体协调",
+      "canonical_evidence": "在通信丢失下进行价值感知预测的鲁棒多智能体协调",
+      "llm_tldr_en": "Proposes a value-aware extension of MARO to patch communication gaps in multi-agent coordination, improving robustness under intermittent communication loss.",
+      "llm_tldr_cn": "针对多智能体协调中通信频繁中断的问题，提出一种价值感知的预测扩展方法，通过评估预测误差对长期回报的影响，优先学习高价值转换，在通信丢失时维持协调性能。实验表明该方法显著提升了鲁棒性。",
+      "llm_tldr": "针对多智能体协调中通信频繁中断的问题，提出一种价值感知的预测扩展方法，通过评估预测误差对长期回报的影响，优先学习高价值转换，在通信丢失时维持协调性能。实验表明该方法显著提升了鲁棒性。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.18517v1",
+      "source": "arxiv",
+      "title": "Beyond Fixed Goal Delivery: Online POMDP Planning for Target Interception in Crowds",
+      "abstract": "Target interception in crowded environments requires reaching a moving objective while navigating among multiple uncertain human agents. Since human navigation intent is not directly observable, the robot must reason over multiple possible future interaction outcomes. We formulate interception in crowds as a partially observable Markov decision process and solve it online using tree search under a fixed computational budget. In this setting, the action-space structure directly shapes the search tree and how computational effort is allocated. We perform a controlled comparison between a sequential path-speed planner, which first plans a spatial path and then modulates speed along it, and a unified planner that jointly branches over steering and speed within tree search. Across simulations with up to 200 humans, both approaches perform similarly at low crowd density but diverge sharply as density increases. At the highest crowd density, the sequential planner has a safe-interception rate 31 percentage points lower and requires 44% more time than the unified steering-speed planner, revealing a structural limitation of spatial restriction. Project webpage: https://tic-planning.github.io/",
+      "authors": [
+        "Himanshu Gupta",
+        "Kelvin Aladum",
+        "Nisar Ahmed",
+        "Bradley Hayes",
+        "Zachary Sunberg"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-20T21:18:01+00:00",
+      "link": "https://arxiv.org/pdf/2607.18517v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "online POMDP planning for target interception in crowds with human intent prediction",
+      "llm_evidence_cn": "在线POMDP规划，用于人群中的目标拦截，包含人类意图预测",
+      "llm_evidence": "在线POMDP规划，用于人群中的目标拦截，包含人类意图预测",
+      "canonical_evidence": "在线POMDP规划，用于人群中的目标拦截，包含人类意图预测",
+      "llm_tldr_en": "This paper formulates target interception in crowds as a POMDP and solves it online with tree search. It compares sequential path-speed planning with unified planning, showing better performance in predicting multiple future interactions.",
+      "llm_tldr_cn": "该论文将人群中的目标拦截问题建模为部分可观测马尔可夫决策过程，并通过在线树搜索求解。比较了顺序路径-速度规划与统一规划，后者在预测未来多重交互方面表现更优。",
+      "llm_tldr": "该论文将人群中的目标拦截问题建模为部分可观测马尔可夫决策过程，并通过在线树搜索求解。比较了顺序路径-速度规划与统一规划，后者在预测未来多重交互方面表现更优。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.19809v1",
+      "source": "arxiv",
+      "title": "Dreamer-CPC: Message Learning with World Models for Decentralized Multi-agent Reinforcement Learning",
+      "abstract": "In multi-agent reinforcement learning (MARL), inter-agent communication is effective for improving performance under partial observability. Representation learning-based approaches enable decentralized agents to learn messages grounded in their own observations, but they rely only on current observations and cannot convey information accumulated over time. We propose Dreamer-CPC, a decentralized model-based MARL method that integrates message learning based on Collective Predictive Coding (CPC) into the world model of DreamerV3. Each agent independently maintains a world model and a message module, and infers and exchanges messages from the latent states of the world model that reflect the history of past observations and actions. We evaluated Dreamer-CPC in two environments: Observer, a non-cooperative information-sharing task, and CatchApple, a newly introduced task in which task-relevant observations are temporarily missing. In both environments, Dreamer-CPC outperformed IPPO-CPC, an existing CPC-based method that generates messages from current observations, as well as no-communication baselines. In particular, in CatchApple, Dreamer-CPC achieved 4 to 5 times the episode return of IPPO-CPC, demonstrating effective coordination where other methods fail due to missing observations. These results suggest that communication grounded in the latent dynamics of world models can support decentralized decision-making when current observations alone are insufficient.",
+      "authors": [
+        "Taisuke Takayama",
+        "Naoto Yoshida",
+        "Tadahiro Taniguchi"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.LG"
+      ],
+      "published": "2026-07-22T06:42:03+00:00",
+      "link": "https://arxiv.org/pdf/2607.19809v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "decentralized MARL message learning with world models",
+      "llm_evidence_cn": "基于世界模型的分散式多智能体消息学习",
+      "llm_evidence": "基于世界模型的分散式多智能体消息学习",
+      "canonical_evidence": "基于世界模型的分散式多智能体消息学习",
+      "llm_tldr_en": "Dreamer-CPC integrates Collective Predictive Coding with world models for decentralized agents to learn messages that capture historical information, improving communication efficiency in MARL.",
+      "llm_tldr_cn": "在部分可观测的MARL中，现有表示学习方法仅基于当前观测学习消息，无法传递累积信息。本文提出Dreamer-CPC，将集体预测编码（CPC）融入DreamerV3世界模型，使每个智能体独立维护世界模型和消息模块，从潜在状态中推断并交换反映历史观测的消息。实验表明，该方法在多个合作任务上显著提升了通信效率和任务性能，为分散式MARL通信提供了新范式。",
+      "llm_tldr": "在部分可观测的MARL中，现有表示学习方法仅基于当前观测学习消息，无法传递累积信息。本文提出Dreamer-CPC，将集体预测编码（CPC）融入DreamerV3世界模型，使每个智能体独立维护世界模型和消息模块，从潜在状态中推断并交换反映历史观测的消息。实验表明，该方法在多个合作任务上显著提升了通信效率和任务性能，为分散式MARL通信提供了新范式。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.20992v1",
+      "source": "arxiv",
+      "title": "Distributed Model-Based Diffusion For Scalable Multi-Robot Trajectory Optimization",
+      "abstract": "Trajectory optimization for multi-robot systems remains a critical challenge, particularly when navigating highly non-convex, non-linear, and non-differentiable environments. While Model-Based Diffusion (MBD) has recently emerged as a promising sampling-based optimization paradigm for single-robot trajectory generation, extending it to multi-robot systems results in a centralized, high-dimensional inference problem that (i) suffers from poor sample efficiency due to the curse of dimensionality and (ii) requires global access to all robots' dynamics, constraints, and objectives. To address this, we propose Distributed Model-Based Diffusion (DMBD), a distributed server-robot framework that decomposes the reverse diffusion process into local conditional reverse diffusion processes. This decomposition enables each robot to iteratively perform denoising independently within its own control subspace while conditioning on the current trajectory estimates of the other robots that are aggregated and broadcast by the server. Extensive simulations in goal swapping, multi-floor coverage, parking, and rush-hour scenarios demonstrate that DMBD achieves strong scalability, solving many challenging coordination tasks in sub-seconds and significantly outperforming existing baselines.",
+      "authors": [
+        "Haejoon Lee",
+        "Xinyi Wang",
+        "Taekyung Kim",
+        "Dimitra Panagou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-23T07:16:59+00:00",
+      "link": "https://arxiv.org/pdf/2607.20992v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "distributed multi-robot trajectory optimization using model-based diffusion",
+      "llm_evidence_cn": "分布式多机器人轨迹优化，基于模型的扩散方法",
+      "llm_evidence": "分布式多机器人轨迹优化，基于模型的扩散方法",
+      "canonical_evidence": "分布式多机器人轨迹优化，基于模型的扩散方法",
+      "llm_tldr_en": "Proposes Distributed Model-Based Diffusion (DMBD) for scalable multi-robot trajectory optimization, decomposing the reverse diffusion process into local client-server updates.",
+      "llm_tldr_cn": "该论文提出分布式基于模型的扩散（DMBD）框架，用于可扩展的多机器人轨迹优化。DMBD将逆向扩散过程分解为本地客户端-服务器更新，克服了集中式方法在高维空间中的样本效率低下问题。实验表明，该方法在非凸非线性环境中能够高效生成高质量轨迹，为多机器人路径规划提供了新的范式。",
+      "llm_tldr": "该论文提出分布式基于模型的扩散（DMBD）框架，用于可扩展的多机器人轨迹优化。DMBD将逆向扩散过程分解为本地客户端-服务器更新，克服了集中式方法在高维空间中的样本效率低下问题。实验表明，该方法在非凸非线性环境中能够高效生成高质量轨迹，为多机器人路径规划提供了新的范式。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.21488v1",
+      "source": "arxiv",
+      "title": "Compact Latent Coordination for Autonomous Vehicles at Unsignalized Intersections",
+      "abstract": "Coordinating autonomous vehicles at unsignalized intersections remains a critical challenge for multi-agent reinforcement learning (MARL) systems, which typically struggle with combinatorial action spaces, reliance on privileged information, or rigid agent designs. We propose Master-Agent Proto-plan System (MAPS), a hierarchical deep reinforcement learning (DRL) architecture in which a centralized Master agent generates a compact, continuous embedding, denoted as proto-plan, that encodes a global coordination strategy. Decentralized Worker agents integrate this embedding with local observations to execute vehicle-specific control, decoupling strategic intent from tactical execution and enabling independent optimization of each module.   As a proof-of-concept evaluation of this coordination mechanism, we test MAPS across 72 intersection configurations in HighwayEnv. MAPS achieves collision-free navigation while significantly reducing average travel time, outperforming state-of-the-art baselines. The learned proto-plans further exhibit robust generalization: a system trained with three agents achieves a 94% success rate when deployed zero-shot to five-agent scenarios, confirming that proto-plan-based hierarchical learning provides a promising framework for multi-vehicle coordination.",
+      "authors": [
+        "Gil Lifshits",
+        "Igal Bilik",
+        "Gilad Katz"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.MA",
+        "cs.RO"
+      ],
+      "published": "2026-07-23T16:28:35+00:00",
+      "link": "https://arxiv.org/pdf/2607.21488v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "MARL for autonomous vehicle coordination at unsignalized intersections, a path planning problem",
+      "llm_evidence_cn": "用于无信号交叉口自动驾驶车辆协调的MARL路径规划",
+      "llm_evidence": "用于无信号交叉口自动驾驶车辆协调的MARL路径规划",
+      "canonical_evidence": "用于无信号交叉口自动驾驶车辆协调的MARL路径规划",
+      "llm_tldr_en": "Proposes MAPS, a hierarchical DRL with centralized Master generating proto-plan and decentralized Workers executing control, achieving coordination at unsignalized intersections.",
+      "llm_tldr_cn": "该论文针对无信号交叉口自动驾驶车辆协调这一多智能体路径规划难题，提出MAPS分层深度强化学习架构，中央Master生成紧凑潜在协调嵌入（proto-plan），分散的Worker集成该嵌入与局部观察执行控制。实验表明该方法在协调效率和鲁棒性上优于现有方法，是学习型多智能体路径规划的典型应用。",
+      "llm_tldr": "该论文针对无信号交叉口自动驾驶车辆协调这一多智能体路径规划难题，提出MAPS分层深度强化学习架构，中央Master生成紧凑潜在协调嵌入（proto-plan），分散的Worker集成该嵌入与局部观察执行控制。实验表明该方法在协调效率和鲁棒性上优于现有方法，是学习型多智能体路径规划的典型应用。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.20772v1",
+      "source": "arxiv",
+      "title": "Socially Consistent Multi-Robot Navigation Using Decoupled Planning and Trajectory Coordination",
+      "abstract": "The successful integration of mobile robots in human-centric environments requires navigation that is not only safe and efficient, but also predictable and aligned with social conventions, key precursors for human comfort and acceptance. While significant research addresses short-term human-aware planning, these methods often lack mechanisms for ensuring consistent and predictable behaviors across long horizons. Without socially aware long-term planners, local planners are overburdened, resulting in inefficient and locally reactive movements that undermine predictability. This paper introduces a partially decentralized framework that generates predictable and socially consistent multi-robot motion by decoupling global path planning from trajectory coordination. First, we propose a modified A* planner that embeds macroscopic social norms into the planner cost function. Planned paths are shared across mobile robots to collaboratively build a social graph of established routes, which enforces path consistency and reduces future planning effort. Second, we leverage the emergent structure of the socially constrained paths to formulate the multi-robot trajectory coordination problem as a mixed-integer convex program. The convex program enables efficient computation of conflict- free trajectories, scaling effectively to large fleets and supporting dynamic task assignment. Our results demonstrate that enforcing social consistency at the path planning stage produces predictable, socially compliant mobile robot paths and simplifies the otherwise complex problem of multi-robot coordination.",
+      "authors": [
+        "Matthew M. Sato",
+        "Kincho H. Law"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-22T22:38:07+00:00",
+      "link": "https://arxiv.org/pdf/2607.20772v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Decentralized multi-robot navigation with socially consistent trajectory coordination",
+      "llm_evidence_cn": "具有社会一致轨迹协调的分散式多机器人导航",
+      "llm_evidence": "具有社会一致轨迹协调的分散式多机器人导航",
+      "canonical_evidence": "具有社会一致轨迹协调的分散式多机器人导航",
+      "llm_tldr_en": "This paper proposes a partially decentralized framework for socially consistent multi-robot navigation by decoupling global path planning and local trajectory coordination, ensuring predictability and social alignment.",
+      "llm_tldr_cn": "针对多机器人导航中因缺乏长期社会意识导致行为不可预测的问题，提出一种部分分散式框架，将全局路径规划与局部轨迹协调解耦，生成社会一致的运动。实验表明该方法显著提升了导航的预测性和社会可接受性。",
+      "llm_tldr": "针对多机器人导航中因缺乏长期社会意识导致行为不可预测的问题，提出一种部分分散式框架，将全局路径规划与局部轨迹协调解耦，生成社会一致的运动。实验表明该方法显著提升了导航的预测性和社会可接受性。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.21043v1",
+      "source": "arxiv",
+      "title": "A Real-Time Generalized Nash Equilibrium Framework for Interaction-Aware Autonomous Driving in Mixed Traffic",
+      "abstract": "Safe and efficient navigation in mixed-traffic environments remains a critical challenge for Autonomous Vehicles (AVs), primarily due to the complex interdependence between the AV's decisions and the unpredictable reactions of human drivers. This paper introduces a comprehensive decision-making framework that formulates the driving interaction as a Generalized Nash Equilibrium Problem (GNEP). Unlike decoupled optimization approaches, this framework explicitly models shared safety and geometric constraints, ensuring that the feasibility of the AV's strategy is dynamically linked to the opponent's actions. To solve this non-convex problem in real-time, we propose a dedicated solver based on Particle Swarm Optimization (PSO). The complete architecture was validated on a test track using a real autonomous Renault Zoé interacting with a human driver. Experimental results demonstrate the system's ability to handle critical scenarios by generating comfortable, human-like trajectories. Benchmarks confirm the solver's operational feasibility, achieving convergence in under 50 ms.",
+      "authors": [
+        "Nouhed Naidja",
+        "Mohamed-Cherif Rahal",
+        "Steve Pechberti",
+        "Stéphane Font",
+        "Guillaume Sandou",
+        "Marc Revilloud"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-23T08:25:01+00:00",
+      "link": "https://arxiv.org/pdf/2607.21043v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "interaction-aware autonomous driving using generalized Nash equilibrium for intent prediction and collision avoidance",
+      "llm_evidence_cn": "基于广义纳什均衡的交互感知自主驾驶，用于意图预测和避碰",
+      "llm_evidence": "基于广义纳什均衡的交互感知自主驾驶，用于意图预测和避碰",
+      "canonical_evidence": "基于广义纳什均衡的交互感知自主驾驶，用于意图预测和避碰",
+      "llm_tldr_en": "This paper presents a real-time generalized Nash equilibrium framework for autonomous driving in mixed traffic, explicitly modeling shared safety constraints. It uses particle swarm optimization for real-time solution, improving interaction-aware decision-making.",
+      "llm_tldr_cn": "该论文提出一个实时广义纳什均衡框架，用于混合交通中的自主驾驶，显式建模共享安全约束。采用粒子群优化进行实时求解，提升了交互感知决策能力。",
+      "llm_tldr": "该论文提出一个实时广义纳什均衡框架，用于混合交通中的自主驾驶，显式建模共享安全约束。采用粒子群优化进行实时求解，提升了交互感知决策能力。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.16619v2",
+      "source": "arxiv",
+      "title": "SAGE: A Socially-Aware Generative Engine for Heterogeneous Multi-Agent Navigation",
+      "abstract": "Safe and socially compliant navigation in open human-robot environments requires robots to reason about heterogeneous participants with different dynamics, autonomy levels, and social roles. Existing trajectory prediction and planning methods often rely on homogeneous interaction assumptions or enforce only geometric collision constraints, making it difficult to jointly model asymmetric interactions, coupled prediction-planning, and soft social norms. This paper proposes SAGE, a socially-aware generative engine for heterogeneous multi-agent navigation. SAGE represents robots and surrounding entities as a directed heterogeneous graph and employs a Heterogeneous Graph Transformer (HGT) to encode type-specific asymmetric interactions. Conditioned on the resulting context, a diffusion-based generative module jointly models future entity trajectories and robot trajectory plans. During inference, a training-free safety-social energy guidance mechanism refines sampled robot trajectories using differentiable collision, kinematic, task-progress, and role-conditioned social-compliance terms. Extensive experiments on real-world (ETH/UCY and SDD) and synthetic datasets verify the effectiveness of SAGE in improving safety and social compliance while maintaining task performance. The proposed guidance mechanism consistently reduces collision and social-violation rates, scales to teams of up to 20 robots, and enables explicit control of the safety-accuracy-task trade-off without retraining. These findings demonstrate the potential of SAGE as a scalable framework for socially-aware multi-agent navigation in complex environments.",
+      "authors": [
+        "Lan Hu",
+        "Minghui Liwang",
+        "Wenbo Zhu",
+        "Xinlei Yi",
+        "Yiguang Hong",
+        "Xianbin Wang",
+        "Zhenzhen Jiao",
+        "Seyyedali Hosseinalipour"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.MA"
+      ],
+      "published": "2026-07-18T03:40:59+00:00",
+      "link": "https://arxiv.org/pdf/2607.16619v2",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "socially-aware heterogeneous multi-agent navigation with graph transformer",
+      "llm_evidence_cn": "基于图变换器的社会感知异质多智能体导航",
+      "llm_evidence": "基于图变换器的社会感知异质多智能体导航",
+      "canonical_evidence": "基于图变换器的社会感知异质多智能体导航",
+      "llm_tldr_en": "SAGE uses a Heterogeneous Graph Transformer to model asymmetric interactions in multi-agent navigation, enabling safe and socially compliant trajectory prediction and planning.",
+      "llm_tldr_cn": "该论文针对开放人机环境中异质参与者（不同动力学、自主程度和社会角色）的导航问题，提出SAGE框架。SAGE将机器人和周围实体表示为有向异构图，采用异构图变换器编码类型特定的不对称交互，并生成社会合规的轨迹预测和规划。实验表明，在多种场景下SAGE在安全性和社会规范性上优于现有方法，推动了多智能体导航的实用化。",
+      "llm_tldr": "该论文针对开放人机环境中异质参与者（不同动力学、自主程度和社会角色）的导航问题，提出SAGE框架。SAGE将机器人和周围实体表示为有向异构图，采用异构图变换器编码类型特定的不对称交互，并生成社会合规的轨迹预测和规划。实验表明，在多种场景下SAGE在安全性和社会规范性上优于现有方法，推动了多智能体导航的实用化。",
+      "llm_tags": [
+        "query:intent-avoid:composite"
+      ],
+      "matched_query_tag": "query:intent-avoid:composite",
+      "matched_query_text": "Papers central to MAS, especially work that connects or combines: multi-agent intent prediction future motion planning; pedestrian trajectory prediction multi-agent system; crowd occupancy grid perception dynamic occupancy; potential field decentralized collision avoidance multi-agent; decentralized collision avoidance multi-agent system coordination; congestion avoidance multi-agent crowd navigation; Multi agent systems for future motion intent prediction and congestion avoidance; Decentralized potential field methods for crowd obstacle avoidance and path planning; Pedestrian trajectory prediction with crowd occupancy grid and diversified routing.",
+      "matched_requirement_id": "req-composite-intent-avoid",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2607.16524v1",
+      "source": "arxiv",
+      "title": "Feedback Attribution and Representation Geometry: Metrics for Comparing Individual and Shared Rewards in MARL",
+      "abstract": "Cooperative multi-agent RL systems routinely use team-averaged rewards, a feedback-attribution choice that gives each agent the team outcome regardless of its individual contribution. We ask whether this leaves a measurable signature, geometric or behavioral, on learned representations. We propose EffRank/$n$ (effective rank normalized by agent count) and $D_\\text{act}$ (mean pairwise KL divergence between agents' action distributions) as low-overhead diagnostics for reward-attribution effects, then test them on competent MAPPO agents in SMACv2 \\texttt{protoss\\_5\\_vs\\_5}, where unit type is encoded in the observation. In an observation $\\times$ reward-attribution comparison (unit type observed vs.\\ masked; individual damage-contribution reward vs.\\ shared team reward), geometry follows observation rather than reward. With unit type observed, shared and individual rewards have similar EffRank/$n$ ($0.31{\\pm}0.03$ vs.\\ $0.29{\\pm}0.02$) and probe accuracy ($0.75{\\pm}0.05$ vs.\\ $0.73{\\pm}0.05$, both $\\gg 1/3$ chance), while $D_\\text{act}$ leans higher under individual rewards ($1.23{\\pm}0.06$ vs.\\ $1.07{\\pm}0.20$). Masking unit type cuts the above-chance probe signal by more than half, to $0.49$ in both reward arms. In short: individually rewarded agents are competent and separable by role, but on SMACv2 the observation explains the geometry and reward attribution shows up mainly in behavior. Thus geometric diagnostics must control for observed role information and test persistent roles that are not directly observed. EffRank/$n$ and $D_\\text{act}$ add $<$5\\% overhead.",
+      "authors": [
+        "Tasha Pais",
+        "Richard Higgins"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-17T21:53:07+00:00",
+      "link": "https://arxiv.org/pdf/2607.16524v1",
+      "tags": [
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "MARL metrics for reward attribution; useful for training multi-agent path planning systems",
+      "llm_evidence_cn": "多智能体强化学习中的奖励分配度量，可训练路径规划系统",
+      "llm_evidence": "多智能体强化学习中的奖励分配度量，可训练路径规划系统",
+      "canonical_evidence": "多智能体强化学习中的奖励分配度量，可训练路径规划系统",
+      "llm_tldr_en": "This paper proposes low-overhead diagnostics (EffRank/n and D_act) for comparing individual and shared rewards in MARL. Tested on MAPPO in SMACv2, these metrics reveal geometric and behavioral differences in learned representations.",
+      "llm_tldr_cn": "该论文提出低开销的诊断指标（EffRank/n和D_act），用于比较多智能体强化学习中的个体与共享奖励。在SMACv2的MAPPO智能体上测试，这些指标揭示了学习表征的几何和行为差异。",
+      "llm_tldr": "该论文提出低开销的诊断指标（EffRank/n和D_act），用于比较多智能体强化学习中的个体与共享奖励。在SMACv2的MAPPO智能体上测试，这些指标揭示了学习表征的几何和行为差异。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.17003v1",
+      "source": "arxiv",
+      "title": "Scalable Causal Imitation Learning",
+      "abstract": "Imitation learning enables learning a policy in an unknown environment with a latent reward signal using expert demonstrations, but it struggles when the imitator's and expert's observations are mismatched and unobserved confounders are present in expert demonstrations. By identifying appropriate adjustment sets via the sequential $π$-backdoor criterion, causal imitation learning (CIL) provides a framework for approximating the expert's policy from confounded data. However, existing CIL methods, Causal Behavioral Cloning (Causal BC) and Causal Generative Adversarial Imitation Learning (Causal GAIL), are designed for short-horizon, low-dimensional settings. When applied to continuous control tasks with long horizons and high-dimensional state-action spaces, these methods exhibit poor performance: Causal BC suffers from compounding errors, Causal GAIL is unstable and sample-inefficient, and sequential $π$-backdoor adjustment becomes impractical. We introduce Causal Soft Q Imitation Learning (SQIL) and Causal Inverse soft-Q Learning (IQ-Learn), two off-policy causal imitation learning algorithms that combine the causal adjustment framework with state-of-the-art inverse reinforcement learning objectives. Both algorithms operate on causally-adjusted state representations produced by an efficient approximation of the sequential $π$-backdoor criterion, exploiting the causal structure of continuous control environments to reduce the full-horizon adjustment to a fixed-size sliding window. We evaluate all methods in a suite of confounded environments and find that Causal SQIL and Causal IQ-Learn substantially outperform prior CIL algorithms on long-horizon tasks, sometimes surpassing the expert, whereas all causally unaware imitation methods fail to learn meaningful behavior.",
+      "authors": [
+        "Eylam Tagor",
+        "Mingxuan Li",
+        "Elias Bareinboim"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-18T23:33:11+00:00",
+      "link": "https://arxiv.org/pdf/2607.17003v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "causal imitation learning",
+      "llm_evidence_cn": "因果模仿学习",
+      "llm_evidence": "因果模仿学习",
+      "canonical_evidence": "因果模仿学习",
+      "llm_tldr_en": "Scalable Causal Imitation Learning proposes a causal approach to handle observation mismatch and confounders in imitation learning, improving scalability for continuous control tasks with long horizons.",
+      "llm_tldr_cn": "该论文针对模仿学习中观察不匹配和未观测混淆变量的问题，提出了可扩展的因果模仿学习方法。通过顺序π-后门准则识别调整集，该方法在连续控制任务中实现了更好的性能，表明因果方法在长时域模仿学习中的有效性。",
+      "llm_tldr": "该论文针对模仿学习中观察不匹配和未观测混淆变量的问题，提出了可扩展的因果模仿学习方法。通过顺序π-后门准则识别调整集，该方法在连续控制任务中实现了更好的性能，表明因果方法在长时域模仿学习中的有效性。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert demonstrations for multi-agent path finding",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.18554v1",
+      "source": "arxiv",
+      "title": "Scalable Policy Optimization for Networked Multi-Agent Reinforcement Learning with Continuous State-Action Spaces",
+      "abstract": "We develop the Continuous Distributed Coupled Policy Gradient (CDCPG) algorithm for cooperative reinforcement learning in networked Markov decision processes with continuous state and action spaces. Each agent maintains a local actor over a bounded graph neighborhood, and a localized least-squares temporal-difference critic evaluates a truncated action-value function through a spectral random-feature representation of the local transition kernel. The analysis makes four contributions. First, the truncated action-value function is constructed as a conditional expectation over the neighborhood, yielding a well-posed localized Bellman theory that removes the continuation-kernel mismatch of naive truncation arguments. Second, we expose a dimensional obstruction to temporal-difference stability for normalized random features and prove an unconditional excitation bound that reduces stability to a symmetric persistence-of-excitation condition, monitorable through an online matrix-concentration certificate. Third, under exponential spatial decay of agent interactions, the excitation condition, and smoothness of the objective, CDCPG drives an averaged per-agent stationarity measure to within any excess $ε$ of an explicitly characterized approximation floor using $\\widetilde{\\mathcal{O}}(ε^{-2})$ shared-oracle samples, and the excess dependence matches the smooth nonconvex first-order rate; per-agent computation and communication are governed by the neighborhood size rather than the network size. Fourth, an adaptive-locality rule selects the radius that balances truncation and graph-decay residuals against the target accuracy. Experiments on a networked linear-quadratic benchmark corroborate the locality and feature-dimension predictions.",
+      "authors": [
+        "Dongming Wang",
+        "Pengcheng Dai",
+        "Wenwu Yu",
+        "Wei Ren"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.LG"
+      ],
+      "published": "2026-07-20T22:41:43+00:00",
+      "link": "https://arxiv.org/pdf/2607.18554v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "networked multi-agent reinforcement learning for continuous control",
+      "llm_evidence_cn": "网络化多智能体强化学习用于连续控制",
+      "llm_evidence": "网络化多智能体强化学习用于连续控制",
+      "canonical_evidence": "网络化多智能体强化学习用于连续控制",
+      "llm_tldr_en": "Scalable Policy Optimization for Networked Multi-Agent RL with Continuous Spaces proposes CDCPG, a decentralized actor-critic method with localized Bellman theory and spectral random features, achieving scalability and theoretical guarantees.",
+      "llm_tldr_cn": "该论文针对连续状态动作空间的网络化多智能体强化学习问题，提出了连续分布式耦合策略梯度算法（CDCPG）。每个智能体维护局部演员和基于谱随机特征的局部评论家，建立了局部贝尔曼理论。理论分析证明其收敛性，实验表明在大规模网络化环境中具有可扩展性。",
+      "llm_tldr": "该论文针对连续状态动作空间的网络化多智能体强化学习问题，提出了连续分布式耦合策略梯度算法（CDCPG）。每个智能体维护局部演员和基于谱随机特征的局部评论家，建立了局部贝尔曼理论。理论分析证明其收敛性，实验表明在大规模网络化环境中具有可扩展性。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2607.17924v1",
+      "source": "arxiv",
+      "title": "Aggregate in the Advantage, Not the Ratio: A Canonical-Form Analysis of Cooperative Multi-Agent Policy Optimization",
+      "abstract": "Multi-agent policy optimization, exemplified by PPO-based methods, is a key branch of cooperative Multi-Agent Reinforcement Learning (MARL). A central design question is how many neighboring agents\\footnote{In this paper, \"neighbors\" refer not only to physical proximity but also to agents whose actions influence one another.} to aggregate in order to effectively utilize global information for cooperation. This decision must be made along two dimensions: in the advantage (which agents' rewards contribute to the credit signal) and in the ratio (which agents' likelihood ratios form the clipped importance weight). Existing methods occupy scattered, underexplored points on these two axes: IPPO treats both separately; MAPPO pairs a team-level advantage with per-agent ratios; HAPPO employs sequential ratios with per-agent advantages; and single-agent reductions operating on factorized joint policies aggregate both into fully joint products. We formalize these two design choices as support matrices $\\SA$ and $\\SR$, and prove a canonical structure: the expected multi-agent policy optimization objective depends on the pair $(\\SA,\\SR)$ only through their matrix product $\\tS=\\SR\\SA$. This yields two key consequences: (i) Redundancy: the two support matrices are interchangeable with respect to the signal, meaning neither aggregation pattern is inherently superior.(ii) Variance Ordering: the advantage aggregates rewards as a sum (additive variance with an interior bias-variance optimum at the coupling neighborhood), whereas the ratio aggregates likelihood ratios as a product (multiplicative variance that grows exponentially with support size, with no accompanying bias reduction). The resulting design principle is unambiguous: aggregate neighbors in the advantage, sized to the coupling neighborhood, and keep the ratio per-agent.",
+      "authors": [
+        "Zijian Zhao",
+        "Sen Li"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.LG"
+      ],
+      "published": "2026-07-20T13:20:29+00:00",
+      "link": "https://arxiv.org/pdf/2607.17924v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Analyzes neighbor aggregation in cooperative MARL, informing communication design",
+      "llm_evidence_cn": "分析合作MARL中的邻居聚合，为通信设计提供指导",
+      "llm_evidence": "分析合作MARL中的邻居聚合，为通信设计提供指导",
+      "canonical_evidence": "分析合作MARL中的邻居聚合，为通信设计提供指导",
+      "llm_tldr_en": "Canonical-form analysis of multi-agent PPO reveals trade-offs in aggregating neighbors for advantage and ratio, guiding communication mask design.",
+      "llm_tldr_cn": "该论文从规范形式分析合作多智能体策略优化中邻居聚合的两个维度（优势与比率），揭示现有方法的稀疏分布。通过理论分析和实验，阐明了不同聚合策略对性能的影响，为设计自适应通信掩码和稀疏通信机制提供了理论依据。",
+      "llm_tldr": "该论文从规范形式分析合作多智能体策略优化中邻居聚合的两个维度（优势与比率），揭示现有方法的稀疏分布。通过理论分析和实验，阐明了不同聚合策略对性能的影响，为设计自适应通信掩码和稀疏通信机制提供了理论依据。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.17311v1",
+      "source": "arxiv",
+      "title": "The Optimization Trilemma: Efficiency, Comfort and Fairness in Decentralized Multi-agent Coordination",
+      "abstract": "The problem of fair multi-agent coordination in decentralized settings is one of the most pressing challenges for building efficient collaborative systems. Resource allocation is based on optimized collective arrangements accounting for agents' needs. Such coordination should not only be computationally efficient but also account for fairness, i.e., equitable redistribution of costs incurred by all agents. Recent literature has proposed several algorithms that efficiently determine optimal plan combinations balancing system-wide efficiency and individual discomfort of agents in a centralized setting. However, these works do not address equitable resource optimization in fully decentralized scenarios, specifically, the optimized redistribution of discomfort among coordinating agents so that none experiences a discomfort level that could lead to loss of incentive or polarization that can disrupt planned operations. In this work, we study the problem of optimizing three objectives: (i) system-wide efficiency, (ii) individuals' comfort and (iii) fairness (i.e., balancing of incurred discomfort costs) in decentralized multi-agent coordination. We design a novel model to optimize those three orthogonal objectives, without any substantial increase in communication and computational overhead. Through experiments on two real-world datasets, we validate the model and demonstrate that it can achieve fairer optimization outcomes, while satisfying agents' preferences and system goals.",
+      "authors": [
+        "Jovan Nikolic",
+        "Maciej Krzysztof Zuziak",
+        "Evangelos Pournaras"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.AI",
+        "cs.CY",
+        "cs.DC",
+        "eess.SY"
+      ],
+      "published": "2026-07-19T15:51:33+00:00",
+      "link": "https://arxiv.org/pdf/2607.17311v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decentralized multi-agent coordination with fairness and efficiency relevant to crowd navigation",
+      "llm_evidence_cn": "去中心化多智能体协调中的公平与效率，与人群导航相关",
+      "llm_evidence": "去中心化多智能体协调中的公平与效率，与人群导航相关",
+      "canonical_evidence": "去中心化多智能体协调中的公平与效率，与人群导航相关",
+      "llm_tldr_en": "This paper addresses the trilemma of efficiency, comfort, and fairness in decentralized multi-agent coordination. It proposes algorithms for equitable cost redistribution, which is relevant to collision avoidance and crowd navigation in multi-agent systems.",
+      "llm_tldr_cn": "该论文解决了去中心化多智能体协调中的效率、舒适度和公平性三重困境，提出了公平成本再分配算法。这对于多智能体系统中的避碰和人群导航问题具有参考价值。",
+      "llm_tldr": "该论文解决了去中心化多智能体协调中的效率、舒适度和公平性三重困境，提出了公平成本再分配算法。这对于多智能体系统中的避碰和人群导航问题具有参考价值。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.18597v1",
+      "source": "arxiv",
+      "title": "A Self-Evolving Default Action for Cooperative Tasks with Continuous Action Space",
+      "abstract": "Counterfactual credit assignment has proven effective in multi-agent reinforcement learning (MARL) for discrete action spaces, yet its extension to continuous-action cooperative tasks remains challenging. Existing methods that approximate the counterfactual baseline via Monte Carlo sampling often introduce bias into policy gradients and fail to guarantee convergence to local optima, as the sampled actions may not have been sufficiently trained. To address these limitations, we propose SAFE, a novel MARL framework that employs a counterfactual baseline conditioned on a self-evolving default action sampled from each agent's experience buffer. This design naturally extends to continuous action spaces without relying on additional simulations, reward models, or environment-specific prior knowledge. The baseline accurately quantifies each agent's contribution, and introduces no bias into the deterministic policy gradient, ensuring convergence to local optima. Extensive experiments on cooperative vehicular tasks demonstrate that SAFE consistently outperforms state-of-the-art models.",
+      "authors": [
+        "Shuangyao Huang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.MA"
+      ],
+      "published": "2026-07-21T00:17:55+00:00",
+      "link": "https://arxiv.org/pdf/2607.18597v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "self-evolving default action for continuous-action cooperative MARL",
+      "llm_evidence_cn": "针对连续动作空间合作任务的自演化默认动作框架",
+      "llm_evidence": "针对连续动作空间合作任务的自演化默认动作框架",
+      "canonical_evidence": "针对连续动作空间合作任务的自演化默认动作框架",
+      "llm_tldr_en": "Proposes SAFE, a MARL framework with counterfactual baseline conditioned on self-evolving default actions, enabling effective credit assignment in continuous action spaces.",
+      "llm_tldr_cn": "在连续动作空间的多智能体强化学习中，现有反事实基线方法因采样偏差导致梯度不收敛。本文提出SAFE框架，利用从经验缓冲区自演化采样的默认动作作为条件基线，自然扩展到连续空间而不依赖额外仿真。实验验证了其在合作任务中的收敛性和性能提升。",
+      "llm_tldr": "在连续动作空间的多智能体强化学习中，现有反事实基线方法因采样偏差导致梯度不收敛。本文提出SAFE框架，利用从经验缓冲区自演化采样的默认动作作为条件基线，自然扩展到连续空间而不依赖额外仿真。实验验证了其在合作任务中的收敛性和性能提升。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2607.18719v1",
+      "source": "arxiv",
+      "title": "Strategy-Following Multi-Agent Deep Reinforcement Learning Considering Control Strategies Provided to Other Agents",
+      "abstract": "This study proposes a learning method for multi-agent systems that allows agents to be controlled through human manager instructions after learning and enables uninstructed agents to implicitly complement the overall work based on the actions of other agents. Multi-agent applications using deep learning have shown potential; thus, to achieve extensive social applications, humans should be able to control learned agents using simple methods to respond to environmental and social changes. Even without such changes, learned coordination often does not match the expectations of human managers, making it preferable to control coordination structures to match human intentions. Some studies have aimed to control agent behavior using simple instructions. However, they assumed that instructions are provided to all agents, which is time-consuming and not evident when designing a better cooperation regime. Ideally, specific agents should receive key action instructions, while others should automatically complete the remaining tasks. The proposed method, which extends previous work on controllability in multi-agent deep reinforcement learning, enables uninstructed agents to adaptively complement overlooked tasks and areas. The experimental results show that agents using the proposed method can shift to another cooperative structure and achieve better performance than those using conventional methods.",
+      "authors": [
+        "Yamato Takahagi",
+        "Gentoku Nakasone",
+        "Yoshinari Motokawa",
+        "Toshiharu Sugawara"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.AI"
+      ],
+      "published": "2026-07-21T05:19:49+00:00",
+      "link": "https://arxiv.org/pdf/2607.18719v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multi-agent deep reinforcement learning with strategy following for coordination",
+      "llm_evidence_cn": "多智能体深度强化学习与策略遵循实现协调",
+      "llm_evidence": "多智能体深度强化学习与策略遵循实现协调",
+      "canonical_evidence": "多智能体深度强化学习与策略遵循实现协调",
+      "llm_tldr_en": "Proposes a multi-agent deep RL method enabling human control of some agents while others implicitly adapt, improving coordination.",
+      "llm_tldr_cn": "该论文针对多智能体系统协调问题，提出一种策略遵循的多智能体深度强化学习方法。学习后允许人类管理者通过简单指令控制部分智能体，未受指令的智能体则根据观察隐式补全整体任务。方法在保持学习协调能力的同时，使人类能够干预与调整合作结构。实验表明，该方法能灵活适应环境变化和人类意图，为多智能体路径规划中的人机协作提供了可借鉴的思路。",
+      "llm_tldr": "该论文针对多智能体系统协调问题，提出一种策略遵循的多智能体深度强化学习方法。学习后允许人类管理者通过简单指令控制部分智能体，未受指令的智能体则根据观察隐式补全整体任务。方法在保持学习协调能力的同时，使人类能够干预与调整合作结构。实验表明，该方法能灵活适应环境变化和人类意图，为多智能体路径规划中的人机协作提供了可借鉴的思路。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.17635v1",
+      "source": "arxiv",
+      "title": "On Optimal Event-Triggered Distributed Control for Stochastic Multi-Agent Systems via Reinforcement Learning",
+      "abstract": "We propose a reinforcement learning (RL) based optimal distributed control algorithm for the multi-agent systems (MASs) with stochastic uncertainties. Unlike existing methods, during the optimized backstepping design process, we use the actor-critic-identifier structure. The actor neural network is used to reflect control behavior, the critic neural network works to evaluate control performance and the unknown stochastic uncertainties are handled by identifier neural network. Furthermore, a low-pass filter effectively suppresses problems stemming from non-affine nonlinear faults and a hybrid event-triggered control (ETC) strategy is proposed to reduce control frequency. We analyze our algorithm's operation, and we provide a Lyapunov-based stability proof that guarantees all errors are bounded, ensuring precise tracking between the leader and followers. We validate its correctness in a single-axis robotic manipulator simulation and finally, we compare against the non-optimal control algorithm highlighting our optimal control algorithm's operational advantages.",
+      "authors": [
+        "Ziming Wang",
+        "Bingbing Li",
+        "Karl H. Johansson",
+        "Apostolos I. Rikos"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-07-20T07:44:39+00:00",
+      "link": "https://arxiv.org/pdf/2607.17635v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent reinforcement learning for distributed control",
+      "llm_evidence_cn": "多智能体强化学习用于分布式控制",
+      "llm_evidence": "多智能体强化学习用于分布式控制",
+      "canonical_evidence": "多智能体强化学习用于分布式控制",
+      "llm_tldr_en": "Proposes an RL-based optimal distributed control algorithm for stochastic multi-agent systems using actor-critic-identifier with event-triggered strategy.",
+      "llm_tldr_cn": "该论文针对含随机不确定性的多智能体系统，提出了一种基于强化学习的优化分布式控制算法。采用执行器-评判器-辨识器结构，执行器神经网络反映控制行为，评判器评估性能，辨识器处理未知随机不确定性。结合低通滤波抑制非仿射非线性故障，并设计混合事件触发控制策略降低通信频率。该方法适用于多智能体路径规划中的分布式控制问题，提供了可迁移的强化学习框架。",
+      "llm_tldr": "该论文针对含随机不确定性的多智能体系统，提出了一种基于强化学习的优化分布式控制算法。采用执行器-评判器-辨识器结构，执行器神经网络反映控制行为，评判器评估性能，辨识器处理未知随机不确定性。结合低通滤波抑制非仿射非线性故障，并设计混合事件触发控制策略降低通信频率。该方法适用于多智能体路径规划中的分布式控制问题，提供了可迁移的强化学习框架。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.19555v1",
+      "source": "arxiv",
+      "title": "CHMAS: A Coupled Hierarchical Framework for Multi-Agent Reinforcement Learning",
+      "abstract": "Multi-agent reinforcement learning (MARL) systems face fundamental   challenges in balancing global coordination with local execution   across different temporal scales. This paper introduces the Coupled   Hierarchical Multi-Agent System (CHMAS), a novel framework that   decomposes multi-agent decision-making into centralized strategic   planning and distributed tactical execution with bidirectional   information flow. The strategic layer integrates all agents' states   with an exclusive global environmental state to generate guidance   actions every $T$ timesteps, while tactical agents execute   distributed policies augmented by strategic guidance and local   neighborhood observations. Unlike existing hierarchical approaches   with unidirectional control, CHMAS establishes a feedback mechanism   where accumulated tactical rewards influence strategic objectives   through a coupling coefficient $λ$, ensuring strategic plans   remain grounded in tactical feasibility. To address the   non-stationarity inherent in hierarchical learning, we propose an   asynchronous update protocol where strategic parameters update every   $N_f$ tactical episodes, allowing tactical policies to converge to   quasi-stationary points between strategic changes. We present both a   general bi-level formulation capturing full system dynamics and a   tractable additive approximation enabling rigorous analysis.   Theoretical analysis proves that this asynchronous scheme achieves   $\\mathcal{O}(\\log K/\\sqrt{K})$ convergence for the strategic layer   after $K$ strategic updates under standard assumptions. Experimental   validation in a multi-agent foraging domain demonstrates successful   learning of spatially partitioned exploration strategies, with both   layers converging stably despite hierarchical coupling.",
+      "authors": [
+        "Dongming Wang",
+        "Jie Xu",
+        "Yanyu Zhang",
+        "Wei Ren"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA"
+      ],
+      "published": "2026-07-21T20:22:40+00:00",
+      "link": "https://arxiv.org/pdf/2607.19555v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Hierarchical MARL framework for strategic planning and tactical execution, applicable to path finding",
+      "llm_evidence_cn": "分层MARL框架，适用于路径查找",
+      "llm_evidence": "分层MARL框架，适用于路径查找",
+      "canonical_evidence": "分层MARL框架，适用于路径查找",
+      "llm_tldr_en": "Proposes a coupled hierarchical multi-agent RL framework with centralized strategic planning and decentralized tactical execution, addressing global-local coordination.",
+      "llm_tldr_cn": "该论文针对多智能体强化学习中全局协调与局部执行的平衡问题，提出CHMAS框架，将决策分解为中心化战略规划和分布式战术执行，并实现双向信息流。实验表明该框架能有效提升合作性能，为多智能体路径规划等任务提供了通用方法基础。",
+      "llm_tldr": "该论文针对多智能体强化学习中全局协调与局部执行的平衡问题，提出CHMAS框架，将决策分解为中心化战略规划和分布式战术执行，并实现双向信息流。实验表明该框架能有效提升合作性能，为多智能体路径规划等任务提供了通用方法基础。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2607.19774v1",
+      "source": "arxiv",
+      "title": "Defer to Plan: Adaptive Multi-Agent Fusion for End-to-End V2X Driving",
+      "abstract": "Vehicle-to-everything-aided autonomous driving (V2X-AD) significantly enhances driving performance through information sharing. However, existing collaborative perception methods only optimize module-level perception capabilities and fail to effectively serve the ultimate planning and control tasks. We propose an end-to-end collaborative driving system that directly optimizes planning task performance. The system employs MotionNetwork to fuse historical temporal information, utilizes attention mechanisms to efficiently compress spatial features into compact tokens, and adaptively fuses multi-agent features through an autoregressive decoder. Additionally, we introduce Mixture-of-Experts (MoE) architecture to enhance the model's representation capacity for heterogeneous features. Experiments demonstrate that our method achieves a driving score of 79.72, surpassing the state-of-the-art CoDriving baseline (77.15) by 3.33% in closed-loop evaluation while maintaining communication efficiency.",
+      "authors": [
+        "Nuoran Li",
+        "Zhang Zhang",
+        "Yueran Zhao",
+        "Tianze Wang",
+        "Chao Sun"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-22T05:44:47+00:00",
+      "link": "https://arxiv.org/pdf/2607.19774v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multi-agent fusion with attention for end-to-end planning",
+      "llm_evidence_cn": "多智能体融合与注意力机制用于端到端规划",
+      "llm_evidence": "多智能体融合与注意力机制用于端到端规划",
+      "canonical_evidence": "多智能体融合与注意力机制用于端到端规划",
+      "llm_tldr_en": "Proposes an end-to-end V2X driving system that adaptively fuses multi-agent features via attention and MoE, directly optimizing planning performance.",
+      "llm_tldr_cn": "该论文针对V2X自动驾驶中多智能体协作规划问题，提出了一种端到端协同驾驶系统。系统利用MotionNetwork融合时序信息，通过注意力机制压缩空间特征为紧凑令牌，并采用自回归解码器自适应融合多智能体特征，同时引入混合专家（MoE）增强表示能力。在V2X场景下，该方法直接优化规划任务，相比模块化感知方法更有效。相关工作为多智能体路径规划中的特征融合和注意力机制提供了参考。",
+      "llm_tldr": "该论文针对V2X自动驾驶中多智能体协作规划问题，提出了一种端到端协同驾驶系统。系统利用MotionNetwork融合时序信息，通过注意力机制压缩空间特征为紧凑令牌，并采用自回归解码器自适应融合多智能体特征，同时引入混合专家（MoE）增强表示能力。在V2X场景下，该方法直接优化规划任务，相比模块化感知方法更有效。相关工作为多智能体路径规划中的特征融合和注意力机制提供了参考。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.18359v1",
+      "source": "arxiv",
+      "title": "Decentralized Multi-agent Reinforcement Learning for Resilient Critical Infrastructures",
+      "abstract": "Critical infrastructures are increasingly distributed, interdependent, and exposed to evolving disruptions, making resilience a central requirement for their operation and control. This paper argues that decentralized multi-agent reinforcement learning (MARL) should be understood not merely as a distributed alternative to centralized training with decentralized execution but as a paradigm structurally aligned with the requirements of resilient critical infrastructures. This perspective is grounded in an analysis of the properties of decentralized MARL and the requirements of critical infrastructures, including scalability to large numbers of agents, support for privacy and local autonomy, robustness to failures, and interaction-driven adaptation among interdependent components. However, structural alignment alone is insufficient for practical deployment. This paper identifies credit assignment and communication as two central conditions for its practical feasibility. Credit assignment determines whether local learning remains aligned with system-level objectives, while communication determines whether coordination can be learned and maintained under realistic operational constraints. Building on these challenges, this paper proposes a research agenda focused on structure-aware, causality-aware, and resilience-aware credit assignment; communication for both coordination and credit assignment; and safe, timely, and recoverable decentralized learning under deployment constraints. Overall, this paper reframes decentralized MARL as a promising but conditional foundation for resilient critical infrastructures.",
+      "authors": [
+        "Minghui Ding",
+        "Evangelos Pournaras"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.LG"
+      ],
+      "published": "2026-07-20T12:43:54+00:00",
+      "link": "https://arxiv.org/pdf/2607.18359v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decentralized MARL methodology applicable to multi-agent path planning",
+      "llm_evidence_cn": "去中心化多智能体强化学习方法可应用于路径规划",
+      "llm_evidence": "去中心化多智能体强化学习方法可应用于路径规划",
+      "canonical_evidence": "去中心化多智能体强化学习方法可应用于路径规划",
+      "llm_tldr_en": "This paper discusses decentralized multi-agent reinforcement learning (MARL) as a paradigm for resilient critical infrastructures, highlighting its scalability, privacy, and robustness. While not directly about path planning, the decentralized MARL framework is transferable to multi-agent path finding tasks.",
+      "llm_tldr_cn": "该论文探讨了去中心化多智能体强化学习作为关键基础设施韧性的一种范式，强调了其可扩展性、隐私性和鲁棒性。虽然没有直接涉及路径规划，但去中心化MARL框架可以迁移到多智能体路径查找任务中。",
+      "llm_tldr": "该论文探讨了去中心化多智能体强化学习作为关键基础设施韧性的一种范式，强调了其可扩展性、隐私性和鲁棒性。虽然没有直接涉及路径规划，但去中心化MARL框架可以迁移到多智能体路径查找任务中。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.20352v1",
+      "source": "arxiv",
+      "title": "Distributed Motion Planning with Safety Guarantees for Self-Reconfiguring Robotic Boats",
+      "abstract": "Aquatic self-reconfigurable robots must assemble into desired shapes while ensuring safe interactions among multiple agents. This paper proposes a hybrid framework that combines distributed Model Predictive Control (MPC) with Control Barrier Functions (CBFs) for multi-agent shape formation and reconfiguration. Given a desired shape and target assignment, a distributed MPC scheme, solved via the Alternating Direction Method of Multipliers (ADMM), computes coordinated trajectories through local optimization and information exchange. To ensure safety in real time, distributed CBF-based filters are applied to enforce inter-agent collision avoidance. The proposed approach leverages the predictive capabilities of MPC to mitigate local minima, while CBFs provide formal safety guarantees despite the nonconvexity of the underlying optimization problem. Simulation results with up to 25 agents and experimental validation with four physical robots demonstrate the effectiveness and scalability of the framework.",
+      "authors": [
+        "Alejandro Gonzalez-Garcia",
+        "Wei Wang",
+        "Wei Xiao",
+        "Wilm Decre",
+        "Jan Swevers",
+        "Carlo Ratti",
+        "Daniela Rus"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-22T16:37:05+00:00",
+      "link": "https://arxiv.org/pdf/2607.20352v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "distributed MPC with CBFs for multi-agent collision avoidance and shape formation",
+      "llm_evidence_cn": "基于分布式MPC和CBF的多智能体避碰与形状形成",
+      "llm_evidence": "基于分布式MPC和CBF的多智能体避碰与形状形成",
+      "canonical_evidence": "基于分布式MPC和CBF的多智能体避碰与形状形成",
+      "llm_tldr_en": "Proposes a hybrid distributed MPC and CBF framework for multi-agent shape formation and collision avoidance in self-reconfiguring robotic boats, using ADMM for coordination.",
+      "llm_tldr_cn": "针对水上自重构机器人多智能体形状形成与安全交互问题，提出一种结合分布式模型预测控制（MPC）与控制屏障函数（CBF）的混合框架。通过交替方向乘子法（ADMM）求解分布式MPC优化轨迹，同时利用CBF滤波器实时保证避碰安全性。该方法兼具MPC的预测能力和CBF的实时安全性，有效避免局部极小值，实现多智能体协同与安全保障。实验验证了框架在形状形成与重构中的有效性。",
+      "llm_tldr": "针对水上自重构机器人多智能体形状形成与安全交互问题，提出一种结合分布式模型预测控制（MPC）与控制屏障函数（CBF）的混合框架。通过交替方向乘子法（ADMM）求解分布式MPC优化轨迹，同时利用CBF滤波器实时保证避碰安全性。该方法兼具MPC的预测能力和CBF的实时安全性，有效避免局部极小值，实现多智能体协同与安全保障。实验验证了框架在形状形成与重构中的有效性。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    }
+  ]
+}
