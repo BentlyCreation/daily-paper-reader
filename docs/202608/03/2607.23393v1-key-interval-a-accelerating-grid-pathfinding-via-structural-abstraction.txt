@@ -1,0 +1,856 @@
+Title: Key-Interval A*: Accelerating Grid Pathfinding via Structural Abstraction
+
+URL Source: https://arxiv.org/pdf/2607.23393v1
+
+Published Time: Tue, 28 Jul 2026 00:49:21 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# Key-Interval A*: Accelerating Grid Pathfinding via Structural Abstraction 
+
+# Taiquan Sui 
+
+Department of Computer Science and Engineering Chalmers University of Technology Gothenburg, Sweden taiquan@chalmers.se 
+
+Abstract 
+
+Existing exact methods for 4-connected grid pathfinding re-duce online search, but often either retain fine-grained search states or require substantial preprocessing. This paper presents Key-Interval A* (KIA*), an optimal pathfinding algorithm that uses lightweight preprocessing to construct and search over a compact interval-level abstraction of free space. KIA* represents free space using intervals: maximal contiguous runs of traversable cells. It extracts key intervals that cap-ture structural boundary changes and connects them through contiguous non-key regions. KIA* then performs A*-style search on the resulting key-interval graph and constructively reconstructs grid paths from interval chains, without cell-level local search. We prove the completeness and optimality of KIA* on 4-connected grids. Experiments on standard bench-marks show that KIA* preserves exact shortest-path lengths and achieves the fastest runtime on seven of eight benchmark groups, with the largest gains on structured and game maps. 
+
+# Introduction 
+
+Pathfinding on grid maps is a fundamental problem in game AI, robotics, and autonomous navigation. Classical search al-gorithms such as A* (Hart, Nilsson, and Raphael 1968) guar-antee completeness and shortest-path optimality, but their ef-ficiency degrades as map size and query difficulty increase. A key reason is that these algorithms operate at the level of indi-vidual grid cells, treating each cell as an independent search state. In large or structured environments, this representation fails to exploit the geometric continuity of free space, lead-ing to extensive exploration of states that are locally distinct but structurally equivalent. As a result, optimal grid search can incur substantial computational overhead even when the underlying free-space structure is simple and highly regular. Existing techniques accelerate grid-based pathfinding in several ways. Symmetry-based methods such as Jump Point Search (Harabor and Grastien 2011) and rectangular decom-position (Harabor and Botea 2010) prune redundant expan-sions, but still operate over grid-level states. Other meth-ods introduce higher-level structures: Subgoal graphs (Uras, Koenig, and Hernández 2013) abstract obstacle-corner de-cision points, HPA* (Botea, Müller, and Schaeffer 2004) partitions the environment into fixed-size clusters and re-lies on the resulting spatial abstraction to guide high-level search, and database-based approaches such as CPD (Botea 2011) and Block A* (Yap et al. 2011) further trade run-time efficiency for heavy offline computation and memory requirements. Despite these advances, the search represen-tations used by existing methods are typically derived from cell-level pruning, sparse decision points, fixed hierarchical partitions, or precomputed path information. In this work, we introduce Key-Interval A* (KIA*), an optimal pathfinding algorithm for 4-connected grids based on a structural interval abstraction of free space, where inter-vals are maximal contiguous runs of traversable cells along grid rows or columns. The main contributions are: (1) a lightweight preprocessing procedure that extracts key inter-vals from local boundary changes and connects them through contiguous non-key regions; (2) an A*-style search algo-rithm over the resulting key-interval graph, with waypoint-update and dominance rules that preserve completeness and shortest-path optimality; and (3) an evaluation on standard grid benchmarks showing that KIA* preserves exact shortest-path lengths and achieves strong online runtime performance, particularly on structured and game maps. 
+
+# Preliminaries and Notation 
+
+We consider a finite two-dimensional 4-connected grid graph 
+
+G = ( V, E ) of size M × N . Each grid cell (x, y ) rep-resents a vertex, where x increases from left to right and y
+
+increases from top to bottom. Cells outside the grid boundary are treated as non-traversable. The set V ⊆ Z2 contains all traversable cells, and two vertices (x1, y 1), (x2, y 2) ∈ V are connected by an edge if and only if |x1 − x2| + |y1 − y2| = 1 .Every edge has unit cost. Given a start vertex s ∈ V and a target vertex t ∈ V ,the objective is to find a path π = ⟨v0, v 1, . . . , v k⟩ such that 
+
+v0 = s, vk = t, and every consecutive pair is adjacent. The path length is the number of edges, namely |π| = k.We use dot notation for structured entities; for a vertex 
+
+v = ( x, y ), v.x and v.y denote its coordinates. For vertices 
+
+a, b ∈ V , let C(a, b ) denote their shortest-path cost in G if such a path exists. Let 
+
+CM (a, b ) = |a.x − b.x | + |a.y − b.y |
+
+denote the Manhattan distance between a and b.
+
+Definition 1 (Manhattan Feasibility) . Two vertices a, b ∈ V
+
+are said to be Manhattan-feasible if there exists a 4-connected arXiv:2607.23393v1 [cs.AI] 25 Jul 2026 path from a to b whose length equals their Manhattan dis-tance CM (a, b ). Such a path is called a Manhattan-feasible path . Equivalently, C(a, b ) = CM (a, b ).
+
+# Preprocessing 
+
+To enable efficient pathfinding, we conduct a one-time pre-processing phase on the input grid map. This phase identifies intervals, extracts critical structural change points (termed 
+
+key points ), and designates the intervals containing these key points as Key Intervals for search. These components form the structural backbone of the Key-Interval A* algorithm. We first introduce the notion of an interval , which serves as the basic unit of abstraction throughout the algorithm. 
+
+Definition 2 (Interval) . A vertical interval is a maximal con-tiguous sequence of traversable grid cells along a single column. Formally, a vertical interval is represented as 
+
+I = ⟨x, y s, y e⟩,
+
+where every cell (x, y ) with y ∈ [ys, y e] is traversable, and both (x, y s − 1) and (x, y e + 1) are non-traversable. The endpoints (x, y s) and (x, y e) are referred to as the start and end vertices of I. A horizontal interval is defined analogously as a maximal contiguous sequence of traversable cells along a single row and is represented as ⟨y, x s, x e⟩.
+
+Figure 1 illustrates an example. On column x = 0 there is a single vertical interval ⟨0, 0, 7⟩, whereas column x = 3 
+
+contains two vertical intervals, ⟨3, 0, 2⟩ and ⟨3, 5, 7⟩.
+
+Definition 3 (Direct Neighbor) . For a vertical interval I =
+
+⟨x, y s, y e⟩, a vertical interval I′ = ⟨x′, y ′
+
+> s
+
+, y ′
+
+> e
+
+⟩ is a direct neighbor of I if |x′ − x| = 1 and [ys, y e] ∩ [y′
+
+> s
+
+, y ′
+
+> e
+
+]̸ = ∅. Two intervals are said to be connected if they are direct neighbors of each other. 
+
+The set of direct neighbors of I is denoted by Nd(I). A direct neighbor I′ is called a left (resp. right ) direct neighbor if x′ = x − 1 (resp. x′ = x + 1 ), denoted by I′ ∈ N ld(I)
+
+(resp. I′ ∈ N rd (I)). As shown in Figure 1, the interval ⟨2, 0, 7⟩ has a left direct neighbor ⟨1, 1, 6⟩ and right direct neighbors ⟨3, 0, 2⟩ and 
+
+⟨3, 5, 7⟩, which together constitute its direct neighbor set. 
+
+Definition 4 (Horizontally Monotone Interval Chain) . Let 
+
+Γ = ( I0, . . . , I m), m ≥ 1,
+
+be an ordered sequence of vertical intervals, where Ii =
+
+⟨x(i), y (i) 
+
+> s
+
+, y (i) 
+
+> e
+
+⟩. We call Γ a horizontally monotone interval chain if 
+
+Ii+1 ∈ Nd(Ii) for all 0 ≤ i < m, 
+
+and there exists d ∈ {− 1, +1 } such that 
+
+x(i+1) = x(i) + d for all 0 ≤ i < m. 
+
+For such a chain, we define 
+
+exit(Γ) = I1, entry(Γ) = Im−1.
+
+Here, exit(Γ) is the direct neighbor immediately after leav-ing I0, whereas entry(Γ) is the direct neighbor from which 
+
+Im is entered. When m = 1 , these definitions give exit(Γ) = 
+
+Im and entry(Γ) = I0.
+
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 
+
+7
+
+6
+
+5
+
+4
+
+3
+
+2
+
+1
+
+0
+
+Figure 1: Example of preprocessing. Vertices marked with arrows indicate key points along with their associated direc-tions 
+
+Key Point Extraction 
+
+We identify key points as vertices that capture local structural changes in the shape of free space. Intuitively, as we scan the grid column by column, the boundaries of traversable regions may expand, shrink, or remain aligned. Key points correspond to locations where these boundary trends change in a way that disrupts direct Manhattan-feasible connectivity. 
+
+Trend Computation We perform a vertical scan from left to right. For each vertical interval I = ⟨x, y s, y e⟩, we com-pare its endpoints with those of its direct neighbors in the previous column. If N ld(I) = ∅, then I has no left direct neighbor and no boundary comparison is available. In this case, both bound-ary trends are initialized as 
+
+Ts(I) = Te(I) = LEVEL .
+
+Otherwise, let 
+
+Il
+
+> min
+
+(I) := arg min  
+
+> I′∈Nld(I)
+
+I′.y s,Il
+
+> max
+
+(I) := arg max  
+
+> I′∈Nld(I)
+
+I′.y e,
+
+denote the left neighbor with the smallest start coordinate and the left neighbor with the largest end coordinate. The right-side quantities Ir
+
+> min
+
+(I) and Ir
+
+> max
+
+(I) are defined analogously over N rd (I).To capture boundary evolution, we define two difference values: 
+
+∆s(I) := I.y s −Il
+
+> min
+
+(I).y s, ∆e(I) := I.y e −Il
+
+> max
+
+(I).y e.
+
+Based on these differences, the start trend Ts(I) and end trend Te(I) are defined as 
+
+Ts(I) = 
+
+
+
+DOWN if ∆s(I) > 0,
+
+UP if ∆s(I) < 0,Ts(Il
+
+> min
+
+(I)) if ∆s(I) = 0 ,
+
+and 
+
+Te(I) = 
+
+
+
+DOWN if ∆e(I) > 0,
+
+UP if ∆e(I) < 0,Te(Il
+
+> max
+
+(I)) if ∆e(I) = 0 .These trends record the direction of the boundary shift, inheriting the previous trend if the boundary remains aligned. For example, consider the interval ⟨3, 0, 2⟩ in Figure 1. Its 
+
+Il
+
+> max
+
+(I) is ⟨2, 0, 7⟩. Here, ∆e = 2 − 7 = −5 < 0, strictly shifting the end boundary upward, yielding Te = UP .
+
+Key Point Identification Based on this trend information, we extract key points —vertices that represent local structural inflections where free space contracts and subsequently ex-pands. For a vertical interval I = ⟨x, y s, y e⟩, if N rd (I)̸ = ∅,its endpoints are labeled according to the following rules: 
+
+• The start vertex (x, y s) is labeled ↓ if 
+
+Ts(I) = DOWN and Ir
+
+> min
+
+(I).y s < I.y s.
+
+• The end vertex (x, y e) is labeled ↑ if 
+
+Te(I) = UP and Ir
+
+> max
+
+(I).y e > I.y e.
+
+If N rd (I) = ∅, neither endpoint is labeled. The horizontal scan is defined symmetrically by exchang-ing the roles of x and y. In this case, the trends UP and DOWN 
+
+correspond to LEFT and RIGHT , respectively, yielding ←
+
+and → key points. An endpoint is defined as a key point if and only if it is assigned one of the above directional labels. Figure 1 illustrates the detected key points. Vertical intervals serve as the abstraction units used by KIA*, while horizontal intervals are used only in the sym-metric key-point extraction pass. KIA* can also be formu-lated with horizontal intervals as the abstraction units by symmetrically exchanging the roles of the two orientations. This paper considers only the vertical-interval formulation. 
+
+Key Interval 
+
+To construct a compact graph representation, we select verti-cal intervals that are anchored by structural features, termed 
+
+key intervals . Formally, any vertical interval I containing at least one key point is designated as a key interval , denoted by 
+
+K. Let K denote the set of all key intervals. Since a vertical interval has a unique start vertex and end vertex, K contains at most one ↑ key point and at most one ↓ key point, denoted by K. up and K. down, respectively. 
+
+Theorem 1. Let I be a vertical interval. If |N ld(I)| > 1 or 
+
+|N rd (I)| > 1, then I contains at least one key point and is therefore a key interval. Proof. We prove the case |N ld(I)| > 1; the case |N rd (I)| > 1
+
+is symmetric. Let I = ⟨x + 1 , y s, y e⟩ be a vertical interval whose left direct neighbors are 
+
+Ij = ⟨x, y (j) 
+
+> s
+
+, y (j) 
+
+> e
+
+⟩, j = 1 , . . . , n, 
+
+where y(1)  
+
+> s
+
+≤ y(1)  
+
+> e
+
+< y (2)  
+
+> s
+
+≤ y(2)  
+
+> e
+
+< · · · < y (n) 
+
+> s
+
+≤ y(n) 
+
+> e
+
+.Consider two consecutive direct neighbors Ik and Ik+1 .All cells in [y(k) 
+
+> e
+
++ 1 , y (k+1)  
+
+> s
+
+− 1] of column x are blocked. We analyze the horizontal scan on rows 
+
+y(i) := y(k) 
+
+> e
+
++ i, 0 ≤ i ≤ y(k+1)  
+
+> s
+
+− y(k) 
+
+> e
+
+.
+
+Let H(i) = ⟨y(i), x (i) 
+
+> s
+
+, x (i) 
+
+> e
+
+⟩ denote the horizontal interval containing (x + 1 , y (i)), which exists since (x + 1 , y (i)) ∈ I.At i = 0 , the presence of Ik implies x(0)  
+
+> s
+
+≤ x.At i = 1 , column x becomes blocked while column x + 1 
+
+remains traversable, so x(1)  
+
+> s
+
+= x + 1 . Hence ∆s(H(1) ) > 0
+
+and therefore Ts(H(1) ) = RIGHT .For 1 < i < y (k+1)  
+
+> s
+
+− y(k) 
+
+> e
+
+, the same configuration holds, so x(i) 
+
+> s
+
+= x + 1 and ∆s(H(i)) = 0 . Thus the trend is inher-ited, yielding Ts(H(i)) = RIGHT .Finally, at i = y(k+1)  
+
+> s
+
+− y(k) 
+
+> e
+
+, the interval Ik+1 begins and column x becomes traversable again. Hence x(i) 
+
+> s
+
+≤
+
+x < x (i−1)  
+
+> s
+
+= x + 1 , which implies ∆s(H(i)) < 0. Since 
+
+Ts(H(i−1) ) = RIGHT and x(i) 
+
+> s
+
+< x (i−1)  
+
+> s
+
+, the horizontal key-point rule labels the start vertex of H(i−1) as a → key point. Since H(i−1) .x s = x + 1 and y(i−1) = y(k+1)  
+
+> s
+
+− 1,this key point is exactly (x + 1 , y (k+1)  
+
+> s
+
+− 1) . Since this vertex lies in I, the interval I contains a key point and is therefore a key interval. 
+
+Definition 5 (Key-Interval Graph) . The key-interval graph 
+
+is the directed multigraph GK = ( VK, EK), where VK =
+
+K. Each edge Γ = ( I0, . . . , I m) ∈ E K is a horizontally monotone interval chain directed from the key interval I0 to the key interval Im, with all intermediate intervals, if any, being non-key. Distinct chains are retained as distinct edges even if they have the same first and last intervals. For each key interval K, let 
+
+Eout (K) = {Γ = ( I0, . . . , I m) ∈ E K | I0 = K}
+
+denote its outgoing edges. 
+
+To construct EK, for each key interval K and each direct neighbor Id ∈ Nd(K), we initialize 
+
+Γ = ( K, I d), Icurr = Id, d = sign( Id.x − K.x ).
+
+If Icurr is key, Γ is inserted into EK and the search terminates. Otherwise, the search follows the unique direct neighbor 
+
+Inext , if it exists, satisfying 
+
+Inext .x − Icurr .x = d. 
+
+Whenever such an interval exists, it is appended to Γ and becomes the new Icurr . The search terminates when a key interval is reached, in which case Γ is inserted into EK, or when no continuation exists, in which case no edge is added. By the contrapositive of Theorem 1, every non-key inter-val has at most one direct neighbor on its left and at most one on its right. Hence, Inext is unique whenever it exists. Con-sequently, the non-key intervals form disjoint non-branching chains under the direct-neighbor relation. We call each max-imal such chain a non-key component .The non-key intervals traversed by each directional search are assigned to the same component. After all searches have been processed, a final linear pass assigns any remaining non-key interval to its maximal component. Such remaining components are not reachable from the key-interval graph. To interface non-key components with the key-interval graph used for search, we define their boundary key intervals. For each non-key component C, let 
+
+B(C) = {K ∈ K | ∃ I ∈ C, K ∈ Nd(I)}.These intervals serve as interfaces between C and the key-interval graph. We write 
+
+C = C ∪ B (C)
+
+for the closure of C. A vertex v ∈ V is said to lie in C if the vertical interval containing v belongs to C.For any two distinct intervals Ia, I b ∈ C, let ΓC (Ia, I b)
+
+denote the unique horizontally monotone interval chain con-tained in C that begins at Ia, ends at Ib, and has all interme-diate intervals, if any, in C. Its uniqueness follows from the non-branching structure of C.
+
+Definition 6 (Non-Key Context) . Let s, t ∈ V be two ver-tices. We say that s and t share a non-key context if there exists a non-key component C such that s ∈ C and t ∈ C.
+
+Lemma 1 (Manhattan Feasibility in Non-Key Context) . Let 
+
+s, t ∈ V be two vertices. If s and t share a non-key context, there exists a Manhattan-feasible path from s to t.Proof. Let Is and It be the vertical intervals containing s and 
+
+t. If Is = It, the vertical path between them is Manhattan-feasible. Otherwise, by the definition of non-key context, there exists a non-key component C such that s, t ∈ C. Let 
+
+ΓC (Is, I t) = ( I0, . . . , I m)
+
+be the horizontally monotone interval chain from Is to It
+
+inside C. Assume by symmetry that it proceeds to the right. Write Ii = ⟨x(i), y (i) 
+
+> s
+
+, y (i) 
+
+> e
+
+⟩, and prove the case s.y ≤ t.y ;the case s.y > t.y is symmetric. We first establish a boundary claim. Consider any subchain 
+
+Ip, . . . , I q whose intermediate intervals are non-key. For any row level η, if y(p) 
+
+> s
+
+≤ η and y(q) 
+
+> s
+
+≤ η, then y(i) 
+
+> s
+
+≤ η for all p ≤ i ≤ q. Indeed, suppose otherwise. Let j be the first index with y(j) 
+
+> s
+
+> η , and let k ≥ j be the first index such that y(k+1)  
+
+> s
+
+< y (k) 
+
+> s
+
+; such k exists because the boundary later returns to at most η. Since k is the first index after j with 
+
+y(k+1)  
+
+> s
+
+< y (k) 
+
+> s
+
+, the lower boundary does not decrease from 
+
+Ij to Ik; each step either sets the start trend to DOWN again or inherits it. Thus Ts(Ik) = DOWN . Since its right direct neighbor Ik+1 satisfies y(k+1)  
+
+> s
+
+< y (k) 
+
+> s
+
+, the key-point rule would label a ↓ key point in Ik, contradicting that Ik is non-key. Thus the lower boundary cannot rise above level η and later return. Symmetrically, if y(p) 
+
+> e
+
+≥ η and y(q) 
+
+> e
+
+≥ η, then y(i) 
+
+> e
+
+≥ η for all p ≤ i ≤ q; otherwise an ↑ key point would be induced. Applying the claim to the whole chain with level t.y for the lower boundary and level s.y for the upper boundary gives 
+
+y(i) 
+
+> s
+
+≤ t.y and y(i) 
+
+> e
+
+≥ s.y for every i. For each adjacent pair 
+
+Ii, I i+1 , let 
+
+Oi = [ ℓi, u i] = [max( y(i) 
+
+> s
+
+, y (i+1)  
+
+> s
+
+), min( y(i) 
+
+> e
+
+, y (i+1)  
+
+> e
+
+)] 
+
+be their row-overlap interval. Since the intervals are direct neighbors, Oi is nonempty, and the boundary claim above implies ℓi ≤ t.y and ui ≥ s.y .Set r0 = s.y and define 
+
+ri+1 = max {ri, ℓ i}
+
+for 0 ≤ i < m . We show that each ri+1 is a valid crossing row between Ii and Ii+1 , i.e., ri+1 ∈ Oi.First, since r0 = s.y and ℓi ≤ t.y for all i, an immediate induction gives 
+
+s.y ≤ ri ≤ t.y for all i. 
+
+Moreover, by definition, ri+1 ≥ ℓi. It remains to show that 
+
+ri+1 ≤ ui.Suppose, for contradiction, that ri+1 > u i. Since ri+1 =max {ri, ℓ i} and ℓi ≤ ui, we have ri > u i. Because ri
+
+is a valid row of Ii, we have ri ≤ y(i) 
+
+> e
+
+. Since ui =min {y(i) 
+
+> e
+
+, y (i+1)  
+
+> e
+
+}, the inequalities ri > u i and ri ≤ y(i)
+
+> e
+
+imply ui = y(i+1)  
+
+> e
+
+, and hence 
+
+y(i+1)  
+
+> e
+
+< r i ≤ y(i) 
+
+> e
+
+.
+
+Moreover, since ri ≤ t.y and t ∈ Im, we have y(m) 
+
+> e
+
+≥ t.y ≥
+
+ri. Applying the boundary claim to the subchain Ii, . . . , I m
+
+with level η = ri gives y(i+1)  
+
+> e
+
+≥ ri, contradicting y(i+1)  
+
+> e
+
+<ri. Hence ri+1 ≤ ui, and therefore ri+1 ∈ Oi.We can therefore construct a path from s to t as follows. For each 0 ≤ i < m , the path first moves vertically inside Ii
+
+from row ri to row ri+1 , and then moves horizontally to Ii+1 
+
+at row ri+1 . After reaching Im, it moves vertically inside 
+
+Im from row rm to t.y . All horizontal moves have the same direction, and the row sequence is nondecreasing. Thus the horizontal cost is |t.x − s.x |, the vertical cost is |t.y − s.y |,and the total length is CM (s, t ). Hence the constructed path is Manhattan-feasible. 
+
+Definition 7 (Transition Vertex) . Let K = ⟨x, y s, y e⟩ be a key interval, and let σ ∈ { l, r } denote one side of K. Let 
+
+I1, . . . , I q be the intervals in N σd (K) on one side of K, sorted by start coordinate. For two distinct same-side neighbors Iα
+
+and Iβ , assume α < β . A key point p = ( x, y ) of K is a 
+
+transition vertex between them if, for some α ≤ i < β ,
+
+Ii.y e < y < I i+1 .y s.
+
+Each separating gap contains a key point by Theorem 1. We store one representative key point for each gap between consecutive same-side neighbors. For Iα and Iβ with α < β ,
+
+K.T (Iα, I β ) returns the representative of the lowest-index separating gap, namely the gap between Iα and Iα+1 .As shown in Figure 1, the vertex (2 , 4) is a transition vertex for the gap between ⟨3, 0, 2⟩ and ⟨3, 5, 7⟩ via the key interval 
+
+⟨2, 0, 7⟩. For the gap between ⟨13 , 0, 0⟩ and ⟨13 , 7, 7⟩ via 
+
+⟨14 , 0, 7⟩, (14 , 1) is selected as the representative. 
+
+# Key-Interval A* 
+
+Key-Interval A* (KIA*) performs A*-style search over the precomputed key-interval graph GK.
+
+Algorithm Description 
+
+Each nonterminal search state c is associated with a key in-terval c.K and represents an arrival-cost profile over that interval. It stores cost values g(c) and h(c), an ordered way-point sequence W (c), and an incoming interval 
+
+c.N in ∈ Nd(c.K ) ∪ {⊥} .The search priority of every state is f (c) = g(c) + h(c).A terminal state has c.K = c.N in = ⊥ and a waypoint sequence ending at t.The waypoint sequence records only the vertices required to preserve Manhattan-feasible connectivity. For a nonter-minal state, if c.N in = ⊥, the state originates inside c.K ;otherwise, c.N in is the direct neighbor through which c.K is entered. This incoming interval is used during expansion to determine whether a transition vertex is required. For path reconstruction, every noninitial state stores a par-ent pointer. Each nonterminal successor also stores the graph edge used to reach it. An initial state stores its initialization chain when Is /∈ K , and a terminal state stores the chain from the last expanded key interval to It.
+
+Initialization Let Is and It denote the vertical intervals containing s and t, respectively. If s and t share a non-key context, KIA* constructs a Manhattan-feasible path between them by Lemma 1 and terminates. Otherwise, for each q ∈ { s, t }, set Kq = {Iq } if Iq ∈ K ;otherwise, let Cq be the non-key component containing Iq
+
+and set Kq = B(Cq ). The sets Ks and Kt identify the key intervals used to initialize the search and those from which the final connection to t is attempted, respectively. If Is ∈ K , an initial state c with c.K = Is, c.N in = ⊥,and W (c) = ⟨s⟩ is inserted into the open list. Otherwise, for each K ∈ K s, let Γs = Γ Cs (Is, K ). An initial state c with 
+
+c.K = K, c.N in = entry(Γ s), and W (c) = ⟨s⟩ is inserted into the open list. By Lemma 1, s is Manhattan-feasible with every vertex of K, so each initial state represents a valid arrival-cost profile over its key interval. 
+
+Search At each iteration, the state with the smallest f -value is extracted from the open list. If its last waypoint is 
+
+t, the path reconstructed from its waypoint sequence as de-scribed later is returned. Otherwise, the state is expanded as described in the next section. Successor states record their incoming intervals, update their waypoint sequences to pre-serve Manhattan-feasible connectivity, and are inserted into the open list. The search terminates when a terminal state ending at t is extracted, or when the open list becomes empty. 
+
+Node Expansion 
+
+Consider the expansion of a state c associated with the key interval K = c.K .If K / ∈ K t, then for each Γ = ( I0, . . . , I m) ∈ E out (K),KIA* generates a candidate successor c′ with c′.K = Im,
+
+c′.N in = entry(Γ) , and Nout = exit(Γ) .If K ∈ K t, KIA* instead generates a candidate terminal successor c′ with c′.K = c′.N in = ⊥. If It = K, set Nout =
+
+⊥. Otherwise, t lies in a non-key component Ct, and set 
+
+Nout = exit(Γ Ct (K, I t)) .In either case, the candidate is discarded if c.N in ̸ = ⊥
+
+and Nout = c.N in . Such a candidate leaves K through the same direct neighbor from which K was entered. The detour crosses between c.N in and K twice and can be replaced by the vertical segment between the same crossing rows within 
+
+c.N in , strictly reducing its length. Any remaining candidate initializes its waypoint sequence as W (c′) = W (c). Let wn be the last waypoint in this se-quence. The sequence W (c′) is then updated according to the following priority rules: 
+
+• If K.T (c.N in , N out ) is defined, append it to W (c′).
+
+• Otherwise, if K contains an ↑ key point K. up and wn.y > K. up .y , append K. up to W (c′).
+
+• Otherwise, if K contains a ↓ key point K. down and 
+
+wn.y < K. down .y , append K. down to W (c′).Finally, if K ∈ K t, append t to W (c′). For every K ∈ K t,every vertex of K is Manhattan-feasible with t, either because 
+
+K = It or by Lemma 1. Hence leaving K through another graph edge cannot yield a shorter completion. The values g(c′), h(c′), and f (c′) are computed accord-ing to the state-evaluation rules described later. A terminal successor is inserted directly into the open list, whereas a nonterminal successor is inserted unless it is dominated. The following lemmas justify the waypoint update rules. Lemma 2 shows that each appended waypoint is Manhattan-feasible with the preceding waypoint, while Lemma 3 shows that inserting the selected key point or transition vertex does not eliminate an optimal continuation. 
+
+Lemma 2 (Waypoint Feasibility) . Suppose an expansion appends a waypoint w, where w is either a key point of the expanded key interval or the target vertex t, and let wn be the preceding waypoint. Then wn and w are Manhattan-feasible, and hence C(wn, w ) = CM (wn, w ).Proof. If wn and w lie in the same vertical interval, the vertical segment between them is Manhattan-feasible. Otherwise, let Γ∗ = ( I0, . . . , I m) be the interval sequence obtained by concatenating, in traversal order, the interval chains followed since wn was appended. If w = t, the se-quence also includes the terminal chain to It.Since no waypoint is appended between wn and w, Γ∗
+
+is horizontally monotone. Indeed, any horizontal reversal would enter and leave some key interval through direct neigh-bors on the same side. Returning through the same neighbor is discarded during expansion, whereas using distinct same-side neighbors would append a transition vertex. Assume by symmetry that Γ∗ proceeds to the right and that wn.y ≤ w.y . Write Ii = ⟨x(i), y (i) 
+
+> s
+
+, y (i) 
+
+> e
+
+⟩. We claim: 
+
+y(i) 
+
+> s
+
+≤ w.y and y(i) 
+
+> e
+
+≥ wn.y for all i. 
+
+If the lower boundary rose above w.y and later returned, the boundary argument in Lemma 1 would induce a ↓ key point above wn.y . The waypoint-update rules would then append either that key point or a higher-priority transition vertex, contradicting the choice of wn and w. The upper-bound case is symmetric. The claimed bounds are exactly the conditions used in the construction of Lemma 1. Applying that construction yields a path from wn to w of length CM (wn, w ). Hence 
+
+C(wn, w ) = CM (wn, w ).
+
+Lemma 3 (Pruning Safety) . Suppose the waypoint-update rules append a key point w while expanding a state c, and let wn be the waypoint immediately preceding w.If w is a vertical key point, i.e., w ∈ { c.K. up , c.K. down },then for every vertex o ∈ c.K and every vertex v reachable from o,
+
+C(wn, w ) + C(w, v ) ≤ C (wn, o ) + C(o, v ).
+
+If w is a transition vertex for c.N in and Nout , then any traversal of c.K that enters through c.N in and leaves through 
+
+Nout can be replaced by one passing through w without increasing its length. Proof. Let K = c.K . First suppose w = K. up; the case 
+
+w = K. down is symmetric. By the update rule, wn.y > w.y . Since w is the end vertex of K, every o ∈ K satisfies 
+
+o.y ≤ w.y , and therefore 
+
+CM (wn, o ) = CM (wn, w ) + CM (w, o ).
+
+By Lemma 2, C(wn, w ) = CM (wn, w ). Moreover, the vertical segment between w and o lies entirely in K, so 
+
+C(w, o ) = CM (w, o ). Hence, by the triangle inequality, 
+
+C(wn, w ) + C(w, v ) ≤ C (wn, w ) + C(w, o ) + C(o, v )= CM (wn, w ) + CM (w, o ) + C(o, v )= CM (wn, o ) + C(o, v )
+
+≤ C (wn, o ) + C(o, v ).
+
+Thus routing through w is no more costly than routing through any other vertex o ∈ K.Now suppose that w is a transition vertex. Let Ia = c.N in 
+
+and Ib = Nout . By definition, Ia and Ib are distinct direct neighbors on the same side of K, and w lies in a transition gap separating them. Assume without loss of generality that 
+
+Ia.y e < w.y < I b.y s.
+
+Consider a traversal that enters K from Ia at row ra and leaves toward Ib at row rb. Since the crossing rows lie in the corresponding overlaps, 
+
+ra ≤ Ia.y e < w.y < I b.y s ≤ rb.
+
+The vertical segment in K from (K.x, r a) to (K.x, r b) is traversable, passes through w, and has length rb − ra, which is the Manhattan distance between its endpoints. It therefore replaces the original traversal without increasing its length. The entry and exit crossings remain unchanged, so the same prefix and suffix paths remain available. Hence inserting w
+
+is safe. 
+
+State Dominance and Cost Evaluation 
+
+To preserve optimality, KIA* represents the arrival cost over an entire key interval analytically. Let c be a nonterminal search state associated with a key interval K = c.K , and let 
+
+W (c) = ⟨w1, . . . , w n⟩ be its waypoint sequence. We define the projected arrival vertex on K as 
+
+vproj =  K.x, max {K.y s, min( wn.y, K.y e)}.
+
+The projected vertex is used only for cost evaluation, domi-nance pruning, and heuristic computation; it is not appended to the waypoint sequence. By the same reasoning as in Lemma 2, wn is connected to 
+
+vproj by a Manhattan-feasible path. We define the g-value of 
+
+c, which represents the cost of reaching vproj , as 
+
+g(c) = 
+
+> n−1
+
+X
+
+> i=1
+
+CM (wi, w i+1 ) + CM (wn, v proj ).
+
+For any vertex (K.x, y ) on K, the projection vertex lies on a Manhattan-shortest continuation from wn to (K.x, y ). Hence 
+
+CM (wn, (K.x, y )) = CM (wn, v proj ) + |y − vproj .y |.
+
+The cost of reaching (K.x, y ) through state c is therefore 
+
+Φc(y) = g(c) + |y − vproj .y |.
+
+Dominance and Pruning Since multiple states may reach the same key interval, KIA* retains only non-dominated arrival-cost profiles. 
+
+Lemma 4 (State Dominance) . Let c1 and c2 be two nonter-minal states associated with the same key interval K. Let 
+
+y1 and y2 be their projected rows, and let g1 = g(c1) and 
+
+g2 = g(c2). If 
+
+g1 + |y1 − y2| ≤ g2,
+
+then c1 dominates c2.Proof. For any row y ∈ [K.y s, K.y e], the triangle inequality gives 
+
+|y − y1| ≤ | y1 − y2| + |y − y2|.
+
+Therefore, 
+
+Φc1 (y) = g1 + |y − y1|≤ g1 + |y1 − y2| + |y − y2|≤ g2 + |y − y2|
+
+= Φ c2 (y).
+
+Thus c1 reaches every vertex of K with cost no greater than 
+
+c2. Any continuation available from a vertex of K after c2
+
+can therefore be reused after c1 with no greater prefix cost. Hence c1 dominates c2.When a new nonterminal state is generated, KIA* com-pares its profile with all retained profiles for the same key interval. The new state is discarded if it is dominated by an existing state; otherwise, it is retained and removes any existing states that it dominates. 
+
+Heuristic Evaluation For any y ∈ [K.y s, K.y e], the trian-gle inequality gives 
+
+|y − vproj .y | + CM (( K.x, y ), t ) ≥ C M (vproj , t ).
+
+Equality is attained at y = vproj .y . Therefore, the minimum lower bound over the arrival-cost profile is obtained at the projected vertex, and we define 
+
+h(c) = CM (vproj , t ), f (c) = g(c) + h(c).
+
+Thus f (c) is an admissible lower bound on the cost of any completion of state c.Terminal State Evaluation For a terminal state c with 
+
+W (c) = ⟨w1, . . . , w n⟩ and wn = t, we define 
+
+g(c) = 
+
+> n−1
+
+X
+
+> i=1
+
+CM (wi, w i+1 ), h(c) = 0 .
+
+Thus f (c) = g(c). By Lemma 2, g(c) is the exact length of the grid path represented by W (c).
+
+Path Construction 
+
+Let W = ⟨w1, . . . , w n⟩ be the waypoint sequence of the ter-minal state, where w1 = s and wn = t. The final grid path π
+
+is constructed by replacing each consecutive pair (wi, w i+1 )
+
+with a Manhattan-feasible grid segment and concatenating the resulting segments. If wi and wi+1 lie in the same vertical interval, the seg-ment between them is the vertical path within that interval. If they share a non-key context C, the segment is constructed along ΓC (Iwi , I wi+1 ) using the crossing-row procedure from Lemma 1, where Iwi and Iwi+1 are the intervals containing the two waypoints. Otherwise, the segment follows the inter-val chains recorded along the corresponding search branch, using the construction established in Lemma 2. Path construction therefore requires no local search; it follows the corresponding interval chains and runs in time linear in the length of the output path. 
+
+# Theoretical Properties 
+
+This section establishes the completeness and optimality of KIA*. 
+
+Theorem 2 (Completeness) . KIA* returns a valid path from 
+
+s to t if one exists, and reports failure otherwise. Proof. If the initial non-key-context test succeeds, Lemma 1 constructs a valid path from s to t. Otherwise, every returned path is reconstructed from a terminal state. By Lemma 2, each consecutive waypoint pair is Manhattan-feasible. Hence every path returned by KIA* is valid. Now suppose that a grid path from s to t exists. Map its vertices to their containing vertical intervals, remove consec-utive duplicates, and erase cycles from the resulting interval walk. This yields a simple interval chain Λ = ( J0, . . . , J r )
+
+from Is to It. The chain is used only as a witness of reach-ability; the path returned by KIA* need not follow the same grid vertices. If Λ contains no key interval, all its intervals belong to the same non-key component. Thus s and t share a non-key context, and the initial test succeeds by Lemma 1. Otherwise, let K1, . . . , K m be the key intervals in Λ, in traversal order. The first belongs to Ks and the last to Kt.This is immediate when the corresponding endpoint interval is key; otherwise, the key interval lies on the boundary of the non-key component containing that endpoint. For each 1 ≤ i < m , let Γi be the subchain from Ki
+
+to Ki+1 . All its intermediate intervals are non-key, and Γi
+
+is horizontally monotone. Otherwise, a horizontal reversal at an intermediate interval would make its preceding and succeeding intervals distinct direct neighbors on the same side. By Theorem 1, that intermediate interval would be key, contradicting the choice of Ki and Ki+1 as consecutive key intervals. During preprocessing, graph construction starts from ev-ery key interval through each of its direct neighbors. Starting from Ki along Γi, it follows the unique continuation through the non-key intermediate intervals and reaches Ki+1 . Hence 
+
+Γi ∈ E out (Ki), and the key-interval graph contains an edge sequence from an interval in Ks to one in Kt.No candidate on this witness sequence is removed by immediate-backtracking pruning. At each Ki, the incoming and outgoing intervals are the intervals immediately preced-ing and following Ki in Λ. If they were equal, Λ would contain a subchain (I, K i, I ) and would not be simple. KIA* initializes every interval in Ks and generates ev-ery outgoing successor that is not an immediate backtrack. The waypoint updates preserve the required continuation by Lemmas 2 and 3. If a witness successor is removed by dom-inance pruning, Lemma 4 guarantees a retained state whose arrival-cost profile is no greater at any vertex of the same key interval. The remaining suffix can therefore be realized with no greater cost; if its first traversal forms an immediate backtrack, removing that round trip yields a shorter realiza-tion of the same suffix. Thus pruning cannot eliminate all realizations of the witness sequence. Finally, the search terminates. There are finitely many key intervals and finitely many projected rows on each interval. For a fixed key interval and projected row, every newly re-tained profile must have a strictly smaller nonnegative integer 
+
+g-value than the profile it replaces. Hence only finitely many profile improvements and expansions can occur. Therefore, if a path exists, KIA* eventually generates and extracts a terminal state. Conversely, if no path exists, no terminal state can be generated because every terminal state represents a valid grid path. The open list eventually becomes empty, and KIA* reports failure. 
+
+Theorem 3 (Optimality) . Whenever a path from s to t exists, KIA* returns a shortest 4-connected grid path. Proof. Let L⋆ = C(s, t ). If the initial non-key-context test succeeds, KIA* returns a path of length CM (s, t ). Since Man-hattan distance lower-bounds the length of every 4-connected grid path, this path is shortest. We therefore consider the case in which interval-level search is performed. Among all shortest paths, choose one, denoted by π⋆, with the fewest interval transitions. Its interval walk is simple. Otherwise, if the same vertical interval occurred twice at vertices a and b, the subpath between them could be replaced by the vertical segment within that interval. This replacement would not increase the path length and would reduce the number of interval transitions, contradicting the choice of 
+
+π⋆.As in the proof of Theorem 2, the interval walk of π⋆
+
+decomposes into horizontally monotone subchains between consecutive key intervals. Each such subchain is an edge of the key-interval graph, while the initial and terminal portions, when nonempty, lie in the corresponding non-key compo-nents. Thus π⋆ induces a sequence of candidate successors Benchmark Maps Runtime per Instance (ms) Length Preprocessing Time (ms) Retained Memory (MB) A* JPS4 RSR HPA* KIA* HPA* JPS4 RSR HPA* KIA* JPS4 RSR HPA* KIA*                                                                                                                                                                       
+
+> Random (10%) 10 0.348 0.217 0.394 0.126 0.450 1.011 3.682 34.811 118.847 61.689 0.10 13.29 5.39 20.35 Random (15%) 10 0.571 0.358 0.621 0.164 0.662 1.012 4.070 31.789 127.273 97.842 0.10 13.25 5.77 26.57 Random (20%) 10 0.760 0.496 0.852 0.214 0.829 1.011 4.488 29.713 125.663 117.380 0.10 12.59 5.82 30.51 Random (25%) 10 0.979 0.670 1.157 0.272 0.961 1.012 4.878 27.116 115.659 131.660 0.10 11.92 5.60 32.59 Random (30%) 10 1.216 0.846 1.410 0.327 1.018 1.015 5.207 25.390 93.492 129.795 0.10 11.25 5.18 32.05 Random (35%) 10 1.794 1.218 1.935 0.408 1.110 1.018 5.384 22.991 65.932 119.878 0.10 10.53 4.62 31.17 Random (40%) 10 1.903 1.293 1.955 0.406 0.882 1.017 4.247 13.065 28.554 58.559 0.10 7.48 3.17 18.35 Maze 60 4.060 0.680 2.541 0.548 0.305 1.036 2.798 11.141 26.150 34.556 0.10 7.05 3.33 9.85 Room 40 1.739 0.139 0.760 0.242 0.051 1.020 2.443 8.163 36.148 12.051 0.10 6.33 3.60 4.44 Street 90 1.254 0.030 1.646 0.133 0.008 1.011 4.325 29.594 38.361 3.528 0.17 16.14 4.54 1.07 BG512 75 0.485 0.019 0.391 0.068 0.004 1.011 2.115 2.984 5.933 1.269 0.10 4.26 1.64 0.39 BGMaps 120 0.039 0.006 0.054 0.011 0.002 1.053 0.169 0.442 0.491 0.304 0.01 0.38 0.12 0.12 Dragon Age 223 0.189 0.019 0.218 0.035 0.006 1.039 1.108 1.543 1.942 1.006 0.06 2.22 0.75 0.33 StarCraft 75 2.155 0.094 2.127 0.215 0.031 1.010 4.195 17.209 26.960 6.148 0.17 12.05 3.89 2.35
+
+Table 1: Results on the MovingAI 2D benchmarks, with Random maps separated by nominal obstacle density. Each Random density contains 10 maps. Runtime is the per-scenario median over five measured runs, averaged within each map and then equally across maps. HPA* uses cluster size 10. Length reports the mean per-instance HPA*/A* path-length ratio; JPS4, RSR, and KIA* match A* on every evaluated scenario. Preprocessing time and retained memory are also averaged with equal weight across maps, with online query workspace excluded from retained memory. from an initial state in Ks to a terminal successor through an interval in Kt. Simplicity of the interval walk ensures that none of these candidates is an immediate backtrack. We show that the search retains a state admitting a com-pletion of total cost at most L⋆. At the first key interval, the initialization profile reaches the vertex used by π⋆ with cost no greater than the corresponding prefix cost. This is imme-diate when Is is key and follows from Lemma 1 otherwise. Suppose that a retained state c at a key interval K admits such a completion. When c is expanded, consider the succes-sor corresponding to the next edge of that completion. If no waypoint is appended, the completion remains available. If a key point or transition vertex is appended, Lemma 3 allows the local traversal to be modified to pass through that way-point without increasing its length. The generated successor therefore also admits a completion of cost at most L⋆.If the successor is removed by dominance pruning, Lemma 4 provides a retained state whose arrival-cost profile is no greater at every vertex of the same key interval. The re-maining suffix can therefore be realized with no greater total cost; if its first traversal forms an immediate backtrack, re-moving that round trip yields a shorter realization of the same suffix. Hence the retained state also admits a completion of cost at most L⋆.Consequently, until a terminal state of cost at most L⋆
+
+is extracted, the open list contains either such a terminal state or a nonterminal state admitting a completion of cost at most L⋆. By the heuristic analysis in State Dominance and Cost Evaluation, f (c) lower-bounds the cost of every completion represented by a nonterminal state c. Therefore, any such frontier state satisfies f (c) ≤ L⋆. For a terminal state, h(c) = 0 and f (c) = g(c), where g(c) is the exact length of its reconstructed grid path. At each iteration, KIA* extracts a state of minimum cur-rent f -value. Thus, while the open list contains a state with 
+
+f ≤ L⋆, a terminal state of cost greater than L⋆ cannot be extracted first. The first extracted terminal state therefore has cost at most L⋆. Since it represents a valid grid path, its cost is also at least C(s, t ) = L⋆. Its cost is therefore exactly L⋆,and KIA* returns a shortest 4-connected grid path. 
+
+# Experimental Results 
+
+We evaluate Key-Interval A* in terms of online runtime, pre-processing time, retained preprocessing memory, and path quality on the MovingAI grid benchmark suite (Sturtevant 2012). We compare KIA* with A*, Jump Point Search for 4-connected grids (JPS4) (Baum 2025), Rectangular Symme-try Reduction (RSR) (Harabor and Botea 2010), and HPA* with cluster size 10. All solvers use optimized C++ imple-mentations and were run single-threaded on an AMD Ryzen 7 9700X processor with 16 GB RAM. Our JPS4 implementa-tion is adapted from the Warthog pathfinding library (Hara-bor and Hechenberger 2024) and retains its cache-friendly bitsets, precomputed horizontal jumps, and reusable query workspace. Its map-dependent preprocessing cost and persis-tent bitset and jump-table storage are included in the reported measurements; the reusable query workspace is excluded from retained memory, consistently with the other solvers. The source code and experimental scripts are available at https://github.com/TaiquanSui/Key-Interval-Astar. Each map contributes up to 500 valid scenarios selected by a deterministic bucket-stratified procedure, with the same scenario set used by all solvers. Each solver performs one warm-up batch followed by five measured batches. Runtime is the per-scenario median over the five runs, averaged within each map and then equally across maps. Preprocessing time measures map-dependent initialization, while retained mem-ory measures map-dependent preprocessing data retained be-tween queries and excludes online query workspaces. The Dragon Age group combines the DAO and DA2 map sets, whereas BGMaps is reported separately. Table 1 summarizes the results. KIA* achieves the lowest online runtime on all seven non-Random benchmark groups. Relative to the fastest non-KIA* baseline in each group, its speedup is approximately 1.8× on Maze, 2.7× on Room, 
+
+3.8× on Street, 4.7× on BG512, 3.0× on BGMaps, 3.2× on Dragon Age, and 3.0× on StarCraft. The largest gains oc-cur on structured and game-derived maps containing rooms, corridors, and large regular regions. The density-separated Random results reveal a more nu-anced trend. HPA* has the lowest online runtime at every evaluated density. At 10% and 15% obstacle density, KIA* is slower than all four baselines. At 20%, it becomes slightly faster than RSR, and at 25% and 30% it is faster than both A* and RSR. At 35% and 40%, KIA* also overtakes JPS4 while remaining slower than HPA*. Thus, KIA* becomes increas-ingly competitive online as obstacle density rises, although it does not outperform HPA* on Random maps. KIA*’s preprocessing requirements depend strongly on the compactness of the interval representation. On Street, BG512, BGMaps, Dragon Age, and StarCraft, retained mem-ory ranges from 0.12 MB to 2.35 MB. Random maps are sub-stantially more expensive and exhibit a non-monotonic trend: retained memory increases from 20.35 MB at 10% obstacle density to 32.59 MB at 25%, while preprocessing time rises from 61.689 ms to 131.660 ms. Both quantities subsequently decrease, reaching 18.35 MB and 58.559 ms at 40%. This pattern is consistent with an interaction between structural fragmentation and the amount of traversable space: inter-mediate densities may induce many intervals and boundary changes, whereas the highest densities leave less free space to represent. Maze maps also incur relatively high prepro-cessing costs, consistent with their narrow corridor structure. JPS4 retains approximately 0.10 MB across the Random den-sities because these maps have identical 512 × 512 dimen-sions and its persistent bit-grid storage depends primarily on map dimensions rather than obstacle density. KIA*, JPS4, and RSR match the path lengths returned by A* on every evaluated scenario. HPA* returns slightly longer paths, with mean per-instance HPA*/A* length ratios ranging from 1.010 on StarCraft to 1.053 on BGMaps. Overall, KIA* provides its strongest online speedups and lowest preprocessing overhead when free space admits a compact interval representation, while preserving exact 4-connected shortest-path lengths. 
+
+# Conclusion and Future Work 
+
+We presented Key-Interval A*, an optimal pathfinding al-gorithm for 4-connected grids that searches over a compact interval-level abstraction derived from structural changes in free space. KIA* combines lightweight preprocessing, A*-style search over a key-interval graph, and constructive grid-path recovery without cell-level local search. We established its completeness and optimality, and experiments showed that KIA* preserves exact shortest-path lengths while achieving strong runtime performance, particularly on structured and game maps. Future work includes improving efficiency on highly fragmented random maps, extending the abstraction to 8-connected and any-angle pathfinding, and exploiting the pre-processed map structure for efficient local repair and partial replanning in dynamic environments. 
+
+# References 
+
+Baum, J. 2025. Jump Point Search Pathfinding in 4-connected Grids. arXiv:2501.14816. Botea, A. 2011. Ultra-Fast Optimal Pathfinding without Run-time Search. In Bulitko, V.; and Riedl, M. O., eds., Proceed-ings of the Seventh AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment, AIIDE 2011, October 10-14, 2011, Stanford, California, USA . The AAAI Press. Botea, A.; Müller, M.; and Schaeffer, J. 2004. Near Optimal Hierarchical Path-Finding. J. Game Dev. , 1(1): 1–30. Harabor, D.; and Botea, A. 2010. Breaking Path Symme-tries on 4-Connected Grid Maps. In Youngblood, G. M.; and Bulitko, V., eds., Proceedings of the Sixth AAAI Conference on Artificial Intelligence and Interactive Digital Entertain-ment, AIIDE 2010, October 11-13, 2010, Stanford, Califor-nia, USA . The AAAI Press. Harabor, D.; and Hechenberger, R. 2024. Warthog: A Highly-Optimised Pathfinding Search Solver. https://bitbucket.org/ dharabor/pathfinding/src/master/warthog/. Software library, accessed 2026-05. Harabor, D. D.; and Grastien, A. 2011. Online Graph Pruning for Pathfinding On Grid Maps. In Burgard, W.; and Roth, D., eds., Proceedings of the Twenty-Fifth AAAI Conference on Artificial Intelligence, AAAI 2011, San Francisco, California, USA, August 7-11, 2011 , 1114–1119. AAAI Press. Hart, P. E.; Nilsson, N. J.; and Raphael, B. 1968. A For-mal Basis for the Heuristic Determination of Minimum Cost Paths. IEEE Trans. Syst. Sci. Cybern. , 4(2): 100–107. Sturtevant, N. 2012. Benchmarks for Grid-Based Pathfind-ing. Transactions on Computational Intelligence and AI in Games , 4(2): 144 – 148. Uras, T.; Koenig, S.; and Hernández, C. 2013. Subgoal Graphs for Optimal Pathfinding in Eight-Neighbor Grids. In Borrajo, D.; Kambhampati, S.; Oddi, A.; and Fratini, S., eds., 
+
+Proceedings of the Twenty-Third International Conference on Automated Planning and Scheduling, ICAPS 2013, Rome, Italy, June 10-14, 2013 . AAAI. Yap, P.; Burch, N.; Holte, R. C.; and Schaeffer, J. 2011. Block A*: Database-Driven Search with Applications in Any-Angle Path-Planning. In Burgard, W.; and Roth, D., eds., Proceedings of the Twenty-Fifth AAAI Conference on Artificial Intelligence, AAAI 2011, San Francisco, Califor-nia, USA, August 7-11, 2011 , 120–125. AAAI Press.

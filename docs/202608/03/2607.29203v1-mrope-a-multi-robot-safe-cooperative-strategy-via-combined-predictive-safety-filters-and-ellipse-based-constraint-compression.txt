@@ -1,0 +1,838 @@
+Title: MROPE: A Multi-Robot Safe Cooperative Strategy via combined Predictive Safety Filters and Ellipse-based Constraint Compression
+
+URL Source: https://arxiv.org/pdf/2607.29203v1
+
+Published Time: Mon, 03 Aug 2026 00:47:25 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+> 1
+
+# MR OPE: A Multi-Robot Safe Cooperative Strategy via combined Predictive Safety Filters and Ellipse-based Constraint Compression 
+
+A. Rosetti 1, L. Pichierri 1, D. Cappello 2, F. Schiano 2, and G. Notarstefano 1
+
+Abstract 
+
+Deploying drone swarms to track a dynamic target in cluttered environments presents severe computational and safety challenges. We propose MR OPE, a hierarchical strategy that decouples the cooperative monitoring mission from strict local safety requirements. To overcome the computational bottlenecks typical of dense spaces, our approach dynamically aggregates complex obstacle geometries into a single safe bounding ellipse for each drone. Methodologically, this architecture is realized by combining distributed aggregative optimization for high-level swarm coordination, a decentralized consensus scheme for the safe area computation, and local Predictive Safety Filters (PSF) for real-time collision avoidance. Virtual and real-world experiments validate the framework, demonstrating superior real-time efficiency and scalability compared to centralized approaches. Video: https://youtu.be/e9WTZL23ICY 
+
+I. I NTRODUCTION 
+
+The use of multi-robot teams to cooperatively accomplish complex tasks enhances efficiency and robustness across a wide range of applications [1], such as surveillance [2] and mapping [3]. In this work, we investigate a scenario in which a team of drones wants to safely monitor and follow a moving target while avoiding both inter-agent collisions and collisions with obstacles. A powerful tool to address complex tasks in multi-robot applications is distributed optimization, see, e.g., [4], [5]. Recently, distributed aggregative optimization has gained attention [6], [7] and has been used for modeling cooperative multi-robot scenarios [8], [9]. However, to inherently ensure collision avoidance among robots or with obstacles, local and coupling constraints must be added into the optimization problem. This significantly increases the computation complexity, especially in presence of a large number of obstacles. To address safety, several approaches have been proposed. Buffered Voronoi Cells are introduced in [10] to ensure safety in a distributed fashion using only position information. In [11], a decentralized Reinforcement Learning control strategy is combined with Buffered Voronoi Cells. Integration of a distributed Model Predictive Control (MPC) with an on-demand collision avoidance method is proposed in [12] and it is implemented in a parallel fashion. In [13] a distributed MPC enforces also safety constraints using neighbors’ planned trajectories. Another decentralized approach is presented in [14] where planned optimal trajectories of the other agents are used to create Time-Aware Safe Corridors. Most existing collision avoidance approaches struggle to scale with the number of agents and obstacles, or tightly couple safety constraints with the primary robotic task. To effectively decouple these objectives, Safety Filters represent a highly effective paradigm. In this context, Control Barrier Functions (CBFs) [15]–[17] have gained significant traction due to their minimal computational overhead in multi-robot scenarios. However, being purely reactive, CBF-based methods are prone to local deadlocks in cluttered environments and often struggle to systematically handle strict actuation limits [18]. To overcome these limitations, Predictive Safety Filters (PSFs) stand out as a robust alternative. An early work is [19], where PSF based on MPC techniques are used to ensure safety along a trajectory. However, these filters have been mainly limited to single-robot applications, such as racing cars [20], quadrotors [21], or marine navigation [22]. While [23] considers a multi-agent scenario, it relies on a centralized PSF. Multi-robot scenarios call for a proper decentralized extension of these filtering mechanisms, fully integrated into a high-level distributed control strategy. The contributions of this paper are twofold. First, we decouple the high-level cooperative surveillance task (based on [7]) from the low-level safety constraints. Unlike existing works that tightly couple these aspects, we introduce a novel decentralized PSF relying on a low-complexity MPC. This filter enforces both inter-agent and static obstacle collision avoidance while minimally deviating from the optimal reference trajectory. Second, to overcome computational bottlenecks in dense environments, we compress linear polyhedral constraints into a single ellipsoidal constraint. This geometric compression ensures the downstream local MPC complexity remains strictly bounded and independent of obstacle density. Furthermore, the ellipse adapts its eccentricity to the available free space, forcing the multi-agent team to adapt its topology and safely traverse tight spaces (e.g., in single-line formations) without requiring ad-hoc reconfiguration rules.  
+
+> Work partially funded by the European Union - Next Generation EU - under the National Recovery and Resilience Plan (NRRP), Mission 4, Component 2, Investment 3.3; CUP J33C23001440009 and by Leonardo Innovation Labs.
+> 1are with the Department of Electrical, Electronic and Information Engineering, Alma Mater Studiorum - Universit` a di Bologna, Bologna, Italy.
+
+{a.rosetti, lorenzo.pichierri, giuseppe.notarstefano }@unibo.it   
+
+> 2are with Leonardo S.p.a., Leonardo Innovation Labs, Rome, Italy.
+
+{domenico.cappello, fabrizio.schiano }@leonardo.com arXiv:2607.29203v1 [cs.RO] 31 Jul 2026 2
+
+Fig. 1: Concept picture of the addressed scenario. The paper unfolds as follows. In Section II we introduce the problem setup. In Section III we detail the hierarchically-distributed control strategy. Section IV provides virtual experiments and Monte Carlo campaigns, whereas Section V presents real experiments. II. P ROBLEM SETUP : C OLLECTIVE SAFETY FOR MULTI -ROBOT SURVEILLANCE 
+
+In this section, we introduce the multi-robot problem scenario addressed in the paper. We start by presenting the communication model for the cooperating drones. For each drone i, the states and inputs are assumed to belong to a given set, i.e., xti ∈ X ⊆ Rn and uti ∈ U ⊆ Rm, and to evolve according to the linear dynamics 
+
+xt+1  
+
+> i
+
+= Ax ti + Bu ti, (1) with state matrix A ∈ Rn×n, and input matrix B ∈ Rn×m. The drones are associated a safety sphere with radius rdr ∈ R
+
+and nominal position pti ∈ Rd. The drones need to cooperatively track a non-cooperative target (i.e., whose trajectory is not controlled by the drones) while moving safely. The team must adapt its mission (follow the target) to avoid collisions with obstacles. The perception of obstacles is outside the scope of this work. We refer the reader to [24], [25] and for the inter-agent and obstacles detection in challenging environments. The goal of the paper is to design a hierarchical architecture that combines distributed optimization, predictive safety filters and a novel compressing mechanism for handling the large number of obstacles. To model the information exchange among the set of cooperating drones V = {1, . . . , N }, we consider a two-layer communication topology that decouples the mission objectives from the safety requirements. The high-level optimization layers relies on a static, undirected graph, which is assumed to be connected, with a doubly stochastic adjacency matrix 
+
+A ∈ RN ×N and neighbor set N a 
+
+> i
+
+. Conversely, the low-level safety filter operates on a time-varying, distance-based graph. In this layer, the neighborhood of drone i at time t is defined as N s,t i = j ∈ V | pti − ptj ≤ rsens , where rsens is the communication threshold. Let us introduce the multi-robot task addressed in the paper. Let ct ∈ Rd be the position of the target at time t. Each drone i ∈ V is aware of the current position of its neighbors, but does not know their future movements. We say that the team of drones is collectively safe when the formation satisfies the following definition. 
+
+Definition 2.1 (Collective Safety): Let pti ∈ Rd be the position of drone i at time t. The team is said to be collectively safe when the following conditions hold: 1) Static obstacle avoidance : Each drone i ∈ V must avoid collision with the static obstacles located at oj ∈ Rd with 
+
+j ∈ { 1, . . . , N O }, where NO ∈ N is the number of obstacles. This constraint can be written as: 
+
+pti − oj ≥ rdr + rj, obs + δo, (2) with rdr , r j, obs ∈ R the radii of the drone and of the obstacle, respectively, and δo ∈ R a safety margin. 2) Inter-agent collision avoidance : Safety among drones is guaranteed when the following inequality holds: 
+
+pti − ptj ≥ 2rdr + δa, (3) for each j ∈ V , j̸ = i, and δa ∈ R a safety margin. □3Motion Planner 
+
+Safety Filter 
+
+Low-Level Controller 
+
+Drone 
+
+Obstacle Compression        
+
+> Neighbors (xtj, s tj, y tj)
+> Target
+> ct, . . . , c t+T
+> uti, des (xti, u ti)
+> uti, mot
+> Et, . . . , Et+T
+> ˆxti
+
+Fig. 2: Block diagram of the proposed solution for the drone i at a generic time t.
+
+Algorithm 1 MR OPE – Solution Strategy Each drone i ∈ V runs: 
+
+for t = 1 , 2, . . . do Aggregative Motion Planner 
+
+Run update step (5) to obtain zt+1 
+
+> i
+
+Compute (potentially) unsafe reference uti, des (7) 
+
+Predictive Safety Filter 
+
+Receive safe ellipse (11) Solve (12) to obtain safe input uti
+
+Low-Level Controller 
+
+Inject uti as reference to controller [26] Then, we can state the main task addressed in the paper. 
+
+Problem 2.2 (Collectively Safe Target Monitoring): Design a collectively safe distributed motion planning and control strategy that navigates a team of drones (1) to monitor a moving target ct, t ≥ 0.III. H IERARCHICALLY -D ISTRIBUTED SAFE SURVEILLANCE STRATEGY 
+
+In this section, we present the hierarchically-distributed control strategy to solve Problem 2.2. The scheme is composed of three main blocks: (i) a distributed optimization-based control scheme to keep the drones close to the target, (ii) adecentralized predictive safety filter let the drones satisfy input and state constraints, and (iii) a low-level control strategy to drive the drones to the desired position. The general framework of the proposed solution for drone i ∈ V is illustrated in Fig. 2. The first block, Motion Planner in Fig. 2, generates the next desired position zt+1  
+
+> i
+
+∈ Rd for all drones i ∈ V by means of a distributed online optimization scheme inspired from the aggregative optimization framework [6], [7]. The second block, Safety Filter is a local predictive safety filter, designed to ensure collective safety of the formation and actuation limits with a minimum deviation from the desired control input. Finally, the third block, Low-Level Controller , is a nonlinear geometric controller that stabilizes the closed-loop system (see [26]). Drones only know the target ct position at time t ≥ 0
+
+and its planned path in a limited horizon. In Fig. 2, the dashed blue box represents the distributed safe-motion planner, while the dashed red box represents the safety block, composed by the centralized obstacle compression and the local predictive safety filter. The strategy is summarized in Algorithm 1, with the main steps, corresponding to the different blocks of Fig. 2, detailed in the next subsections. 4
+
+A. Distributed Aggregative Planner 
+
+To achieve the target monitoring task, we exploit the distributed aggregative optimization in [7]. At each t ≥ 0 the N
+
+drones solve an optimization problem of the form 
+
+min 
+
+> z∈RN d
+> N
+
+X
+
+> i=1
+
+ℓti (zi, σ (z)) . (4) Here, z = col (z1, . . . , z N ), each ℓti(zi, σ (z)) : Rd × Rd 7 → R depends on the local optimization variable of drone i and on an aggregative variable σ(z) = PNi=1  
+
+> ϕi(zi)
+> N
+
+, with ϕi(zi) : Rd 7 → Rd for each i ∈ V . In our scenario ϕi(zi) = zi, thus σ(z)
+
+represents the team centroid. Problem (4) is solved in a distributed way by using the aggregative tracking algorithm proposed in [6], [7]. At each iteration t, each drone i computes zt+1  
+
+> i
+
+emulating a centralized gradient descent step in a distributed fashion. Since σ(zt)
+
+and PNi=1 ∇2ℓti(zti , σ (zt)) are not available to single drones, they track this global information through two auxiliary variables 
+
+sti ∈ Rd and yti ∈ Rd, respectively. Formally, each drone i initializes its states as z0 
+
+> i
+
+∈ Rd, s0 
+
+> i
+
+= ϕi(z0 
+
+> i
+
+), y0 
+
+> i
+
+= ∇2ℓ0 
+
+> i
+
+(z0 
+
+> i
+
+, s 0 
+
+> i
+
+)
+
+and runs at each tzt+1  
+
+> i
+
+= zti − α(∇1ℓti(zti , s ti) + ϕi(zti )yti )
+
+st+1  
+
+> i
+
+= X 
+
+> j∈N a
+> i
+
+aij stj + ϕi(zt+1  
+
+> i
+
+) − ϕi(zti ) (5) 
+
+yt+1  
+
+> i
+
+= X 
+
+> j∈N a
+> i
+
+aij ytj + ∇2ℓt+1  
+
+> i
+
+(zt+1  
+
+> i
+
+, s t+1  
+
+> i
+
+) − ∇ 2ℓti(zti , s ti),
+
+with α > 0 a stepsize. We refer the reader to [7] for the formal proof of its convergence properties. We model the cost function as the sum of three terms, i.e., 
+
+ℓti(zi, σ (z)) = γ1
+
+
+
+∥σ (z) − zi∥2 − d2
+
+> b
+
+2
+
++ γ2 σ(z) − ct 2 + γ3 zi − ˆpti 
+
+> 2
+
+. (6) The three terms in (6) aim, respectively, to maintain the drone at a predetermined distance db ∈ R from the formation centroid σ(z), to guide the centroid toward the target current position ct, and to penalize excessive deviations from the drone currently measured position ˆpti, with γ1, γ 2, γ 3 ∈ R being weights that balance the three terms. A rigid formation could be enforced by modifying the first term in (6). However, we opted for a loosely weighted distance-based cost. This avoids enforcing a predefined topology, allowing the swarm to autonomously adapt its shape to safety constraints. MR OPE assumes global target state knowledge in (6), however this can be challenging in non-cooperative scenarios. Integrating a distributed estimator is under current investigation. Finally, uti, des ∈ Rd is computed as 
+
+uti, des = Π  zt+1  
+
+> i
+
+, z ti
+
+ , (7) where Π : Rd × Rd → Rm denotes a control policy designed by the user to steer the drone from zti to zt+1  
+
+> i
+
+.
+
+B. Obstacle Compression Node 
+
+To ensure collision avoidance without relying on a centralized coordinator, the drones cooperatively compute a safe convex region at each time step t. Specifically, each drone i ∈ V locally computes a safe set ¯Eti = {Bti r + ct 
+
+> ell ,i
+
+| ∥ r∥ ≤ 1} centered at ct 
+
+> ell ,i
+
+∈ Rd with eccentricity matrix Bti ∈ Rd×d.We consider a scenario where each drone is aware only of a local subset of obstacles. For clarity, assume each drone i
+
+tracks a single local obstacle oi (the extension to multiple obstacles per drone is straightforward). The drone formulates a hyperplane separating the target ct from the obstacle: 
+
+ati = oi − ct
+
+∥oi − ct∥ , bti = ( oi − rj, obs ati)⊤ati. (8) To maximize the safe area, we exploit the well-known maximum volume inscribed ellipsoid problem. Since no drone has global knowledge of all obstacles, we introduce a distributed consensus scheme (Algorithm 2) inspired by [27]. Each drone iteratively solves the optimization problem using a local set of constraints Sti , exchanging only the active hyperplanes with its communication neighbors j ∈ N s,t i :
+
+Bti , c t 
+
+> ell ,i
+
+= arg max 
+
+> B,c
+
+β1 log( det (B)) − β2∥ct − c∥2 (9) s.t. ∥Ba j ∥ + a⊤ 
+
+> j
+
+c ≤ bj , ∀(aj , b j ) ∈ S ti
+
+B ≻ 05
+
+Algorithm 2 Distributed Ellipse Consensus (Drone i, time t)
+
+Initialization: Target position ct, local obstacle oi
+
+Compute local hyperplane (ati, b ti) using (8) 
+
+˜S0 
+
+> i
+
+← { (ati, b ti)}
+
+for k = 0 , . . . , K − 1 do 
+
+˜Bki , ˜ck 
+
+> ell ,i
+
+← solve (9) with ct and ˜Ski
+
+˜Cki ← Extract active constraints from the solution Send ˜Cki to neighbors j ∈ N a
+
+> i
+
+Receive ˜Ckj from neighbors j ∈ N a
+
+> i
+
+˜Sk+1  
+
+> i
+
+← ˜S0 
+
+> i
+
+∪ ˜Cki ∪
+
+S 
+
+> j∈N a
+> i
+
+˜Ckj
+
+
+
+Final assignment: Bti ← ˜Bki , ct 
+
+> ell ,i
+
+← ˜ck
+
+> ell ,i
+
+, Sti ← ˜Sk+1 
+
+> i
+
+return Bti , c t
+
+> ell ,i
+
+, Sti
+
+where β1, β 2 > 0 balance the ellipse area and its distance from the target. The ellipse is then expressed in quadratic form as: 
+
+¯Eti =
+
+n
+
+r ∈ Rd |  r − ct
+
+> ell ,i
+
+⊤ M t
+
+> nom ,i
+
+ r − ct
+
+> ell ,i
+
+ = 1 
+
+o
+
+, (10) where M t 
+
+> nom ,i
+
+= ( Bti Bti )−1. To account for the drone physical volume, we shrink the ellipse proportionally to the drone radius rdr , obtaining the safe shape matrix M ti = Σ ti ⊙ M t
+
+> nom ,i
+
+, where Σti = (1 − rdr 
+
+pλt
+
+> max
+
+)−2In, and λt 
+
+> max
+
+is the maximum eigenvalue of M t
+
+> nom ,i
+
+. The shrunk safe shape is defined as: 
+
+Eti =
+
+n
+
+r ∈ Rd |  r − ct
+
+> ell ,i
+
+⊤ M ti
+
+ r − ct
+
+> ell ,i
+
+ = 1 
+
+o
+
+. (11) The safe region constraint for drone i is then (pti − ct
+
+> ell ,i
+
+)⊤M ti (pti − ct
+
+> ell ,i
+
+) ≤ 1.Finally, the local predictive safety filter requires the safe area over the entire prediction horizon τ ∈ { t, . . . , t + T }. To limit the communication overhead, drones run Algorithm 2 only for the current step t. As detailed in Algorithm 3, for the future steps τ , drone i locally propagates the final active constraint set Sti by recalculating the hyperplanes (8) relative to the predicted target trajectory cτ and solving (9) locally. 
+
+Algorithm 3 Safe Ellipse Horizon Generation (Drone i)
+
+for t = 0 , 1, . . . do 
+
+Receive target trajectory ct:t+T
+
+Bti , c t
+
+> ell ,i
+
+, Sti ← Run Algorithm 2 at time step t
+
+for τ = t + 1 , . . . , t + T do 
+
+Sτi ← Update hyperplanes in Sti with cτ
+
+Bτi , c τ 
+
+> ell ,i
+
+← solve (9) locally using cτ and Sτi
+
+C. Safety Filter Block 
+
+For the safety part, we design a decentralized predictive safety filter that leverages MPC techniques. The goal of each drone is threefold, i.e., (i) ensure collective safety at each t within the prediction horizon, (ii) satisfy actuation limits, and 
+
+(iii) find uti that gives minimum deviation from uti, des .Let T ∈ N be a prediction horizon, and xti ∈ Rn and uti ∈ Rm the state and input at time t, respectively. At each t ≥ 0,each drone i ∈ V computes a sequence of states and control inputs xi = col (xti, . . . , x t+Ti ), ui = col (uti, . . . , u t+Ti ) as solution of the following optimization problem 6
+
+min 
+
+> xi,u i,ε i
+
+Jtu,i (ui, ε i) (12a) s.t. xτ +1  
+
+> i
+
+= Ax τi + Bu τi (12b) 
+
+[pτi , v τi ]⊤ = Cx τi (12c) 
+
+1 − (pτi − cτ
+
+> ell
+
+)⊤ M τi (pτi − cτ
+
+> ell
+
+) ≥ 0 (12d) 
+
+wτij  
+
+> ⊤
+
+ pτi − mτij −  rdr − ετij 
+
+ wτij 
+
+ ≥ 0 (12e) 
+
+0 ≤ ετij ≤ εmax (12f) 
+
+εtij = 0 , εt+1  
+
+> ij
+
+= 0 j ∈ N s,t i (12g) 
+
+vmin ≤ vτi ≤ vmax , umin ≤ uτi ≤ umax (12h) 
+
+xti = ˆ xti (12i) 
+
+xt+Ti ∈ X Ti
+
+∀τ ∈ { t, . . . , t + T }
+
+where ˆxti is the current measured state of drone i, and C ∈ R2d×n is the output matrix. The dynamics and the output equations are imposed in (12b) and (12c) respectively. Then constraint (12d) ensures that the drone is inside the safe ellipse, while (12i) ensures that the initialization is consistent with the current state of the drone. The design of the cost function and of the remaining constraints are detailed in the following. 
+
+Remark 3.1: Each drone solves problem (12) using only its neighbors current positions, without knowing the desired future trajectory or the MPC solutions of the other drones. 
+
+□
+
+We consider the cost function 
+
+Jtu,i (ui, ε i) = ρ1 uti − uti, des  
+
+> 2
+
++ ρ2
+
+> t+T
+
+X 
+
+> τ=t+1
+
+∥uτi ∥2 + ρ3
+
+> t+T
+
+X   
+
+> τ=t
+> |N s,t i|− 1
+
+X
+
+> j=1
+
+ετij  
+
+> 2
+
+, (13) where ρ1, ρ 2, ρ 3 ∈ R are weights that balance the three terms. The first and second term represent respectively a penalty on the deviation from the desired control input and a regularization term. The last term involves slack variables used to enforce some soft constraints. Specifically, we introduce a set of slack variables εi = col (εti, . . . , ε t+Ti ) with ετi = col (ετi1, . . . , ε τi|N s,t i |− 1)
+
+for τ ∈ { t, . . . , t + T }, that relax inter-agent collision avoidance constraints defined as follows. For each drone i ∈ V , given the set of neighbors at the time t, inter-agent constraints are based on hyperplanes that restrict the available space of the future trajectory. To this end, let wtij ∈ Rd be the unit vector pointing from drone i to drone j and mtij ∈ Rd the midpoint between drones i.e., 
+
+wtij = pti − ptj
+
+pti − ptj
+
+, mtij = pti + ptj
+
+2 , (14) respectively. Then, the constraints between each drone i and its neighbors j ∈ N s,t i , required to ensure inter-agent collision avoidance at time t read as 
+
+wtij  
+
+> ⊤
+
+ pti − mtij 
+
+ ≥ 0, ∀i ∈ V , j ∈ N s,t i . (15) To ensure a proper inter-agent collision avoidance, we rewrite the constraint (15) by taking into account also the footprint of the drones, namely including a circle of radius rdr , as 
+
+wtij  
+
+> ⊤
+
+ pti − mtij − rdr wtij 
+
+ ≥ 0, ∀i ∈ V , j ∈ N s,t i . (16) Notice that constraint (16) defines a separating hyperplane between each drones and its neighbors at time t only. To enforce safety at the next time instants, the hyperplane constraints are propagated along the prediction horizon by taking into account the evolution of the ellipse in (11). In particular, let λτi and vτi , i ∈ { 1, . . . , d }, be, respectively, the eigenvalues and the associated eigenvectors of matrix M τi in (11). Let Dτ = diag i
+
+(λτi )−1/2 be a transformation which takes into account the eccentricity of the ellipsoid and Rτ = vτ 
+
+> 1
+
+, . . . , vτd a rotation matrix that accounts for the orientation thereof. We apply a linear transformation T τ +1  
+
+> τ
+
+: Rn → Rn defined as T τ +1  
+
+> τ
+
+= ψτ +1 ◦ (ψτ )−1, where ψτ = Rτ Dτ . Hence, the update rule for the normal unit vector of the j-th hyperplane reads as 
+
+wτ +1  
+
+> ij
+
+= T τ +1  
+
+> τ
+
+wτij , τ ∈ { t, . . . , t + T − 1}, (17) while the middle points are translated according to 
+
+mτ +1  
+
+> ij
+
+= mτij + cτ +1 − cτ , τ ∈ { t, . . . , t + T − 1}. (18) 7
+
+Fig. 3: Graphical representation of the inter-agent collision avoidance constraints described in (12e). Next, we introduce a set of slack variables ετij ≥ 0 that relax the hyperplane constraints for time instants τ > t + 1 . This is used to give more degrees of freedom to the optimization solver to find a viable path. Each variable ετij indicates the amount by which the j-th hyperplane constraint is violated at time τ . For safety reasons, we impose that the slack variables are bounded by a certain value εmax ∈ R. We formalize it by means of the constraints (12e), (12f) and (12g). We graphically represent the constraints in Fig. 3. Notice that, we consider the set of neighbors N s,t i to be fixed along the entire prediction horizon τ ∈ { t, . . . , t + T }.We consider drones with actuation limits (12h), where vmin , v max ∈ Rd and umin , u max ∈ Rm are the minimum and maximum velocity and acceleration input, respectively. To ensure feasibility of the optimization problem we impose a terminal constraint that can be divided into two parts, i.e., the final position needs to be inside the safe ellipse and the final velocity needs to be zero. In particular we define the terminal set X Ti , for all i ∈ V , as 
+
+X Ti =
+
+n
+
+xT ∈ Rn |  pTi − cT
+
+> ell
+
+⊤ ¯M T  pTi − cT
+
+> ell
+
+ ≤ 1, v Ti = 0 
+
+o
+
+.
+
+IV. V IRTUAL EXPERIMENTS VIA ROBOTIC SIMULATOR 
+
+We validate the MR OPE strategy (Algorithm 1) through virtual experiments in a forest-like scenario, where aerial drones monitor a mobile ground target. Simulations are conducted in Webots using C RAZY CHOIR [28], a ROS 2 extension of the C HOI RBOT toolbox [29] for Crazyflie swarms. To ensure modularity and ease real-world deployment, each drone is managed by independent ROS 2 processes and communicates only with local neighbors over a sparse graph. We specialize the desired input (7) as: 
+
+uti, des = Kp ˜pti + Kv ˜vti + Kieti (19) 
+
+et+1  
+
+> i
+
+= eti + ∆ t ˜pti, e0 
+
+> i
+
+= 0 ,
+
+where ∆t ∈ R is the discretization step, ˜pti = P ¯Eti (zt+1  
+
+> i
+
+) − ˆpti, ˜vti = v⋆,t i − ˆvti , reference velocity v⋆,t i = [0 , 0] ⊤, and 
+
+Kp, K v , K i ∈ Rm×d are feedback gain diagonal matrices. Here, P ¯Eti (zt+1  
+
+> i
+
+) projects zt+1  
+
+> i
+
+onto the safe set ¯Eti shrunk as in (11). 
+
+A. Multi-Robot Safe Target Tracking 
+
+We consider a 2D scenario, i.e., d = 2 , where N = 5 Crazyflies track a Turtlebot 3 Burger through a dense matrix of 
+
+NO = 16 trees. Drone and obstacle radii are rdr = 0 .1 m and rj, obs = 0 .15 m, respectively. We consider a scenario in which all the drones must fly at the same height, thus making the collision avoidance problem more challenging. The drones are modeled as double integrators ( n = 4 , m = 2 ) with states xti = [ pti, v ti ]⊤ and sampling time ∆t = 0 .1 s, while the ground target follows a pre-computed cubic spline. Aggregative planner parameters (6) are γ1 = 1 .0, γ2 = 40 .0, γ3 = 10 .0,desired distance db = 0 .4 m, and stepsize α = 10 −3. Low-level gains (19) are Kp = 0 .4I2, Kv = 1 .5I2, and Ki = 0 .01 I2.Safety filter parameters (12a) are ρ1 = 20 .0, ρ2 = 0 .01 , ρ3 = 600 , and prediction horizon T = 35 . Ellipse weights (9) are β1 = β2 = 1 .0. Actuation limits (12h) are bounded at ±1.5 m/s for velocity and ±1.5 m/s 2 for acceleration. The sensing range is rsens = 1 .0 m. Simulations are executed on a workstation equipped with an Intel i9 processor and an Nvidia RTX 4000 GPU. The local optimization problem is formulated via CVXPY and solved using CLARABEL [30]. The safety filter operates at a frequency of 7 Hz. This choice is motivated by the need to maintain a real-time reactive control loop: obstacle avoidance algorithms typically operate at a few Hertz to tens of Hertz, where this range is sufficient to repeatedly 81
+
+> 2
+> 3
+> 4
+> 5
+
+t = 0 s. 1  
+
+> 23
+> 45
+
+t = 40 s. 1  
+
+> 2
+> 3
+> 45
+
+t = 90 s. 1  
+
+> 2
+> 3
+> 45
+
+t = 130 s. 
+
+Fig. 4: Virtual experiment screenshots at 0, 40 , 90 , 130 [ s]. Red circles are obstacles, the red dot is the target, and blue dots are drones. Dashed lines are the trajectories up to t.
+
+Fig. 5: Snapshots from the virtual experiment. A final snapshot of the monitoring phase (left) and a top-down view showcasing the drones’ trajectories inside the forest (right). sense–decide–act and react to environmental changes without incurring excessive computational overhead. We experimentally verified that higher frequencies did not provide significant performance improvements. The mobile ground robot follows a pre-computed cubic spline via the Unicycle control suite of C HOI RBOT . The Crazyflies, instead, are controlled by the proposed hierarchically-distributed predictive control strategy deployed on C RAZY CHOIR . Fig. 4 illustrates the experiment evolution at t ∈ { 0, 40 , 90 , 130 } s, highlighting the ellipse compression adapting to different forest zones. Fig. 5 provides a final snapshot and a top-down trajectory view, demonstrating safe target monitoring in a cluttered environment. As reported in Fig. 6, the tracking error remains below 0.8 m throughout the mission. The Predictive Safety Filter executes in 6 ms on average, validating its real-time capability. Furthermore, the maximum worst-case execution time peaks at strictly 11.6 ms. The distributed optimization step (5), implemented via the C HOI RBOT toolbox [29] (leveraging DISROPT), averages just 
+
+0.01 ms, yielding a negligible computational footprint compared to the downstream MPC. To illustrate the distributed ellipse consensus (Algorithm 2), Fig. 7 details the local safe set computation for a single drone (e.g., Drone 5) at a generic time step t. At k = 0 , the drone relies solely on its locally sensed obstacles, formulating local separating hyperplanes. Throughout Algorithm 2, each drone exchanges active constraints with its neighbors. Setting the maximum iterations to K = N = 5 , the local ellipse rapidly converges to the globally safe configuration in just k = 3 
+
+steps. This confirms that the decentralized scheme effectively aggregates the scattered environmental geometry without a central coordinator. To evaluate the constraint compression performance, we repeated the experiment by varying the obstacle density within the same workspace ( NO ∈ { 4, 16 , 32 , 64 , 100 }). As shown in Fig. 8, the Predictive Safety Filter computation time remains almost constant, highlighting the effectiveness of the compression mechanism against environment clutter. We point out that while in this virtual experiment the fully distributed ellipse consensus (Algorithm 2) is run, the subsequent Monte Carlo campaigns and real-world experiments employ a parallel architecture with a single obstacle compression node (see Section III-B). This choice is motivated by the need to mitigate communication latency and computational overhead during extensive testing, thereby allowing the performance analysis to focus strictly on the decentralized scalability and real-time reliability of the local Predictive Safety Filters. 90 10 20 30 40 50 60 70 80 90 100 110 120 130 140 
+
+20 
+
+40 
+
+60 
+
+80 
+
+100 
+
+> Tracking Error [cm]
+
+10 20 30 40 50 60 70 80 90 100 110 120 130 140 
+
+5
+
+10 
+
+15 
+
+20 
+
+Time [s] 
+
+> MPC Time [ms]
+
+Fig. 6: Evolution of the target tracking error (blue) and the computational time (red) of the Predictive Safety Filter. 1
+
+> 2
+> 3
+> 4
+> 5
+
+k = 0. 1 
+
+> 2
+> 3
+> 4
+> 5
+
+k = 1. 1 
+
+> 2
+> 3
+> 4
+> 5
+
+k = 2. 1 
+
+> 2
+> 3
+> 4
+> 5
+
+k = 3. 
+
+Fig. 7: Evolution of Distributed Ellipse Consensus (Algorithm 2) for Drone 5 at fixed time t. From the local initialization (k = 0 ) to consensus ( k = 3 ). Active separating hyperplanes (green lines) are exchanged among neighbors. Red dots represent active constraints, while dark gray ones are locally known but inactive, and dashed lines indicate the ellipses computed by the other drones. 4 16 32 64 100 
+
+# 10 
+
+# 15 
+
+# 20 
+
+# 25 
+
+# 30 
+
+# Number of Obstacles ( NO )
+
+> [ms]
+
+# Mean MPC Time 
+
+Fig. 8: Computation time of the MR OPE Predictive Safety Filter increasing the number of obstacles NO .10 4 6 8
+
+## 50 
+
+## 100 
+
+> Tracking Error [cm]
+
+## 4 6 8
+
+## 100 
+
+## 200 
+
+## 300 
+
+## 400 
+
+## Number of robots ( N )
+
+> MPC Time [ms] Centralized Distributed
+> Centralized Distributed
+
+Fig. 9: Algorithm performance increasing the number of drones N . Target tracking error (above) and computation time of the optimal solution (below) are shown. The shaded areas represent the standard deviation band, while the dashed black line indicates the ≈ 142 ms real-time deadline (corresponding to the 7 Hz safety frequency). In blue the centralized filter, in red our distributed approach. 
+
+B. Monte Carlo Virtual Experiments 
+
+To evaluate Algorithm 1, we run two Monte Carlo campaigns analyzing performance against varying fleet sizes N and target velocities vc. Scenarios are generalized by randomizing obstacle and target positions, initial drone formation, and communication graphs. In each trial, the target follows an A ⋆-generated trajectory at a mean velocity vc.First, we evaluate scalability ( N ∈ { 4, 6, 8}, 50 trials, vc = 0 .08 m/s) against a centralized PSF baseline adapted from [23]. In this centralized setup, instead of using distributed local solvers, a single MPC gathers all desired inputs to jointly enforce inter-agent collisions and compute all safe commands. As shown in Fig. 9, the centralized approach (blue line) exhibits exponential computational growth. At N = 8 , it takes nearly 400 ms, severely violating the 142 ms real-time deadline (7 Hz, dashed line). Even when meeting the deadline (e.g., at N = 4 ), the centralized solver yields a higher average tracking error ( ≈ 50 cm). This performance drop is rooted in the monolithic nature of the baseline. Furthermore, centrally resolving all inter-agent constraints simultaneously induces chattering, further deviating the swarm from the reference path. Conversely, our strategy (red line) effectively distributes the computational effort, keeping the tracking error tightly bounded around 
+
+10 cm. Since each drone solves a localized, fixed-dimension problem (12), execution times increase marginally, staying safely below 40 ms even for N = 8 .Second, we evaluate collective safety (Definition 2.1) by varying the target velocity vc for a fleet of N = 5 over 50 trials per velocity. A mission succeeds if the entire team tracks the target without any collisions. As shown in Fig. 10, the success rate approaches 100% for velocities vc ≤ 0.21 m/s, confirming the predictive filter’s reliability. The expected performance drop at higher speeds is inherent to the distributed architecture: lacking global knowledge of neighbors’ future trajectories, tracking a fast target in clutter severely restricts the local MPC feasible space. V. R EAL -W ORLD EXPERIMENT : N ANO -Q UADROTOR SWARM MONITORING A MOBILE GROUND ROBOT 
+
+We validate the proposed MR OPE strategy in a real-world indoor flight arena ( 9 × 4 × 3 m) using a fleet of N = 4 
+
+Crazyflie 2.1 nano-quadrotors and a TurtleBot 3 Burger as the moving target. Four physical static obstacles are placed in the workspace to evaluate the collision avoidance performance. Robots states are tracked at 100 Hz by a Vicon motion capture system. The hardware workstation, ROS 2 middleware, and optimization solvers employed in this deployment are identical to those detailed in Section IV. Due to the computational constraints of the nano-quadrotors, onboard optimization is infeasible. However, to rigorously evaluate the distributed nature of MR OPE and subject the system to realistic middleware communication delays, we adopt a decentralized software architecture. Each drone is governed by independent ROS 2 11 
+
+nodes that do not share memory, exchanging information strictly via standard network topics to emulate a true distributed computing environment. Optimal control inputs are converted into angular-rate setpoints by the C RAZY CHOIR geometric controller and transmitted to the Crazyflies at 100 Hz via a Crazyradio 2.0 dongle. Concurrently, the TurtleBot 3 receives velocity commands through the C HOI RBOT suite. To replicate this experiment, parameters are set as follows: ∆t = 0 .14 s, 
+
+γ1 = 10 .0, γ2 = 1 .0, γ3 = 0 .1, db = 0 .5 m, α = 10 −3, Kp = 3 .75 I2, Kv = 4 .0I2, Ki = 0 .3I2, ρ1 = 64 .0, ρ2 = 10 −3,
+
+ρ3 = 75 , T = 30 , and rsens = 0 .8 m. Actuation limits are bounded at ±1.0 m/s for velocity and ±1.5 m/s 2 for acceleration. As shown in Fig. 11, the real-world performance closely matches the virtual experiments. The target tracking error remains strictly bounded, and the computational time of the Predictive Safety Filter stays within the real-time deadline. Ultimately, the entire team successfully achieves the monitoring task while avoiding both inter-agent and static obstacle collisions. In Fig. 12, we show a snapshot of the real experiment, where the Crazyflie swarm monitors the TurtleBot 3 Burger while ensuring collective safety. VI. C ONCLUSION 
+
+We proposed MR OPE, a hierarchically-distributed predictive control strategy for cooperative drones navigating obstacle-dense environments. By decoupling the high-level distributed aggregative tracking from the low-level MPC safety filtering, we ensured both task execution and collective safety. Furthermore, a novel distributed obstacle compression mechanism bounds the drones motion within a safe elliptical region, overcoming the computational bottlenecks of traditional dense-environment navigation. Extensive Monte Carlo simulations and real-world experiments validated the strategy, demonstrating superior scalability and real-time computational efficiency compared to centralized approaches. Future work includes the development of a comprehensive theoretical analysis to formally guarantee the recursive feasibility of MR OPE. Additionally, distributed estimation schemes can be integrated to handle non-cooperative target tracking without relying on global information. REFERENCES [1] X. Zhou, X. Wen, Z. Wang, Y. Gao, H. Li, Q. Wang, T. Yang, H. Lu, Y. Cao, C. Xu, and F. Gao, “Swarm of micro flying robots in the wild,” Science Robotics , vol. 7, no. 66, p. eabm5954, 2022. [2] M. Saska, V. Von´ asek, J. Chudoba, J. Thomas, G. Loianno, and V. Kumar, “Swarm distribution and deployment for cooperative surveillance by micro-aerial vehicles,” Journal of Intelligent & Robotic Systems , vol. 84, pp. 469–492, 2016. [3] S. Wang, Y. Wang, D. Li, and Q. Zhao, “Distributed relative localization algorithms for multi-robot networks: A survey,” Sensors , vol. 23, no. 5, p. 2399, 2023. [4] O. Shorinwa, T. Halsted, J. Yu, and M. Schwager, “Distributed optimization methods for multi-robot systems: Part 2—a survey,” IEEE Robotics & Automation Magazine , 2024. [5] A. Testa, G. Carnevale, and G. Notarstefano, “A tutorial on distributed optimization for cooperative robotics: from setups and algorithms to toolboxes and research directions,” Proceedings of the IEEE , 2025. [6] X. Li, X. Yi, and L. Xie, “Distributed online convex optimization with an aggregative variable,” IEEE Trans. on Control of Network Systems , vol. 9, no. 1, pp. 438–449, 2021. [7] G. Carnevale, A. Camisa, and G. Notarstefano, “Distributed online aggregative optimization for dynamic multirobot coordination,” IEEE Trans. on Automatic Control , vol. 68, no. 6, pp. 3736–3743, 2022. [8] L. Pichierri, G. Carnevale, L. Sforni, and G. Notarstefano, “Multi-robot target monitoring and encirclement via triggered distributed feedback optimization,” IEEE Trans. on Robotics , 2026. [9] J. Huang, C. Yang, S. Wu, and Q. Liu, “Distributed aggregative optimization algorithm for solving multi-robot formation problem,” IEEE Trans. on Control of Network Systems , 2025. [10] D. Zhou, Z. Wang, S. Bandyopadhyay, and M. Schwager, “Fast, on-line collision avoidance for dynamic vehicles using buffered voronoi cells,” IEEE Robotics and Automation Letters , vol. 2, no. 2, pp. 1047–1054, 2017. [11] A. P. Vinod, S. Safaoui, T. H. Summers, N. Yoshikawa, and S. Di Cairano, “Decentralized, safe, multiagent motion planning for drones under uncertainty via filtered reinforcement learning,” IEEE Trans. on Control Systems Technology , 2024. [12] C. E. Luis, M. Vukosavljev, and A. P. Schoellig, “Online trajectory generation with distributed model predictive control for multi-robot motion planning,” IEEE Robotics and Automation Letters , vol. 5, no. 2, pp. 604–611, 2020. 0.14 0.17 0.21 0.28 0.31 0.34 0.40 
+
+0
+
+50 
+
+100 
+
+> 14.0%
+> 21.9%
+> 76.0%
+> 84.0%
+> 98.0% 100.0% 100.0%
+
+Mean Target Velocity [m/s] 
+
+> Success Rate [%]
+
+Fig. 10: Mission success rate at increasing target velocity vc.12 0 10 20 30 40 50 60 70 80 87 
+
+0
+
+10 
+
+20 
+
+> Tracking Error [cm]
+
+0 10 20 30 40 50 60 70 80 87 
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+Time [s] 
+
+> MPC Time [ms]
+
+Fig. 11: Evolution of the target tracking error (blue) and the computational time (red) of the Predictive Safety Filter. 
+
+Fig. 12: Snapshot of the real experiment. 
+
+[13] E. Soria, F. Schiano, and D. Floreano, “Distributed predictive drone swarms in cluttered environments,” IEEE Robotics and Automation Letters , vol. 7, no. 1, pp. 73–80, 2021. [14] C. Toumieh and A. Lambert, “Decentralized multi-agent planning using model predictive control and time-aware safe corridors,” IEEE Robotics and Automation Letters , vol. 7, no. 4, pp. 11 110–11 117, 2022. [15] M. Cavorsi, L. Sabattini, and S. Gil, “Multirobot adversarial resilience using control barrier functions,” IEEE Transactions on Robotics , vol. 40, pp. 797–815, 2023. [16] Y. Hu, J. Fu, and G. Wen, “Decentralized robust collision-avoidance for cooperative multirobot systems: A gaussian process-based control barrier function approach,” IEEE Transactions on Control of Network Systems , vol. 10, no. 2, pp. 706–717, 2022. [17] R. Cheng, M. J. Khojasteh, A. D. Ames, and J. W. Burdick, “Safe multi-agent interaction through robust control barrier functions with learned uncertainties,” in 2020 59th IEEE Conference on Decision and Control (CDC) . IEEE, 2020, pp. 777–783. [18] J. S. Grover, C. Liu, and K. Sycara, “Deadlock analysis and resolution for multi-robot systems,” in International Workshop on the Algorithmic Foundations of Robotics . Springer, 2020, pp. 294–312. [19] K. P. Wabersich and M. N. Zeilinger, “Linear model predictive safety certification for learning-based control,” in 2018 IEEE Conference on Decision and Control (CDC) . IEEE, 2018, pp. 7130–7135. [20] B. Tearle, K. P. Wabersich, A. Carron, and M. N. Zeilinger, “A predictive safety filter for learning-based racing control,” IEEE Robotics and Automation Letters , vol. 6, no. 4, pp. 7635–7642, 2021. [21] F. P. Bejarano, L. Brunke, and A. P. Schoellig, “Multi-step model predictive safety filters: Reducing chattering by increasing the prediction horizon,” 13 
+
+in 2023 62nd IEEE Conference on Decision and Control (CDC) . IEEE, 2023, pp. 4723–4730. [22] A. Vaaler, S. J. Husa, D. Menges, T. N. Larsen, and A. Rasheed, “Modular control architecture for safe marine navigation: Reinforcement learning with predictive safety filters,” Artificial Intelligence , vol. 336, p. 104201, 2024. [23] S. Safaoui, A. P. Vinod, A. Chakrabarty, R. Quirynen, N. Yoshikawa, and S. Di Cairano, “Safe multi-agent motion planning under uncertainty for drones using filtered reinforcement learning,” IEEE Trans. on Robotics , 2024. [24] F. Schilling, F. Schiano, and D. Floreano, “Vision-based drone flocking in outdoor environments,” IEEE Robotics and Automation Letters , vol. 6, no. 2, pp. 2954–2961, 2021. [25] K. Ebadi, L. Bernreiter, H. Biggie, G. Catt, Y. Chang, A. Chatterjee, C. E. Denniston, S.-P. Deschˆ enes, K. Harlow, S. Khattak et al. , “Present and future of slam in extreme environments: The darpa subt challenge,” IEEE Trans. on Robotics , vol. 40, pp. 936–959, 2023. [26] D. Mellinger and V. Kumar, “Minimum snap trajectory generation and control for quadrotors,” in 2011 IEEE international conference on robotics and automation . IEEE, 2011, pp. 2520–2525. [27] G. Notarstefano and F. Bullo, “Distributed abstract optimization via constraints consensus: Theory and applications,” IEEE Transactions on Automatic Control , vol. 56, no. 10, pp. 2247–2261, 2011. [28] L. Pichierri, A. Testa, and G. Notarstefano, “Crazychoir: Flying swarms of crazyflie quadrotors in ros 2,” IEEE Robotics and Automation Letters ,vol. 8, no. 8, pp. 4713–4720, 2023. [29] A. Testa, A. Camisa, and G. Notarstefano, “ChoiRbot: A ROS 2 toolbox for cooperative robotics,” IEEE Robotics and Automation Letters , vol. 6, no. 2, pp. 2714–2720, 2021. [30] P. J. Goulart and Y. Chen, “Clarabel: An interior-point solver for conic programs with quadratic objectives,” Mathematical Programming Computation ,pp. 1–83, 2026.

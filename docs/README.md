@@ -6,74 +6,74 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-27
-- 运行时间：2026-07-27 21:53:32 UTC
+- 最新运行日期：2026-08-03
+- 运行时间：2026-08-03 22:08:14 UTC
 - 运行状态：成功
 - 本次总论文数：18
 - 精读区：8
 - 速读区：10
 
 ### 今日简报（AI）
-今日共筛选18篇论文，精读8篇，重点关注合作多智能体策略优化与端到端V2X驾驶两大方向。最值得精读的两篇9分论文分别从规范形式分析揭示了合作优势的核心机制，以及提出了自适应融合框架提升车联网驾驶决策。建议普通读者优先精读这两篇高分论文，把握多智能体协同决策的前沿方法。
-- 详情：[/202607/27/README](/202607/27/README)
+今日共处理18篇论文，精读8篇、速读10篇，重点聚焦多智能体系统与协同导航方向。最值得关注的是《MR-TGN》与《Cooperative Multi-UAV Navigation》，分别以9.0分在团队意图预测和复杂环境多无人机导航中表现突出。建议优先精读这两篇高分论文，再结合速读列表中的因果世界模型与安全协同策略拓展视野。
+- 详情：[/202608/03/README](/202608/03/README)
 
 ### 精读区论文标签
-1. [Aggregate in the Advantage, Not the Ratio: A Canonical-Form Analysis of Cooperative Multi-Agent Policy Optimization](/202607/27/2607.17924v1-aggregate-in-the-advantage-not-the-ratio-a-canonical-form-analysis-of-cooperative-multi-agent-policy-optimization)  
+1. [MR-TGN: A Meta-Role Temporal Graph Network for Team-Level Intent Prediction in Multi-Agent Systems](/202608/03/2607.25316v1-mr-tgn-a-meta-role-temporal-graph-network-for-team-level-intent-prediction-in-multi-agent-systems)  
+   标签：评分：9.0/10、query:intent-avoid
+   evidence：多智能体系统团队级集体意图预测，直接匹配多智能体意图预测需求
+2. [Cooperative Multi-UAV Navigation in Complex Environments via Systematic Multi-Agent Deep Reinforcement Learning](/202608/03/2607.25754v1-cooperative-multi-uav-navigation-in-complex-environments-via-systematic-multi-agent-deep-reinforcement-learning)  
    标签：评分：9.0/10、query:lbm
-   evidence：合作多智能体策略优化，分析优势聚合和比率裁剪
-2. [Defer to Plan: Adaptive Multi-Agent Fusion for End-to-End V2X Driving](/202607/27/2607.19774v1-defer-to-plan-adaptive-multi-agent-fusion-for-end-to-end-v2x-driving)  
-   标签：评分：9.0/10、query:lbm
-   evidence：基于注意力融合的端到端多智能体路径规划用于V2X驾驶
-3. [Dreamer-CPC: Message Learning with World Models for Decentralized Multi-agent Reinforcement Learning](/202607/27/2607.19809v1-dreamer-cpc-message-learning-with-world-models-for-decentralized-multi-agent-reinforcement-learning)  
-   标签：评分：9.0/10、query:marl-comm
-   evidence：去中心化多智能体强化学习中的智能体间通信
-4. [Value-Aware Prediction for Robust Multi-Agent Coordination Under Communication Loss](/202607/27/2607.17914v1-value-aware-prediction-for-robust-multi-agent-coordination-under-communication-loss)  
+   evidence：结合行为克隆示范的多智能体深度强化学习用于多无人机协作导航
+3. [TRUAV: Distributed Multi-Agent Reinforcement Learning for Trajectory Planning and Routing Enhancement in UAV-Aided IoT-Enabled VANETs](/202608/03/2607.23734v1-truav-distributed-multi-agent-reinforcement-learning-for-trajectory-planning-and-routing-enhancement-in-uav-aided-iot-enabled-vanets)  
+   标签：评分：8.0/10、query:lbm
+   evidence：分布式多智能体强化学习用于无人机轨迹规划与路由增强
+4. [GNN-based Multi-Agent Control of Traffic Shockwaves in Sparse Vehicular Ad-hoc Networks](/202608/03/2607.23792v2-gnn-based-multi-agent-control-of-traffic-shockwaves-in-sparse-vehicular-ad-hoc-networks)  
    标签：评分：8.0/10、query:marl-comm
-   evidence：多智能体通信丢失下的协调
-5. [A Self-Evolving Default Action for Cooperative Tasks with Continuous Action Space](/202607/27/2607.18597v1-a-self-evolving-default-action-for-cooperative-tasks-with-continuous-action-space)  
-   标签：评分：8.0/10、query:lbm
-   evidence：具有连续动作的合作任务的多智能体强化学习
-6. [Comparative Study of Multi-Agent Actor-Critic Algorithms in Parameterized Action Reinforcement Learning](/202607/27/2607.19117v1-comparative-study-of-multi-agent-actor-critic-algorithms-in-parameterized-action-reinforcement-learning)  
-   标签：评分：8.0/10、query:lbm
-   evidence：面向参数化动作的多智能体Actor-Critic算法
-7. [Unified Prediction and Planning via Conflict-Aware Disjoint Parameter Training](/202607/27/2607.19971v1-unified-prediction-and-planning-via-conflict-aware-disjoint-parameter-training)  
+   evidence：稀疏车载网络中基于GNN的去中心化多智能体强化学习
+5. [InterOCF: Spatio-Temporal 2D-3D Interaction for Camera-Only 4D Occupancy Forecasting](/202608/03/2607.24431v1-interocf-spatio-temporal-2d-3d-interaction-for-camera-only-4d-occupancy-forecasting)  
    标签：评分：8.0/10、query:intent-avoid
-   evidence：拥挤场景中多智能体导航的统一预测与规划
-8. [ACME: A Multi-Cultural, Multi-Embodiment Social-Navigation Dataset](/202607/27/2607.21964v1-acme-a-multi-cultural-multi-embodiment-social-navigation-dataset)  
+   evidence：四维占用预测从多视角图像预测未来三维语义场景，与动态占用网格感知高度相关
+6. [Shared Voxel-Map-Based Cooperative Indoor UAV Guidance with a Multi-Agent Soft Actor-Critic Controller](/202608/03/2607.25728v1-shared-voxel-map-based-cooperative-indoor-uav-guidance-with-a-multi-agent-soft-actor-critic-controller)  
+   标签：评分：8.0/10、query:lbm
+   evidence：多智能体强化学习用于共享地图下的协同路径规划
+7. [Semi-Decentralized Multi-Spacecraft Collision Avoidance under Communication Constraints](/202608/03/2607.26570v1-semi-decentralized-multi-spacecraft-collision-avoidance-under-communication-constraints)  
+   标签：评分：8.0/10、query:marl-comm
+   evidence：通信约束下的半分散多航天器碰撞规避，直接对应稀疏通信与拓扑约束下的多智能体路径规划
+8. [Learning Social Robot Navigation By Sensing Human Legs](/202608/03/2607.27922v1-learning-social-robot-navigation-by-sensing-human-legs)  
    标签：评分：8.0/10、query:intent-avoid
-   evidence：大规模跨文化社会导航数据集，包含行人轨迹跟踪
+   evidence：面向人群感知导航的端到端强化学习，规避拥塞
 
 ### 速读区论文标签
-1. [Variance-Reduced Q-Learning over Static and Time-Varying Networks](/202607/27/2607.21876v1-variance-reduced-q-learning-over-static-and-time-varying-networks)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：基于共识的稀疏通信分散式Q学习，协作带来线性加速
-2. [Predictive Lightweight MARL for Resilient Coverage in Sparse-Signaling Aerial Networks](/202607/27/2607.22109v1-predictive-lightweight-marl-for-resilient-coverage-in-sparse-signaling-aerial-networks)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：稀疏信号下基于轨迹推断的弹性覆盖MARL
-3. [A Self-Evolving Default Action for Cooperative Tasks with Continuous Action Space](/202607/27/2607.18597v2-a-self-evolving-default-action-for-cooperative-tasks-with-continuous-action-space)  
+1. [Learning Implicit Causal World Models from Multi-Agent Demonstrations](/202608/03/2607.26336v1-learning-implicit-causal-world-models-from-multi-agent-demonstrations)  
+   标签：评分：8.0/10、query:lbm
+   evidence：从多智能体离线演示中恢复因果世界模型用于模型化强化学习，并在导航等协调任务上评测，契合基于强化学习与模仿学习的多智能体路径规划
+2. [MROPE: A Multi-Robot Safe Cooperative Strategy via combined Predictive Safety Filters and Ellipse-based Constraint Compression](/202608/03/2607.29203v1-mrope-a-multi-robot-safe-cooperative-strategy-via-combined-predictive-safety-filters-and-ellipse-based-constraint-compression)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：去中心化共识与局部预测安全滤波器用于多机器人防碰撞
+3. [Key-Interval A*: Accelerating Grid Pathfinding via Structural Abstraction](/202608/03/2607.23393v1-key-interval-a-accelerating-grid-pathfinding-via-structural-abstraction)  
    标签：评分：7.0/10、query:lbm
-   evidence：多智能体强化学习框架，适用于连续动作空间的协作任务，可用于路径规划。
-4. [Safe and Scalable Multi-Drone Payload Transport via CBF-based Reinforcement Learning with Zero-Shot Sim-to-Real Transfer](/202607/27/2607.20665v1-safe-and-scalable-multi-drone-payload-transport-via-cbf-based-reinforcement-learning-with-zero-shot-sim-to-real-transfer)  
+   evidence：最优网格寻路算法，是多智能体路径规划求解器的核心子程序
+4. [GNN-based Multi-Agent Control of Traffic Shockwaves in Sparse Vehicular Ad-hoc Networks](/202608/03/2607.23792v1-gnn-based-multi-agent-control-of-traffic-shockwaves-in-sparse-vehicular-ad-hoc-networks)  
+   标签：评分：7.0/10、query:marl-comm
+   evidence：基于GNN的分布式多智能体强化学习协同控制，涉及智能体间通信
+5. [Multi-Agent Planning with Spatio-Temporal and Topological Constraints using STL-GO](/202608/03/2607.28679v1-multi-agent-planning-with-spatio-temporal-and-topological-constraints-using-stl-go)  
    标签：评分：7.0/10、query:lbm
-   evidence：多无人机协同运输结合强化学习与安全
-5. [Learning Spatiotemporal Decision Priors for Efficient Path Planning under Partial Observability](/202607/27/2607.22166v1-learning-spatiotemporal-decision-priors-for-efficient-path-planning-under-partial-observability)  
-   标签：评分：7.0/10、query:lbm
-   evidence：基于示范的路径规划模仿学习
-6. [Reinforcement Learning: From Algorithms To Foundation Models](/202607/27/2607.17560v1-reinforcement-learning-from-algorithms-to-foundation-models)  
-   标签：评分：6.0/10、query:lbm
-   evidence：关于强化学习的论文涵盖多智能体RL算法，与学习型路径规划广泛相关
-7. [Strategy-Following Multi-Agent Deep Reinforcement Learning Considering Control Strategies Provided to Other Agents](/202607/27/2607.18719v1-strategy-following-multi-agent-deep-reinforcement-learning-considering-control-strategies-provided-to-other-agents)  
+   evidence：多智能体规划结合时空与拓扑约束，与MAPF问题设定高度对应
+6. [Focus Is All You Need: Adaptive Goal-aware Attention Orchestration for Multi-Agent Graph Systems](/202608/03/2607.23678v1-focus-is-all-you-need-adaptive-goal-aware-attention-orchestration-for-multi-agent-graph-systems)  
    标签：评分：6.0/10、query:marl-comm
-   evidence：基于智能体间控制策略的多智能体深度强化学习
-8. [CHMAS: A Coupled Hierarchical Framework for Multi-Agent Reinforcement Learning](/202607/27/2607.19555v1-chmas-a-coupled-hierarchical-framework-for-multi-agent-reinforcement-learning)  
+   evidence：面向多智能体协调的自适应注意力编排
+7. [PLATO: Pointer Learner for Agent and Task Openness](/202608/03/2607.25082v2-plato-pointer-learner-for-agent-and-task-openness)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：面向开放智能体与任务空间的MARL方法，使用指针网络与GNN评论员
+8. [Self-Adaptive Learning and Model Predictive Control for Tracking Unknown Dynamics with No Regret](/202608/03/2607.26370v1-self-adaptive-learning-and-model-predictive-control-for-tracking-unknown-dynamics-with-no-regret)  
+   标签：评分：6.0/10、query:intent-avoid
+   evidence：自适应在线学习预测未知目标运动，MPC规划无碰撞跟踪/追逃；支撑意图预测和运动规划
+9. [MANTA: Multi-Agent Network Topology Adaptation for Self-Evolving Multi-Agent Systems](/202608/03/2607.28527v1-manta-multi-agent-network-topology-adaptation-for-self-evolving-multi-agent-systems)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：面向多智能体系统的自适应通信拓扑
+10. [When Does On-Policy Interaction Help? Representational Tradeoffs in Value-Based Imitation Learning](/202608/03/2607.29617v1-when-does-on-policy-interaction-help-representational-tradeoffs-in-value-based-imitation-learning)  
    标签：评分：6.0/10、query:lbm
-   evidence：用于协调的分层多智能体强化学习框架
-9. [Adaptive Multi-Horizon Reinforcement Learning](/202607/27/2607.20656v1-adaptive-multi-horizon-reinforcement-learning)  
-   标签：评分：6.0/10、query:lbm
-   evidence：自适应多时间尺度强化学习方法适用于多智能体路径规划
-10. [Towards Capability-Aware Traversability Navigation for Unstructured Environments](/202607/27/2607.20679v1-towards-capability-aware-traversability-navigation-for-unstructured-environments)  
-   标签：评分：6.0/10、query:lbm
-   evidence：机器人可通行性导航，单智能体但与学习型路径规划方法相关
+   evidence：基于价值的专家示范模仿学习
 
 
 <div class="dpr-home-promo-card">
