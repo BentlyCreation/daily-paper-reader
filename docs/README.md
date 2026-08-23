@@ -6,74 +6,61 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-03
-- 运行时间：2026-08-03 22:08:14 UTC
+- 最新运行日期：2026-08-23
+- 运行时间：2026-08-23 20:42:09 UTC
 - 运行状态：成功
-- 本次总论文数：18
-- 精读区：8
-- 速读区：10
+- 本次总论文数：13
+- 精读区：6
+- 速读区：7
 
 ### 今日简报（AI）
-今日共处理18篇论文，精读8篇、速读10篇，重点聚焦多智能体系统与协同导航方向。最值得关注的是《MR-TGN》与《Cooperative Multi-UAV Navigation》，分别以9.0分在团队意图预测和复杂环境多无人机导航中表现突出。建议优先精读这两篇高分论文，再结合速读列表中的因果世界模型与安全协同策略拓展视野。
-- 详情：[/202608/03/README](/202608/03/README)
+今日共读13篇论文，精读6篇、速读7篇，重点关注多智能体路径规划与行人运动预测两大方向。  
+最值得精读的是《A Theoretical Framework for Parallel Lifelong MAPF Using Group Decentralized Planning》（9.0分），其面向并行终身多智能体路径规划提出分组去中心化理论框架；同时《Unified Pedestrian Path Prediction Using Inverse Reinforcement Learning》（8.0分）为行人路径预测提供了逆强化学习统一方案。  
+后续可结合速读中的逆强化学习路线选择综述，进一步比较不同IRL建模在交通场景中的适用性。
+- 详情：[/202608/23/README](/202608/23/README)
 
 ### 精读区论文标签
-1. [MR-TGN: A Meta-Role Temporal Graph Network for Team-Level Intent Prediction in Multi-Agent Systems](/202608/03/2607.25316v1-mr-tgn-a-meta-role-temporal-graph-network-for-team-level-intent-prediction-in-multi-agent-systems)  
-   标签：评分：9.0/10、query:intent-avoid
-   evidence：多智能体系统团队级集体意图预测，直接匹配多智能体意图预测需求
-2. [Cooperative Multi-UAV Navigation in Complex Environments via Systematic Multi-Agent Deep Reinforcement Learning](/202608/03/2607.25754v1-cooperative-multi-uav-navigation-in-complex-environments-via-systematic-multi-agent-deep-reinforcement-learning)  
+1. [A Theoretical Framework for Parallel Lifelong MAPF Using Group Decentralized Planning](/202608/23/2608.17928v1-a-theoretical-framework-for-parallel-lifelong-mapf-using-group-decentralized-planning)  
    标签：评分：9.0/10、query:lbm
-   evidence：结合行为克隆示范的多智能体深度强化学习用于多无人机协作导航
-3. [TRUAV: Distributed Multi-Agent Reinforcement Learning for Trajectory Planning and Routing Enhancement in UAV-Aided IoT-Enabled VANETs](/202608/03/2607.23734v1-truav-distributed-multi-agent-reinforcement-learning-for-trajectory-planning-and-routing-enhancement-in-uav-aided-iot-enabled-vanets)  
-   标签：评分：8.0/10、query:lbm
-   evidence：分布式多智能体强化学习用于无人机轨迹规划与路由增强
-4. [GNN-based Multi-Agent Control of Traffic Shockwaves in Sparse Vehicular Ad-hoc Networks](/202608/03/2607.23792v2-gnn-based-multi-agent-control-of-traffic-shockwaves-in-sparse-vehicular-ad-hoc-networks)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：稀疏车载网络中基于GNN的去中心化多智能体强化学习
-5. [InterOCF: Spatio-Temporal 2D-3D Interaction for Camera-Only 4D Occupancy Forecasting](/202608/03/2607.24431v1-interocf-spatio-temporal-2d-3d-interaction-for-camera-only-4d-occupancy-forecasting)  
+   evidence：直接面向分散式多智能体路径规划，提出终身MAPF的理论框架
+2. [Unified Pedestrian Path Prediction Using Inverse Reinforcement Learning](/202608/23/2608.15929v1-unified-pedestrian-path-prediction-using-inverse-reinforcement-learning)  
    标签：评分：8.0/10、query:intent-avoid
-   evidence：四维占用预测从多视角图像预测未来三维语义场景，与动态占用网格感知高度相关
-6. [Shared Voxel-Map-Based Cooperative Indoor UAV Guidance with a Multi-Agent Soft Actor-Critic Controller](/202608/03/2607.25728v1-shared-voxel-map-based-cooperative-indoor-uav-guidance-with-a-multi-agent-soft-actor-critic-controller)  
+   evidence：基于逆向强化学习和STGAT的行人路径预测，匹配行人轨迹预测与意图预测。
+3. [Planner-Conditioned Diffusion for Coordinated Multi-Agent Exploration](/202608/23/2608.16229v1-planner-conditioned-diffusion-for-coordinated-multi-agent-exploration)  
    标签：评分：8.0/10、query:lbm
-   evidence：多智能体强化学习用于共享地图下的协同路径规划
-7. [Semi-Decentralized Multi-Spacecraft Collision Avoidance under Communication Constraints](/202608/03/2607.26570v1-semi-decentralized-multi-spacecraft-collision-avoidance-under-communication-constraints)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：通信约束下的半分散多航天器碰撞规避，直接对应稀疏通信与拓扑约束下的多智能体路径规划
-8. [Learning Social Robot Navigation By Sensing Human Legs](/202608/03/2607.27922v1-learning-social-robot-navigation-by-sensing-human-legs)  
+   evidence：基于扩散策略的多智能体路径规划学习
+4. [Offline Multi-Agent Reinforcement Learning with a Physics-Informed World Model for Cooperative Mixed Traffic Control](/202608/23/2608.17739v1-offline-multi-agent-reinforcement-learning-with-a-physics-informed-world-model-for-cooperative-mixed-traffic-control)  
    标签：评分：8.0/10、query:intent-avoid
-   evidence：面向人群感知导航的端到端强化学习，规避拥塞
+   evidence：离线多智能体强化学习结合世界模型，在公路瓶颈处实现协同拥堵缓解
+5. [Model Predictive Supervisory Control for Hierarchical and Distributed UAS Traffic Management](/202608/23/2608.18353v1-model-predictive-supervisory-control-for-hierarchical-and-distributed-uas-traffic-management)  
+   标签：评分：8.0/10、query:lbm
+   evidence：提出分层分布式MPSC框架用于多智能体无人机交通管理，直接面向共享资源下的去中心化多智能体路径规划。
+6. [Reward-Guided Autoregressive Graph Generation for Efficient Multi-Agent Communication Topology Design](/202608/23/2608.20099v1-reward-guided-autoregressive-graph-generation-for-efficient-multi-agent-communication-topology-design)  
+   标签：评分：8.0/10、query:marl-comm
+   evidence：面向多智能体系统的稀疏高效通信拓扑设计，使用奖励引导的图生成方法
 
 ### 速读区论文标签
-1. [Learning Implicit Causal World Models from Multi-Agent Demonstrations](/202608/03/2607.26336v1-learning-implicit-causal-world-models-from-multi-agent-demonstrations)  
-   标签：评分：8.0/10、query:lbm
-   evidence：从多智能体离线演示中恢复因果世界模型用于模型化强化学习，并在导航等协调任务上评测，契合基于强化学习与模仿学习的多智能体路径规划
-2. [MROPE: A Multi-Robot Safe Cooperative Strategy via combined Predictive Safety Filters and Ellipse-based Constraint Compression](/202608/03/2607.29203v1-mrope-a-multi-robot-safe-cooperative-strategy-via-combined-predictive-safety-filters-and-ellipse-based-constraint-compression)  
-   标签：评分：8.0/10、query:intent-avoid
-   evidence：去中心化共识与局部预测安全滤波器用于多机器人防碰撞
-3. [Key-Interval A*: Accelerating Grid Pathfinding via Structural Abstraction](/202608/03/2607.23393v1-key-interval-a-accelerating-grid-pathfinding-via-structural-abstraction)  
+1. [Learning Sequential Mobility Choice: A Review of Route and Activity Choice through Inverse Reinforcement and Imitation Learning](/202608/23/2608.15339v1-learning-sequential-mobility-choice-a-review-of-route-and-activity-choice-through-inverse-reinforcement-and-imitation-learning)  
    标签：评分：7.0/10、query:lbm
-   evidence：最优网格寻路算法，是多智能体路径规划求解器的核心子程序
-4. [GNN-based Multi-Agent Control of Traffic Shockwaves in Sparse Vehicular Ad-hoc Networks](/202608/03/2607.23792v1-gnn-based-multi-agent-control-of-traffic-shockwaves-in-sparse-vehicular-ad-hoc-networks)  
-   标签：评分：7.0/10、query:marl-comm
-   evidence：基于GNN的分布式多智能体强化学习协同控制，涉及智能体间通信
-5. [Multi-Agent Planning with Spatio-Temporal and Topological Constraints using STL-GO](/202608/03/2607.28679v1-multi-agent-planning-with-spatio-temporal-and-topological-constraints-using-stl-go)  
-   标签：评分：7.0/10、query:lbm
-   evidence：多智能体规划结合时空与拓扑约束，与MAPF问题设定高度对应
-6. [Focus Is All You Need: Adaptive Goal-aware Attention Orchestration for Multi-Agent Graph Systems](/202608/03/2607.23678v1-focus-is-all-you-need-adaptive-goal-aware-attention-orchestration-for-multi-agent-graph-systems)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：面向多智能体协调的自适应注意力编排
-7. [PLATO: Pointer Learner for Agent and Task Openness](/202608/03/2607.25082v2-plato-pointer-learner-for-agent-and-task-openness)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：面向开放智能体与任务空间的MARL方法，使用指针网络与GNN评论员
-8. [Self-Adaptive Learning and Model Predictive Control for Tracking Unknown Dynamics with No Regret](/202608/03/2607.26370v1-self-adaptive-learning-and-model-predictive-control-for-tracking-unknown-dynamics-with-no-regret)  
-   标签：评分：6.0/10、query:intent-avoid
-   evidence：自适应在线学习预测未知目标运动，MPC规划无碰撞跟踪/追逃；支撑意图预测和运动规划
-9. [MANTA: Multi-Agent Network Topology Adaptation for Self-Evolving Multi-Agent Systems](/202608/03/2607.28527v1-manta-multi-agent-network-topology-adaptation-for-self-evolving-multi-agent-systems)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：面向多智能体系统的自适应通信拓扑
-10. [When Does On-Policy Interaction Help? Representational Tradeoffs in Value-Based Imitation Learning](/202608/03/2607.29617v1-when-does-on-policy-interaction-help-representational-tradeoffs-in-value-based-imitation-learning)  
+   evidence：通过逆向强化学习和模仿学习综述路径与活动选择，与多智能体路径搜索的模仿学习直接相关。
+2. [Untangling Dense Crowds with mmWave Radar: From Crowd Semantics to Individual Spatial Behaviors](/202608/23/2608.19357v1-untangling-dense-crowds-with-mmwave-radar-from-crowd-semantics-to-individual-spatial-behaviors)  
+   标签：评分：7.0/10、query:intent-avoid
+   evidence：基于雷达的密集人群占用感知与个体空间行为恢复，与人群占用网格感知相关
+3. [Accelerating Mixed Discrete-Continuous Motion Planning via Neural Graphs of Convex Sets](/202608/23/2608.15440v1-accelerating-mixed-discrete-continuous-motion-planning-via-neural-graphs-of-convex-sets)  
    标签：评分：6.0/10、query:lbm
-   evidence：基于价值的专家示范模仿学习
+   evidence：基于图注意力网络的混合离散连续运动规划学习加速，与基于学习的路径规划密切相关。
+4. [Rigidity-Aware Formation Tracking under Sensing Range Constraints via Single Control Barrier Function Constraint](/202608/23/2608.16115v1-rigidity-aware-formation-tracking-under-sensing-range-constraints-via-single-control-barrier-function-constraint)  
+   标签：评分：6.0/10、query:intent-avoid
+   evidence：基于控制障碍函数的分布式多机器人协调，面向感知约束下的安全编队，可用于去中心化避碰协调。
+5. [Bayesian Partner Modelling enables Adaptive Replanning for LLM Coordination](/202608/23/2608.18490v1-bayesian-partner-modelling-enables-adaptive-replanning-for-llm-coordination)  
+   标签：评分：6.0/10、query:intent-avoid
+   evidence：用贝叶斯跟踪伙伴技能/意图并在多智能体LLM协作中自适应重规划
+6. [Multi-Agent Orchestration with the Common-Sense Reasoning Capabilities of LLMs for Autonomous Driving](/202608/23/2608.20129v1-multi-agent-orchestration-with-the-common-sense-reasoning-capabilities-of-llms-for-autonomous-driving)  
+   标签：评分：6.0/10、query:lbm
+   evidence：多智能体编排结合PPO强化学习与LLM推理用于自动驾驶决策，与基于学习的多智能体路径规划相关。
+7. [Explainable Decoding of Sensorimotor Communication in Joint Object Manipulation](/202608/23/biorxiv-10-64898-2026-08-17-745075-v1-explainable-decoding-of-sensorimotor-communication-in-joint-object-manipulation)  
+   标签：评分：6.0/10、query:intent-avoid
+   evidence：基于多模态感觉运动信号的多智能体意图解码
 
 
 <div class="dpr-home-promo-card">

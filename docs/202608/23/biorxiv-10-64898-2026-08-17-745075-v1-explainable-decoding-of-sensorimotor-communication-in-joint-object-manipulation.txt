@@ -1,0 +1,1817 @@
+Title: Explainable Decoding of Sensorimotor Communication in Joint Object Manipulation
+
+URL Source: https://www.biorxiv.org/content/10.64898/2026.08.17.745075v1.full.pdf
+
+Number of Pages: 23
+
+Markdown Content:
+# Explainable Decoding of Sensorimotor Communication in Joint Object Manipulation 
+
+Yiming Liu 1,2 , Dorian Verdel 2, Raz Leib 1, Etienne Burdet 2, and David W. Franklin 1,3,4,* 
+
+> 1
+
+Neuromuscular Diagnostics, TUM School of Medicine and Health, Technical University of Munich, Munich, Germany 
+
+> 2
+
+Department of Bioengineering, Imperial College of Science, Technology and Medicine, London, UK 
+
+> 3
+
+Munich School of Robotics and Machine Intelligence (MIRMI), Technical University of Munich, Munich, Germany 
+
+> 4
+
+Munich Data Science Institute (MDSI), Technical University of Munich, Munich, Germany 
+
+> *
+
+Correspondence: David W. Franklin (david.franklin@tum.de) 
+
+Abstract 1
+
+Humans often collaborate under asymmetric information, for example when two people carry a table 2
+
+and only one knows the destination. They coordinate without speech using cues from movement kinematics, 3
+
+interaction forces, and object states. Characterizing this sensorimotor communication is difficult because 4
+
+these signals both execute the task and convey information, whose meaning is context-dependent. Here, 5
+
+we investigated a virtual table-carrying task where one partner knew the target while the other inferred 6
+
+it from visuo-haptic feedback. Participants flexibly adapted kinematic and haptic cues across contexts to 7
+
+convey intention. We introduce an explainable machine-learning framework that decodes intent from ongoing 8
+
+multimodal signals and quantifies where individual features are informative. Incorporating the decoded 9
+
+signals into a drift-diffusion model accurately predicted the uninformed partner’s target choices and decision 10 
+
+times. Together, our framework explains how humans communicate through action and offers principles for 11 
+
+collaborative robots to infer and express intent through physical interaction. 12 13 
+
+Humans excel at physical collaboration, coordinating seamlessly by continuously predicting and adapting to their 14 
+
+partners’ actions [1, 2, 3, 4, 5, 6, 7, 8], while forming internal representations of their partners’ behavior [9, 10, 11]. 15 
+
+Achieving fine coordination requires partners to learn each other’s movement intentions, which becomes especially 16 
+
+challenging under asymmetric information , when one partner lacks full knowledge of the environment (e.g., the 17 
+
+goal or an obstacle) and must infer it from their partner’s behavior. Despite this information gap, partners can 18 
+
+often coordinate effectively without words, communicating intentions through action by modulating movements 19 
+
+and forces, a process referred to as sensorimotor communication [12]. Effective communication may be facilitated 20 
+
+by legible behavioral signals that enable observers to infer intent quickly and confidently [13]. Although central 21 
+
+to human physical collaboration, the mechanisms by which movement and force jointly convey intent remain 22 
+
+largely unknown. 23 
+
+Sensorimotor communication emerges intuitively in humans [14], yet its underlying structure is difficult to 24 
+
+characterize. One reason is its inherently multimodal nature: it relies on high-dimensional kinematic and haptic 25 
+
+signals [15] such as movement path, speed and force magnitude. These signals are physically coupled and often 26 
+
+covary, yet they remain dissociable and can diverge, for example during collisions. Consequently, changes in one 27 
+
+variable may reflect intentional signaling, mechanical task constraints, or indirect consequences of modulating 28 
+
+another variable. Moreover, actions in physical collaboration simultaneously serve the task goal and convey 29 
+
+intentions and task-relevant information. Communicative signals are embedded within task execution and must 30 
+
+respect the behavioral constraints imposed by the task. Together, these properties make human sensorimotor 31 
+
+communication difficult to interpret. 32 
+
+Previous studies show that humans enhance legibility by exaggerating or disambiguating movements relative 33 
+
+to alternative goals. For example, they modulate movement trajectories [16, 17, 18, 19], velocity profiles 34 
+
+[20, 21], grip aperture [17], movement duration [22], and movement variability [23, 24] (see [12] for a review). 35 
+
+Communicative signals are often identified as deviating from energetically optimal movements observed when 36 
+
+1
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+signaling is unnecessary [16, 25]. Although this line of work is motivated by direct physical collaboration 37 
+
+(e.g., transporting a table [26, 27, 28]), most studies have examined visually observable cues in tasks without 38 
+
+shared object dynamics or direct physical contact. This constrains the multimodal expression of sensorimotor 39 
+
+communication and overlooks the contributions of haptic signals and their interaction with visual cues. 40 
+
+Haptic feedback is a critical communication channel during physical collaboration [29, 30]. Humans use 41 
+
+haptic cues to infer a partner’s movement intentions [10, 31], which can improve interpersonal coordination 42 
+
+[32, 33] and task performance [34, 35]. These effects depend on factors such as the coupling stiffness [34], 43 
+
+individual performance [36], individual motor costs [37], and role distribution within the dyad [32, 33, 38]. In 44 
+
+prior studies, haptic feedback arose naturally from physical coupling during task execution, but the tasks did 45 
+
+not require participants to actively shape haptic signals to enhance legibility because both partners had full 46 
+
+visibility and faced no environmental constraints. Moreover, it remains unclear how haptic signals interact with 47 
+
+visual cues during active communication. 48 
+
+Here we examine how intention is encoded in and decoded from multimodal sensorimotor signals during 49 
+
+physical collaboration. In complex collaboration, partners may embed intention in force, movement, and 50 
+
+object-state signals, creating a high-dimensional signaling space that is potentially redundant, as the same intent 51 
+
+can be expressed through different combinations of signals. Meanwhile, the informativeness of each signal may 52 
+
+depend on the task structure, local environment, and concurrent signals. We ask three questions. First, how is 53 
+
+intent embedded across multimodal sensorimotor signals as a function of contextual factors? Second, does intent 54 
+
+expression show consistent patterns within individuals, and are these patterns shared across participants? Third, 55 
+
+how can we decode and interpret the information conveyed through sensorimotor communication? 56 
+
+To study multimodal sensorimotor communication, we used a joint transport task in which pairs of participants 57 
+
+moved a virtual table freely in a plane toward one of four possible targets while receiving visual and haptic 58 
+
+feedback. This setup created a rich set of cues through which partners could communicate flexibly, without 59 
+
+being constrained to a predefined signaling strategy. By manipulating whether target information was shared or 60 A
+
+> Where to go?
+
+# ABC
+
+Modeling Framework 
+
+SHAP 
+
+Explainable AI 
+
+> Identify features that convey the informed partner’s intent
+
+Drift Diffusion Model 
+
+Human Decision Making 
+
+> Model the uninformed partner's evidence acquisition
+> Decode context-dependent sensorimotor signals
+
+Random Forest 
+
+Machine Learning 
+
+Fxv θ
+
+Informed Uninformed 
+
+Figure 1: Conceptual overview of the modeling framework. In the asymmetric table-carrying task, only the informed partner knows the target location, while the uninformed partner must infer it from multimodal sensorimotor signals, including object path, velocity, orientation, and interaction force. A random forest model was trained to decode these sensorimotor signals and predict the informed partner’s intended target. We then applied SHAP analysis to explain how each sensorimotor feature contributes to the random forest model’s predictions. Finally, we combined the random forest model with a drift-diffusion model to characterize the uninformed partner’s evidence accumulation and decision-making process. 
+
+2
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+asymmetric between partners, we examined how humans shaped their behavior to make the target legible. 61 
+
+Interpreting these high-dimensional sensorimotor interactions requires new data processing pipelines (Fig. 1). 62 
+
+We used explainable machine learning methods to decode the intended target from ongoing behavior and to 63 
+
+quantify the contribution of each variable to intent estimation. Based on the decoded signals, we further modeled 64 
+
+how the uninformed participant accumulated evidence over time until they identified the target. This approach 65 
+
+provides a quantitative method for studying how intent is communicated through physical interaction. 66 
+
+# 1 Results 67 
+
+Two participants jointly controlled the movements of a table in a four-room virtual apartment using haptic 68 
+
+devices, where each partner held an extremity of the table. Each participant viewed the shared task on their 69 
+
+own display, but could not see or talk to their partner directly (Fig. 2A). In each trial, four potential target 70 ?
+
+> Target
+> Informed Uninformed
+
+Button Press  
+
+> Informed Informed Target
+
+Symmetric 
+
+> Target
+
+?
+
+> Uninformed Informed
+
+Asymmetric Experimental Conditions 
+
+# A BC
+
+## Asym. Asym. Asym .Sym. Sym. Button Button 
+
+×2 with switched roles 
+
+Figure 2: Experimental setup, conditions and protocol. A. Experimental setup: two participants sat side-by-side, separated by a curtain, each interacting with a haptic device. The haptic devices were connected to the two ends of a virtual table (blue rectangle) via virtual springs. The virtual apartment was divided into four rooms by virtual walls. Four potential target locations were in the two rooms on the right, with one true target and three decoys. Dyads were instructed to move the table from the start position in the left room to the target, while avoiding collisions with the walls and entering decoy locations. When informed (here on the right), a participant saw the target in green and decoys in orange; when uninformed (here on the left), a participant saw all potential targets in orange. B. Experimental conditions: 
+
+Symmetric , both participants were informed of the target location; Asymmetric and Button Press , one participant was informed and the other was uninformed of the target. In the Button Press condition, the uninformed participant pressed a button as soon as they believed they had identified the target. C. Experimental Protocol: each dyad performed 13 blocks in total, with each block consisting of 40 co-manipulation trials. The order of block conditions was the same for all dyads. In the Asymmetric and Button Press conditions, the informed and uninformed roles were swapped between partners halfway through the experiment. 
+
+3
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+locations were presented, one true target and three decoys. The dyads needed to transport the table from a 71 
+
+fixed start position in the left room, through two passages, to the target as quickly as possible. The targets were 72 
+
+distributed in the top-right and bottom-right rooms. Two scenes with different target layouts were presented in 73 
+
+a pseudo-randomized order across trials. When a participant was informed, the target was highlighted in green 74 
+
+with decoys in orange; when uninformed, all potential target locations appeared identically in orange (Fig. 2A). 75 
+
+Three experimental conditions varied the information available to each participant and the incentive for 76 
+
+early, legible signaling (Fig. 2B). In all conditions, the dyads were rewarded for faster completion times. In the 77 
+
+Symmetric condition, both participants were informed of the location of the target. In the Asymmetric and 78 
+
+Button Press conditions, only one participant was informed of the location of the target, which they needed to 79 
+
+convey to the other uninformed participant through sensorimotor signals. In the Button Press condition, the 80 
+
+uninformed participant was instructed to press a button as soon as they believed they had identified the target. 81 
+
+After the button press, one of two trial types occurred: (i) Button Press–Transport , where the dyad continued 82 
+
+moving the table to the target, and (ii) Button Press–Select , where the table was frozen and the uninformed 83 
+
+participant selected the target they believed to be correct. The two trial types were pseudo-randomized within 84 
+
+each block and revealed only after the button press. This design encouraged movements that were informative 85 
+
+early and compatible with subsequent transport (see Methods, Experimental conditions). In Button Press–Select 86 
+
+trials, the trial ended with target selection, and dyads were rewarded based on the time of the button presses for 87 
+
+correct selections. In all other trials, the trial ended when the table reached the target, and dyads were rewarded 88 
+
+for the actual completion time. General trends of trial-by-trial learning are shown in Supplementary Note 1. 89 
+
+1.1 Task performance and effort sharing 90 
+
+To quantify how task conditions shaped performance and dyadic effort, we compared the completion time 91 
+
+and total mechanical work performed by the dyad in the final block of each condition (Blocks 5–7,11–13). A 92 
+
+repeated-measures ANOVA revealed a significant main effect of condition on completion time ( F1.16 ,18 .56 = 4 .28, 93 
+
+p = 0 .048, η2 
+
+> p
+
+= 0 .21; Greenhouse-Geisser corrected; Fig. 3A). While the Symmetric condition appeared slightly 94 
+
+faster, no pairwise comparisons reached statistical significance (all p > 0.10). 95 
+
+We hypothesized that asymmetric information contexts would motivate sensorimotor signaling, which could 96 
+
+require an increase in mechanical work compared to the Symmetric baseline. Contrary to our hypothesis, we 97 
+
+observed a significant decrease in this energetic expenditure (Fig. 3B). A repeated-measures ANOVA revealed 98 
+
+a significant main effect of condition on total mechanical work ( F1.22 ,19 .52 = 15 .39, p < 0.001, η2 
+
+> p
+
+= 0 .49; 99 
+
+Greenhouse-Geisser corrected). Subsequent pairwise comparisons confirmed that the Symmetric condition 100 
+
+required significantly more work than both asymmetric conditions (both: p < 0.01, d > 0.56). Additionally, the 101 
+
+Asymmetric condition required more work than the Button Press–Transport condition ( p = 0 .002, d = 0 .31). 102 
+
+Note that the Button Press–Select trials were excluded from this analysis because the table was frozen at the 103 
+
+button press. Similar results were obtained when measuring effort through the total force and the table path 104 
+
+length (see Supplementary Note 2). In sum, these results show that efficient sensorimotor signaling was achieved 105 
+
+without an increase in effort. 106 
+
+Beyond this overall decrease in mechanical work, its sharing between the partners was shaped by information 107 
+
+and task requirements (Fig. 3C). Dyads exhibited a consistent monotonic shift in work sharing across task-role 108 
+
+conditions, which refers to the combination of the task condition and the participant’s informed/uninformed role. 109 
+
+A repeated-measures ANOVA revealed a significant effect of task-role condition ( F2.0,32 .0 = 123 .15, p < 0.0001, 110 
+
+η2 
+
+> p
+
+= 0 .89, Greenhouse–Geisser corrected). All post hoc pairwise comparisons were significant (all p < 0.001). 111 
+
+Effect sizes were smaller for comparisons between Asymmetric and Button Press within the same information 112 
+
+role ( d = 0 .28 for informed; d = 0 .67 for uninformed), while all other pairwise contrasts had d ≥ 0.93. In the 113 
+
+Symmetric condition, work sharing was typically more balanced between partners; in Asymmetric and Button 114 
+
+Press , the informed partner contributed more than the uninformed. This imbalance was stronger in Button 115 
+
+Press than in Asymmetric , which may reflect that the informed partner adopted a more dominant role to 116 
+
+generate clearer sensorimotor cues, while the uninformed partner prioritized target inference over contributing to 117 
+
+transport. Accordingly, in the rest of this paper, we refer to the informed partner as the leader in Asymmetric 118 
+
+and Button Press , and to the partner with the larger work share as the leader in Symmetric .119 
+
+4
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint 0.1 0.0 −0.1
+
+3 214    
+
+> Scene 1
+> Y (m)
+> −0.2 −0.1 0.0 0.1 0.2
+
+X (m) 
+
+> 0.1 0.0 −0.1
+
+213 4
+
+> Scene 2
+> Y (m)
+
+Symmetric Asymmetric Button Press 
+
+> −40° −20° 0° 20° 40° 60°
+
+Orientation     
+
+> −0.2 −0.1 0.0 0.1 0.2
+
+X (m) 
+
+> −40° −20° 0° 20° 40° 60° 02468(N)
+
+Force     
+
+> −0.2 −0.1 0.0 0.1 0.2
+
+X (m) 
+
+> 02468(N) 0.0 0.1 0.2 0.3 (m/s)
+
+Velocity     
+
+> −0.2 −0.1 0.0 0.1 0.2
+
+X (m) 
+
+> 0.0 0.1 0.2 0.3 (m/s)
+
+A B CD E F G
+
+> −25% 0% 50% 25% 75% 125% 100%
+> Work Share of Left Subject
+
+Button Uninf. Asym. Uninf. Sym. Asym. Inf. Button Inf. Sym. Asym. Button 
+
+> 2.6 3.0 3.4 3.8 4.2
+> Completion Time (s)
+
+Sym. Asym. Button 
+
+> 2.2 2.4 2.6
+> Total Work (J)  ** ** ***
+
+Figure 3: Leader-follower behavior and signaling cues under asymmetric information. A. Completion time tended to increase under asymmetric information. B. The total mechanical work expended by the dyads decreased under asymmetric information. Asterisks indicate significant pairwise differences. In (A–B), values were calculated from the final blocks of each condition before and after the role swap (Blocks 5–7 and 11–13). Button Press–Select trials were excluded as they did not end at the target. C. Share of total work contributed by the left-seated participant across task-role conditions, which refers to the combination of the task condition and the participant’s informed/uninformed role. The gray bars indicate the mean across dyads, and the dotted line marks equal contribution. Each colored line corresponds to one dyad. 
+
+D. Mean table trajectories for each target in Scene 1 (top) and Scene 2 (bottom), color-coded by target. E–G. Mean profiles of sensorimotor signals plotted as a function of table position along the x-axis for each scene: (E) table orientation, (F) table velocity, and (G) leader force. In (D–G), solid, dashed, and dotted lines denote the Symmetric , Asymmetric , and 
+
+Button Press conditions, respectively. Horizontal bars at the top indicate x-ranges with significant differences between conditions according to non-parametric cluster-based permutation tests (see Methods for details), color-coded by target. The dashed vertical lines indicate the positions of the vertical walls with constrained passages; from left to right, they mark the first and second passages. Each panel displays measures exclusively for targets within one room (top-right or bottom-right) of the scene. 
+
+1.2 Multimodal signaling 120 
+
+In this joint manipulation task, partners were mechanically coupled through the object, creating a potentially 121 
+
+rich physical channel for communication. In principle, the informed partner could embed target information 122 
+
+in multiple variables, such as the table’s path, orientation, or interaction forces. To characterize how behavior 123 
+
+changed under asymmetric information, we compared these variables across conditions. The Symmetric condition 124 
+
+was used as a baseline, as it reflects efficient transport without the need for signaling. Deviations from this 125 
+
+baseline in Asymmetric and Button Press conditions may indicate adjustments to improve legibility. 126 
+
+Dyads collaborated to transport the table in two scenes with different target layouts (Fig. 3D). Asymmetric 127 
+
+5
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+information induced significant changes in table paths in specific regions, generally increasing separation from 128 
+
+paths leading to nearby decoys. Furthermore, deviations were generally larger in the Button Press condition 129 
+
+than in the Asymmetric condition (Fig. 3D). Despite these systematic deviations, paths remained broadly similar 130 
+
+across conditions, indicating that the dyads preserved transport efficiency by avoiding large detours. This 131 
+
+conservative modulation of the path is consistent with the absence of increased dyadic work under asymmetric 132 
+
+information (Fig. 3B), suggesting that cues other than path deviations may be used to convey target information. 133 
+
+We then examined differences in table orientation, table velocity, and interaction forces between the three 134 
+
+conditions. Table orientation profiles showed significant differences between conditions after the second passage. 135 
+
+Deviations from the Symmetric baseline emerged in the Asymmetric condition and were even more pronounced in 136 
+
+the Button Press condition (Fig. 3E). Table velocity also differed across conditions (Fig. 3F), with the Symmetric 137 
+
+condition exhibiting higher speeds than the Asymmetric and Button Press conditions. Finally, leaders applied 138 
+
+higher forces in the Button Press and Asymmetric conditions, particularly between the two passages (Fig. 3G). 139 
+
+Comparing the two scenes further revealed that signaling adjustments depended on local environmental 140 
+
+context rather than target location alone. T 1, T 2, and T 4 had identical positions across scenes, whereas T 3141 
+
+differed in location. Thus, the same spatial location could correspond to a different local context with different 142 
+
+nearby decoys. For instance, in Scene 1, T 2 lay between T 1 and T 3, leading to minimal deviations from the 143 
+
+Symmetric baseline as shifts in either direction would have been misleading. By contrast, in Scene 2, T 2 had the 144 
+
+same location but a different local context, with only one competing decoy ( T 1) on the upper right, leading to 145 
+
+downward shifts in path and orientation. Another example was T 4 after the second passage: leader force showed 146 
+
+little difference across conditions in Scene 1, since no decoys were present. However, in Scene 2, leader force 147 
+
+increased under asymmetric information, possibly to further enhance separation from T 3. Conversely, targets 148 
+
+with similar local contexts showed similar signaling strategies despite different locations. T 3 in Scene 1 and T 2149 
+
+in Scene 2 both had competing decoys only to the upper right, and both showed similar downward adjustments. 150 
+
+On the other hand, deviations from the Symmetric baseline cannot always be attributed to sensorimotor 151 
+
+signaling. As shown in Fig. 3C, information asymmetry shifted more work share toward the leader, which could 152 
+
+cause behavioral changes. For example, before the second passage, table orientation was more tilted in the 153 
+
+Asymmetric and Button Press conditions (Fig. 3E), which could result from the leader dominating the maneuver, 154 
+
+or from table tilt being used as an informative signal, or both. Similarly, the lower speed observed in the 155 
+
+Asymmetric and Button Press conditions likely arose because one partner did not know the target, preventing 156 
+
+the dyad from pushing together consistently, rather than because speed itself served as a signal (Fig. 3F). 157 
+
+These results, together with comparisons of other sensorimotor signals (see Supplementary Note 3), suggest 158 
+
+that sensorimotor signaling is multimodal, high-dimensional, and context-dependent. However, behavioral 159 
+
+differences under asymmetric information may not always reflect signaling alone, motivating the use of more 160 
+
+powerful tools to decode it. 161 
+
+1.3 Machine learning decoding of sensorimotor communication 162 
+
+Decoding the target from the instantaneous movement state requires combining multiple cues whose meaning 163 
+
+can be context dependent. These cues interact non-linearly, which complicates the interpretation of their 164 
+
+combined meaning using classical methods. Therefore, we used a Random Forest (RF) classifier to implement 165 
+
+context-dependent decision rules by partitioning the feature space, interpret sensorimotor cues, and output 166 
+
+probabilities for each target. The probabilities reflect the model’s confidence in each target as the intended goal, 167 
+
+and thus the legibility of the instantaneous sensorimotor signals. 168 
+
+The spatial distribution of the Random Forest model’s confidence for each target in Scene 2 is shown in 169 
+
+Figure 4A, with the corresponding results for Scene 1 shown in Supplementary Note 4.1. At the start of 170 
+
+trials, confidence was near chance level ( ∼ 25%), as the initial trajectories were similar across targets and thus 171 
+
+uninformative. Confidence increased as the table moved toward the target, with some regions reaching higher 172 
+
+confidence earlier than others. In the top-right room, confidence rose faster for T 1 along the scene’s upper 173 
+
+boundary and for T 2 within the lower part. In the bottom-right room, T 3 was positioned near the passage and 174 
+
+along the route to T 4. Accordingly, T 3 had high confidence only within a small area around the target, whereas 175 
+
+for T 4, confidence sharply increased even before the table passed T 3, suggesting clear signaling beyond position 176 
+
+cues around T 3. Confidence dropped sharply when the table position was more consistent with a decoy, as visible 177 
+
+6
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+D9 D9 D1 D8 D4 D14 D12 D2 D7 D6 D3 D11 D17 D13 D15 D10 D16 D5 MDS-2 MDS-1 MDS-3 
+
+> D9 D1 D2 D8 D6 D16 D7 D13 D4 D5 D14 D10 D15 D3 D12 D11 D17
+
+D9 D1 D2 D8 D6 D16 D7 D13 D4 D5 D14 D10 D15 D3 D12 D11 D17 
+
+> 0.13 0.13 0.14 0.13 0.13 0.14 0.13 0.13 0.13 0.13 0.13 0.13 0.12 0.12 0.12 0.12 0.13 0.13 0.14 0.13 0.12 0.13 0.13 0.12 0.12 0.12 0.13 0.12 0.12 0.12 0.12 0.13 0.13 0.12 0.13 0.12 0.13 0.12 0.11 0.12 0.13 0.12 0.12 0.11 0.12 0.12 0.12 0.13 0.12 0.12 0.12 0.11 0.12 0.12 0.11 0.11 0.11 0.12 0.13 0.13 0.12 0.12 0.11 0.11 0.12 0.11 0.11 0.12 0.11 0.12 0.12 0.12 0.12 0.12 0.11 0.11 0.12 0.11 0.11 0.11 0.11 0.11 0.12 0.12 0.11 0.11 0.11 0.11 0.11 0.12 0.11 0.11 0.11 0.11 0.11 0.10 0.11 0.11 0.11 0.11 0.11 0.11 0.11 0.10 0.11 0.11 0.10 0.11 0.11 0.11 0.10 0.11 0.11 0.10 0.11 0.11 0.11 0.10 0.10 0.10 0.11 0.09 0.11 0.11 0.10 0.10 0.11 0.10 0.10 0.10 0.10 0.10 0.10 0.10 0.10 0.10
+
+dyad vs general 
+
+> 0.11 0.10 0.10 0.09 0.10 0.09 0.1 0.09 0.09 0.08 0.09 0.09 0.08 0.08 0.08 0.08 0.09
+
+0.08 0.10 0.12 0.14 JS distance 
+
+AB C
+
+# 123
+
+XY Y
+
+# 4
+
+X
+
+0.0 0.2 0.4 0.6 0.8 1.0 Mean Confidence 0% 100% 
+
+(2 nd passage) (target) Normalized Table Pos X 
+
+40% 50% 60% 
+
+70% 
+
+100% Confidence Asym. vs Button Sym. vs Button Sym. vs Asym 
+
+Symmetric Asymmetric Button Press Figure 4: Random Forest decoding of sensorimotor signaling. A. Mean confidence of the RF model across the workspace in Scene 2 for each target T 1 − T 4. The workspace was discretized into 0 .5 × 0.5 cm bins, and color indicates the mean predicted probability of the true target within each bin. B. Mean model confidence in the true target as a function of normalized table position, from the second passage (0%) to the target (100%), averaged across targets and scenes for each condition. Shaded regions indicate 95% confidence interval across dyads, and horizontal bars at the top indicate significant differences between conditions according to non-parametric cluster-based permutation tests. C. Pairwise Jensen–Shannon (JS) distance between dyad-specific RF models, computed from their predictions on a shared dataset. The heatmap shows the mean pairwise JS distance between pairs of dyads, the rightmost column shows the JS distance between each dyad and the general model trained on pooled data. The dendrogram on the right shows agglomerative hierarchical clustering with average linkage, grouping dyads based on the similarity of their model predictions. Inset: 3D metric multidimensional scaling (MDS) embedding of the JS distance matrix, providing a low-dimensional visualization of the distances between dyads. 
+
+7
+
+.CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint near the top-right corner for T 2 and the lower-right corner for T 3. Overall, although no ground-truth confidence 178 
+
+values were available for direct comparison, the model’s outputs qualitatively aligned with our expectations 179 
+
+based on the task geometry. 180 
+
+We next examined how confidence evolved across conditions, averaged across scenes and targets (Fig. 4B). 181 
+
+The RF model’s confidence in the true target is plotted as a function of the table’s normalized horizontal position, 182 
+
+where 0% corresponds to the second passage and 100% to the target location. Confidence started at similar 183 
+
+levels across conditions, with the Button Press condition showing slightly higher values. As the table moved 184 
+
+toward the target, confidence increased earliest and most strongly in Button Press , followed by Asymmetric 185 
+
+and then Symmetric , with significant differences between conditions. This suggests that dyads produced more 186 
+
+informative movements when signaling incentives were stronger, with the clearest signaling in Button Press ,187 
+
+followed by Asymmetric , both clearer than the Symmetric baseline. In all conditions, confidence approached 188 
+
+100% near the target. 189 
+
+In addition to the general RF model trained on pooled data from all dyads, we also trained dyad-specific RF 190 
+
+models on each dyad’s data to assess their individual signaling strategies. The dyad-specific models were evaluated 191 
+
+on a shared dataset aggregated from all dyads, and their predictions were compared using the Jensen-Shannon 192 
+
+(JS) distance. 193 
+
+The mean pairwise JS distance between each pair of dyads and each dyad compared to the general model is 194 
+
+shown in Figure 4C, where smaller JS distances indicate more similar strategies. To characterize how dyads 195 
+
+differed in their signaling strategies, we applied agglomerative hierarchical clustering with average linkage based 196 
+
+on the JS distance. Dyads that clustered earlier and appeared lower in the dendrogram were more similar to 197 
+
+one another, whereas dyads that clustered higher showed more distinct strategies. Moreover, we applied metric 198 
+
+multidimensional scaling (MDS) to the JS distance matrix, embedding dyads in a three-dimensional space that 199 
+
+approximately preserves their high-dimensional distances (stress=0.124, Fig. 4C inset). Dyads located closer 200 
+
+together showed more similar signaling strategies, whereas those farther apart exhibited more distinct strategies. 201 
+
+Overall, JS distances remained small and spanned a narrow range (0.08–0.14), indicating that most dyads 202 
+
+had similar signaling strategies. A few dyads showed larger distinction to both the general model and other 203 
+
+dyads. In particular, D9, D1, and D2 exhibited the largest JS distance, appeared at the top of the dendrogram, 204 
+
+and also appeared at the edge of the MDS map. This indicates comparatively distinct strategies. Conversely, 205 
+
+dyads near the bottom of the dendrogram (e.g., D10, D15, D3, and D12) were closer to the general model and 206 
+
+to most other dyads, suggesting more common signaling strategies. 207 
+
+Importantly, distinct signaling strategies do not imply poorer coordination. For instance, D9 achieved the 208 
+
+earliest button presses, and D1 pressed at the smallest distance from the start (see Supplementary Note 6). 209 
+
+Therefore, some dyads may have developed individual “dialects” that facilitated more efficient communication. 210 
+
+1.4 SHAP-based interpretation of model decisions 211 
+
+The Random Forest model compresses high-dimensional sensorimotor states into target confidence, but like 212 
+
+many machine-learning models, its decision process is not directly interpretable. Therefore, we used SHAP 213 
+
+(SHapley Additive exPlanations), an explainable AI method that quantifies the contribution of each feature to 214 
+
+the model output [39, 40]. Specifically, SHAP decomposes the RF prediction for each sample into a baseline 215 
+
+and individual feature’s contribution. The resulting SHAP values show how each feature affects the model’s 216 
+
+prediction, with positive values increasing the RF confidence. 217 
+
+The mean absolute SHAP values for each feature and target provide an overall ranking of feature importance 218 
+
+(Fig. 5A). Across all targets in Scene 2, table position was the most important feature, followed by table velocity 219 
+
+direction and leader’s forces. Table velocity contributed primarily to T 3 and T 4, which were located in a 220 
+
+narrower region. The remaining variables had less influence. Similar results were observed for Scene 1 (see 221 
+
+Supplementary Note 4.2). 222 
+
+The spatial distribution of SHAP values further illustrated how feature contributions varied across the 223 
+
+workspace. As an example, Fig. 5B shows the spatial distribution of SHAP values for table velocity direction for 224 
+
+T 2 in Scene 2. Positive SHAP values were concentrated in the upper part of the top-right room, indicating 225 
+
+where this feature was most informative. This agrees with our empirical expectation: before the second passage, 226 
+
+velocity direction cannot distinguish between T 1 and T 2, whereas in the lower part of the top-right room, 227 
+
+8
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+−0.05 0.00 0.05 0.10 0.15 X (m) YX
+
+B C
+
+−0.3 −0.2 −0.1 0.0 0.1 0.2 0.3 −100° −50° 0° 50° 100° Velocity Direction 0.00 0.05 0.10 mean(|SHAP value|) 0.15 0.20 
+
+YXForce Y Vel. Direction Force X Orientation Velocity Force Rate Target 1 Target 2 Target 3 Target 4 
+
+D
+
+# 123 4
+
+Orientation Vel. Direction Velocity Force Y Force X Force Rate 
+
+AFigure 5: SHAP analysis explaining the RF predictions and feature contributions in Scene 2. A. Mean absolute SHAP values for each feature and target, showing the overall importance of each feature. B. Spatial distribution of SHAP values for table velocity direction for T 2, computed by discretizing the workspace into spatial bins and computing the 95th percentile within each bin. Color indicates the signed SHAP value, with positive values increasing the model’s confidence. C. Dependence of the contribution of velocity direction on horizontal position for T 2. Points show samples for 
+
+T 2 plotted by table x position and velocity direction, with color indicating the signed SHAP value of velocity direction. D. 
+
+Spatial regions where each feature substantially increased the model’s confidence for each target. Contours indicate regions where the 95th percentile of the signed SHAP value exceeded 0.1 (probability units), color-coded by feature. Table position was excluded to highlight where other kinematic and kinetic features contributed. The gray shading indicates the overall trajectory distribution for each target. 
+
+position is a sufficient cue and velocity direction adds little additional information. Additionally, positive SHAP 228 
+
+values were associated with negative angles below −20 ◦ (Fig. 5C), indicating that downward-directed motion in 229 
+
+9
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+this region increased the model’s confidence in T 2. This analysis reveals how each variable should be modulated 230 
+
+to make the movement more legible. 231 
+
+Summarizing across features, the overlaid SHAP map shows where each feature contributed across the 232 
+
+workspace (Fig. 5D). Leader’s vertical force contributed prominently after the first passage and helped distinguish 233 
+
+whether the intended target lay in the upper or lower part of the scene. In the top-right room, where targets 234 
+
+were farther from the passage in a more spacious room, the model relied mainly on the leader’s vertical force 235 
+
+and the table velocity direction. In contrast, the bottom-right room was more spatially constrained, especially 236 
+
+for T 3, which was close to the passage. For this target, table velocity and velocity direction contributed more 237 
+
+strongly. For T 4, the trajectory initially passed near T 3, and the model relied on a combination of multiple 238 
+
+force and velocity cues. Once the table moved beyond T 3, position alone became sufficient to distinguish T 4. 239 
+
+Overall, these SHAP maps showed that RF relied on different cues depending on the local geometry, reflecting 240 
+
+how humans adjusted signaling across sensorimotor variables to the local context. Similar results were obtained 241 
+
+for Scene 1 (see Supplementary Note 4.2). 242 
+
+Together with the mechanical work results, these analyses suggest that dyads flexibly combined kinematic 243 
+
+and force cues in a context-dependent manner to increase movement legibility, thereby communicating efficiently 244 
+
+and effectively without energy-costly detours. 245 
+
+1.5 Modeling the follower’s decision-making process 246 
+
+In the Button Press condition, the uninformed participant gradually accumulated evidence from the ongoing 247 
+
+sensorimotor signals and pressed a button once they identified the target, providing empirical decision times. 248 
+
+The broad distribution of table positions at the time of the button presses (Fig. 6A, Supplementary Note 5) 249 
+
+reflected a large variability in signaling strategies, cue interpretation, and reaction time. The relatively rare 250 
+
+incorrect choices (marked as ×) tended to occur in spatially ambiguous regions, where samples associated with 251 
+
+different targets overlapped. 252 
+
+To model this decision-making process, we applied the widely used Drift-Diffusion Model (DDM) framework. 253 
+
+In its classical form, DDM assumes a one-dimensional evidence signal. Thus, it is not directly applicable to our 254 
+
+task, where signals are high-dimensional and must first be interpreted before being treated as evidence. Therefore, 255 
+
+we combined the DDM with the RF decoder. Specifically, we used the RF to map the high-dimensional feature 256 
+
+state to one-dimensional time-varying confidence traces for each target. These traces were then used as inputs 257 
+
+to the DDM, which accumulated positive evidence when confidence for a target exceeded chance level (0.25 for 258 
+
+four targets), and negative evidence otherwise. We implemented a racing DDM in which four accumulators, one 259 
+
+for each target, accumulated evidence in parallel. For each trial, the first accumulator to reach the decision 260 
+
+bound predicted the target choice of the uninformed participant, with its crossing time predicting the decision 261 
+
+time. One racing DDM was fit for each participant using the Button Press trials in which that participant was 262 
+
+uninformed. 263 
+
+A representative trial illustrates the DDM process, with both the confidence inputs and the corresponding 264 
+
+accumulated evidence traces (Fig. 6B). Early in the trial, confidence stayed near chance level for all targets, 265 
+
+leading to near-zero evidence accumulation. As informative cues emerged, RF confidence increased for the 266 
+
+target ( T 1) and decreased for the decoys. Correspondingly, T 1’s accumulator rose and crossed the positive 267 
+
+bound, whereas competing accumulators drifted downward. The predicted decision time closely matched the 268 
+
+participant’s button press time. 269 
+
+Across participants, the racing DDM predicted the participant’s chosen target with an accuracy of 94 .9% ±5.1% 270 
+
+(mean ±SD). Predicted decision times closely matched empirical ones, with points clustered around the unity 271 
+
+line (Fig. 6C). Prediction errors were small and approximately unbiased (0.02 ±0.37 s; Fig. 6C, inset), indicating 272 
+
+little systematic bias. That is, the DDM could accurately predict both the selected target and decision time of 273 
+
+the participants for each trial, suggesting that the RF model effectively captured the target-relevant information 274 
+
+carried by the sensorimotor signals. 275 
+
+Decision-making models such as the DDM provide a mechanistic account of how choices are formed over 276 
+
+time, offering insight into the latent computations that give rise to behavior. By combining the RF model with 277 
+
+a racing DDM, we extended evidence accumulation modeling to high-dimensional sensorimotor signals, in which 278 
+
+the relevant evidence is not directly available but must first be inferred. The high prediction accuracy further 279 
+
+10 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+No Choice Wrong Target 1 Target 2 Target 3 Target 4 Correct 
+
+## CBA
+
+2Predicted DT (s) Empirical DT (s) 64264
+
+> -1.0 -0.5 0.0 0.5 1.0 050 100 150 Count Prediction Error (s)
+
+0 1 2 3 4Time (s) −1.0 −0.5 0.0 0.5 1.0 Accumulated Evidence Predicted DT Empirical DT Decision Bound Target 1 Target 2 Target 3 Target 4 Confidence 0.0 0.5 1.0 Figure 6: Modeling human decision-making process using a racing DDM. A. Table positions at the moment of the button press across all participants for Scene 2. Lighter and darker shaded points indicate earlier and later trials, respectively. B. Example trial. Top: Confidence traces predicted by the RF model for each target. Bottom: Corresponding evidence accumulation trajectories in the DDM. Vertical lines mark the empirical (brown) and the predicted decision time (blue) corresponding to when a target’s accumulated evidence first crossed the decision bound (horizontal dashed line). C. 
+
+Decision time prediction. Comparison between the predicted and empirical decision time (DT) for every button press trial, color-coded by participant. Inset: Distribution of prediction errors, overlaid with a kernel density estimate. 
+
+supports the validity of the machine learning decoding of the sensorimotor strategies. 280 
+
+11 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+# 2 Discussion 281 
+
+Physical collaboration often requires partners to combine their available information and coordinate their actions 282 
+
+despite unequal access to task-relevant information. In this study, we investigated how humans with asymmetric 283 
+
+information convey intent through sensorimotor signals during joint object manipulation. We introduced a unified 284 
+
+analysis pipeline that bridges high-dimensional behavior with cognitive decision-making: decoding intent from 285 
+
+sensorimotor signals, extracting the context-dependent semantics of specific kinematic and kinetic features, and 286 
+
+modeling the evidence accumulation process. Through these analyses, we demonstrate that intent is not conveyed 287 
+
+by a single channel, but through the flexible modulation of multimodal kinematic and haptic cues. Critically, 288 
+
+increasing legibility did not necessarily come at the cost of transport efficiency. Humans selectively modulated 289 
+
+the sensorimotor features that were most informative within the local task geometry, without increasing total 290 
+
+mechanical work. Moreover, while most dyads exhibit a shared signaling consensus, we observed the emergence 291 
+
+of dyad-specific “dialects” that potentially yielded more efficient communication. 292 
+
+Prior works have often studied legibility in joint action through visual cues, such as the trajectory shape 293 
+
+[16, 22], leaving the contribution of haptic signals to legibility less explored. In contrast, our results show that 294 
+
+intent is conveyed through integrated multimodal cues that combine visual and haptic signals. Importantly, 295 
+
+these communicative cues are embedded within actions that must remain pragmatic for task completion. Within 296 
+
+this constraint, dyads flexibly shifted which features they relied on, or combined multiple cues, depending on 297 
+
+the local workspace geometry and which decoys were currently plausible. This context-dependent multimodal 298 
+
+signaling may have allowed dyads to make their actions legible without additional energetic cost. 299 
+
+Several studies have proposed that deviations from efficient movement should be a core mechanism for intent 300 
+
+communication [16, 25]. Consistent with this idea, observers often interpret inefficient actions as attempts to 301 
+
+convey information [41, 42, 43]. However, this view has largely been developed in tasks with limited action 302 
+
+redundancy, where only a small number of efficient alternatives are available to achieve the goal. In such settings, 303 
+
+communicative modulation may necessarily appear as deviations from efficiency. By contrast, in our joint object 304 
+
+manipulation task, participants increased movement legibility without compromising efficiency. Joint object 305 
+
+manipulation involves multimodal, high-dimensional sensorimotor signals, creating natural redundancy in how 306 
+
+the task can be completed. Participants could therefore select more legible actions from among similarly efficient 307 
+
+alternatives, and introduce communicative modulations that either contributed to task completion or carried 308 
+
+little additional energetic cost. This may have allowed dyads to communicate intent without compromising 309 
+
+dyadic efficiency. 310 
+
+We found a shared consensus on sensorimotor signaling strategies across the majority of dyads. This ‘universal 311 
+
+language’ could arise from the task’s physical constraints as well as participants’ past experiences in joint actions, 312 
+
+reflecting shared principles through which communicative meaning is embedded in, and inferred from, movement. 313 
+
+Such shared principles may provide a foundation for human physical collaboration, allowing even unfamiliar 314 
+
+partners to rapidly establish mutual understanding and coordinate their actions. However, as dyads repetitively 315 
+
+worked together, we observed the emergence of dyad-specific ‘dialects’ characterized by systematic deviations 316 
+
+from the general strategy. These dialects potentially enabled pairs to improve communication. This suggests 317 
+
+that sensorimotor communication is both robust and adaptive, relying on broadly shared baseline strategies that 318 
+
+can be further specialized as partners converge on dyad-specific features. 319 
+
+Importantly, we introduced in this paper a framework to decipher the high-dimensional sensorimotor 320 
+
+communication by integrating (i) the predictive power of machine learning (Random Forest), capturing statistical 321 
+
+regularities in sensorimotor communication, (ii) the transparency of explainable AI (SHAP), quantifying the 322 
+
+relative contribution of each feature to the information carried by sensorimotor signals, and (iii) models of 323 
+
+human decision making from cognitive neuroscience (Drift-Diffusion Models), simulating the process of evidence 324 
+
+accumulation and decision-making. A challenge in computational modeling of human behavior is the tension 325 
+
+between model complexity and interpretability: more complex models can capture richer behavioral structure, 326 
+
+but are often harder to interpret. Traditional computational approaches in motor control often favor compact, 327 
+
+interpretable models, such as Bayesian inference or optimal control frameworks, which offer deep mechanistic 328 
+
+insights and clear conceptual narratives. However, these models can become computationally costly, even for 329 
+
+seemingly simple and constrained tasks. For example, action understanding has been formalized as Bayesian 330 
+
+inverse planning [44], and later extended to Bayesian theory-of-mind models [45], but scaling such models to 331 
+
+12 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+richer observation spaces and continuous movement dynamics remains challenging. The difficulty is especially 332 
+
+pronounced in sensorimotor signaling, where the meaning of an action depends on a complex interplay between 333 
+
+multiple coupled variables, the local geometry, and uncertain predictions of the partner’s responses. 334 
+
+To address these limitations, modern work in computational neuroscience increasingly integrates machine 335 
+
+learning models to handle complex and large-scale data [46, 47]. Our framework leverages Explainable AI as 336 
+
+a scalable solution that can handle high-dimensional behavioral data while opening the “black box” to reveal 337 
+
+internal model dynamics. We decoded sensorimotor signals and localized the contributions of specific features 338 
+
+across diverse contexts. Moreover, our pipeline extended Drift-Diffusion Models from accumulating evidence over 339 
+
+one-dimensional stimuli to high-dimensional sensorimotor states. In this way, we provide a unified computational 340 
+
+framework for studying how humans communicate through sensorimotor signals. 341 
+
+Robotics research often treats generating legible motions as an optimization problem to maximize a legibility 342 
+
+function [48], where legibility is defined with hand-specified efficiency and rationality rather than learned from 343 
+
+human-human collaboration. As a result, optimization can yield motions that are legible but not human-like, 344 
+
+deviating from the conventions that humans naturally use when coordinating with each other. We argue 345 
+
+that progress toward human-like legibility requires studying sensorimotor communication in human–human 346 
+
+experiments, where signaling emerges in its most natural form with physical coupling and multimodal feedback. 347 
+
+By grounding legibility in empirically observed patterns, our approach provides a reference for robots to 348 
+
+communicate through the shared object using the same channels humans rely on, and it supports a unified 349 
+
+framework to infer intent from movement, and to shape movement given intent. 350 
+
+It should be noted that communication is inherently bilateral [49], yet our measurements and analyses 351 
+
+primarily characterize how the informed partner’s movement and forces reveal intent, with limited access to 352 
+
+how the uninformed partner contributes to the exchange. In practice, followers may signal uncertainty, confirm 353 
+
+understanding, or actively probe. Such feedback loops are only partially captured when the analysis is centered 354 
+
+on leader-driven cues. Furthermore, while the Random Forest and SHAP analyses identify predictive features, 355 
+
+they do not recover a unique “true” signal. Since many kinematic and force variables are mechanically coupled, 356 
+
+correlated features can trade off in importance estimates. We alleviated this by selecting relatively independent 357 
+
+features, but residual coupling is unavoidable in physical interaction and can vary across workspace regions. 358 
+
+Finally, our paradigm focuses on one type of information asymmetry, where one partner has more information 359 
+
+than the other. However, real collaboration may involve more dynamic information contexts, for instance with 360 
+
+an asymmetry that emerges only mid-trial, or interacting partners having different task-relevant knowledge. 361 
+
+Beyond human-human collaboration, learning sensorimotor communication presents a unique challenge for 362 
+
+human-robot interactions. Unlike verbal communication, it is inherently flexible and adaptive and lacks a 363 
+
+stable mapping from a particular force–motion pattern to its meaning. This makes it challenging to generate 364 
+
+comprehensive descriptions for an AI or a robot to learn from. Recent progress in training robots from large-scale 365 
+
+video data [50] is structurally limited for physical collaboration, where haptic signals such as interaction forces 366 
+
+and limb stiffness are critical, but not visually observable. While robots could learn by directly interacting with 367 
+
+humans, collecting such data is resource-intensive and may pose safety risks during physical interaction. More 368 
+
+importantly, humans are extremely adaptive and may rapidly infer a robot’s limitations before it can learn, 369 
+
+which could lead them to switch to simplified or exaggerated strategies. The robot would thus end up learning 370 
+
+downgraded and suboptimal patterns. 371 
+
+In contrast, by grounding legibility in empirically observed behavioral patterns, our approach provides a 372 
+
+usable reference for deciphering human-human interactions. The decoded communication patterns could inform 373 
+
+the design of robots that communicate intent in a human-compatible way, with potential applications in physical 374 
+
+assistance, rehabilitation, joint training, and sensorimotor augmentation [51]. 375 
+
+# 3 Methods 376 
+
+3.1 Participants and materials 377 
+
+Participants: The experimental protocol was approved by the Ethics Committee of the Technical University 378 
+
+of Munich (approval number 763/20 S-KH). Thirty-four right-handed participants (17 dyads; age range 20–35 379 
+
+years; 23 females) were recruited. Written informed consent was obtained from each participant prior to the 380 
+
+13 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+experiment. All participants were neurologically healthy, reported no motor impairments of their right arm, and 381 
+
+were naive to the purpose of the study. Handedness was assessed using the Edinburgh Handedness Inventory [52]. 382 
+
+Experimental setup: Pairs of participants were seated side by side at a table, separated by an opaque curtain 383 
+
+(Fig. 2A). Each participant viewed the virtual environment on a screen in front of them and operated a 3-DoF 384 
+
+haptic device (Phantom Premium 1.5 HF, 3D Systems) with their right hand. The haptic device provided 385 
+
+force feedback, with the peak force limited to 8 N for safety. End-effector motion was virtually constrained to a 386 
+
+vertical plane parallel to the screen (stiffness 200 N /m). Visual rendering ran at 60 Hz, and haptic feedback was 387 
+
+presented at 1000 Hz. End-effector position and force were stored at 1000 Hz for offline processing. 388 
+
+Virtual environment: The virtual apartment environment was simulated in 3D using Chai3D and Open 389 
+
+Dynamics Engine [53, 54]. We rendered a workspace (40 cm × 20 cm) containing a table (4 cm × 1 cm, 0 .5 kg), 390 
+
+four possible targets with the same geometry as the table, and walls that partitioned the workspace into four 391 
+
+rooms. Adjacent rooms were either connected by a 3 cm-wide passage or separated by walls. We designed two 392 
+
+scenes with the same wall layout but different target layouts (Fig. 7A): T 1, T 2, and T 4 had the same locations 393 
+
+in both scenes, whereas T 3 differed. As a result, Scene 1 had three potential target locations at the top and 394 
+
+one at the bottom, while Scene 2 had two potential target locations on each side. Consequently, the workspace 395 
+
+contained rooms with varying ambiguity (i.e., one, two, or three candidate targets) and varying spatial constraints 396 
+
+and space for signaling. Target visibility depended on the experimental condition (see Methods –Experimental 397 
+
+conditions ). 398 
+
+The two partners in an experiment jointly controlled the table object at its two ends (Fig. 2A). Each hand 399 
+
+position was connected by a virtual spring (stiffness 800 N /m) to a control point located on the table centerline 400 
+
+(parallel to the long axis), positioned 0 .5 cm from the edge. The haptic devices rendered forces arising from 401 
+
+interactions with the environment and the partner via the table. Both partners viewed a top-down rendering 402 
+
+of the scene, and their on-screen motion matched the direction of their physical hand motion. The friction 403 
+
+coefficient between the table and the floor was 1 .0, and both the table and the walls had a contact stiffness of 404 
+
+300 N /m. Upon collision, the wall turned red, a beep was played, and participants felt the resulting contact 405 
+
+force through their haptic device. 406 
+
+3.2 Experimental paradigm 407 
+
+Task and conditions: The experimental task required dyads to collaboratively transport the table object 408 
+
+to a target while avoiding obstacles. At the onset of each trial, the table was fixed at the start location and 409 
+
+participants moved their cursors to their assigned control points to “pick up” the table. When both cursors 410 
+
+were within 2 cm of their assigned control points, each cursor was coupled to the corresponding control point 411 
+
+via a virtual spring, so participants could move the table. At the same time, four potential targets appeared, 412 
+
+and participants slid the table to the target, while avoiding collisions with the walls or entering decoys. Verbal 413 
+
+communication was not allowed. Due to simulated friction, the table could be transported efficiently only when 414 
+
+both participants contributed force in coordination, providing a natural incentive to collaborate. 415 
+
+We designed three block conditions: Symmetric, Asymmetric, and Button Press (Fig. 2B). Conditions differed 416 
+
+in (i) which participant could visually identify the target and (ii) how the trial ended. In the Symmetric condition, 417 
+
+both participants saw the target highlighted in green, while the three decoys were shown in orange (Fig. 7B). In 418 
+
+the Asymmetric and Button Press conditions, only one participant was informed of the green target, and the 419 
+
+uninformed participant saw four identical orange targets (Fig. 7C). Additionally, in the Button Press condition, 420 
+
+the uninformed participant pressed a button in their left hand as soon as they could identify the target. After 421 
+
+the button press, either (i) the table was frozen and the uninformed participant selected the target they believed 422 
+
+to be correct with their cursor (Button Press–Select condition, Fig. 7D), or (ii) the dyad continued transporting 423 
+
+the table to the target (Button Press–Transport condition, Fig. 7E). These two trial types were randomized, and 424 
+
+the dyad only learned the current trial type after the button press. 425 
+
+In the Symmetric, Asymmetric, and Button Press–Transport trials, trials ended when the table reached the 426 
+
+target, defined as the center of the table being within 2 cm of the target position and its orientation within 20 ◦427 
+
+of the target orientation. In the Button Press–Select trials, trials ended with the uninformed participant’s target 428 
+
+selection. 429 
+
+14 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint xy(10, 0) (-19, 0) (16, 0) (16, -5) (18, 5)
+
+1234  
+
+> 8.5 8.5 393314610 24
+> xy(0, -5) (16, 0) (-19, 0) (16, -5) (18, 5)
+
+123 4  
+
+> 8.5 8.5 393314610 24
+
+Scene 1 Scene 2 Informed View Uninformed View 
+
+Button Press Button Press 
+
+Button Press-Select Button Press-Transport DB CEAFigure 7: Experimental Protocol and Setup. (A) Scene layouts of Scene 1 and Scene 2 showing the starting position (blue) and the four potential target locations. Dimensions and coordinates are expressed in centimeters. (B) The screen as seen by an Informed participant, where the target is green and decoys are orange. (C) The screen as seen by an Uninformed participant, where all potential targets appear identical in orange. (D–E) Illustrations of the two trial types in the Button Press condition. The task requirements differ in these two conditions after the button press: (D) Button Press–Select, the uninformed partner selects a target with a cursor; (E) Button Press–Transport, the dyad physically moves the table to the target. 
+
+Scoring: At the end of each trial, both partners were shown the team score. In Symmetric, Asymmetric, and 430 
+
+Button Press–Transport trials, this score was based on completion time from pickup to successful placement. 431 
+
+The dyad received 5 points for completion time under 4 s; 1 point was deducted for each additional second, to a 432 
+
+minimum of 0 points. In Button Press–Select trials, if the correct target was selected, the score was based on 433 
+
+the time from pickup to button press: the dyad received 8 points for button press time within 1 s, with 1 point 434 
+
+deducted for each additional second to a minimum of 0 points. An incorrect target selection yielded 0 points. 435 
+
+Participants were instructed to avoid collisions with walls and entry into decoys, but these did not affect the 436 
+
+score. 437 
+
+Experimental Protocol: Each dyad completed a total of 13 blocks, with 3 Symmetric, 6 Asymmetric, and 4 438 
+
+Button Press blocks. The experiment followed a fixed block sequence shown in Fig. 2C to control for learning 439 
+
+and role-specific effects. In the Asymmetric and Button Press blocks, the right-seated participant was visually 440 
+
+informed of the target and the left-seated participant was uninformed in blocks 2–6; roles were reversed in blocks 441 
+
+8–12. 442 
+
+15 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+Each block contained 40 trials, with each target in each scene presented five times. To evenly distribute 443 
+
+targets within a block, 40 trials were arranged into five sets of eight trials, with each target in each scene 444 
+
+presented once per set in randomized order. In Symmetric and Asymmetric blocks, all trials within a block 445 
+
+followed the same information structure and trial protocol. In Button Press blocks, each target appeared in 446 
+
+two Transport and three Select trials (16 Transport and 24 Select trials per block); Transport and Select trials 447 
+
+were randomly distributed and only revealed after the button press. This design ensured two requirements 448 
+
+simultaneously: the informed participant’s movements needed to be informative early and physically feasible for 449 
+
+transport. Participants were informed of the block condition at the start of each block, but not of the trial order. 450 
+
+Before the main experiment, participants completed familiarization trials. Each participant completed five 451 
+
+trials in each condition (Symmetric, Asymmetric, Button Press) in each role (informed and uninformed, where 452 
+
+applicable) using unique target layouts. Button Press familiarization included both trial types. 453 
+
+3.3 Data analysis 454 
+
+Kinematic and dynamic data were low-pass filtered (Butterworth, 20 Hz cut-off frequency, tenth order) before 455 
+
+computing the reported metrics. Data analysis was performed with Python 3.8. The mechanical work expended 456 
+
+by each participant was computed as 457 
+
+Wi =
+
+Z tf
+
+> t0
+
+Fi · vCP ,i dt, i ∈ L, R. (1) where i denotes the left- (L) or right-seated (R) participant, Fi is the 2D force applied by participant i at their 458 
+
+control point on the table, and vCP ,i is the 2D velocity of that control point. Total work was computed as 459 
+
+Wtot = WL + WR. The SPARC smoothness reported in the Supplementary materials was computed using the 460 
+
+codes provided in [55]. 461 
+
+3.4 Statistical analysis 462 
+
+Several statistical approaches were implemented using the pingouin and mne.stats package (Python 3.8). All 463 
+
+pairwise tests were two-tailed, with a significance level of α = 0 .05. 464 
+
+Block-level metrics: Completion time, expended mechanical work, and work share were compared across 465 
+
+experimental conditions using data from the final blocks of each condition (Blocks 5–7 and 11–13). Normality 466 
+
+was assessed with Shapiro–Wilk tests [56]. Main effects of condition were tested using repeated-measures 467 
+
+ANOVA. If sphericity was violated, a Greenhouse–Geisser correction was applied. Following a significant main 468 
+
+effect, post-hoc pairwise comparisons were performed using paired t-tests with Holm–Bonferroni correction. For 469 
+
+significant post-hoc tests, we report Cohen’s d as a measure of the effect size. Statistical significance is indicated 470 
+
+as follows: *( p < 0.05), **( p < 0.01), and ***( p < 0.001). 471 
+
+Signaling trajectories: To determine where trajectories of signaling variables (e.g., path, orientation, velocity, 472 
+
+force) diverged across conditions, we used a non-parametric cluster-based permutation test for within-subject 473 
+
+designs [57]. Table position x was discretized into 0 .01 m bins, and each signal was averaged within bins for 474 
+
+each participant, separately for each scene and target. At each x bin, a repeated-measures F -statistic comparing 475 
+
+the three conditions was computed. Contiguous bins exceeding the cluster-forming threshold ( p < 0.05) were 476 
+
+grouped into clusters, and cluster significance was assessed by comparing the summed F -values against a null 477 
+
+distribution generated from 5000 random permutations of condition labels. Clusters were considered significant 478 
+
+if the cluster-level p-value was < 0.05. 479 
+
+Confidence trajectories: To compare confidence increase across conditions, table position x was normalized 480 
+
+to a unit interval between the second passage ( x = −0.04) and the center of the intended target, then discretized 481 
+
+into 2.5% spatial increments. Pairwise non-parametric cluster-based permutation tests [57] were then conducted 482 
+
+between conditions, with Holm–Bonferroni adjustment. 483 
+
+16 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+3.5 Decoding Sensorimotor Communication 484 
+
+As shown in the Results, sensorimotor communication during joint object manipulation is expressed through 485 
+
+multimodal, high-dimensional signals. The interpretation of cues is conditional on both task context and the set 486 
+
+of co-occurring cues. Because cue effects can interact nonlinearly, their semantics are not additive. We therefore 487 
+
+adopted an explainable machine learning approach to relate the sensorimotor signals to the inferred target. This 488 
+
+approach comprised two steps: (i) Random Forest models integrated the multidimensional features and produced 489 
+
+a probability distribution over candidate targets, and (ii) SHapley Additive exPlanations (SHAP) quantified the 490 
+
+contribution of each feature to the model output, enabling interpretation of which signals supported each target 491 
+
+prediction and how signals can be shaped to optimize legibility. 492 
+
+3.5.1 Decoding intended target from multimodal cues using Random Forest 493 
+
+In this task, the informed participant conveys the intended target through sensorimotor cues, so the cue 494 
+
+interpretation can be formulated as a classification problem. We used a Random Forest classifier [58] because 495 
+
+ensembles of decision trees can model nonlinear decision boundaries and feature interactions, are well-suited to 496 
+
+high-dimensional sensorimotor signals, and often perform effectively with small-to-moderate training sets. 497 
+
+We trained Random Forest (RF) classifiers using the Scikit-learn library [59] to decode the target from the 498 
+
+instantaneous sensorimotor state at each timestep. Input features comprised table position ( x, y ), orientation 499 
+
+(θ), speed ( ∥v∥), velocity direction ( θv), and the leader’s force ( Fx, F y) and force rate ( ˙∥F∥). The leader was 500 
+
+defined as the participant with higher work share in the Symmetric blocks, and as the informed participant in the 501 
+
+Asymmetric and Button Press blocks. RF models treated each timestep as a sample, output class probabilities 502 
+
+over the four targets, and predicted the target with the highest probability. Data were downsampled to 100 Hz. 503 
+
+Train–test splits were performed at the trial level to avoid temporal leakage. Within each block, each target in 504 
+
+each scene appeared five times and one trial was randomly held out for testing (20%), and the remaining four 505 
+
+trials were used for training. 506 
+
+We trained a general model using data aggregated across all dyads and dyad-specific models using data from 507 
+
+each dyad. Models were trained separately for each scene. Hyperparameters were selected by grid search over 508 
+
+maximum tree depth 6 , 7, 8, 10 , 12 , 15 , 20 , 30 and number of trees 50 , 100 , 200 , 300, using 3-fold cross-validation 509 
+
+and accuracy as the scoring metric. To balance predictive accuracy and model complexity, we set the maximum 510 
+
+tree depth to 10 for the general model and to 8 for dyad-specific models, both using 50 trees. 511 
+
+To visualize how model confidence varied across the workspace, we discretized it into 0 .5 cm × 0.5 cm bins. 512 
+
+For each bin, we averaged the model’s predicted probability for the target across all samples within that bin. 513 
+
+To compare model similarities, and whether different models produced similar predictions for the same 514 
+
+sensorimotor signals, we evaluated each dyad-specific and the general model on a pooled evaluation dataset 515 
+
+containing all dyads and computed pairwise difference between models using the Jensen–Shannon (JS) distance 516 
+
+between their predicted probability vectors. JS distance was computed at each timestep for each pair of models 517 
+
+and then averaged over timesteps and trials. To visualize the JS distances between dyads, a 3D embedding 518 
+
+was generated using metric multidimensional scaling (MDS) [60] based on the dissimilarity matrix using the 519 
+
+Scikit-learn library [59]. This projection maps the high-dimensional dissimilarity matrix into a 3D Euclidean 520 
+
+space, preserving the original distances as closely as possible. 521 
+
+3.6 Interpreting model predictions with SHAP 522 
+
+RF models map high-dimensional sensorimotor cues to a confidence value for each target. However, the mapping 523 
+
+is not directly interpretable, which prevents assessing how individual signals and their interactions contribute 524 
+
+to the model’s prediction. We therefore applied SHapley Additive exPlanations (SHAP) to quantify feature 525 
+
+contributions to the RF outputs [39, 40]. SHAP is based on Shapley values from cooperative game theory [61] and 526 
+
+quantifies each feature’s average marginal contribution to the prediction. For each sample, SHAP decomposes 527 
+
+the model output into an expected value (the baseline) plus additive contributions from individual features. A 528 
+
+positive (negative) SHAP value indicates that the corresponding feature increases (decreases) the predicted 529 
+
+probability relative to the baseline, and the magnitude reflects the strength of this influence. SHAP values are 530 
+
+expressed here in the unit of predicted probability. 531 
+
+17 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+We computed SHAP values for the general RF models at each timestep using all participants’ time series 532 
+
+data, separately for each scene. Global feature importance was defined as the mean absolute SHAP value 533 
+
+per feature, computed for each target and scene. To characterize how feature contributions varied across the 534 
+
+workspace, we discretized it into 0 .5 cm × 0.5 cm bins, spatially aggregated SHAP values within each bin, and 535 
+
+summarized their upper range using the 95th percentile. This shows how much the different features could 536 
+
+potentially contribute to the model’s confidence across the workspace. 537 
+
+To compare where each feature contributed most strongly, we overlaid “high-contribution” regions for 538 
+
+each feature in a single plot. Specifically, for each feature we thresholded the spatially aggregated SHAP 539 
+
+map (SHAP > 0.1) to obtain a binary mask and then smoothed it with a Gaussian filter (STD=1.5 bins). 540 
+
+The contours for each feature were then overlaid in one plot for each target and scene and the features were 541 
+
+color-coded. 542 
+
+3.7 Drift-Diffusion Models 543 
+
+To model how the uninformed participant accumulated evidence about the target from the evolving sensorimotor 544 
+
+cues, we integrated the Random Forest model with a Drift-Diffusion Model (DDM) [62, 63, 64]. 545 
+
+The DDM describes a decision process in which noisy evidence is integrated over time until it reaches a decision 546 
+
+bound. Classical DDM formulations assume a one-dimensional evidence stream, whereas our sensorimotor 547 
+
+signals are high-dimensional and do not directly represent evidence. We therefore used the RF model to map 548 
+
+the signals to target-specific probability estimates, and treated these probabilities as momentary evidence. For 549 
+
+each target i ∈ { 1, 2, 3, 4}, we defined the momentary evidence as the deviation of the RF output from chance 550 
+
+level: ei(t) = Pi(t) − 0.25. Here Pi(t) is the probability predicted by RF at time t for target i, and 0.25 is the 551 
+
+chance level for four alternatives. When ei(t) > 0, the model accumulated positive evidence in favor of target i,552 
+
+and vice versa. 553 
+
+Because the task involved four alternatives, we implemented a racing DDM with four accumulators running 554 
+
+in parallel, one per target. A decision was made when the first accumulator reached the bound a, and the 555 
+
+corresponding target was taken as the model’s predicted choice: 556 
+
+Ei(t + ∆ t) = Ei(t) + v Pi(t) − 0.25 ∆t + σ√∆t ϵ t, ϵt ∼ N (0 , 1) (2) 
+
+T = inf {t : max  
+
+> i
+
+Ei(t) ≥ a} (3) ˆi = arg max  
+
+> i
+
+Ei(T ) (4) 
+
+DT = T + t0 (5) Here, Ei(t) is the accumulated evidence for target i up to time t, T the bound-crossing time, ˆ i the predicted 557 
+
+target and DT the predicted decision time including the non-decision time t0 (accounting for sensory and motor 558 
+
+delays). The DDM parameters were the bound a, drift gain v, diffusion noise σ, and non-decision time t0. We 559 
+
+fixed a = 1 and fit v, σ and t0 using SciPy’s differential evolution optimizer. If the model predicted the correct 560 
+
+target, the cost was the absolute error between the predicted and empirical decision time. If the model predicted 561 
+
+an incorrect target, we added a fixed penalty of 10 (substantially larger than typical decision-time errors) to 562 
+
+strongly penalize incorrect choices. 563 
+
+# Acknowledgments 564 
+
+This work was supported in part by the Deutsche Forschungsgemeinschaft (DFG, project 467042759) and by the 565 
+
+European Commission (FETOPEN H2020 899626 NIMA). The project was part of the Imperial-TUM Joint 566 
+
+Academy of Doctoral Studies (JADS), where YL was supported by the TUM International Graduate School of 567 
+
+Science and Engineering (IGSSE). 568 
+
+18 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+# Author contributions 569 
+
+All authors contributed to the conceptualization and methodology of the study. Y.L. developed the software, 570 
+
+conducted the experiments and formal analyses, created the visualizations, and wrote the original draft. All 571 
+
+authors contributed to the interpretation of the results and provided substantial input on the analyses and 572 
+
+visualizations. D.V., E.B., and D.F. reviewed and edited the manuscript. D.F. and E.B. supervised the research 573 
+
+and acquired funding. 574 
+
+# Data availability 575 
+
+The data supporting the findings of this study are available from the corresponding author upon reasonable 576 
+
+request. 577 
+
+# Code availability 578 
+
+The custom code used to generate the results reported in this study is available from the corresponding author 579 
+
+upon reasonable request. 580 
+
+# Competing interests 581 
+
+The authors declare no competing interests. 582 
+
+# References 583 
+
+[1] N. Sebanz and G. Knoblich, “Prediction in joint action: What, when, and where,” Topics in Cognitive 584 
+
+Science , vol. 1, no. 2, pp. 353–367, 2009. 585 
+
+[2] D. A. Braun, P. A. Ortega, and D. M. Wolpert, “Motor coordination: when two have to act as one,” 586 
+
+Experimental Brain Research , vol. 211, no. 3, pp. 631–641, 2011. 587 
+
+[3] A. Sawers, T. Bhattacharjee, J. L. McKay, M. E. Hackney, C. C. Kemp, and L. H. Ting, “Small forces 588 
+
+that differ with prior motor experience can communicate movement goals during human-human physical 589 
+
+interaction,” Journal of NeuroEngineering and Rehabilitation , vol. 14, Jan. 2017. 590 
+
+[4] A. Takagi, M. Hirashima, D. Nozaki, and E. Burdet, “Individuals physically interacting in a group rapidly 591 
+
+coordinate their movement by estimating the collective goal,” eLife , vol. 8, pp. 1–19, Feb. 2019. 592 
+
+[5] R. Lokesh, S. Sullivan, J. A. Calalo, A. Roth, B. Swanik, M. J. Carter, and J. G. Cashaback, “Humans 593 
+
+utilize sensory evidence of others’ intended action to make online decisions,” Scientific Reports , vol. 12, 594 
+
+no. 1, p. 8806, 2022. 595 
+
+[6] R. Lokesh, S. R. Sullivan, L. St. Germain, A. M. Roth, J. A. Calalo, J. Buggeln, T. Ngo, V. R. Marchhart, 596 
+
+M. J. Carter, and J. G. Cashaback, “Visual accuracy dominates over haptic speed for state estimation 597 
+
+of a partner during collaborative sensorimotor interactions,” Journal of Neurophysiology , vol. 130, no. 1, 598 
+
+pp. 23–42, 2023. 599 
+
+[7] H. B¨ orner, G. Carboni, X. Cheng, A. Takagi, S. Hirche, S. Endo, and E. Burdet, “Physically interacting 600 
+
+humans regulate muscle coactivation to improve visuo-haptic perception,” Journal of Neurophysiology ,601 
+
+vol. 129, no. 2, pp. 494–499, 2023. 602 
+
+[8] M. Wu and L. H. Ting, “Low-force physical human-robot interaction at the hands influence changes to gait 603 
+
+coordination through sensorimotor engagement instead of direct gait propulsion,” ACM Transactions on 604 
+
+Human-Robot Interaction , 2025. 605 
+
+19 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+[9] D. Kourtis, G. Knoblich, M. Wo´ zniak, and N. Sebanz, “Attention allocation and task representation during 606 
+
+joint action planning,” Journal of Cognitive Neuroscience , vol. 26, pp. 2275–2286, oct 2014. 607 
+
+[10] A. Takagi, G. Ganesh, T. Yoshioka, M. Kawato, and E. Burdet, “Physically interacting individuals estimate 608 
+
+the partner’s goal to enhance their movements,” Nature Human Behaviour , vol. 1, pp. 1–6, Mar. 2017. 609 
+
+[11] D. Kourtis, M. Wo´ zniak, N. Sebanz, and G. Knoblich, “Evidence for we-representations during joint action 610 
+
+planning,” Neuropsychologia , vol. 131, pp. 73–83, aug 2019. 611 
+
+[12] G. Pezzulo, F. Donnarumma, H. Dindo, A. D’Ausilio, I. Konvalinka, and C. Castelfranchi, “The body talks: 612 
+
+Sensorimotor communication and its brain and kinematic signatures,” Physics of Life Reviews , vol. 28, 613 
+
+pp. 1–21, 2019. 614 
+
+[13] A. Dragan and S. Srinivasa, “Integrating human observer inferences into robot motion planning,” Autonomous 615 
+
+Robots , vol. 37, pp. 351–368, aug 2014. 616 
+
+[14] G. Ganesh, A. Takagi, R. Osu, T. Yoshioka, M. Kawato, and E. Burdet, “Two is better than one: physical 617 
+
+interactions improve motor performance in humans,” Scientific Reports , vol. 4, Jan. 2014. 618 
+
+[15] N. Sebanz and G. Knoblich, “Progress in joint-action research,” Current Directions in Psychological Science ,619 
+
+vol. 30, pp. 138–143, jan 2021. 620 
+
+[16] G. Pezzulo, F. Donnarumma, and H. Dindo, “Human sensorimotor communication: A theory of signaling 621 
+
+in online social interactions,” PLOS ONE , vol. 8, no. 11, p. e79876, 2013. 622 
+
+[17] L. M. Sacheli, E. Tidoni, E. F. Pavone, S. M. Aglioti, and M. Candidi, “Kinematics fingerprints of leader 623 
+
+and follower role-taking during cooperative joint actions,” Experimental Brain Research , vol. 226, no. 4, 624 
+
+pp. 473–486, 2013. 625 
+
+[18] M. Candidi, A. Curioni, F. Donnarumma, L. M. Sacheli, and G. Pezzulo, “Interactional leader–follower 626 
+
+sensorimotor communication strategies during repetitive joint actions,” Journal of the Royal Society Interface ,627 
+
+vol. 12, no. 110, p. 20150644, 2015. 628 
+
+[19] T. Buidze, T. Sommer, K. Zhao, X. Fu, and J. Gl¨ ascher, “Expectation violations signal goals in novel 629 
+
+human communication,” Nature Communications , vol. 16, no. 1, p. 1989, 2025. 630 
+
+[20] L. McEllin, G. Knoblich, and N. Sebanz, “Distinct kinematic markers of demonstration and joint action 631 
+
+coordination? evidence from virtual xylophone playing.,” Journal of Experimental Psychology: Human 632 
+
+Perception and Performance , vol. 44, no. 6, p. 885, 2018. 633 
+
+[21] M. Dockendorff, L. Schmitz, G. Knoblich, and C. Vesper, “Joint action partners modulate the first step of 634 
+
+an action sequence to communicate a distal goal,” Acta Psychologica , vol. 253, p. 104724, 2025. 635 
+
+[22] C. Vesper, L. Schmitz, and G. Knoblich, “Modulating action duration to establish nonconventional 636 
+
+communication.,” Journal of Experimental Psychology: General , vol. 146, no. 12, p. 1722, 2017. 637 
+
+[23] C. Vesper, R. P. Van Der Wel, G. Knoblich, and N. Sebanz, “Making oneself predictable: Reduced temporal 638 
+
+variability facilitates joint action coordination,” Experimental Brain Research , vol. 211, no. 3, pp. 517–530, 639 
+
+2011. 640 
+
+[24] F. Ciardo, D. De Tommaso, and A. Wykowska, “Joint action with artificial agents: Human-likeness in 641 
+
+behaviour and morphology affects sensorimotor signaling and social inclusion,” Computers in Human 642 
+
+Behavior , vol. 132, p. 107237, 2022. 643 
+
+[25] M. Dockendorff, N. Sebanz, and G. Knoblich, “Deviations from optimality should be an integral part of a 644 
+
+working definition of smc: Comment on” the body talks: Sensorimotor communication and its brain and 645 
+
+kinematic signatures” by pezzulo et al,” Physics of Life Reviews , vol. 28, pp. 22–23, 2019. 646 
+
+20 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+[26] S. W. Jensen, J. L. Salmon, and M. D. Killpack, “Trends in haptic communication of human-human dyads: 647 
+
+Toward natural human-robot co-manipulation,” Frontiers in Neurorobotics , vol. 15, p. 626074, 2021. 648 
+
+[27] I. Maroger, M. Silva, H. Pillet, N. Turpin, O. Stasse, and B. Watier, “Walking paths during collaborative 649 
+
+carriages do not follow the simple rules observed in the locomotion of single walking subjects,” Scientific 650 
+
+Reports , vol. 12, sep 2022. 651 
+
+[28] K. Shaw, J. L. Salmon, and M. D. Killpack, “Understanding human co-manipulation via motion and haptic 652 
+
+information to enable future physical human-robotic collaborations,” Frontiers in Neurorobotics , vol. 19, 653 
+
+p. 1480399, 2025. 654 
+
+[29] K. B. Reed and M. A. Peshkin, “Physical collaboration of human-human and human-robot teams,” IEEE 655 
+
+Transactions on Haptics , vol. 1, pp. 108–120, July 2008. 656 
+
+[30] R. P. R. D. van der Wel, G. Knoblich, and N. Sebanz, “Let the force be with us: Dyads exploit haptic 657 
+
+coupling for coordination.,” Journal of Experimental Psychology: Human Perception and Performance ,658 
+
+vol. 37, no. 5, pp. 1420–1431, 2011. 659 
+
+[31] K. Mojtahedi, B. Whitsell, P. Artemiadis, and M. Santello, “Communication and inference of intended 660 
+
+movement direction during human–human physical interaction,” Frontiers in neurorobotics , vol. 11, p. 21, 661 
+
+2017. 662 
+
+[32] Y. Liu, R. Leib, and D. W. Franklin, “Follow the force: Haptic communication enhances coordination in 663 
+
+physical human-robot interaction when humans are followers,” IEEE Robotics and Automation Letters ,664 
+
+vol. 8, no. 10, pp. 6459–6466, 2023. 665 
+
+[33] Y. Liu, R. Leib, W. Dudley, A. Shafti, A. A. Faisal, and D. W. Franklin, “Partner-sourced haptic feedback 666 
+
+rather than environmental inputs drives coordination improvement in human dyadic collaboration,” Scientific 667 
+
+Reports , vol. 15, no. 1, p. 40347, 2025. 668 
+
+[34] A. Takagi, F. Usai, G. Ganesh, V. Sanguineti, and E. Burdet, “Haptic communication between humans is 669 
+
+tuned by the hard or soft mechanics of interaction,” PLOS Computational Biology , vol. 14, pp. 1–17, Mar. 670 
+
+2018. 671 
+
+[35] A. Michalko, F. Di Tommaso, E. Peperoni, S. L. Capitani, A. Noccaro, A. Parri, C. Gener, R. Conti, 672 
+
+N. Di Stefano, N. L. Tagliamonte, et al. , “Robot-mediated haptic feedback outperforms vision in violin duo 673 
+
+coordination,” Science Robotics , vol. 11, no. 112, p. eaeb1901, 2026. 674 
+
+[36] E. Ivanova, J. Eden, G. Carboni, J. Kr¨ uger, and E. Burdet, “Interaction with a reactive partner improves 675 
+
+learning in contrast to passive guidance,” Scientific Reports , vol. 12, sep 2022. 676 
+
+[37] D. Verdel, B. Berret, and E. Burdet, “How individual vigor shapes human-human physical interaction,” 677 
+
+eLife , vol. 14, no. RP109781, 2026. 678 
+
+[38] A. Takai, Q. Fu, Y. Doibata, G. Lisi, T. Tsuchiya, K. Mojtahedi, T. Yoshioka, M. Kawato, J. Morimoto, 679 
+
+and M. Santello, “Role specialization enables superior task performance by human dyads than individuals,” 680 
+
+The International Journal of Robotics Research , vol. 45, no. 3, pp. 522–537, 2026. 681 
+
+[39] S. M. Lundberg and S.-I. Lee, “A unified approach to interpreting model predictions,” Advances in Neural 682 
+
+Information Processing Systems , vol. 30, 2017. 683 
+
+[40] C. Molnar, Interpretable Machine Learning . 3 ed., 2025. 684 
+
+[41] L. McEllin, N. Sebanz, and G. Knoblich, “Identifying others’ informative intentions from movement 685 
+
+kinematics,” Cognition , vol. 180, pp. 246–258, 2018. 686 
+
+[42] A. Royka, R. Aboody, and J. Jara-Ettinger, “Movement as a message: inferring communicative intent from 687 
+
+actions,” in Proceedings of the Annual Meeting of the Cognitive Science Society , vol. 40, 2018. 688 
+
+21 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+[43] A. Royka, A. Chen, R. Aboody, T. Huanca, and J. Jara-Ettinger, “People infer communicative action 689 
+
+through an expectation for efficient communication,” Nature Communications , vol. 13, no. 1, p. 4160, 2022. 690 
+
+[44] C. L. Baker, R. Saxe, and J. B. Tenenbaum, “Action understanding as inverse planning,” Cognition , vol. 113, 691 
+
+no. 3, pp. 329–349, 2009. 692 
+
+[45] C. L. Baker, J. Jara-Ettinger, R. Saxe, and J. B. Tenenbaum, “Rational quantitative attribution of beliefs, 693 
+
+desires and percepts in human mentalizing,” Nature Human Behaviour , vol. 1, no. 4, p. 0064, 2017. 694 
+
+[46] B. A. Richards, T. P. Lillicrap, P. Beaudoin, Y. Bengio, R. Bogacz, A. Christensen, C. Clopath, R. P. 695 
+
+Costa, A. de Berker, S. Ganguli, et al. , “A deep learning framework for neuroscience,” Nature Neuroscience ,696 
+
+vol. 22, no. 11, pp. 1761–1770, 2019. 697 
+
+[47] N. L. Goodwin, S. R. Nilsson, J. J. Choong, and S. A. Golden, “Toward the explainability, transparency, 698 
+
+and universality of machine learning for behavioral classification in neuroscience,” Current Opinion in 699 
+
+Neurobiology , vol. 73, p. 102544, 2022. 700 
+
+[48] A. D. Dragan, K. C. Lee, and S. S. Srinivasa, “Legibility and predictability of robot motion,” in ACM/IEEE 701 
+
+International Conference on Human-Robot Interaction (HRI) , pp. 301–308, IEEE, 2013. 702 
+
+[49] I. Konvalinka, P. Vuust, A. Roepstorff, and C. D. Frith, “Follow you, follow me: continuous mutual 703 
+
+prediction and adaptation in joint tapping,” Quarterly journal of experimental psychology , vol. 63, no. 11, 704 
+
+pp. 2220–2230, 2010. 705 
+
+[50] C. Eze and C. Crick, “Learning by watching: A review of video-based learning approaches for robot 706 
+
+manipulation,” IEEE Access , 2025. 707 
+
+[51] Y. Li, A. Sena, Z. Wang, X. Xing, J. Babiˇ c, E. van Asseldonk, and E. Burdet, “A review on interaction 708 
+
+control for contact robots through intent detection,” Progress in Biomedical Engineering , vol. 4, p. 032004, 709 
+
+jul 2022. 710 
+
+[52] R. C. Oldfield, “The assessment and analysis of handedness: the edinburgh inventory,” Neuropsychologia ,711 
+
+vol. 9, no. 1, pp. 97–113, 1971. 712 
+
+[53] F. Conti, F. Barbagli, D. Morris, and C. Sewell, “Chai 3d: An open-source library for the rapid development 713 
+
+of haptic scenes,” IEEE World Haptics , vol. 38, no. 1, pp. 21–29, 2005. 714 
+
+[54] R. Smith, Open Dynamics Engine , 2005. 715 
+
+[55] S. Balasubramanian, A. Melendez-Calderon, A. Roby-Brami, and E. Burdet, “On the analysis of movement 716 
+
+smoothness,” Journal of NeuroEngineering and Rehabilitation , vol. 12, pp. 1–11, dec 2015. 717 
+
+[56] S. S. Shapiro and M. B. Wilk, “An analysis of variance test for normality (complete samples),” Biometrika ,718 
+
+vol. 52, p. 591, dec 1965. 719 
+
+[57] E. Maris and R. Oostenveld, “Nonparametric statistical testing of eeg-and meg-data,” Journal of Neuro-720 
+
+science Methods , vol. 164, no. 1, pp. 177–190, 2007. 721 
+
+[58] L. Breiman, “Random forests,” Machine Learning , vol. 45, no. 1, pp. 5–32, 2001. 722 
+
+[59] F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion, O. Grisel, M. Blondel, P. Prettenhofer, 723 
+
+R. Weiss, V. Dubourg, et al. , “Scikit-learn: Machine learning in python,” the Journal of Machine Learning 724 
+
+Research , vol. 12, pp. 2825–2830, 2011. 725 
+
+[60] W. S. Torgerson, “Multidimensional scaling: I. theory and method,” Psychometrika , vol. 17, no. 4, pp. 401– 726 
+
+419, 1952. 727 
+
+[61] L. S. Shapley, “A value for n-person games,” in The Shapley Value (A. E. Roth, ed.), pp. 31–40, Princeton 728 
+
+University Press, 1988. 729 
+
+22 
+
+> .CC-BY 4.0 International license available under a (which was not certified by peer review) is the author/funder, who has granted bioRxiv a license to display the preprint in perpetuity. It is made The copyright holder for this preprint this version posted August 20, 2026. ;https://doi.org/10.64898/2026.08.17.745075 doi: bioRxiv preprint
+
+[62] R. Ratcliff, “A theory of memory retrieval.,” Psychological Review , vol. 85, no. 2, p. 59, 1978. 730 
+
+[63] R. Ratcliff and G. McKoon, “The diffusion decision model: theory and data for two-choice decision tasks,” 731 
+
+Neural Computation , vol. 20, no. 4, pp. 873–922, 2008. 732 
+
+[64] R. Ratcliff, P. L. Smith, S. D. Brown, and G. McKoon, “Diffusion decision model: Current issues and 733 
+
+history,” Trends in Cognitive Sciences , vol. 20, no. 4, pp. 260–281, 2016. 734 
+
+23

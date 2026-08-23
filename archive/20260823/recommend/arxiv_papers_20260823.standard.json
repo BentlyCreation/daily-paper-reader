@@ -1,0 +1,558 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-23T20:36:24.068387+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 6,
+    "deep_cap": 8,
+    "deep_selected": 6,
+    "quick_candidates": 7,
+    "quick_skim_target": 13,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2608.17928v1",
+      "source": "arxiv",
+      "title": "A Theoretical Framework for Parallel Lifelong MAPF Using Group Decentralized Planning",
+      "abstract": "In the Lifelong Multi-Agent Path Finding (L-MAPF) problem, agents must repeatedly move from one destination to another while avoiding obstacles and inter-agent collisions. Widely regarded as one of the highest-performing solutions to this problem is the Rolling-Horizon Collision Resolution (RHCR) framework. However, commensurate with its quality solutions, it incurs a computational cost that limits its applicability to even modest agent counts. In this paper, leveraging theoretical methods from the Locally Interdependent Multi-Agent MDP literature, we first theoretically prove the near-optimality of RHCR in a discounted MDP formulation of the L-MAPF problem. Then, we leverage these results to naturally motivate an extended framework called Group Decentralized RHCR (GD-RHCR) which incorporates a group decentralized structure that partitions agents based on a transitive communication scheme and plans for each partition of agents in parallel. We show that both RHCR and GD-RHCR achieve similar exponentially close to optimal guarantees, establishing a theoretical duality between the time based restrictions performed by vanilla RHCR and the additional space based partitioning performed by GD-RHCR. Lastly, we show that across varying maps, GD-RHCR is able to attain high throughput that scales into higher agent counts while maintaining a significantly lower per plan cost.",
+      "authors": [
+        "Alex DeWeese",
+        "Jiaoyang Li",
+        "Guannan Qu"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-08-18T15:48:18+00:00",
+      "link": "https://arxiv.org/pdf/2608.17928v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Directly addresses decentralized multi-agent path finding with a theoretical framework for lifelong MAPF",
+      "llm_evidence_cn": "直接面向分散式多智能体路径规划，提出终身MAPF的理论框架",
+      "llm_evidence": "直接面向分散式多智能体路径规划，提出终身MAPF的理论框架",
+      "canonical_evidence": "直接面向分散式多智能体路径规划，提出终身MAPF的理论框架",
+      "llm_tldr_en": "Provides a theoretical framework proving near-optimality of RHCR for lifelong MAPF in a discounted MDP, motivating a parallel group decentralized planning extension.",
+      "llm_tldr_cn": "终身多智能体路径规划要求智能体反复移动并避免碰撞，现有方法计算成本高。本文将终身MAPF建模为折扣MDP，利用局部相互依赖多智能体MDP理论证明滚动时域碰撞消解框架近似最优，并据此提出扩展框架，支持群体分散式并行规划。理论结果保证了扩展方法的性能保证，同时降低计算开销，为大规模终身MAPF提供了可扩展的理论基础。",
+      "llm_tldr": "终身多智能体路径规划要求智能体反复移动并避免碰撞，现有方法计算成本高。本文将终身MAPF建模为折扣MDP，利用局部相互依赖多智能体MDP理论证明滚动时域碰撞消解框架近似最优，并据此提出扩展框架，支持群体分散式并行规划。理论结果保证了扩展方法的性能保证，同时降低计算开销，为大规模终身MAPF提供了可扩展的理论基础。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.15929v1",
+      "source": "arxiv",
+      "title": "Unified Pedestrian Path Prediction Using Inverse Reinforcement Learning",
+      "abstract": "Pedestrian path prediction is crucial for enhancing the safety of autonomous vehicles and advanced driver-assistance systems. Previous studies explored different learning-task formulations for pedestrian path prediction and compared these formulations using shallow neural networks, but did not extend this analysis to more complex deep-learning models. This paper adapts the Spatial-Temporal Graph Attention Network (STGAT) to a unified pedestrian path prediction framework and introduces state and action definitions specific to STGAT. The resulting formulations support deterministic and stochastic policies, one-time and sequential decision-making, and reinforcement-learning algorithms including REINFORCE and proximal policy optimization. The proposed learning-task formulations improve prediction performance across the selected benchmark datasets compared with the standard supervised-learning formulation. These results demonstrate that reformulating the decision process and training objective can improve an advanced pedestrian trajectory prediction architecture and may provide a path toward improving other graph-based prediction models.",
+      "authors": [
+        "Šimon Sukup",
+        "Ariyan Bighashdel",
+        "Pavol Jancura"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-16T20:51:48+00:00",
+      "link": "https://arxiv.org/pdf/2608.15929v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Pedestrian path prediction using inverse reinforcement learning and STGAT, matching pedestrian trajectory prediction and intent prediction.",
+      "llm_evidence_cn": "基于逆向强化学习和STGAT的行人路径预测，匹配行人轨迹预测与意图预测。",
+      "llm_evidence": "基于逆向强化学习和STGAT的行人路径预测，匹配行人轨迹预测与意图预测。",
+      "canonical_evidence": "基于逆向强化学习和STGAT的行人路径预测，匹配行人轨迹预测与意图预测。",
+      "llm_tldr_en": "Adapts STGAT to a unified pedestrian path prediction framework under inverse reinforcement learning, supporting deterministic/stochastic policies and sequential decision-making with REINFORCE and PPO, improving path prediction for autonomous driving safety.",
+      "llm_tldr_cn": "针对行人路径预测任务，论文将时空图注意力网络STGAT适配到统一的逆向强化学习框架中，定义了适用于该网络的状态和动作。该框架支持确定性与随机策略、一次性与序贯决策，并兼容REINFORCE和近端策略优化算法。实验验证了该统一框架在行人路径预测上的有效性与灵活性，为自动驾驶安全提供了更强的预测能力。",
+      "llm_tldr": "针对行人路径预测任务，论文将时空图注意力网络STGAT适配到统一的逆向强化学习框架中，定义了适用于该网络的状态和动作。该框架支持确定性与随机策略、一次性与序贯决策，并兼容REINFORCE和近端策略优化算法。实验验证了该统一框架在行人路径预测上的有效性与灵活性，为自动驾驶安全提供了更强的预测能力。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "pedestrian trajectory prediction multi-agent system",
+      "matched_requirement_id": "req-22",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.16229v1",
+      "source": "arxiv",
+      "title": "Planner-Conditioned Diffusion for Coordinated Multi-Agent Exploration",
+      "abstract": "Coordinated multi-agent exploration requires not only efficient individual coverage but also non-redundant coverage across agents over extended planning horizons. Conventional approaches rely on hand-crafted coordination rules, while end-to-end multi-agent learning methods are difficult to scale and train. Diffusion-based planners such as DARE offer a promising alternative by generating long-horizon trajectories instead of single-step actions, but existing methods are trained on a narrow planner distribution, limiting behavioral diversity and inference-time controllability. We propose a Planner-Conditioned Diffusion Policy (PCDP) for graph-based multi-agent exploration. PCDP is trained on demonstrations from multiple planner styles with planner identity as an explicit conditioning input, enabling a single shared model to learn a multimodal trajectory distribution and generate diverse, controllable trajectory candidates from the same observation. Rather than learning coordination end-to-end, we reuse this multimodal single-agent policy across all agents and introduce coordination through local reranking, in which nearby agents jointly select the trajectory combination with minimal predicted overlap. We evaluate PCDP against classical and diffusion-based baselines on 100 held-out maps in a four-agent simulation setting. PCDP matches the perfect success rate of the diffusion-based baselines while improving mean max-agent travel, total team travel, and agent imbalance. Crucially, reranking alone over a single-planner baseline yields only marginal gains, indicating that planner-conditioned multimodality is the main contributor to improved coordination. Qualitative simulation results and real-robot experiments with two agents further validate that diverse long-horizon trajectory generation produces emergent spatial separation between agents without any explicit repulsion mechanism.",
+      "authors": [
+        "Marcus Yu Siong Teo",
+        "Jeric Lew",
+        "Tanishq Duhan",
+        "Guillaume Sartoretti"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-17T08:07:20+00:00",
+      "link": "https://arxiv.org/pdf/2608.16229v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "learning-based multi-agent pathfinding via diffusion policies",
+      "llm_evidence_cn": "基于扩散策略的多智能体路径规划学习",
+      "llm_evidence": "基于扩散策略的多智能体路径规划学习",
+      "canonical_evidence": "基于扩散策略的多智能体路径规划学习",
+      "llm_tldr_en": "Planner-Conditioned Diffusion Policy for graph-based multi-agent exploration trains on multi-style demonstrations to generate diverse long-horizon coordinated trajectories.",
+      "llm_tldr_cn": "多智能体协同探索面临个体覆盖高效与跨智能体非冗余覆盖的长期规划难题，且端到端学习方法难以扩展。本文提出规划器条件扩散策略PCDP，利用多种规划器风格的演示训练扩散模型，代替单步动作生成长期协调轨迹，提升行为多样性和推理时可控性。实验表明PCDP在基于图的多智能体探索任务中能有效实现协调覆盖，为学习式多智能体路径规划提供了新范式。",
+      "llm_tldr": "多智能体协同探索面临个体覆盖高效与跨智能体非冗余覆盖的长期规划难题，且端到端学习方法难以扩展。本文提出规划器条件扩散策略PCDP，利用多种规划器风格的演示训练扩散模型，代替单步动作生成长期协调轨迹，提升行为多样性和推理时可控性。实验表明PCDP在基于图的多智能体探索任务中能有效实现协调覆盖，为学习式多智能体路径规划提供了新范式。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "learning based multi agent pathfinding",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.20099v1",
+      "source": "arxiv",
+      "title": "Reward-Guided Autoregressive Graph Generation for Efficient Multi-Agent Communication Topology Design",
+      "abstract": "LLM-based Multi-Agent Systems (MAS) achieve strong performance on complex reasoning tasks by coordinating multiple agents, but at the cost of substantial token consumption. Recent work on automatic topology design, ARG-Designer, has reframed this problem as autoregressive graph generation. However, its training objective provides no explicit incentive for the model to generate sparse and efficient topologies. We address this limitation by introducing a Reward-Guided Autoregressive Graph Generation (RGA-Designer) inspired by Reinforcement Learning from Human Feedback (RLHF). We train a reward model that jointly captures task correctness and structural compactness, and then fine-tune the pretrained graph generator using the reward model as feedback. Our method preserves task accuracy at the level of ARG-Designer while reducing token consumption by an average of 20.5%.",
+      "authors": [
+        "Poomphob Suwannapichat",
+        "Boonyarit Changaival",
+        "Caesar Wu",
+        "Pascal Bouvry"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-08-20T14:32:01+00:00",
+      "link": "https://arxiv.org/pdf/2608.20099v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Sparse and efficient communication topology design for multi-agent systems using reward-guided graph generation",
+      "llm_evidence_cn": "面向多智能体系统的稀疏高效通信拓扑设计，使用奖励引导的图生成方法",
+      "llm_evidence": "面向多智能体系统的稀疏高效通信拓扑设计，使用奖励引导的图生成方法",
+      "canonical_evidence": "面向多智能体系统的稀疏高效通信拓扑设计，使用奖励引导的图生成方法",
+      "llm_tldr_en": "Proposes RGA-Designer, which uses a reward model for compactness and correctness to guide autoregressive graph generation, producing sparse and token-efficient communication topologies for LLM-based MAS.",
+      "llm_tldr_cn": "大语言模型多智能体系统在推理时消耗大量token，现有自动拓扑设计方法不显式鼓励稀疏和高效结构。本文提出奖励引导的自回归图生成方法RGA-Designer，受RLHF启发，训练一个同时刻画任务正确性与结构紧凑性的奖励模型，并据此微调预训练图生成器。生成的通信拓扑更稀疏、更节省token，同时保持任务性能，为多智能体通信结构学习提供了新思路。",
+      "llm_tldr": "大语言模型多智能体系统在推理时消耗大量token，现有自动拓扑设计方法不显式鼓励稀疏和高效结构。本文提出奖励引导的自回归图生成方法RGA-Designer，受RLHF启发，训练一个同时刻画任务正确性与结构紧凑性的奖励模型，并据此微调预训练图生成器。生成的通信拓扑更稀疏、更节省token，同时保持任务性能，为多智能体通信结构学习提供了新思路。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.17739v1",
+      "source": "arxiv",
+      "title": "Offline Multi-Agent Reinforcement Learning with a Physics-Informed World Model for Cooperative Mixed Traffic Control",
+      "abstract": "This study investigates cooperative control of connected and automated vehicles (CAVs) at partially observable highway bottlenecks in mixed traffic, aiming to mitigate congestion without relying on complete global traffic states or online trial-and-error. We propose a physics-informed world model-based offline multi-agent reinforcement learning framework that reconstructs a physically interpretable global traffic state from local CAV observation-action histories, with coupled macroscopic-microscopic traffic dynamics providing physics-based supervision. A probabilistic ensemble world model learns traffic-state transitions and system rewards, while model disagreement quantifies epistemic uncertainty. Multi-step imagined rollouts with pessimistic rewards and uncertainty-driven truncation are then used for offline policy learning. Experiments in a SUMO-based on-ramp bottleneck using approximately $1\\times10^6$ offline transitions show that physics supervision improves state reconstruction and world-model prediction accuracy.",
+      "authors": [
+        "Lu Liu",
+        "Chi Xie",
+        "Xi Xiong"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA"
+      ],
+      "published": "2026-08-18T13:03:51+00:00",
+      "link": "https://arxiv.org/pdf/2608.17739v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "offline MARL with world model for cooperative multi-agent congestion mitigation at highway bottlenecks",
+      "llm_evidence_cn": "离线多智能体强化学习结合世界模型，在公路瓶颈处实现协同拥堵缓解",
+      "llm_evidence": "离线多智能体强化学习结合世界模型，在公路瓶颈处实现协同拥堵缓解",
+      "canonical_evidence": "离线多智能体强化学习结合世界模型，在公路瓶颈处实现协同拥堵缓解",
+      "llm_tldr_en": "This paper proposes an offline multi-agent reinforcement learning framework with a physics-informed world model to cooperatively control connected vehicles at highway bottlenecks, reconstructing global traffic states from local observations and using model disagreement for uncertainty, aiming to mitigate congestion without online trial-and-error.",
+      "llm_tldr_cn": "针对混合交通瓶颈处的拥堵问题，本文提出一种基于物理信息世界模型的离线多智能体强化学习框架。该方法从局部观测-动作历史重建可解释的全局交通状态，并通过概率集成世界模型学习状态转移与奖励，利用模型分歧量化认知不确定性。在部分可观测瓶颈场景中，它无需完整全局信息或在线试错即可学习协同控制策略。实验表明该方法能有效缓解交通拥堵，为离线多智能体决策提供了新思路。",
+      "llm_tldr": "针对混合交通瓶颈处的拥堵问题，本文提出一种基于物理信息世界模型的离线多智能体强化学习框架。该方法从局部观测-动作历史重建可解释的全局交通状态，并通过概率集成世界模型学习状态转移与奖励，利用模型分歧量化认知不确定性。在部分可观测瓶颈场景中，它无需完整全局信息或在线试错即可学习协同控制策略。实验表明该方法能有效缓解交通拥堵，为离线多智能体决策提供了新思路。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "congestion avoidance multi-agent crowd navigation",
+      "matched_requirement_id": "req-26",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.18353v1",
+      "source": "arxiv",
+      "title": "Model Predictive Supervisory Control for Hierarchical and Distributed UAS Traffic Management",
+      "abstract": "This work proposes a hierarchical Model Predictive Supervisory Control (MPSC) framework for multi-agent systems with shared resources. MPSC integrates receding-horizon cost-optimal control with Supervisory control theory (SCT) based supervision that enforces safety, nonblockingness, and resource exclusivity. Scalability arises from hierarchical and scalable supervisor and automaton templates, enabling distributed execution without monolithic synthesis. Using this framework, this work develops an urban Unmanned aircraft system Traffic Management (UTM) model. The model supports pickup-and-delivery missions under time-varying demand efficiently.",
+      "authors": [
+        "Matheus P. Loures",
+        "Guilherme V. Raffo",
+        "Patrícia N. Pena"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY",
+        "cs.MA"
+      ],
+      "published": "2026-08-18T22:08:41+00:00",
+      "link": "https://arxiv.org/pdf/2608.18353v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Hierarchical and distributed MPSC for multi-agent UAS traffic management, directly addressing decentralized multi-agent path planning with shared resources.",
+      "llm_evidence_cn": "提出分层分布式MPSC框架用于多智能体无人机交通管理，直接面向共享资源下的去中心化多智能体路径规划。",
+      "llm_evidence": "提出分层分布式MPSC框架用于多智能体无人机交通管理，直接面向共享资源下的去中心化多智能体路径规划。",
+      "canonical_evidence": "提出分层分布式MPSC框架用于多智能体无人机交通管理，直接面向共享资源下的去中心化多智能体路径规划。",
+      "llm_tldr_en": "Proposes a hierarchical model predictive supervisory control framework for multi-agent systems, enforcing safety and resource constraints via supervisory control theory, enabling distributed UAS traffic management with scalable templates.",
+      "llm_tldr_cn": "针对多智能体共享资源下的交通管理问题，本文提出分层模型预测监督控制（MPSC）框架。它将滚动时域最优控制与监督控制理论结合，保证安全性、无阻塞与资源独占性。通过层次化和模板化实现分布式执行，避免整体综合。应用于城市无人机交通管理，支持随时间变化的取送任务需求。该方法为多智能体协调控制提供了可扩展的方案。",
+      "llm_tldr": "针对多智能体共享资源下的交通管理问题，本文提出分层模型预测监督控制（MPSC）框架。它将滚动时域最优控制与监督控制理论结合，保证安全性、无阻塞与资源独占性。通过层次化和模板化实现分布式执行，避免整体综合。应用于城市无人机交通管理，支持随时间变化的取送任务需求。该方法为多智能体协调控制提供了可扩展的方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.15339v1",
+      "source": "arxiv",
+      "title": "Learning Sequential Mobility Choice: A Review of Route and Activity Choice through Inverse Reinforcement and Imitation Learning",
+      "abstract": "Route and activity choice are connected levels of a common sequential mobility decision problem: activity choice determines what people do, where, and when, while route choice governs how they move between activities. This review develops a unified framework connecting transportation choice modeling with inverse reinforcement learning (IRL) and imitation learning (IL). Under explicit assumptions, recursive logit, logit dynamic discrete choice, and maximum-entropy IRL share a soft Bellman representation, while trajectory occupancies and network flows satisfy related conservation laws. However, utility, reward, policy, occupancy, constraints, and observation errors remain different estimands with different behavioral and counterfactual interpretations. We review constrained and inverse-constrained learning, occupancy-ratio and DICE methods, incomplete and mixed-quality demonstrations, graph and sequence learning, transfer, data fusion, multi-agent choice, and large language models. Our central message is that machine learning adds the greatest value when embedded within a behaviorally disciplined framework: exact transitions enforce feasibility, structured rewards preserve interpretable trade-offs, observation models address heterogeneous data sources, and network or equilibrium solvers produce coherent system outcomes. Such hybrid models can improve scalability and prediction without sacrificing behavioral identification or policy relevance.",
+      "authors": [
+        "Tien Mai"
+      ],
+      "primary_category": "econ.EM",
+      "categories": [
+        "econ.EM"
+      ],
+      "published": "2026-08-15T17:45:20+00:00",
+      "link": "https://arxiv.org/pdf/2608.15339v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Reviews route and activity choice via inverse reinforcement and imitation learning, directly relevant to imitation learning for multi-agent path finding.",
+      "llm_evidence_cn": "通过逆向强化学习和模仿学习综述路径与活动选择，与多智能体路径搜索的模仿学习直接相关。",
+      "llm_evidence": "通过逆向强化学习和模仿学习综述路径与活动选择，与多智能体路径搜索的模仿学习直接相关。",
+      "canonical_evidence": "通过逆向强化学习和模仿学习综述路径与活动选择，与多智能体路径搜索的模仿学习直接相关。",
+      "llm_tldr_en": "Reviews how inverse reinforcement learning and imitation learning unify route and activity choice in sequential mobility decisions, offering a framework that connects transportation choice modeling with learning-based path finding.",
+      "llm_tldr_cn": "该综述将交通选择建模与逆向强化学习和模仿学习统一在一个框架下，阐述活动选择与路径选择如何构成序贯移动决策。文章推导了递归Logit、Logit动态离散选择与最大熵IRL在软Bellman表示下的等价关系，并讨论了轨迹占用与网络流之间的守恒律。这项工作为使用专家演示数据学习出行者路径选择行为提供了理论基础，对基于学习的多智能体路径规划具有参考价值。",
+      "llm_tldr": "该综述将交通选择建模与逆向强化学习和模仿学习统一在一个框架下，阐述活动选择与路径选择如何构成序贯移动决策。文章推导了递归Logit、Logit动态离散选择与最大熵IRL在软Bellman表示下的等价关系，并讨论了轨迹占用与网络流之间的守恒律。这项工作为使用专家演示数据学习出行者路径选择行为提供了理论基础，对基于学习的多智能体路径规划具有参考价值。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert demonstrations for multi-agent path finding",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.15440v1",
+      "source": "arxiv",
+      "title": "Accelerating Mixed Discrete-Continuous Motion Planning via Neural Graphs of Convex Sets",
+      "abstract": "Motion planning problems such as collision-free navigation and contact-rich manipulation can be naturally formulated as optimization problems that couple discrete decisions with continuous trajectories. The Graphs of Convex Sets (GCS) framework offers a practical solution to these problems. It represents discrete decisions as nodes of a graph and encodes continuous trajectories in the edges connecting them. However, the resulting optimization subproblems can become computationally prohibitive for online replanning.   In this work, we propose a learning-based strategy to mitigate this limitation. Specifically, we replace the costly convex relaxation step required by nominal GCS with a single forward pass through a Graph Attention Network that predicts a set of highly probable candidate paths through the graph. A lightweight ranking network then orders these candidates by their estimated trajectory cost. Evaluating them in this order, we terminate our search early while still recovering a near-optimal motion plan. We validate the resulting pipeline across diverse robotic tasks, including collision-free motion planning for a 3D quadrotor and a 7-DoF manipulator, and planning through contact for planar pushing. Across both convex and non-convex cost and constraint settings, our approach yields up to two orders of magnitude speedup over nominal GCS while maintaining a 100% success rate, at the cost of some suboptimality in the recovered solutions. Code implementations and video demonstrations can be found at https://neural-gcs.github.io/.",
+      "authors": [
+        "Ananya Trivedi",
+        "Sarvesh Prajapati",
+        "Mohamed Khalid M Jaffar",
+        "Zhexin Xu",
+        "David Rosen",
+        "Taskin Padir"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-15T22:51:56+00:00",
+      "link": "https://arxiv.org/pdf/2608.15440v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Learning-based acceleration of mixed discrete-continuous motion planning using graph attention networks, relevant to learning-based path planning.",
+      "llm_evidence_cn": "基于图注意力网络的混合离散连续运动规划学习加速，与基于学习的路径规划密切相关。",
+      "llm_evidence": "基于图注意力网络的混合离散连续运动规划学习加速，与基于学习的路径规划密切相关。",
+      "canonical_evidence": "基于图注意力网络的混合离散连续运动规划学习加速，与基于学习的路径规划密切相关。",
+      "llm_tldr_en": "Proposes a learning-based acceleration for Graphs of Convex Sets motion planning by replacing costly convex relaxation with a single forward pass through a Graph Attention Network, enabling faster online replanning for collision-free navigation and manipulation.",
+      "llm_tldr_cn": "针对GCS框架在线重规划计算量大的问题，提出用图注意力网络的一次前向传播替代代价高昂的凸松弛步骤，加速混合离散-连续运动规划。实验表明该方法在保障碰撞避免与操作任务可行性的同时显著降低在线重规划耗时，为基于学习的机器人路径规划提供了一种高效加速方案。",
+      "llm_tldr": "针对GCS框架在线重规划计算量大的问题，提出用图注意力网络的一次前向传播替代代价高昂的凸松弛步骤，加速混合离散-连续运动规划。实验表明该方法在保障碰撞避免与操作任务可行性的同时显著降低在线重规划耗时，为基于学习的机器人路径规划提供了一种高效加速方案。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.19357v1",
+      "source": "arxiv",
+      "title": "Untangling Dense Crowds with mmWave Radar: From Crowd Semantics to Individual Spatial Behaviors",
+      "abstract": "In this paper, we present a novel framework for recovering individual footprints and pedestrian spatial behaviors in dense crowds. This is a highly challenging problem, as pedestrians can merge or block one another often and for prolonged periods in crowded areas, leading to strongly entangled observations. Our approach jointly leverages learned crowd semantics and principled reasoning over persistent radar observability loss to systematically infer individual spatial footprints. At the macroscopic level, we learn spatial usage patterns of the crowd from radar point clouds, while at the microscopic level we develop a physics-informed model of radar observability loss caused by sustained merging and occlusion. Building on this macro-micro structure, we introduce a semantic-guided multi-hypothesis reasoning foundation that evaluates competing hypotheses via principled reasoning over many-to-one and one-to-none observation mappings, enabling untangling of individual spatial footprints. We evaluate the framework through 18 real-world experiments using an off-the-shelf mmWave radar, involving crowds of up to (and including) 10 individuals across six categories of diverse pedestrian behaviors, and four environments. Our methodology robustly recovers individual spatial footprints, even during prolonged and persistent observability loss, demonstrating strong structural consistency with the ground-truth. The recovered footprints further enable accurate zonal analysis of pedestrian space usage. Finally, we present an ablation study and further compare against state-of-the-art. The proposed foundation substantially outperforms the state-of-the-art across all experiments, achieving an average median DTW of 30.5 cm compared to 95.94 cm, highlighting the framework's robustness to frequent and prolonged merging and occlusion.",
+      "authors": [
+        "Aaditya Prakash Kattekola",
+        "Anurag Pallaprolu",
+        "Yasamin Mostofi"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-19T18:20:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.19357v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Perception of dense crowd occupancy and individual spatial behaviors from radar, relevant to crowd occupancy grid perception",
+      "llm_evidence_cn": "基于雷达的密集人群占用感知与个体空间行为恢复，与人群占用网格感知相关",
+      "llm_evidence": "基于雷达的密集人群占用感知与个体空间行为恢复，与人群占用网格感知相关",
+      "canonical_evidence": "基于雷达的密集人群占用感知与个体空间行为恢复，与人群占用网格感知相关",
+      "llm_tldr_en": "Uses learned crowd semantics and physics-informed radar observability modeling to recover individual footprints and spatial behaviors in dense crowds despite merging and occlusion.",
+      "llm_tldr_cn": "密集人群中行人经常相互遮挡或合并，导致观测纠缠不清。作者结合学习到的人群语义与基于物理的雷达可见性损失推理，在宏观层面学习人群空间使用模式、微观层面建模持续合并遮挡引起的可见性损失，从而系统推断个体空间足迹。实验表明该方法能有效恢复密集场景下的个体行为，为人群感知与拥挤分析提供了新工具。",
+      "llm_tldr": "密集人群中行人经常相互遮挡或合并，导致观测纠缠不清。作者结合学习到的人群语义与基于物理的雷达可见性损失推理，在宏观层面学习人群空间使用模式、微观层面建模持续合并遮挡引起的可见性损失，从而系统推断个体空间足迹。实验表明该方法能有效恢复密集场景下的个体行为，为人群感知与拥挤分析提供了新工具。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "crowd occupancy grid perception dynamic occupancy",
+      "matched_requirement_id": "req-23",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.16115v1",
+      "source": "arxiv",
+      "title": "Rigidity-Aware Formation Tracking under Sensing Range Constraints via Single Control Barrier Function Constraint",
+      "abstract": "This paper presents a control framework for formation tracking and rigidity maintenance in heterogeneous multi-robot systems with nonlinear dynamics under sensing range constraints. Since formation tracking alone does not ensure rigidity maintenance with a limited sensing range, despite rigidity being a prerequisite for establishing and preserving a unique formation, our work integrates both objectives through a single Control Barrier Function (CBF)-like constraint within a quadratic optimization framework. The proposed distributed controller requires only local relative information from neighbors, as verified with simulation case studies.",
+      "authors": [
+        "S. Saharsh",
+        "Pushpak Jagtap"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-08-17T05:11:54+00:00",
+      "link": "https://arxiv.org/pdf/2608.16115v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Decentralized multi-robot coordination with local sensing constraints using control barrier functions; relevant to collision avoidance coordination.",
+      "llm_evidence_cn": "基于控制障碍函数的分布式多机器人协调，面向感知约束下的安全编队，可用于去中心化避碰协调。",
+      "llm_evidence": "基于控制障碍函数的分布式多机器人协调，面向感知约束下的安全编队，可用于去中心化避碰协调。",
+      "canonical_evidence": "基于控制障碍函数的分布式多机器人协调，面向感知约束下的安全编队，可用于去中心化避碰协调。",
+      "llm_tldr_en": "For multi-robot formation tracking with limited sensing range, a single CBF-like constraint in quadratic optimization jointly enforces tracking and rigidity, requiring only local neighbor information. Simulations validate the distributed controller.",
+      "llm_tldr_cn": "异质多机器人系统在有限感知范围下进行编队跟踪时，仅靠编队跟踪无法保证刚性保持。本文在二次优化框架中通过单一控制障碍函数约束同时处理编队跟踪与刚性维护，控制器仅需邻居局部相对信息。仿真案例验证了所提分布式控制器在感知范围约束下的有效性。该方法为去中心化多智能体避碰与协调提供了可迁移的控制机制。",
+      "llm_tldr": "异质多机器人系统在有限感知范围下进行编队跟踪时，仅靠编队跟踪无法保证刚性保持。本文在二次优化框架中通过单一控制障碍函数约束同时处理编队跟踪与刚性维护，控制器仅需邻居局部相对信息。仿真案例验证了所提分布式控制器在感知范围约束下的有效性。该方法为去中心化多智能体避碰与协调提供了可迁移的控制机制。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.18490v1",
+      "source": "arxiv",
+      "title": "Bayesian Partner Modelling enables Adaptive Replanning for LLM Coordination",
+      "abstract": "Multi-agent Large Language Model (LLM) systems often struggle to collaborate with new teammates whose strategies shift mid-task. Because agents execute multi-step or temporally extended skills, they frequently continue executing outdated plans long after public evidence shows that a partner has changed its skill. Existing methods either treat partner tracking as passive context-leaving the agent aware of the shift but slow to act-or replan indiscriminately. We introduce BayesBeliefAgent, which pairs a hierarchical LLM planner with a Bayesian tracking module. Rather than replanning constantly, our agent interrupts its current skill only when a partner's actions directly contradict the inferred skill. Beyond standard reward, we evaluate performance using replanning efficiency and the belief-action gap: the fraction of total decisions where an agent with a correct partner estimate executes a non-complementary skill. Across benchmark Overcooked environments, contradiction-conditioned control drastically narrows this belief-action gap while requiring an order of magnitude fewer replans than heuristic methods",
+      "authors": [
+        "Harsh Goel",
+        "Aditya Sai Ellendula",
+        "Vaishnav Tadiparthi",
+        "Ehsan Moradi Pari",
+        "Hossein Nourkhiz Mahjoub",
+        "Sandeep P. Chinchali"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA"
+      ],
+      "published": "2026-08-19T03:29:32+00:00",
+      "link": "https://arxiv.org/pdf/2608.18490v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Bayesian tracking of partner skills/intents enables adaptive replanning in multi-agent LLM coordination.",
+      "llm_evidence_cn": "用贝叶斯跟踪伙伴技能/意图并在多智能体LLM协作中自适应重规划",
+      "llm_evidence": "用贝叶斯跟踪伙伴技能/意图并在多智能体LLM协作中自适应重规划",
+      "canonical_evidence": "用贝叶斯跟踪伙伴技能/意图并在多智能体LLM协作中自适应重规划",
+      "llm_tldr_en": "Multi-agent LLM systems often keep outdated plans when partners change strategy. BayesBeliefAgent pairs a hierarchical LLM planner with Bayesian tracking, interrupting only when partner actions contradict the inferred skill, enabling efficient adaptive replanning and improving collaboration.",
+      "llm_tldr_cn": "多智能体LLM系统常因伙伴策略中途变化而继续执行过时计划。本文提出BayesBeliefAgent，将分层LLM规划器与贝叶斯跟踪模块结合，仅在伙伴动作与推断技能直接矛盾时中断当前技能，而不是频繁重规划。实验表明该机制在标准奖励之外也提升了协作性能，为多智能体意图推断与自适应规划提供了新范式。相较于被动跟踪和盲目重规划，该方法在任务成功率和重规划成本之间取得更好平衡。",
+      "llm_tldr": "多智能体LLM系统常因伙伴策略中途变化而继续执行过时计划。本文提出BayesBeliefAgent，将分层LLM规划器与贝叶斯跟踪模块结合，仅在伙伴动作与推断技能直接矛盾时中断当前技能，而不是频繁重规划。实验表明该机制在标准奖励之外也提升了协作性能，为多智能体意图推断与自适应规划提供了新范式。相较于被动跟踪和盲目重规划，该方法在任务成功率和重规划成本之间取得更好平衡。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.20129v1",
+      "source": "arxiv",
+      "title": "Multi-Agent Orchestration with the Common-Sense Reasoning Capabilities of LLMs for Autonomous Driving",
+      "abstract": "Autonomous vehicles require robust perception and decision-making capabilities to operate in diverse and unseen scenarios. While reinforcement learning and rule-based methods can provide effective control and safety mechanisms, their performance may degrade in situations requiring contextual reasoning. Large Language Models (LLMs) have demonstrated strong capabilities in understanding multimodal information and generating contextual reasoning, however, their use for direct vehicle control can introduce latency and hallucination risks. To address these limitations, a hybrid framework is proposed. This system uses an orchestrator to coordinate PPO-trained reinforcement learning and PID control, with LLM common-sense reasoning applied throughout the framework. LLM reasoning is further employed iteratively to refine the RL reward function for dynamic driving environments. The proposed framework is evaluated in highly randomized CARLA scenarios under diverse environmental and traffic conditions. The results demonstrate the potential of integrating LLM-based reasoning with conventional autonomous driving methods while retaining structured control and safety mechanism.",
+      "authors": [
+        "Mehdi Azarafza",
+        "Faezeh Pasandideh",
+        "Ali Ehteshami Bejnordi",
+        "Stefan Henkler",
+        "Achim Rettberg"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.CL",
+        "cs.CV"
+      ],
+      "published": "2026-08-20T14:56:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.20129v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Multi-agent orchestration combining PPO reinforcement learning and LLM reasoning for autonomous driving; relevant to learning-based multi-agent path planning.",
+      "llm_evidence_cn": "多智能体编排结合PPO强化学习与LLM推理用于自动驾驶决策，与基于学习的多智能体路径规划相关。",
+      "llm_evidence": "多智能体编排结合PPO强化学习与LLM推理用于自动驾驶决策，与基于学习的多智能体路径规划相关。",
+      "canonical_evidence": "多智能体编排结合PPO强化学习与LLM推理用于自动驾驶决策，与基于学习的多智能体路径规划相关。",
+      "llm_tldr_en": "Autonomous driving needs contextual reasoning beyond RL and rules; direct LLM control risks latency and hallucination. The framework uses an orchestrator coordinating PPO-based RL and PID control with LLM common-sense reasoning. It improves robustness and is relevant to learning-based multi-agent path planning.",
+      "llm_tldr_cn": "自动驾驶车辆在未见场景中需要结合感知与推理决策，纯强化学习或规则方法在需要上下文推理时可能退化。本文提出混合框架，用编排器协调PPO训练的强化学习与PID控制，并利用大语言模型的常识推理能力增强决策。该方法缓解了直接使用LLM控制带来的延迟与幻觉风险，在自动驾驶决策中结合了多智能体编排与强化学习，对基于学习的多智能体路径规划具有借鉴意义。",
+      "llm_tldr": "自动驾驶车辆在未见场景中需要结合感知与推理决策，纯强化学习或规则方法在需要上下文推理时可能退化。本文提出混合框架，用编排器协调PPO训练的强化学习与PID控制，并利用大语言模型的常识推理能力增强决策。该方法缓解了直接使用LLM控制带来的延迟与幻觉风险，在自动驾驶决策中结合了多智能体编排与强化学习，对基于学习的多智能体路径规划具有借鉴意义。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "biorxiv-10-64898-2026-08-17-745075-v1",
+      "source": "biorxiv",
+      "title": "Explainable Decoding of Sensorimotor Communication in Joint Object Manipulation",
+      "abstract": "Humans often collaborate under asymmetric information, for example when two people carry a table and only one knows the destination. They coordinate without speech using cues from movement kinematics, interaction forces, and object states. Characterizing this sensorimotor communication is difficult because these signals both execute the task and convey information, whose meaning is context-dependent. Here, we investigated a virtual table-carrying task where one partner knew the target while the other inferred it from visuo-haptic feedback. Participants flexibly adapted kinematic and haptic cues across contexts to convey intention. We introduce an explainable machine-learning framework that decodes intent from ongoing multimodal signals and quantifies where individual features are informative. Incorporating the decoded signals into a drift-diffusion model accurately predicted the uninformed partner's target choices and decision times. Together, our framework explains how humans communicate through action and offers principles for collaborative robots to infer and express intent through physical interaction.",
+      "authors": [
+        "Liu, Y.",
+        "Verdel, D.",
+        "Leib, R.",
+        "Burdet, E.",
+        "Franklin, D. W."
+      ],
+      "primary_category": "neuroscience",
+      "categories": [
+        "neuroscience"
+      ],
+      "published": "2026-08-20T00:00:00+00:00",
+      "link": "https://www.biorxiv.org/content/10.64898/2026.08.17.745075v1.full.pdf",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent intent decoding from multimodal sensorimotor cues",
+      "llm_evidence_cn": "基于多模态感觉运动信号的多智能体意图解码",
+      "llm_evidence": "基于多模态感觉运动信号的多智能体意图解码",
+      "canonical_evidence": "基于多模态感觉运动信号的多智能体意图解码",
+      "llm_tldr_en": "The proposed explainable machine-learning framework decodes a partner's intent from multimodal sensorimotor signals including kinematics, forces, and object states during a collaborative table-carrying task.",
+      "llm_tldr_cn": "在不对称信息的协作中，运动学、力和物体状态等信号既执行任务又传递上下文相关的意图，难以解释。本研究设计虚拟抬桌任务并引入可解释机器学习框架，从多模态感觉运动信号中实时解码伙伴目标。实验显示参与者会灵活调整运动与触觉线索，框架能准确识别意图，为多智能体意图预测和人机协作规划提供了分析工具。",
+      "llm_tldr": "在不对称信息的协作中，运动学、力和物体状态等信号既执行任务又传递上下文相关的意图，难以解释。本研究设计虚拟抬桌任务并引入可解释机器学习框架，从多模态感觉运动信号中实时解码伙伴目标。实验显示参与者会灵活调整运动与触觉线索，框架能准确识别意图，为多智能体意图预测和人机协作规划提供了分析工具。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
