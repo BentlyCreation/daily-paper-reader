@@ -6,61 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-23
-- 运行时间：2026-08-23 20:42:09 UTC
+- 最新运行日期：2026-08-24
+- 运行时间：2026-08-24 21:01:42 UTC
 - 运行状态：成功
-- 本次总论文数：13
-- 精读区：6
-- 速读区：7
+- 本次总论文数：4
+- 精读区：1
+- 速读区：3
 
 ### 今日简报（AI）
-今日共读13篇论文，精读6篇、速读7篇，重点关注多智能体路径规划与行人运动预测两大方向。  
-最值得精读的是《A Theoretical Framework for Parallel Lifelong MAPF Using Group Decentralized Planning》（9.0分），其面向并行终身多智能体路径规划提出分组去中心化理论框架；同时《Unified Pedestrian Path Prediction Using Inverse Reinforcement Learning》（8.0分）为行人路径预测提供了逆强化学习统一方案。  
-后续可结合速读中的逆强化学习路线选择综述，进一步比较不同IRL建模在交通场景中的适用性。
-- 详情：[/202608/23/README](/202608/23/README)
+今日精读1篇、速读3篇，重点关注形状感知的强化学习模型预测控制（SRL-MPC）。最值得看的是SRL-MPC（8.0分）将形状感知融入控制，以及混合离散连续运动规划的神经图方法（7.0分）。建议优先复现SRL-MPC的提升效果，再结合运动规划扩展应用场景。
+- 详情：[/202608/24/README](/202608/24/README)
 
 ### 精读区论文标签
-1. [A Theoretical Framework for Parallel Lifelong MAPF Using Group Decentralized Planning](/202608/23/2608.17928v1-a-theoretical-framework-for-parallel-lifelong-mapf-using-group-decentralized-planning)  
-   标签：评分：9.0/10、query:lbm
-   evidence：直接面向分散式多智能体路径规划，提出终身MAPF的理论框架
-2. [Unified Pedestrian Path Prediction Using Inverse Reinforcement Learning](/202608/23/2608.15929v1-unified-pedestrian-path-prediction-using-inverse-reinforcement-learning)  
-   标签：评分：8.0/10、query:intent-avoid
-   evidence：基于逆向强化学习和STGAT的行人路径预测，匹配行人轨迹预测与意图预测。
-3. [Planner-Conditioned Diffusion for Coordinated Multi-Agent Exploration](/202608/23/2608.16229v1-planner-conditioned-diffusion-for-coordinated-multi-agent-exploration)  
+1. [SRL-MPC: Shape-Aware Reinforcement Learned Model Predictive Control](/202608/24/2608.21175v1-srl-mpc-shape-aware-reinforcement-learned-model-predictive-control)  
    标签：评分：8.0/10、query:lbm
-   evidence：基于扩散策略的多智能体路径规划学习
-4. [Offline Multi-Agent Reinforcement Learning with a Physics-Informed World Model for Cooperative Mixed Traffic Control](/202608/23/2608.17739v1-offline-multi-agent-reinforcement-learning-with-a-physics-informed-world-model-for-cooperative-mixed-traffic-control)  
-   标签：评分：8.0/10、query:intent-avoid
-   evidence：离线多智能体强化学习结合世界模型，在公路瓶颈处实现协同拥堵缓解
-5. [Model Predictive Supervisory Control for Hierarchical and Distributed UAS Traffic Management](/202608/23/2608.18353v1-model-predictive-supervisory-control-for-hierarchical-and-distributed-uas-traffic-management)  
-   标签：评分：8.0/10、query:lbm
-   evidence：提出分层分布式MPSC框架用于多智能体无人机交通管理，直接面向共享资源下的去中心化多智能体路径规划。
-6. [Reward-Guided Autoregressive Graph Generation for Efficient Multi-Agent Communication Topology Design](/202608/23/2608.20099v1-reward-guided-autoregressive-graph-generation-for-efficient-multi-agent-communication-topology-design)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：面向多智能体系统的稀疏高效通信拓扑设计，使用奖励引导的图生成方法
+   evidence：面向密集多智能体人群导航的强化学习路径规划
 
 ### 速读区论文标签
-1. [Learning Sequential Mobility Choice: A Review of Route and Activity Choice through Inverse Reinforcement and Imitation Learning](/202608/23/2608.15339v1-learning-sequential-mobility-choice-a-review-of-route-and-activity-choice-through-inverse-reinforcement-and-imitation-learning)  
+1. [Accelerating Mixed Discrete-Continuous Motion Planning via Neural Graphs of Convex Sets](/202608/24/2608.15440v1-accelerating-mixed-discrete-continuous-motion-planning-via-neural-graphs-of-convex-sets)  
    标签：评分：7.0/10、query:lbm
-   evidence：通过逆向强化学习和模仿学习综述路径与活动选择，与多智能体路径搜索的模仿学习直接相关。
-2. [Untangling Dense Crowds with mmWave Radar: From Crowd Semantics to Individual Spatial Behaviors](/202608/23/2608.19357v1-untangling-dense-crowds-with-mmwave-radar-from-crowd-semantics-to-individual-spatial-behaviors)  
-   标签：评分：7.0/10、query:intent-avoid
-   evidence：基于雷达的密集人群占用感知与个体空间行为恢复，与人群占用网格感知相关
-3. [Accelerating Mixed Discrete-Continuous Motion Planning via Neural Graphs of Convex Sets](/202608/23/2608.15440v1-accelerating-mixed-discrete-continuous-motion-planning-via-neural-graphs-of-convex-sets)  
-   标签：评分：6.0/10、query:lbm
-   evidence：基于图注意力网络的混合离散连续运动规划学习加速，与基于学习的路径规划密切相关。
-4. [Rigidity-Aware Formation Tracking under Sensing Range Constraints via Single Control Barrier Function Constraint](/202608/23/2608.16115v1-rigidity-aware-formation-tracking-under-sensing-range-constraints-via-single-control-barrier-function-constraint)  
+   evidence：用图注意力网络学习加速GCS运动规划，替代凸松弛步骤，面向路径规划
+2. [Q-based Variational Inverse Reinforcement Learning](/202608/24/2608.16888v1-q-based-variational-inverse-reinforcement-learning)  
+   标签：评分：7.0/10、query:lbm
+   evidence：基于专家演示的贝叶斯逆强化学习，可迁移到路径规划奖励学习
+3. [Distilling Aggregate Mobility Statistics into a Language Model Policy for Post-Event Crowd Simulation](/202608/24/2608.19778v1-distilling-aggregate-mobility-statistics-into-a-language-model-policy-for-post-event-crowd-simulation)  
    标签：评分：6.0/10、query:intent-avoid
-   evidence：基于控制障碍函数的分布式多机器人协调，面向感知约束下的安全编队，可用于去中心化避碰协调。
-5. [Bayesian Partner Modelling enables Adaptive Replanning for LLM Coordination](/202608/23/2608.18490v1-bayesian-partner-modelling-enables-adaptive-replanning-for-llm-coordination)  
-   标签：评分：6.0/10、query:intent-avoid
-   evidence：用贝叶斯跟踪伙伴技能/意图并在多智能体LLM协作中自适应重规划
-6. [Multi-Agent Orchestration with the Common-Sense Reasoning Capabilities of LLMs for Autonomous Driving](/202608/23/2608.20129v1-multi-agent-orchestration-with-the-common-sense-reasoning-capabilities-of-llms-for-autonomous-driving)  
-   标签：评分：6.0/10、query:lbm
-   evidence：多智能体编排结合PPO强化学习与LLM推理用于自动驾驶决策，与基于学习的多智能体路径规划相关。
-7. [Explainable Decoding of Sensorimotor Communication in Joint Object Manipulation](/202608/23/biorxiv-10-64898-2026-08-17-745075-v1-explainable-decoding-of-sensorimotor-communication-in-joint-object-manipulation)  
-   标签：评分：6.0/10、query:intent-avoid
-   evidence：基于多模态感觉运动信号的多智能体意图解码
+   evidence：基于聚合移动统计的人群多智能体仿真
 
 
 <div class="dpr-home-promo-card">

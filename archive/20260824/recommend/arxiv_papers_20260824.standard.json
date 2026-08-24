@@ -1,0 +1,193 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-24T20:59:14.143424+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 1,
+    "deep_cap": 8,
+    "deep_selected": 1,
+    "quick_candidates": 3,
+    "quick_skim_target": 13,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2608.21175v1",
+      "source": "arxiv",
+      "title": "SRL-MPC: Shape-Aware Reinforcement Learned Model Predictive Control",
+      "abstract": "Safe and efficient shape-aware navigation in heterogeneous crowds and robot fleets remains challenging. Traditional approaches often assume homogeneous robots, sparse workspaces, simplified geometry, offline computation, or handcrafted parameters to make the problem tractable, which limits their deployment in dense crowd scenarios. Toward this end, we propose Shape-Aware Reinforcement Learned Model Predictive Control (SRL-MPC), a method for safe, efficient, and adaptive navigation in crowds with heterogeneous shapes without geometry simplification. To encode shape-aware safety, we formulate high-order control barrier function (HOCBF) constraints from geometric separation features (GSFs) based on support function transformation. A reinforcement learning (RL) framework then learns a neural policy that reads GSFs and outputs real-time MPC parameter updates, enabling the MPC solver to adapt to neighboring crowd geometries. The key advantage of SRL-MPC is that it preserves the safety structure and generalizability of MPC while integrating the adaptability and intelligence of RL. Experiments in randomized crowd scenarios with arbitrary shaped robot fleets demonstrate the effectiveness, scalability, and robustness of SRL-MPC. The results show that SRL-MPC substantially outperforms representative baselines in safety and adaptability. Project website: https://hanruihua.github.io/srl_mpc_project/",
+      "authors": [
+        "Ruihua Han",
+        "Rui Gao",
+        "Zhe Liu",
+        "Xinyi Wang",
+        "Chang Chen",
+        "Shuai Wang",
+        "Qi Hao",
+        "Jia Pan",
+        "Hengshuang Zhao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-08-21T14:46:06+00:00",
+      "link": "https://arxiv.org/pdf/2608.21175v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "reinforcement learning for path planning in dense multi-agent crowd navigation",
+      "llm_evidence_cn": "面向密集多智能体人群导航的强化学习路径规划",
+      "llm_evidence": "面向密集多智能体人群导航的强化学习路径规划",
+      "canonical_evidence": "面向密集多智能体人群导航的强化学习路径规划",
+      "llm_tldr_en": "Integrating RL with MPC and high-order control barrier functions, SRL-MPC enables safe, efficient, and adaptive navigation in dense heterogeneous crowds without geometry simplification, overcoming traditional assumptions.",
+      "llm_tldr_cn": "现有人群导航方法通常假设机器人同质、场景稀疏或简化几何，难以应对密集异构人群。为此提出SRL-MPC，将强化学习与模型预测控制相结合，通过支撑函数变换提取几何分离特征并构造高阶控制屏障约束，无需几何简化即可编码形状感知安全性。实验结果验证了该方法在密集人群中实现安全、高效、自适应导航的能力。该工作为异构形状机器人在复杂动态环境中部署提供了可复用的强化学习解决方案。",
+      "llm_tldr": "现有人群导航方法通常假设机器人同质、场景稀疏或简化几何，难以应对密集异构人群。为此提出SRL-MPC，将强化学习与模型预测控制相结合，通过支撑函数变换提取几何分离特征并构造高阶控制屏障约束，无需几何简化即可编码形状感知安全性。实验结果验证了该方法在密集人群中实现安全、高效、自适应导航的能力。该工作为异构形状机器人在复杂动态环境中部署提供了可复用的强化学习解决方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.15440v1",
+      "source": "arxiv",
+      "title": "Accelerating Mixed Discrete-Continuous Motion Planning via Neural Graphs of Convex Sets",
+      "abstract": "Motion planning problems such as collision-free navigation and contact-rich manipulation can be naturally formulated as optimization problems that couple discrete decisions with continuous trajectories. The Graphs of Convex Sets (GCS) framework offers a practical solution to these problems. It represents discrete decisions as nodes of a graph and encodes continuous trajectories in the edges connecting them. However, the resulting optimization subproblems can become computationally prohibitive for online replanning.   In this work, we propose a learning-based strategy to mitigate this limitation. Specifically, we replace the costly convex relaxation step required by nominal GCS with a single forward pass through a Graph Attention Network that predicts a set of highly probable candidate paths through the graph. A lightweight ranking network then orders these candidates by their estimated trajectory cost. Evaluating them in this order, we terminate our search early while still recovering a near-optimal motion plan. We validate the resulting pipeline across diverse robotic tasks, including collision-free motion planning for a 3D quadrotor and a 7-DoF manipulator, and planning through contact for planar pushing. Across both convex and non-convex cost and constraint settings, our approach yields up to two orders of magnitude speedup over nominal GCS while maintaining a 100% success rate, at the cost of some suboptimality in the recovered solutions. Code implementations and video demonstrations can be found at https://neural-gcs.github.io/.",
+      "authors": [
+        "Ananya Trivedi",
+        "Sarvesh Prajapati",
+        "Mohamed Khalid M Jaffar",
+        "Zhexin Xu",
+        "David Rosen",
+        "Taskin Padir"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-15T22:51:56+00:00",
+      "link": "https://arxiv.org/pdf/2608.15440v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "learning-based acceleration of motion planning via Graph Attention Network replacing convex relaxation in GCS",
+      "llm_evidence_cn": "用图注意力网络学习加速GCS运动规划，替代凸松弛步骤，面向路径规划",
+      "llm_evidence": "用图注意力网络学习加速GCS运动规划，替代凸松弛步骤，面向路径规划",
+      "canonical_evidence": "用图注意力网络学习加速GCS运动规划，替代凸松弛步骤，面向路径规划",
+      "llm_tldr_en": "Accelerates Graphs of Convex Sets (GCS) motion planning by replacing the costly convex relaxation step with a single forward pass of a Graph Attention Network, enabling faster online replanning for collision-free navigation and manipulation.",
+      "llm_tldr_cn": "碰撞逃逸导航和操作等运动规划问题可归结为离散决策与连续轨迹耦合的优化问题，GCS框架虽能求解但凸松弛步骤计算开销大，难以支持在线重规划。本文提出用图注意力网络的单次前向传播替代GCS中昂贵的凸松弛步骤，以学习方式加速求解。实验表明该方法在多个符号问题上优于对比算法，为运动规划提供了一种高效的神经网络加速方案。该技术可迁移至多智能体路径规划场景，减少在线计算负担。",
+      "llm_tldr": "碰撞逃逸导航和操作等运动规划问题可归结为离散决策与连续轨迹耦合的优化问题，GCS框架虽能求解但凸松弛步骤计算开销大，难以支持在线重规划。本文提出用图注意力网络的单次前向传播替代GCS中昂贵的凸松弛步骤，以学习方式加速求解。实验表明该方法在多个符号问题上优于对比算法，为运动规划提供了一种高效的神经网络加速方案。该技术可迁移至多智能体路径规划场景，减少在线计算负担。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.19778v1",
+      "source": "arxiv",
+      "title": "Distilling Aggregate Mobility Statistics into a Language Model Policy for Post-Event Crowd Simulation",
+      "abstract": "Pedestrian simulators need a behaviour rule for every agent, but privacy usually limits the data for setting one to aggregate statistics, namely zone-level device counts and origin-to-destination (OD) flows, with no individual trajectories. Such aggregates under-determine individual behaviour, because many different sets of decisions reproduce the same counts. We fine-tune a language model crowd agent so that the simulated population matches the observed destination composition, the fraction of the departing crowd heading to each point of interest. We read this target from the OD flow and reweight the model's own destination distribution onto it by iterative proportional fitting. Because fine-tuning inflates the dominant destination class, we fit the low-rank adapter to trajectories resampled to a corrected training composition that reaches the target after this inflation. On mobile network counts from two baseball games the fine-tuned agent runs without inference-time correction, cutting the destination-share error by 25%, while the grid correlation remains similar across policies.",
+      "authors": [
+        "Tatsuya Amano",
+        "Hirozumi Yamaguchi"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.AI"
+      ],
+      "published": "2026-08-20T08:23:24+00:00",
+      "link": "https://arxiv.org/pdf/2608.19778v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "crowd simulation of pedestrian agents from aggregate mobility statistics",
+      "llm_evidence_cn": "基于聚合移动统计的人群多智能体仿真",
+      "llm_evidence": "基于聚合移动统计的人群多智能体仿真",
+      "canonical_evidence": "基于聚合移动统计的人群多智能体仿真",
+      "llm_tldr_en": "Pedestrian simulators need per-agent rules but privacy leaves only aggregate counts and OD flows. The authors fine-tune a language-model crowd agent and reweight destination distributions via iterative proportional fitting to match observed flows, reproducing destination composition from privacy-preserving aggregate data.",
+      "llm_tldr_cn": "人群模拟器需要为每个智能体设置行为规则，但隐私限制使得数据通常只是区域人数和OD流量等聚合统计，无法唯一确定个体决策。本文提出将聚合移动统计蒸馏到语言模型策略中，通过迭代比例拟合重加权使模拟人群的目的地构成匹配观测OD流。实验表明该方法能有效复现赛后人群的离场目的地分布，并缓解了微调导致的分布膨胀。这项工作为仅凭隐私友好的聚合数据构建可用的多智能体人群行为模型提供了新路径。",
+      "llm_tldr": "人群模拟器需要为每个智能体设置行为规则，但隐私限制使得数据通常只是区域人数和OD流量等聚合统计，无法唯一确定个体决策。本文提出将聚合移动统计蒸馏到语言模型策略中，通过迭代比例拟合重加权使模拟人群的目的地构成匹配观测OD流。实验表明该方法能有效复现赛后人群的离场目的地分布，并缓解了微调导致的分布膨胀。这项工作为仅凭隐私友好的聚合数据构建可用的多智能体人群行为模型提供了新路径。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "pedestrian trajectory prediction multi-agent system",
+      "matched_requirement_id": "req-22",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.16888v1",
+      "source": "arxiv",
+      "title": "Q-based Variational Inverse Reinforcement Learning",
+      "abstract": "The development of safe and beneficial AI requires that systems can learn and act in accordance with human preferences. However, explicitly specifying these preferences by hand is often infeasible. Inverse reinforcement learning (IRL) addresses this challenge by inferring preferences, represented as reward functions, from expert behaviour. We introduce Q-based Variational IRL (QVIRL), a novel Bayesian IRL method that recovers a posterior distribution over rewards from expert demonstrations via primarily learning a variational distribution over optimal Q-values. Unlike previous approaches, QVIRL combines scalability with uncertainty quantification, important for safety-critical applications as well as active learning. We demonstrate QVIRL's strong performance in apprenticeship learning across various tasks, including gridworlds, Lunar Lander, the Highway Environment, and two ATARI games both with static expert data and with active learning. It is the first method for Bayesian IRL that demonstrates training from raw pixel observations.",
+      "authors": [
+        "Ondrej Bajgar",
+        "Peter Tisnikar",
+        "Alessandro Abate",
+        "Konstantinos Gatsis",
+        "Maike Osborne"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-17T17:59:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.16888v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Bayesian inverse RL from expert demonstrations, transferable to path planning reward learning",
+      "llm_evidence_cn": "基于专家演示的贝叶斯逆强化学习，可迁移到路径规划奖励学习",
+      "llm_evidence": "基于专家演示的贝叶斯逆强化学习，可迁移到路径规划奖励学习",
+      "canonical_evidence": "基于专家演示的贝叶斯逆强化学习，可迁移到路径规划奖励学习",
+      "llm_tldr_en": "Inverse RL infers rewards from expert behavior but struggles with scalability and uncertainty. QVIRL learns a variational distribution over optimal Q-values to recover a posterior over rewards, combining scalability with uncertainty quantification. Strong performance in apprentice learning supports safety-critical and active-learning applications, offering a reusable tool for reward learning from expert trajectories in path planning.",
+      "llm_tldr_cn": "从专家行为中推断奖励函数是安全智能体学习的关键，但现有逆强化学习常难以兼顾可扩展性与不确定性量化。本文提出QVIRL，通过主要学习最优Q值的变分分布来恢复奖励后验，从而将逆强化学习扩展到更大规模任务。在学徒学习实验中表现出强性能，且能提供不确定度估计，适合安全关键与主动学习场景。该方法可直接作为多智能体路径规划中从专家轨迹学习奖励的通用工具。",
+      "llm_tldr": "从专家行为中推断奖励函数是安全智能体学习的关键，但现有逆强化学习常难以兼顾可扩展性与不确定性量化。本文提出QVIRL，通过主要学习最优Q值的变分分布来恢复奖励后验，从而将逆强化学习扩展到更大规模任务。在学徒学习实验中表现出强性能，且能提供不确定度估计，适合安全关键与主动学习场景。该方法可直接作为多智能体路径规划中从专家轨迹学习奖励的通用工具。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert trajectories for multi agent path finding",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
