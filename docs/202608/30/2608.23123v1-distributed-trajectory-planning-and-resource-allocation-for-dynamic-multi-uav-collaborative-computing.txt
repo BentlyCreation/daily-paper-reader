@@ -1,0 +1,1543 @@
+Title: Distributed Trajectory Planning and Resource Allocation for Dynamic Multi-UAV Collaborative Computing
+
+URL Source: https://arxiv.org/pdf/2608.23123v1
+
+Published Time: Tue, 25 Aug 2026 01:57:50 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+> 1
+
+# Distributed Trajectory Planning and Resource Allocation for Dynamic Multi-UAV Collaborative Computing 
+
+Tiankui Zhang, Senior Member, IEEE , Wenlong Xu, Tianyi Shi, Graduate Student Member, IEEE ,Xiaoxia Xu, Member, IEEE , Arumugam Nallanathan, Fellow, IEEE 
+
+Abstract —This paper investigates a multiple uncrewed aerial vehicles (UAVs)-enabled distributed mobile edge computing (MEC) framework, where the set of collaborative UAVs dynam-ically varies over time due to their energy states and service loads. The joint optimization of trajectory planning and resource allocation is formulated as a Stackelberg game, where UAVs and mobile terminals (MTs) are modeled as leaders and followers, respectively. UAVs aim to maximize their benefits by balancing executed workload, energy cost, and resource allocation revenue, while the MTs seek to minimize their total overhead, composed of computing delay and resource costs, through offloading and resource-request decisions in response to the UAV-side service decisions. A hierarchical joint optimization algorithm is devel-oped within a multi-agent deep reinforcement learning (MADRL) framework to coordinate UAVs and MTs in a distributed manner. At the leader level, UAVs jointly determine their trajectories, task migration ratios, MT-UAV association, and unit computing resource pricing. For distributed decision making, each UAV is modeled as an agent in a partially observable Markov decision process, and the agents are jointly trained via multi-agent proxi-mal policy optimization (MAPPO) under the centralized-training-and-decentralized-execution paradigm. At the follower level, MTs determine their optimal task offloading ratios and requested com-puting resources using a two-stage iterative algorithm. Simulation results demonstrate that the proposed algorithm achieves stable convergence under the dynamic UAV participation. Compared to the no-collaboration benchmark, it improves UAV efficiency by 18.58% through effective balancing of computing workloads via inter-UAV task migration and reduces average MT overhead by 33.77% over the fully offloading scheme. It also outperforms other benchmarks under varying network scales and capabilities by jointly optimizing UAV operations and resource utilization. 
+
+Index terms— Distributed optimization, multi-agent deep reinforcement learning, mobile edge computing, uncrewed aerial vehicle, Stackelberg game 
+
+This work is supported by National Natural Science Foundation of China under Grant 62371068. Tiankui Zhang, Wenlong Xu and Tianyi Shi are with the School of Information and Communication Engineering, Beijing University of Posts and Telecommunications, Beijing 100876, China (e-mail: zhang-tiankui@bupt.edu.cn, Evan xwl@163.com, shi tianyi@bupt.edu.cn). Xiaoxia Xu is with the School of Electronic Engineering and Computer Science, Queen Mary University of London, E1 4NS London, U.K. (e-mail: x.xiaoxia@qmul.ac.uk). A. Nallanathan is with the School of Electronic Engineering and Computer Science, Queen Mary University of London, London and also with the Department of Electronic Engineering, Kyung Hee University, Yongin-si, Gyeonggi-do 17104, Korea (email: a.nallanathan@qmul.ac.uk). Copyright (c) 2026 IEEE. Personal use of this material is permitted. However, permission to use this material for any other purposes must be obtained from the IEEE by sending a request to pubs-permissions@ieee.org. 
+
+I. I NTRODUCTION 
+
+With the rapid development of mobile Internet and the wide application of various computing applications, mobile networks are facing rapidly growing demands for computing resources. Mobile edge computing (MEC) reduces computing latency and network traffic pressure by deploying computing resources to the network edge closer to the mobile terminals (MTs) [1]–[3]. In the absence of fixed network infrastructure, such as in remote field environments or emergency rescue scenarios, MEC systems can be flexibly deployed with the aid of uncrewed aerial vehicles (UAVs) [4], [5]. As agile aerial platforms, UAVs can improve the quality of ground commu-nication links and expand network coverage by establishing Line-of-Sight (LoS) links. Owing to these merits, they have received considerable attention in applications such as data acquisition, spectrum sensing, and emergency communication [6], [7]. These features make UAV-enabled MEC particularly attractive for on-demand computing services in infrastructure-limited scenarios. Traditional MEC systems adopt a centralized architecture, where MEC servers deployed in different geographical loca-tions are typically managed by a centralized controller. This setup enables efficient resource management of MEC systems and collaborative computing among MEC servers. However, in such architecture, both MEC servers and MTs need to frequently send status information to the centralized controller to maintain service continuity [8]–[10]. Hence, when directly applied to UAV-enabled MEC systems, this architecture faces two key challenges. On the one hand, the communication overhead and resource management complexity of the cen-tralized controller increase significantly with network size. On the other hand, the high mobility of UAVs leads to frequent changes in network topology, which further compli-cates centralized management and control [11], [12]. These limitations hinder the scalability of UAV networks and confine flexible UAV deployment. As a result, UAV-enabled MEC leads to a highly dynamic service environment, where the evolving topology and resource availability make centralized coordination increasingly difficult. 
+
+A. Related Work 
+
+Existing research on UAV-enabled MEC systems can be broadly classified into three categories, i.e., single UAV-arXiv:2608.23123v1 [cs.NI] 24 Aug 2026 2
+
+enabled MEC, centralized multi-UAV MEC, and distributed multi-UAV MEC, as analyzed as follows. 
+
+1) Single UAV-enabled MEC: The related work of single UAV-enabled MEC systems mainly focuses on resource alloca-tion and trajectory planning [13]–[17]. Wang et al. considered the MEC system composed of base stations and a UAV with complex channel environments in cities and jointly optimized computing resources, communication bandwidth, computing offloading, and UAV trajectory to maximize computational efficiency [13]. Joint trajectory and resource optimization has also been investigated in UAV-assisted heterogeneous edge computing networks with D2D support [14]. In order to minimize the weighted completion time and propulsion energy consumption of rotary-wing UAV, double deep Q-learning (DDQN) is used to optimize the three-dimensional trajectory of the UAV while maintaining the stability of the UAV ground terminal link [15]. Hu et al. designed a layered aerial computing framework consisting of MTs, the UAV, and high-altitude platforms, maximizing model resource utilization and task scheduling, and proposed a trajectory optimization and task offloading algorithm based on the actor-critic approach [16]. Wei et al. studied task partition and offloading between IoT devices and the UAV to improve training efficiency and reduce UAV energy consumption [17]. However, single-UAV MEC systems are inherently limited by restricted coverage, constrained onboard computing resources, and low service robustness. A single UAV cannot simultaneously approach all connected MTs, and its service capability is vulnerable to failure or interference. These limitations motivate the study of multi-UAV-enabled MEC systems, where service capability and system flexibility can be further enhanced through coop-eration among multiple UAVs. 
+
+2) Centralized Multi-UAV MEC: Some studies that con-sider MEC systems with multiple UAVs [18]–[20] have each UAV independently responsible for its coverage area, ig-noring the coordination between UAVs, which may lead to uneven offload distribution. To leverage the mutual advantages among multiple UAVs, considerable studies [21]–[23] have been conducted to further enhance the system performance. In [21], the author designed an aerial MEC architecture where multiple UAVs aggregate data onto a high-altitude platform and minimized system latency and energy consumption by jointly optimizing container caching decisions and UAV tra-jectories. In the case of dynamic task generation, Li et al. optimized task scheduling and UAV trajectories to maximize coverage and reduce energy consumption via a multi-agent deep deterministic policy gradient (MADDPG)-based algo-rithm [22]. Liu et al. explored the scenario of combining semantic communication with MEC, aiming to minimize task completion time and improve semantic spectrum efficiency [23]. Nevertheless, the above studies do not take the dy-namic environments of ground MTs’ location movement into consideration. To address the challenges in dynamic envi-ronments, deep reinforcement learning (DRL) is widely used for trajectory and resource allocation optimization in UAV-enabled MEC systems [24]–[28]. Liu et al. used deep Q-learning to optimize UAV positioning and resource allocation under dynamic interference [24]. Online service selection and task offloading in UAV-assisted MEC have also been investigated via deep reinforcement learning [25]. Considering both the random tasks and time-varying channels of MTs, the authors of [26] proposed a contract incentive strategy based on DQN to maximize the long-term utility of all hotspots while maintaining energy stability. These works typically assume a central controller with global knowledge to conduct the optimization. Although some of them consider dynamic user movement, random task generation, or time-varying channels, the UAV-side decision process is still mainly handled in a centralized manner and the available UAV set is usually treated as fixed during optimization. Although centralized approaches can enhance system efficiency, they face challenges such as high training complexity, limited scalability, and vulnerability to single points of failure in large-scale deployments, motivat-ing the development of distributed architectures. 
+
+3) Distributed Multi-UAV MEC: Distributed multi-UAV MEC architectures have emerged as a promising solution to the limitations of centralized systems. By decentralizing decision-making, these frameworks reduce communication overhead, distribute computation loads on individual nodes, and improve system scalability [29]. Noor et al. constructed a vehicle networking system assisted by UAVs and proposed a distributed offloading and resource allocation algorithm through value-based iteration in reinforcement learning that minimizes the computational and communication overhead of vehicle systems [30]. Under the air-ground collaborative MEC architecture, Ye et al. proposed a low-complexity distributed DQN algorithm using the deterministic state transition char-acteristics of UAV-enabled MEC systems [31]. Considering the limited channel capacity and system computing resources between UAVs and MTs, the author established a distributed DNN that improves training efficiency by simultaneously training multiple DNNs while minimizing system delay and energy consumption weighting [29]. Li et al. developed an MT privacy and security computing offloading method based on distributed federated learning, which maximizes the nor-malized weighted sum of task response delay and MT energy consumption [32]. Kim et al. proposed a collaborative MAD-DPG algorithm that introduces graph attention networks into DRL and designs multiple types of action variables, improving the system performance in a distributed manner [33]. These studies have demonstrated the potential of distributed of-floading, trajectory control, and resource scheduling in multi-UAV MEC systems. However, existing distributed multi-UAV MEC studies usually make decisions over a static set of UAV agents, while network dynamics are mainly reflected in MT mobility, stochastic task arrivals, channel fluctuations, or workload variation. The case where the UAV collaboration set itself changes over time has received less attention. Such UAV-side availability dynamics alter the service topology, available computing resources, and feasible coordination space among UAVs and MTs. Accordingly, how to jointly coordinate topology-dependent association and migration decisions with UAV-side pricing and MT-side responses under such dynamics remains insufficiently explored. 3
+
+B. Motivation and Contribution 
+
+Although substantial research has been devoted to improv-ing system performance and addressing practical deployment challenges, distributed multi-UAV MEC under dynamic UAV participation remains insufficiently studied. Existing dynamic MEC studies commonly focus on time-varying MT loca-tions, stochastic task arrivals, fluctuating wireless channels, or changing service demands, while the available UAV collabo-ration set and the network scale are usually assumed to remain fixed during optimization. In many practical missions, the set of available UAVs may vary over time due to energy states and workload conditions, which means that UAVs may join or leave the collaborative computing network and thus lead to a time-varying UAV-side service topology and decision space. Effectively harnessing UAVs’ inherent mobility and flexible deployment capabilities is crucial to fully realizing their po-tential in MEC scenarios. Under such UAV-side availability dynamics, the trajectory planning, MT-UAV association, inter-UAV task migration, and resource provisioning decisions become more tightly coupled and must adapt to the current service topology. To address this issue, this paper investigates a distributed MEC system that accommodates changes in ground MT locations and fluctuating service demands, where the available UAV set varies over time. Within this architecture, a trajectory planning and resource allocation problem is for-mulated based on a Stackelberg game, where UAVs and MTs act as leaders and followers, respectively. Multi-agent deep reinforcement learning (MADRL) is employed to enable UAVs to learn fast adaptive service decisions under the time-varying network scale and service topology, thus significantly reducing system-level control overhead. The main contributions of this article are summarized as follows.  
+
+> •
+
+We propose a distributed multi-UAV-enabled MEC frame-work under dynamic UAV participation, where the available UAV set varies over time according to system conditions. The system model captures partial task offloading from MTs to serving UAVs, inter-UAV task migration for load balancing, time-varying MT locations, and stochastic task generation. Under the resulting time-varying service topol-ogy and decision space, we formulate the distributed joint trajectory planning and resource allocation problem within a Stackelberg game framework, where UAVs and MTs act as leaders and followers, respectively.  
+
+> •
+
+We develop a hierarchical MADRL-based solution to enable distributed coordination between UAVs and MTs. At the leader level, each UAV is modeled as an agent under partial observability and trained via MAPPO under the centralized training and decentralized execution paradigm to optimize trajectories, task migration ratio, user association, and re-source pricing. At the follower level, given the leaders’ decisions, MTs update task offloading ratios and purchased computing resources via a two-stage iterative procedure, where the update rules are derived using the Lagrange dual method and Karush-Kuhn-Tucker (KKT) conditions.  
+
+> •
+
+Simulation results validate the effectiveness of the proposed framework. The proposed algorithm exhibits good conver-gence behavior under time-varying UAV availability and UAV  MT  Task  Controller    
+
+> Uplink Migration link MT move Agent
+
+Fig. 1: Dynamic distributed UAV-enabled MEC system model. achieves lower MT overhead and higher UAV-side benefits compared with benchmark methods under different comput-ing capabilities, network scales, and bandwidth settings. 
+
+C. Organization 
+
+The rest of this paper is organized as follows. In Section II, we introduce the system model and formulate the correspond-ing Stackelberg game. A distributed hierarchical optimization algorithm is proposed in Section III. The performance of the proposed algorithm is evaluated by the simulation in Section IV, while the paper concludes in Section V. II. S YSTEM MODEL 
+
+A dynamic distributed UAV-enabled MEC system is con-sidered for industrial private networks, where multiple UAVs act as aerial MEC nodes to provide elastic computing and coverage enhancement for ground MTs, as illustrated in Fig. 1. Using trajectory discretization, the considered horizon is par-titioned into T slots indexed by t ∈ T ≜ {1, 2, . . . , T },each with an adaptive duration τt upper bounded by δ, where 
+
+δ denotes the maximum allowable slot length determined by the system design, and tasks generated in one slot are assumed to be completed within the same slot. The quasi-static approximation is adopted, indicating that the distance between each UAV and each MT is treated as constant when evaluating within a slot. Let K ≜ {1, 2, . . . , K } denote the MT set. Due to dynamic participation, the set of available UAVs at slot t is M(t) with |M (t)| = M (t), where M (t) can vary over time, and is viewed in this work as an exogenous time-varying system condition. At each slot, MTs generate computation tasks and can partially offload them to associated UAVs. Accordingly, the cooperative decision space varies over time with the current UAV availability. To cope with load imbalance, UAVs can further forward a portion of offloaded tasks to nearby UAVs for cooperative computing. The main symbols defined in the system model are described in Table I. 
+
+A. UAV and MT Movement Models 
+
+The flight altitude of all UAVs is fixed at a constant value H.In a Cartesian coordinate system, the horizontal coordinates 4
+
+TABLE I: Notation Descriptions                                                                                       
+
+> Notation Description
+> T,Tset and number of time slots
+> τtduration of time slot tδmaximum slot duration
+> K,Kset and number of MTs
+> M(t)number of active UAVs in slot t
+> qm(t)horizontal coordinates of UAV min slot t
+> wk(t)horizontal coordinates of MT kin slot tvm(t)flight speed of UAV min slot tαm(t)heading angle of UAV min slot tvk(t)moving speed of MT kin slot tαk(t)moving direction of MT kin slot tJk(t)task input data size (bits) of MT kin slot tCkrequired CPU cycles per bit for MT k’s task
+> gm,m ′(t)channel power gain between UAV mand UAV m′
+> dm,m ′(t)distance between UAV mand UAV m′
+> dk,m (t)distance between MT kand UAV mγk(t)offloading ratio of MT kzk,m (t)indicator of MT association
+> pm(t)propulsion power of UAV min slot trk,m (t)uplink transmission rate from MT kto UAV mrm,m ′(t)transmission rate between UAV mand UAV m′
+> ρk,m,m ′(t)inter-UAV task offloading ratio
+> fk,m (t)CPU allocation from UAV mto MT kin slot tbm(t)unit price of UAV m
+
+of UAV m in time slot t can be represented as qm(t) = [xm (t) , y m (t)] , and the horizontal starting point of UAV m is defined as qini  
+
+> m
+
+. Given the flight speed vm (t) ∈ [0 , V max ] and direction αm (t), where Vmax is the maximum UAV speed (m/s), the UAV position is updated as 
+
+xm (t) = xm (t − 1) + vm (t) cos ( αm (t)) τt, (1) 
+
+ym (t) = ym (t − 1) + vm (t) sin ( αm (t)) τt. (2) The horizontal coordinate of MT k in time slot t is defined as wk (t) = [ xk (t) , y k (t)] . Following [34], we adopt a Gauss– Markov mobility model for MT movements, which provides a tractable way to characterize the temporally correlated movement of MTs across adjacent slots. Specifically, the speed 
+
+vk (t) (m/s) and moving direction αk (t) (rad) are updated as 
+
+vk (t) = c1vk (t − 1) + (1 − c1)¯ v +
+
+q
+
+1 − c21 Φk, (3) 
+
+αk (t) = c2αk (t − 1) + (1 − c2)¯ α +
+
+q
+
+1 − c22 Ψk, (4) where c1 ∈ [0 , 1] and c2 ∈ [0 , 1] are correlation coefficients, 
+
+¯v and ¯α are the mean speed and mean direction, respectively, and Φk and Ψk are independent Gaussian random variables capturing random perturbations. Accordingly, the MT position is updated as 
+
+xk (t) = xk (t − 1) + vk (t) cos ( αk (t)) τt, (5) 
+
+yk (t) = yk (t − 1) + vk (t) sin ( αk (t)) τt. (6) 
+
+B. Communication Model 
+
+In practical application scenarios, due to the presence of obstacles such as buildings and mountains, the actual path loss between UAVs and MTs is determined by the probabilities of both LoS and Non-Line-of-Sight (NLoS) links. The probability that the link between MT k and UAV m in time slot t is a LoS link is given by 
+
+pLoS  
+
+> k,m
+
+(t) = 11 + ηa exp ( −ηb (θk,m (t) − ηa)) , (7) where ηa and ηb are constants related to the propagation environment. θk,m (t) = arcsin 
+
+ Hdk,m (t)
+
+
+
+is the elevation angle, and dk,m (t) = 
+
+q
+
+H2 + ∥wk (t) − qm (t)∥22 represents the Euclidean distance between MT k and UAV m. Ac-cordingly, the probability that the link is an NLoS link is 
+
+pNLoS  
+
+> k,m
+
+(t) = 1 − pLoS  
+
+> k,m
+
+(t). The free-space path loss between MT k and UAV m is modeled as 
+
+LFS 
+
+> k,m
+
+(t) = 20 log 10 
+
+ dk,m (t) + 20 log 10 
+
+ 4πf c
+
+vc
+
+
+
+, (8) where fc is the carrier frequency and vc is the speed of light. Therefore, the average path loss is then given by 
+
+Lk,m (t) = LFS 
+
+> k,m
+
+(t) + pLoS 
+
+> k,m
+
+(t)ηLoS + pNLoS  
+
+> k,m
+
+(t)ηNLoS , (9) where ηLoS and ηNLoS denote the additional loss factors for LoS and NLoS links, respectively. We consider an orthogonal frequency division multiple access (OFDMA)-based uplink for task data transmission. For tractability, the total bandwidth is equally partitioned among MTs, and the bandwidth allocated to each MT is denoted by BK . This assumption simplifies the uplink transmission model so that the proposed Stackelberg game can more clearly characterize the interaction between UAV pricing and service decisions and the MTs’ offloading responses. Thus, the uplink transmission rate from MT k to UAV m in slot t is 
+
+rk,m (t) = BK log 2
+
+
+
+1 + PK
+
+σ2 10 Lk,m (t)/10 
+
+
+
+, (10) where σ2 is the noise power and PK is the MT transmit power. Since air-to-air links are typically LoS due to the absence of obstacles in inter-UAV communications, the channel power gain between UAV m and UAV m′ in slot t is modeled as 
+
+gm,m ′ (t) = β0d−2 
+
+> m,m ′
+
+(t) = β0
+
+∥qm(t) − qm′ (t)∥22
+
+, (11) where β0 is the channel power gain at the reference distance of 1 meter, and dm,m ′ (t) = ∥qm(t) − qm′ (t)∥2 is the distance between UAV m and UAV m′. To ensure flight safety, we impose the minimum separation constraint dm,m ′ (t) ≥ dmin .Accordingly, the task transmission rate between UAV m and UAV m′ is 
+
+rm,m ′ (t) = BM log 2
+
+
+
+1 + PM gm,m ′ (t)
+
+σ2
+
+
+
+, ∀m̸ = m′ ∈ M (t),
+
+(12) where PM is the UAV transmit power and BM is the inter-UAV bandwidth. 
+
+C. Computing Model 
+
+In each time slot t, MT k generates a computing task characterized by {Jk(t), C k}, where Jk(t) denotes the input data size (in bits) and Ck denotes the required CPU cycles per 5
+
+bit. This slot-level task-generation model is used to describe the time-varying computing demands of MTs in a tractable manner. Since the task is divisible, MT k can offload a portion of the task to a UAV. Let γk(t) ∈ [0 , 1] denote the offloading ratio, where γk(t) is the fraction offloaded and 1 − γk(t) is computed locally. Accordingly, the local computation time of MT k in slot t is 
+
+Dlocal  
+
+> k
+
+(t) = (1 − γk(t)) Jk(t)Ck
+
+f loc 
+
+> k
+
+, (13) where f loc  
+
+> k
+
+is the computing power of MT k (CPU cycles/s). Let zk,m (t) ∈ { 0, 1} indicate the association decisions, with P 
+
+> m∈M (t)
+
+zk,m (t) = 1 since each MT can access only one UAV per slot. For notational simplicity, for each MT k in slot t, we use m0 to denote its unique associated UAV, i.e., 
+
+zk,m 0 (t) = 1 . The uplink transmission time for MT k to offload task data to UAV m in slot t is 
+
+Dcomm  
+
+> k,m
+
+(t) = γk(t) zk,m (t) Jk(t)
+
+rk,m (t) . (14) Due to the uneven spatial distribution of MTs, the number of MTs associated with each UAV may vary, which causes load imbalance. To alleviate this, a UAV can migrate a portion of its offloaded workload to nearby UAVs with available computing resources. Specifically, for the task offloaded by MT k to UAV 
+
+m0 in slot t, UAV m0 may forward a fraction of this workload to UAV m. Let ρk,m 0,m (t) ∈ [0 , 1] denote the migration ratio from UAV m0 to UAV m, satisfying P 
+
+> m∈M (t)
+
+ρk,m 0,m (t) = 1, ∀k ∈ K , t ∈ T . Accordingly, the transmission time for forwarding the migrated task data from UAV m0 to UAV m is 
+
+Dtran 
+
+> k,m 0,m
+
+(t) = Jk(t) γk(t) ρk,m 0,m (t)
+
+rm0,m (t) . (15) To unify the notation, we define Dtran 
+
+> k,m 0,m
+
+(t) = 0 when m =
+
+m0, corresponding to the case where the offloaded workload fraction is scheduled for execution at its associated UAV m0
+
+and therefore no inter-UAV forwarding is required. In time slot t, the computation time at UAV m for process-ing the workload of MT is 
+
+Dcomp  
+
+> k,m
+
+(t) = Jk(t)Ck γk(t) ρk,m 0,m (t)
+
+fk,m (t) , (16) where fk,m (t) denotes the computing power (CPU cycles/s) allocated by UAV m to process MT k’s workload in slot t that satisfies P
+
+> k∈K
+
+fk,m (t) ≤ f max  
+
+> m
+
+, in which f max  
+
+> m
+
+is the maximum computing power of the UAV m. Here, the inner summation over ˜m only serves to select the unique associated UAV of MT k through the one-hot association variable zk, ˜m(t). Due to the relatively small size of computation results, we ignore the downlink transmission, including inter-UAV result delivery. Therefore, for MT k, the processing time of the task generated in slot t is 
+
+Dk(t) = max Dlocal  
+
+> k
+
+(t),
+
+h
+
+Dcomm  
+
+> k,m 0
+
+(t)+ max 
+
+> m∈M (t)
+
+ Dtran 
+
+> k,m 0,m
+
+(t) + Dcomp  
+
+> k,m
+
+(t)i!
+
+.
+
+(17) In the above expression, local computing and uplink offloading are performed in parallel at MTs, while the offloaded workload may be split and processed in parallel across multiple UAVs. Hence, the completion time of the offloaded part is determined by the slowest execution branch. Moreover, the duration of slot 
+
+t can be set according to the maximum task processing time among all MTs, i.e., τt = min {δ, max k∈K Dk(t)}. Therefore, the slot duration in slot t is determined by the corresponding task processing requirement while remaining upper bounded by δ, and the considered setting does not involve unfinished tasks carried over to subsequent slots. For UAV m, the total amount of task data executed in time slot t is 
+
+Wm(t) = X
+
+> k∈K
+
+Jk(t) γk(t) ρk,m 0,m (t). (18) That is, in each summation term, m0 denotes the associated UAV of the corresponding MT k, and Wm(t) accounts for all workload fractions finally executed by UAV m.
+
+D. Energy Consumption Model 
+
+In time slot t, the communication energy consumption for MT k to offload task data to UAV m is 
+
+Ecomm  
+
+> k,m
+
+(t) = Dcomm  
+
+> k,m
+
+(t)PK , (19) while the local computation energy consumption of MT k is expressed as 
+
+Elocal  
+
+> k
+
+(t) = φk
+
+ f loc 
+
+> k
+
+3Dlocal  
+
+> k
+
+(t), (20) where φk is the effective capacitance coefficient of MT k.Therefore, the total energy consumption of MT k in slot t is 
+
+Ek(t) = Elocal  
+
+> k
+
+(t) + X
+
+> m∈M (t)
+
+Ecomm  
+
+> k,m
+
+(t). (21) According to the rotary-wing UAV power model, the propul-sion power of UAV m in time slot t is given by 
+
+pm(t) = U1 1 + 3v2
+
+> m
+
+(t)
+
+v2
+
+> tip
+
+!
+
++ U2
+
+sr
+
+U3 + v4
+
+> m
+
+(t)4 − v2
+
+> m
+
+(t)2 + U4v3
+
+> m
+
+(t) + U5,
+
+(22) where U1, U 2, U 3, U 4, U 5 are constants related to aerodynam-ics and UAV hardware, and vtip is the rotor tip speed. Thus, the propulsion energy consumption of UAV m in slot t is represented as 
+
+Efly  
+
+> m
+
+(t) = pm(t)τt. (23) In time slot t, the communication energy consumption for forwarding the migrated workload from UAV m0 to UAV m is 
+
+Etran 
+
+> k,m 0,m
+
+(t) = Dtran 
+
+> k,m 0,m
+
+(t)PM . (24) The computation energy consumption at UAV m for process-ing MT k’s workload is given by 
+
+Ecomp  
+
+> k,m
+
+(t) = φm
+
+ fk,m (t)3Dcomp  
+
+> k,m
+
+(t), (25) where φm is the effective capacitance coefficient of UAV m.6
+
+Therefore, the total energy consumption of UAV m in slot t
+
+is expressed as 
+
+Em(t) = Efly  
+
+> m
+
+(t) + X
+
+> k∈K
+
+ X
+
+> m′∈M (t)
+
+zk,m (t) Etran  
+
+> k,m,m ′
+
+(t)+ Ecomp  
+
+> k,m
+
+(t)
+
+
+
+. (26) Here, zk,m (t) = 1 indicates that the currently considered UAV 
+
+m is the associated UAV of MT k in slot t, and thus incurs the corresponding workload-forwarding energy. In the above expression, the first term inside the summation captures the transmission energy for forwarding workload fractions from UAV m to UAV m′, where m′ denotes the execution UAV, while the second term inside the summation captures the computation energy consumed by UAV m when it executes the assigned workload. 
+
+E. Stackelberg Game Formulation 
+
+We consider a distributed UAV-enabled MEC system where UAVs provide computing services to MTs. In each slot, the UAV and MT positions are first updated, and the corresponding channel conditions are determined. Then, the UAVs make the slot-level service decisions and announce their unit prices. Based on the current system state and the announced deci-sions, each MT determines its offloading ratio and requested computing resources. After that, the offloaded workload is transmitted to the associated UAV and, if necessary, further forwarded to other UAVs for collaborative execution. Finally, the task delay, energy consumption, UAV utility, and MT overhead are updated for the current slot. Such a slot-level interaction naturally motivates a Stackelberg game formula-tion, where UAVs act as leaders and MTs act as followers. At the leader level, the UAVs jointly determine the trajec-tories, task migration ratios, MT-UAV association decisions, and unit prices for computing service. Given these leader-level decisions, each MT determines its offloading ratio and requested computing resources at the follower level. UAVs aim to maximize benefits from resource provisioning, while MTs seek to acquire sufficient computing resources at minimal overhead. In general, higher prices discourage offloading and lead MTs to execute more workload locally, while lower prices incentivize more aggressive offloading. Let bm(t) denote the unit price announced by UAV m in slot t. For each UAV, the instantaneous benefit in slot t balances three factors: the utility gained from the workload finally executed by itself, the corresponding energy cost, and the revenue obtained by providing computing resources to MTs. These decisions are constrained by practical limitations such as onboard energy and computing capacity. Accordingly, the benefit of UAV m
+
+in time slot t is given by 
+
+Um(t) = ωWWm(t) − ωEEm(t) + bm(t) X
+
+> k∈K
+
+fk,m (t), (27) where ωW and ωE are the weights associated with the ex-ecuted task data and the energy consumption, respectively, which are used to balance the incentive of executing more workload against the corresponding energy cost in the UAV-side objective. Wm(t) and Em(t) denote the workload finally executed by UAV m and its overall energy consumption. Therefore, UAV m maximizes its long-term benefits by jointly optimizing its trajectory, task migration ratios, UAV access selection, and the unit price of computing resources. The leader-level optimization problem is formulated as 
+
+(P1) : max 
+
+> {Λm}
+
+X
+
+> t∈T
+
+Um(t), (28a) s.t. 0 ≤ ρk,m,m ′ (t) ≤ 1, ∀k, ∀m, ∀m′, ∀t, (28b) 
+
+X
+
+> m′∈M (t)
+
+ρk,m,m ′ (t) = 1 , ∀k, ∀m, ∀t, (28c) 
+
+zk,m (t) ∈ { 0, 1}, ∀k, ∀m, ∀t, (28d) 
+
+X
+
+> m∈M (t)
+
+zk,m (t) = 1 , ∀k, ∀t, (28e) 
+
+qm(1) = qini  
+
+> m
+
+, ∀m, (28f) 
+
+0 ≤ vm(t) ≤ V max , ∀m, ∀t, (28g) 
+
+0 ≤ αm(t) < 2π, ∀m, ∀t, (28h) 
+
+dm,m ′ (t) ≥ dmin , ∀m̸ = m′, ∀t, (28i) 
+
+X
+
+> t∈T
+
+Em(t) ≤ Emax  
+
+> m
+
+, ∀m, (28j) 
+
+bm(t) ≥ 0, ∀m, ∀t, (28k) where Λm =  vm(t), α m(t), ρ k,m,m ′ (t), z k,m (t), b m(t) de-notes the leader-level decision variables of UAV m1. Con-straints (28b)–(28e) guarantee feasible migration and asso-ciation decisions. Constraints (28f)–(28i) capture trajectory-related feasibility, including the initial position, mobility bounds, and safety distance. Moreover, (28j) and (28k) im-pose the UAV energy budget and the non-negative pricing constraint, respectively. For MT k, we define the MT overhead as a sum of the task processing delay and the payment for purchased computing resources. By jointly optimizing the offloading ratio and the requested computing resources, the MT overhead minimiza-tion problem is formulated as 
+
+(P2) : min  
+
+> {Γk}
+
+X
+
+> t∈T
+
+
+
+Dk(t) + X
+
+> m∈M (t)
+
+bm(t) fk,m (t)
+
+
+
+, (29a) s.t. 0 ≤ fk,m (t) ≤ zk,m (t) f max  
+
+> m
+
+, ∀m, ∀t, (29b) 
+
+X
+
+> k∈K
+
+fk,m (t) ≤ f max  
+
+> m
+
+, ∀m, ∀t, (29c) 
+
+0 ≤ γk(t) ≤ 1, ∀t, (29d) 
+
+Ek(t) ≤ Emax  
+
+> k
+
+, ∀t, (29e) where Γk =  fk,m (t), γ k(t) denotes the decision variables of MT k. Constraint (29b) enforces the feasibility of the requested computing resources. (29c) captures the computing capacity limit of each UAV. (29d) bounds the offloading ratio                    
+
+> 1The notation ρk,m,m ′(t)is kept in its general form in the optimization problem, where mand m′denote the source UAV and the execution UAV, respectively. This is because the leader-level formulation describes the migration decision from the UAV-level perspective. By contrast, the notation
+> m0introduced earlier is only used as a local notation for the unique associated UAV of MT kin slot twhen expressing the resulting workload, delay, and energy terms from the task-level perspective. 7
+
+within [0 , 1] . (29e) ensures that the energy consumption of MT 
+
+k in each slot does not exceed its energy budget. III. D ISTRIBUTED HIERARCHICAL OPTIMIZATION 
+
+ALGORITHM 
+
+To achieve efficient MEC computing resource allocation, meeting the demands of latency-sensitive tasks, we propose the decision-making algorithms for the leader and the followers of the formulated Stackelberg game optimization model based on the MADRL method and the Lagrange multiplier method, respectively. 
+
+A. Leader Decision Algorithm Based on MAPPO 
+
+Problem (P1) involves coupled trajectory-related decisions across time slots and strong interactions among UAVs through MT association and inter-UAV task migration. Moreover, MT mobility and stochastic task arrivals lead to a time-varying environment, and latency-sensitive services require online decision-making. Under such conditions, traditional optimization methods often fail to provide efficient solu-tions. Therefore, we model the UAV decision-making process as a Markov decision process and adopt MAPPO, whose centralized-training-and-decentralized-execution paradigm is well suited to problem (P1) with strongly coupled multi-UAV decisions in a time-varying environment, while still supporting distributed execution based on local observations after training. We transform (P1) into a partially observable Markov decision process (POMDP) with M (t) agents. The POMDP is defined by the state space S, observation spaces O =
+
+{O 1, . . . , OM (t)}, action spaces A = {A 1, . . . , AM (t)}, and reward functions R = {R 1, . . . , RM (t)}. The state S captures global environment information, including UAV locations, MT locations, and task-related information, while each UAV m
+
+observes a local observation om(t) ∈ Om and takes an action am(t) ∈ A m according to its policy πm. The specific definitions of state, observation, action, and reward are given as follows: 1) State space : In time slot t, the global information of the environment can be represented as s(t) =  q(t), w(t), J(t),
+
+where q(t) = {(xm(t), y m(t)) }m∈M (t) denotes the UAV loca-tions, w(t) = {(xk(t), y k(t)) }k∈K denotes the MT locations, and J(t) = {Jk(t)}k∈K denotes the task input sizes. 2) Observation space : In time slot t, the local informa-tion observed by UAV m can be expressed as om(t) = qm(t), w(t), J(t), which includes the location of UAV m,the locations of all MTs, and the task input sizes. In the considered setting, the MT-side information is available to the UAVs on a slot basis, while the positions of the other UAVs are not included in the local observation. 3) Action space : In time slot t, the action of UAV m can be represented as am(t) =  vm(t), α m(t), ρm(t), zm(t), b m(t),
+
+where ρm(t) = {ρk,m,m ′ (t)}k∈K ,m ′∈M (t) denotes migration ratios from UAV m and zm(t) = {zk,m (t)}k∈K denotes asso-ciation decisions. To ensure action feasibility, the continuous outputs are mapped onto their admissible ranges, and ρm(t)
+
+is further normalized to satisfy (28c). 4) Reward function : In time slot t, the reward function of UAV m can be expressed as rm (t) = ωWWm (t) −
+
+ωEEm (t) + bm (t) P
+
+> k∈K
+
+fk,m (t), denotes the total benefit ob-tained by UAV m in time slot t.To fit the considered distributed multi-UAV MEC setting, the MAPPO formulation is specified through the above state, observation, action, and reward design, together with the corre-sponding feasibility handling for the leader-level decisions. In MAPPO, each agent is composed of two actor networks ( πθm
+
+and πθold  
+
+> m
+
+), a critic network QθQm , and an experience buffer. During the training phase, a central controller collects and evaluates global information about the environment to achieve centralized training. During the execution phase, each agent implements distributed execution based on its locally deployed actor network, without requiring a centralized controller for real-time decision making. Specifically, the intelligent agent inputs the observed result om (t) into the actor network, and then obtains the action am (t) and reward rm (t) of the current training batch, and stores the experience in the experience buffer. At the end of each training batch, the agent randomly extracts a certain batch of data from the buffer and calculates the advantage function value ˆAθm (o (t)) = PT −tl=0 γlη (t + l),where γ is the discount factor and η (t + l) represents the temporal difference error, defined as 
+
+η (t) = R (t) + γQ θQm (o (t + 1)) − QθQm (o (t)) . (30) Among them, QθQm (o (t)) represents the output of the critic network QθQm when its input is o (t).The loss function of the actor network is 
+
+Jθm = E
+
+h
+
+min 
+
+
+
+uθm (t) ˆAθm (t),
+
+clip  uθm (t), 1 − ε, 1 + ε ˆAθm (t)
+
+i 
+
+. (31) Among them, uθm (t) represents the ratio of the probability of the actor network strategy corresponding to agent m:
+
+uθm (t) = πθm
+
+ am (t) om (t)
+
+πθold 
+
+> m
+
+ am (t) om (t) . (32) where πθm (a (t) |o (t)) represents the probability that the actor network πθm outputs a (t) when the input is o (t). Similarly, the same applies to πθold  
+
+> m
+
+(a (t) |o (t)) .To avoid excessive parameter updates in the actor network, a clip function is defined to constrain uθm (t) between 1 − ε
+
+and 1 + ε:                        
+
+> clip ( uθm(t),1−ε, 1 + ε) =
+> 
+> 1−ε, if uθm(t)≤1−ε,
+> 1 + ε, if uθm(t)≥1 + ε, uθm(t),otherwise .
+> (33)
+
+Every certain training batch, training data is retrieved from the experience buffer, and then centralized updates of all actor networks and critic networks are completed in the central controller. The cumulative discount reward is defined as G (t) = PT −tl=0 γlR (t + l), and the loss function of the critic network is defined as 
+
+JθQm = E
+
+
+
+QθQm (s (t)) − G (t)
+
+2
+
+. (34) 8
+
+B. Follower decision algorithm based on two-stage iteration 
+
+For problem (P2) , the per-slot decisions are separable across time slots. Hence, we solve the single-slot problem and omit the slot index t for brevity. Under the given leader-side association, migration, and pricing decisions, the follower-side problem reduces to the joint optimization of each MT’s offloading ratio and requested computing resources. Based on this structure, we develop a two-stage iterative procedure with updates derived via Lagrange duality and KKT conditions. To linearize the max-type delay expression, we introduce the auxiliary variables {χk,m }m∈M and Gk such that 
+
+χk,m ≥ Dcomp  
+
+> k,m
+
+, ∀m ∈ M , (35) 
+
+χk,m ≥ Dtran  
+
+> k,m,m ′
+
++ Dcomp  
+
+> k,m ′
+
+, ∀m, m ′ ∈ M , (36) 
+
+Gk ≥ Dlocal  
+
+> k
+
+, (37) 
+
+Gk ≥ Dcomm  
+
+> k,m
+
++ χk,m , ∀m ∈ M . (38) Then the follower subproblem for MT k can be reformulated as 
+
+(P3) : min    
+
+> γk,{fk,m },G k,{χk,m }
+
+Gk + X
+
+> m∈M
+
+bmfk,m , (39a) s.t. (35)–(38) , (39b) 
+
+fk,m ≥ 0,
+
+> K
+
+X
+
+> k=1
+
+fk,m ≤ f max  
+
+> m
+
+, ∀m ∈ M ,
+
+(39c) 
+
+0 ≤ γk ≤ 1, τt ≤ δ, Ek(γk) ≤ Emax  
+
+> k
+
+. (39d) In (39), the actual decision variables are (γk, {fk,m }), while 
+
+Gk and {χk,m } are auxiliary slack variables introduced by the epigraph reformulation. 
+
+Remark 1. Problem (P3) admits a non-cooperative game interpretation among MTs, where each MT k selects uk =(γk, {fk,m }m∈M ) to minimize its individual overhead G′ 
+
+> k
+
+≜
+
+Gk + P 
+
+> m∈M
+
+bmfk,m . A strategy profile u∗ = {u∗
+
+> k
+
+}k∈K is a Nash equilibrium if G′
+
+> k
+
+(u∗
+
+> k
+
+, u ∗−k) ≤ G′
+
+> k
+
+(uk, u ∗−k) for all feasible uk and k ∈ K [35]. 
+
+Accordingly, we employ distributed best-response updates, where each MT alternates between (41) and (45) while treating other MTs’ decisions as fixed. To obtain a low-complexity solver, we adopt a two-stage alternating procedure to solve (39) for each MT k.
+
+(1) Update γk with fixed {fk,m }: With fixed computing re-sources {fk,m }, problem (39) reduces to a convex optimization with a single scalar decision γk and linear epigraph constraints. The Lagrangian function can be written as 
+
+L(γ) = Gk + ζ Dlocal  
+
+> k
+
+− Gk
+
+
+
++ X
+
+> m∈M
+
+υm
+
+ Dcomm  
+
+> k,m
+
++ χk,m − Gk
+
+
+
++ X
+
+> m∈M
+
+X
+
+> m′∈M
+
+ϑm,m ′
+
+
+
+Dtran  
+
+> k,m,m ′
+
++ Dcomp  
+
+> k,m ′
+
+− χk,m 
+
+
+
+− θk γk + ¯θk(γk − 1) + ε(Ek − Emax  
+
+> k
+
+) , (40) where ζ ≥ 0, {υm ≥ 0}, {ϑm,m ′ ≥ 0}, θk ≥ 0, ¯θk ≥ 0, and 
+
+ε ≥ 0 are dual variables. By applying the KKT conditions, the stationarity with respect to γk yields a scalar equation, which leads to a closed-form update 
+
+γ∗ 
+
+> k
+
+= min 
+
+
+
+γE 
+
+> k
+
+, Ck
+
+γden 
+
+> k
+
+
+
+. (41) Here γE 
+
+> k
+
+is the maximum feasible offloading ratio induced by the energy constraint. Under the commonly used energy model where the local CPU energy scales with (f loc  
+
+> k
+
+)2 and the uplink energy is proportional to the transmission time, we can obtain 
+
+γE 
+
+> k
+
+= min 
+
+(
+
+Emax  
+
+> k
+
+− JkCkφk(f loc  
+
+> k
+
+)2
+
+P 
+
+> m∈M
+
+zk,m Jk Pk 
+
+> rk,m
+
+− JkCkφk(f loc  
+
+> k
+
+)2 , 1
+
+)
+
+,
+
+(42) and γden  
+
+> k
+
+collects the coefficients of γk in the end-to-end delay expression as 
+
+γden  
+
+> k
+
+= Ck + f loc 
+
+> k
+
+X
+
+> m∈M
+
+zk,m 
+
+rk,m 
+
++ f loc 
+
+> k
+
+X
+
+> m∈M
+
+X
+
+> m′∈M
+
+ zk,m ρk,m,m ′
+
+rm,m ′
+
++ Ckzk,m ′ ρk,m ′,m 
+
+fk,m ′
+
+
+
+.
+
+(43) Specifically, we substitute the explicit delay and energy models into ∂L(γ)/∂γ k = 0 , and then collect the coefficients of γk to obtain γden  
+
+> k
+
+, while γE 
+
+> k
+
+is derived from the energy feasibility 
+
+Ek ≤ Emax  
+
+> k
+
+.
+
+(2) Update {fk,m } with fixed γk: With fixed γk, prob-lem (39) is convex in {fk,m } under the per-UAV capacity constraints. The dependence on fk,m comes from the linear price term bmfk,m and the computation delay in (16). Let 
+
+λm ≥ 0 be the dual variable associated with the capacity constraint PKk=1 fk,m ≤ f max  
+
+> m
+
+. Moreover, Dcomp  
+
+> k,m
+
+enters the epigraph constraints via χk, ¯m ≥ Dtran   
+
+> k, ¯m,m
+
++ Dcomp  
+
+> k,m
+
+. Focusing on the terms involving {fk,m }k∈K for UAV m, the Lagrangian function yields 
+
+L(f ) 
+
+> m
+
+= X
+
+> k∈K
+
+(bm + λm) fk,m + X
+
+> k∈K
+
+ωk,m Dcomp  
+
+> k,m
+
+, (44) Under (35)–(36), the aggregated weight is ωk,m = ϕm +P 
+
+> ¯m∈M
+
+ϑ ¯m,m , where ϕm ≥ 0 and ϑ ¯m,m ≥ 0 are the multipliers of (35) and (36), respectively. Applying the stationarity condition ∂L(f ) 
+
+> m
+
+/∂f k,m = 0 gives 
+
+(bm + λm) − ωk,m Jk Ck
+
+> P
+> m′∈M
+
+ zk,m ′ γk ρk,m ′,m 
+
+ 
+
+> f2
+> k,m
+
+= 0 , which yields 
+
+f ∗ 
+
+> k,m
+
+=
+
+vuut ωk,m JkCk
+
+P
+
+> m′∈M
+
+(zk,m ′ γkρk,m ′,m )
+
+bm + λm
+
+, (45) and it satisfies f ∗ 
+
+> k,m
+
+≥ 0 since bm +λm > 0 and the numerator is nonnegative. For each UAV m, λm is determined by the complementary slackness condition with PKk=1 f ∗ 
+
+> k,m
+
+≤ f max  
+
+> m
+
+.
+
+(3) Two-stage iteration: For each MT k, we alternately update γk and {fk,m } according to (41) and (45) until the local change is below a tolerance. MTs then perform best-response updates in an outer loop until the strategy profile stabilizes. The procedure can be implemented in a distributed manner since each MT only exchanges the current decisions 9
+
+Algorithm 1 Follower decision algorithm based on two-stage iteration 
+
+1: Set tolerance ϵ, outer iteration index j = 0 , and maximum outer iterations Jmax .
+
+2: Initialize γ(0)  
+
+> k
+
+and f (0)  
+
+> k,m
+
+for all k ∈ K and m ∈ M .
+
+3: repeat 
+
+4: for k = 1 to K do 
+
+5: Set inner index i = 0 ; set γik ← γ(j) 
+
+> k
+
+, f ik,m ← f (j)
+
+> k,m
+
+, ∀m.
+
+6: repeat 
+
+7: Update γi+1  
+
+> k
+
+by (41) with fixed {f ik,m }.
+
+8: Update {f i+1 
+
+> k,m
+
+} by (45) with fixed γi+1  
+
+> k
+
+, where {λm}
+
+are obtained to satisfy PKk=1 f i+1  
+
+> k,m
+
+≤ f max  
+
+> m
+
+(e.g., by bisection). 
+
+9: i ← i + 1 .
+
+10: until γik − γi−1 
+
+> k
+
++ P 
+
+> m∈M
+
+f ik,m − f i−1 
+
+> k,m
+
+≤ ϵ
+
+11: Set γ(j+1)  
+
+> k
+
+← γik and f (j+1)  
+
+> k,m
+
+← f ik,m , ∀m.
+
+12: end for 
+
+13: j ← j + 1 .
+
+14: until max 
+
+> k∈K
+
+
+
+γ(j) 
+
+> k
+
+− γ(j−1)  
+
+> k
+
++ P 
+
+> m∈M
+
+f (j) 
+
+> k,m
+
+− f (j−1) 
+
+> k,m
+
+
+
+≤ ϵ or 
+
+j ≥ Jmax 
+
+with other MTs and no centralized controller is required. The overall procedure is summarized in Algorithm 1. 
+
+C. Distributed Stackelberg Game Algorithm Based on MADRL 
+
+By integrating the MAPPO-based leader optimization with the two-stage follower solver, we obtain a distributed Stackel-berg game algorithm based on MADRL under a centralized-training-and-distributed-execution (CTDE) paradigm. 
+
+Centralized training: At each time slot, each UAV collects its local observation and uploads it to a centralized trainer, which constructs the joint state for critic evaluation. The UAV actions are sampled from the actor networks, and the follower decisions (MT best responses) are computed via Algorithm 1. The environment then returns the reward and the next state, and the resulting transitions are stored in an experience buffer. When a training batch is ready or the last slot of a period is reached, the trainer updates the actor and critic networks of all UAV agents. This centralized training stage incurs communication overhead between the UAVs and the trainer due to observation uploading and updated parameter feedback. Since such communication only appears periodically during training and does not affect the runtime distributed execution procedure, it is regarded as a training-side implementation cost in this work. The training flow is illustrated in Fig. 2, and the detailed procedure is given in Algorithm 2. 
+
+Distributed execution: Each UAV runs its trained actor network locally and selects actions based on its own ob-servation. At runtime, each UAV sends its slot-level service information to the related MTs through lightweight control messages,which may include the unit price bm(t) and the association outcome zk,m (t). Based on the received service information and scalar capacity feedback from the involved UAVs, the MTs perform the follower-side updates in Algo-rithm 1 to obtain their offloading ratios {γk(t)} and requested computing resources {fk,m (t)}. The resulting follower-side decisions are then sent to the associated UAVs. When collab-Critic: UAV m 
+
+> Actor: UAV m
+
+... ...     
+
+> UAV 1 UAV mUAV M
+
+... ...        
+
+> Critic: UAV 1 Critic: UAV M
+> Actor: UAV 1 Actor: UAV M
+> Experience buffer
+> Centralized training process
+> Data collection Observation Actor UAV action Collected MT decisions Reward Data storage UAV Observation Experience buffer UAV action Reward Network training Experience buffer Extract data
+> Input Output Compute Store Update
+> Optimal followers decisions based on Algorithm 1
+> Critic Actor Critic Actor
+
+( )  
+
+> 1at
+
+( )  
+
+> 1ot
+
+( )  
+
+> mat
+
+( )  
+
+> mot
+
+( )  
+
+> Mat
+
+( )  
+
+> Mot
+
+    
+
+> **,,k m kf
+> 
+
+   
+
+> **1, 1,mf
+> 
+
+        
+
+> **,,K m Kf
+> 
+> Centralized
+> Control Layer UAV Layer MT Layer
+> MT 1 MT kMT K
+> Centralized training
+> Distributed execution
+> Centralized controller
+
+Fig. 2: Training diagram of distributed Stackelberg game algorithm based on MADRL. Distributed execution process 
+
+... ...         
+
+> UAV 1 UAV mUAV M
+> Actor: UAV 1 Actor: UAV mActor: UAV M
+
+... ...        
+
+> MT 1 MT kMT K
+> Game
+> UAV Layer MT Layer
+> UAV observation Actor UAV strategy Input Output User action UAV strategy Input Two-phase iteration output Follower decision algorithm
+
+.. UAV M
+
+.     
+
+> Critic: UAV M
+> Actor: UAV M
+> Centralized training process
+> Data collection Observation Actor UAV action Collected MT decisions Reward
+> Data storage
+> UAV Observation Experience buffer UAV action Reward Network training Experience buffer Extract data
+> Input Output Compute Store Update
+> on Algorithm 1
+> Critic Actor Critic Actor
+
+( ) 
+
+> a
+
+( ) 
+
+> o
+
+( )  
+
+> mat
+
+( )  
+
+> mot
+
+( )  
+
+> Mat
+
+( )  
+
+> Mot
+
+    
+
+> **
+> ,k m kf
+
+      
+
+> **,,K m Kf
+> 
+> MT K
+> Distributed execution Trained policy
+> Centralized training
+
+Fig. 3: Execution diagram of distributed Stackelberg game algorithm based on MADRL orative execution is required, the associated UAV further sends coordination messages to the selected execution UAVs, which may include the task identifier, the migration ratio ρk,m,m ′ (t),and the workload fraction to be forwarded. The additional communication overhead introduced by Algorithm 1 is limited to scalar-level control exchange during the iterative decision update. In particular, the bisection-based determination of 
+
+{λm} only requires capacity-related scalar feedback from the involved UAVs. Hence, this overhead mainly scales with the number of involved MTs, the number of available UAVs, and the iteration budgets, while no raw task payloads, global observations, or neural network parameters are exchanged in this iterative decision update. No centralized controller is involved in this stage, and no global observations are collected for decision-making. Therefore, the runtime process only relies on local observations and slot-level control signaling among the involved UAVs and MTs over the available UAV-MT and inter-UAV links. The execution process is illustrated in Fig. 3. 
+
+D. Complexity Analysis 
+
+We analyze the computational complexity of the proposed algorithm from the follower-side two-stage iterative procedure and the MAPPO-based CTDE procedure. For Algorithm 1, let Jmax denote the maximum number of outer best-response 10 
+
+Algorithm 2 Training of distributed Stackelberg game algo-rithm based on MAPPO  
+
+> 1:
+
+Initialize actor policies {πθm }m∈M , centralized critic Qϕ, and old policies {πθold  
+
+> m
+
+} with θold  
+
+> m
+
+← θm. 
+
+> 2:
+
+for each episode do  
+
+> 3:
+
+Reset environment and obtain initial observations 
+
+{om(1) }m∈M ; initialize buffer U ← ∅ . 
+
+> 4:
+
+for t = 1 to T do  
+
+> 5:
+
+Each UAV m samples am(t) ∼ πθold  
+
+> m
+
+(· | om(t)) ; denote 
+
+a(t) = {am(t)}. 
+
+> 6:
+
+Given a(t), each MT solves its response via Algorithm 1; denote the follower decisions as u(t). 
+
+> 7:
+
+Execute {a(t), u(t)} in the environment; obtain rewards 
+
+{rm(t)} and next observations {om(t + 1) }. 
+
+> 8:
+
+Store transition (o(t), a(t), r(t), o(t + 1)) in U , where 
+
+o(t) = {om(t)} and r(t) = {rm(t)}. 
+
+> 9:
+
+if |U | = B or t = T then  
+
+> 10:
+
+Update actor policies {πθm } using MAPPO with buffer 
+
+U and critic Qϕ. 
+
+> 11:
+
+Update critic parameters ϕ using buffer U . 
+
+> 12:
+
+Synchronize old policies: θold  
+
+> m
+
+← θm, ∀m; clear buffer 
+
+U ← ∅ . 
+
+> 13:
+
+end if  
+
+> 14:
+
+end for  
+
+> 15:
+
+end for 
+
+iterations, Imax denote the maximum number of inner two-stage iterations, Bmax denote the maximum number of bisec-tion iterations for determining the dual variables {λm}, and 
+
+¯M denote the average number of available UAVs. In each inner iteration, updating γk by (41) requires evaluating the summation terms in γden  
+
+> k
+
+, with direct complexity O( ¯M 2) for each MT. Given γk, updating {fk,m } by (45) requires com-puting the requested computing resources over the available UAVs and determining {λm} to satisfy the per-UAV capacity constraints, leading to complexity O( ¯M 2 + ¯M B max ) for each MT. Therefore, the complexity of Algorithm 1 in one slot is 
+
+CF = O(Jmax Imax K( ¯M 2 + ¯M B max )) . The actual number of iterations depends on the stopping tolerance ϵ, while the worst-case complexity is upper bounded by the iteration budgets 
+
+Jmax , Imax , and Bmax . This indicates that, when the number of available UAVs and the iteration budgets are bounded, the follower-side computational cost grows linearly with the number of MTs. In practical implementation, the sparsity of the MT-UAV association variables can further reduce the cost of evaluating the summation terms. For Algorithm 2, each slot involves UAV-side action sam-pling, follower-side response calculation, environment execu-tion, and transition storage. Let F inf  
+
+> π
+
+denote the computational cost of one actor-network inference, and let Fπ and FQ denote the typical computational costs of one actor-network update and one centralized critic update, respectively. The slot-level UAV-side action sampling cost is CA = O( ¯M F inf  
+
+> π
+
+), while the MAPPO update cost for one buffer is CU = O( ¯M F π + FQ).Let Nep denote the number of training episodes, T denote the number of slots in each episode, and B denote the buffer size for policy updates. Since Algorithm 1 is invoked in each slot to obtain the follower-side response, the overall training complexity of Algorithm 2 can be expressed as 
+
+O(Nep T (CA + CF) + Nep ⌈T /B ⌉CU). After training, the TABLE II: Parameter Settings for Simulation                                                          
+
+> Parameter Value Mission length T= 20
+> Slot duration δ= 2 sTotal bandwidth 25 MHz MT local CPU floc
+> k= 0 .2GHz UAV CPU budget fmax
+> m= 3 GHz Task input size Jk∈[0 .1,0.5] Mbits CPU density Ck= 1000 cycles/bit Batch size B= 5
+> Ref. channel gain β0=−60 dB Noise power σ2=−100 dBm MT tx power PK= 0 .1WUAV tx power PM= 1 WCapacitance coeff. φm= 10 −28
+> Rotor tip speed vtip = 110 m/s Utility weights ωW= 0 .3, ω E= 0 .7
+> PPO clip ratio ϵ= 0 .1
+> Min. secure distance dmin = 5 mAlgorithm accuracy o= 0 .01
+> Max. iterations Jmax = 10
+
+centralized critic and policy-update operations are no longer required. Each UAV only performs actor-network inference to generate its leader-side decision, while the MTs compute their follower-side responses through Algorithm 1. Therefore, the online execution complexity per slot is O(CA + CF). This shows that the online computational cost is mainly determined by the number of available UAVs, the number of MTs, and the iteration budgets of the follower-side two-stage procedure. Since these factors are explicitly bounded in the algorithm implementation, the proposed algorithm can provide tractable slot-level decision-making in the considered network scale. IV. S IMULATION RESULTS AND ANALYSIS 
+
+We consider a dynamic UAV-enabled MEC system in a square industrial area of [−250 , 250] × [−250 , 250] m2. UAVs start from four corner points, fly at altitude H = 50 m with maximum speed Vmax = 25 m/s, and maintain a minimum separation distance dmin = 5 m. MTs are uniformly distributed and move according to a Gauss–Markov model with mean speed 0.5 m/s and mean direction π/ 4, which is adopted to characterize the temporally correlated movement of MTs in a tractable manner. Key simulation and training parameters are summarized in Table II. In particular, the default utility weights ωW = 0 .3 and ωE = 0 .7 are chosen to represent an energy-aware setting, since UAVs operate under limited onboard energy and their propulsion, forwarding, and compu-tation all incur non-negligible energy consumption. Therefore, the UAV-side utility is designed to place relatively more emphasis on energy cost while still preserving the incentive for workload execution. In general, a larger ωW encourages more workload-oriented service decisions, while a larger ωE leads to more conservative decisions with stronger preference for energy saving. To highlight the effectiveness of the proposed algorithm, the following benchmark algorithms are provided for comparison:  
+
+> •
+
+No Offloading (NO) : All MTs compute tasks locally, and UAVs hover at their takeoff locations.  
+
+> •
+
+All Offloading (AO) : All MTs fully offload tasks to their associated UAVs. 11 
+
+TABLE III: Runtime evaluation of the proposed method under two representative implementation environments.               
+
+> Env. CPU/GPU Total time (s) Per-step (s)
+> IIntel i9-13900HX NVIDIA RTX 5060 Laptop 0.306 0.0153 II Intel Xeon Silver 4210R NVIDIA RTX 3090 0.275 0.0137 01000 2000 3000 4000 5000
+> episodes
+> 025 50 75 100 125 150 175 200
+> Total benefit of the UAV
+> UAV1 UAV2 UAV3 UAV4
+
+Fig. 4: Convergence of leader decision algorithm.  
+
+> •
+
+No collaboration (NC) : Inter-UAV task migration is dis-abled, and each UAV serves its associated MTs indepen-dently. This scheme serves as a no-collaboration reference in the performance comparison.  
+
+> •
+
+Frequency Average (FA) : Each UAV allocates computing resources equally among its associated MTs.  
+
+> •
+
+Fixed : Each UAV hovers near its associated MT. To provide a practical view of the decision latency of the proposed method, we evaluate its runtime under two representative implementation environments. Environment I is configured with Python 3.10.19 and PyTorch 2.9.0, while Envi-ronment II is configured with Python 3.10.2 and PyTorch 2.5.1. As shown in Table III, the proposed method completes one mission process within about 0.28–0.31 s, corresponding to an average per-step runtime of about 0.014–0.015 s. Although the two environments differ in both hardware and software con-figurations, the per-step runtime remains consistently below 0.02 s. This comparable millisecond-level runtime across dif-ferent implementation environments supports the practicality of using the proposed method for slot-level decision making in the considered network scale. Fig. 4 shows the convergence of the leader decision algo-rithm. The total benefit of all UAVs remained stable after approximately 2000 training batches. Due to the fact that UAVs 1-3 provide services throughout the entire mission cycle, while UAV 4 joins the system midway through the mission and exits the system after providing a period of computing services, its total UAV benefit is approximately half that of other UAVs. This result further indicates that dynamic UAV participation directly affects the optimization outcome. Since UAV 4 remains available for a shorter duration, its contri-bution is accumulated over a smaller time span. Meanwhile, its joining and leaving behavior also changes the available service nodes for MT-UAV association and inter-UAV task migration. Nevertheless, even when the number of available UAVs changes over time, the proposed algorithm still exhibits good convergence for different UAVs, which demonstrates its adaptability to time-varying UAV availability. Fig. 5 shows UAV trajectories in the three phases of one continuous mission process under dynamic UAV participation, illustrating how the UAV spatial deployment is reconfigured as the available UAV set changes over time. In Phase I, the three UAVs exhibit a relatively stable spatial deployment, and their trajectories mainly involve local adjustments around their service regions. After UAV 4 joins in Phase II, the trajectory reconfiguration appears in the lower service region, where UAV 3 and UAV 4 move within a nearby area, suggesting that the newly available UAV mainly enhances local service flexibility and cooperative support in that region, while the other UAVs largely remain in their original service areas. After UAV 4 exits in Phase III, the remaining UAVs further adjust their trajectories and gradually recover a relatively sep-arated spatial deployment pattern. Overall, these phase-wise trajectory changes suggest that the proposed framework can maintain continuous and coordinated UAV service behavior under time-varying UAV availability. Fig. 6 shows the convergence of the follower decision algorithm. The total overhead of each of the 10 MTs remained stable after about 4 iterations of the proposed algorithm. Due to the analytical solution obtained by analyzing the KKT conditions, the follower decision algorithm has a fast overall iteration, which can meet the requirements of time-sensitive tasks and achieve online computing. Fig. 7 shows the average time efficiency of UAVs at different maximum computing frequencies. As the maximum computing frequency of UAVs increases, the benefits obtained by selling computing resources gradually increase, and the average time efficiency of UAVs gradually increases. How-ever, due to the limited energy consumption caused by task computing and the limited demand for computing resources from MTs, the increase in average time efficiency of UAVs is gradually decreasing. In the absence of collaborative work between UAVs, the uneven distribution of MT locations leads to different UAV loads, resulting in extreme values of UAV time average efficiency. Although the maximum time-averaged benefit of the NC algorithm for UAVs is relatively higher compared to the proposed algorithm, the average benefit of the NC algorithm is lower due to the small number of UAVs connected to MTs, which indicates that enabling inter-UAV collaboration is beneficial to improving UAV resource utilization under the considered setting. The average time overhead of MTs at different maximum computing frequencies for UAVs is given in Fig. 8. With the increase of the maximum computing frequency of UAVs, the average time overhead of the proposed algorithm and AO corresponding to MTs is gradually decreasing. MTs can purchase more computing resources from UAVs, and the computing time for offloading tasks is reduced. The limited computing tasks of MTs and the pricing of UAV computing frequency mean that MTs have limited demand for computing 12        
+
+>  
+>    
+>        
+>            
+
+(a) Phase I               
+
+>  
+>    
+>         
+>              
+
+(b) Phase II             
+
+>  
+>    
+>        
+>            
+
+(c) Phase III 
+
+Fig. 5: Representative UAV trajectories under dynamic UAV participation. The three subfigures show the three phases of one continuous mission process. In Phase I (steps 0-4), three UAVs provide service; in Phase II (steps 5-14), UAV 4 joins the system; and in Phase III (steps 15-19), UAV 4 exits the system. 1 2 3 4 5 6
+
+> Number of iterations
+> 3.0 3.5 4.0 4.5 5.0
+> Total cost of MTs
+> User1 User2 User3 User4 User5 User6 User7 User8 User9 User10
+
+Fig. 6: Convergence of follower decision algorithm. 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 
+
+> Maximum computation frequency of UAVs (GHz)
+> 01234567
+> Average time benefit of UAVs
+> Proposed-max Proposed-min Proposed-avg NC-max NC-min NC-avg
+
+Fig. 7: Average time benefit of UAVs at different maximum computing frequencies. resources, so the reduction in average time overhead of MTs is gradually decreasing. Due to the fact that all computing tasks corresponding to NO are executed locally and are not affected 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 
+
+> Maximum computation frequency of UAVs (GHz)
+> 246810 12
+> Average time cost of MTs
+> Proposed-max Proposed-min Proposed-avg NO-max NO-min NO-avg AO-max AO-min AO-avg
+
+Fig. 8: Average MT time overhead at different maximum computing frequencies for UAVs. by the frequency of UAV computing. The proposed algorithm has better performance compared to NO and AO, indicating that partial offloading computing tasks can efficiently utilize both local resources of MTs and UAV computing resources simultaneously. In Fig. 9, we show the average benefits of UAVs under different numbers of MTs. The average benefits of UAVs increase with the increase of the number of MTs, and the unit computing task volume is directly proportional to the UAV benefits, thus showing a linear growth overall. Fixed UAV positioning can reduce the flight energy consumption of UAVs to a certain extent, but due to the inability to actively approach MTs to reduce communication distance, it leads to an increase in communication energy consumption and communication latency, resulting in a lower overall average efficiency of UAVs. The NC algorithm performs the worst, which further highlights the importance of coordinated trajec-tory planning and inter-UAV collaboration for improving the average efficiency of UAVs. We investigate the average overhead of MTs under different 13 6 8 10 12 14 16 
+
+> Number of MTs
+> 234567
+> Average benefit of UAVs
+> Proposed NC Fixed
+
+Fig. 9: Average benefits of UAVs at different numbers of MTs. 6 8 10 12 14 16 
+
+> Number of MTs
+> 345678
+> Average cost of MTs
+> Proposed NO AO FA
+
+Fig. 10: Average MT overhead at different numbers of MTs. numbers of MTs in Fig. 10. Due to the fact that the calculation tasks corresponding to the NO algorithm are all executed locally on MTs, the MT overhead has little impact on NO after averaging the number of MTs. Under the constraint of limited computing resources in UAVs, as the number of MTs increases, the computing resources obtained by each MT decrease, and the task computing delay increases accordingly. Therefore, the average overhead of MTs gradually increases. When the difference in task volume between MTs is not significant, evenly distributing UAV computing resources is a relatively effective method, but the performance of the proposed algorithm is still relatively poor. We analyze the average benefits of UAVs under different MT bandwidths in Fig. 11. As the bandwidth of MTs in-creases, the average efficiency of UAVs gradually increases due to the decrease in communication latency caused by high bandwidth, thereby reducing communication energy consump-tion. It can be seen that the increase in average efficiency of UAVs is gradually slowing down because there is a logarithmic relationship between MT bandwidth and energy consumption. This also means that increasing MT bandwidth within acertain range is feasible, but when the bandwidth is too large, the system benefits brought by increasing bandwidth 0.6 0.8 1.0 1.2 1.4 1.6 
+
+> MT bandwidth (MHz)
+> 3.0 3.5 4.0 4.5 5.0 5.5 6.0
+> Average benefit of UAVs
+> Proposed NC Fixed
+
+Fig. 11: Average benefits of UAVs at different MT bandwidths. 0.6 0.8 1.0 1.2 1.4 1.6 
+
+> MT bandwidth (MHz)
+> 345678
+> Average cost of MTs
+> Proposed NO AO FA
+
+Fig. 12: Average MT overhead at different MT bandwidths. are very small. The proposed algorithm still maintains good performance compared to the benchmark algorithm. Finally, we show the average overhead of MTs under differ-ent bandwidths in Fig. 12. With the increase of MT bandwidth, the overall average overhead of MTs is gradually decreasing. Due to the fact that the NO algorithm does not offload any computing tasks and there is no scenario for communication with UAVs, it is not affected by the bandwidth of MTs. The average overhead of MTs corresponding to other algorithms gradually decreases with the increase of MT bandwidth, and the decrease rate gradually decreases. The equal distribution of UAV computing resources still has good performance and can serve as an alternative to the proposed algorithm to a certain extent. But the proposed algorithm still performs well under different conditions. V. C ONCLUSION 
+
+In this paper, we proposed a dynamic distributed MEC architecture to support collaborative computing among mul-tiple UAVs in scenarios with mobile MTs and randomly generated computing tasks, enabling the dynamic joining and leaving of UAVs. MTs were allowed to partially offload their computing tasks to connected UAVs, while overloaded 14 
+
+UAVs could further redistribute tasks through collaborative migration. We formulated a Stackelberg game-based opti-mization model to maximize UAV benefits by jointly op-timizing UAV trajectories, inter-UAV task migration ratios, UAV access decisions, and computing resource pricing and solved it using a MAPPO-based algorithm. Simultaneously, MT overhead was minimized by jointly optimizing computing resource allocation and task offloading ratios, with a two-stage iterative method adopted to solve the follower subproblem. Simulation results demonstrated that the proposed algorithms achieved stable convergence and significantly outperformed benchmark schemes under varying computing capacities, MT densities, and bandwidth conditions. Future work may extend the current model by incorporating more adaptive bandwidth allocation mechanisms to further improve spectrum utilization and provide a more comprehensive characterization of uplink resource management in distributed multi-UAV MEC sys-tems. In addition, practical deployment and validation on real UAV platforms will be investigated by integrating measured wireless links, onboard computing constraints, flight-control limitations, and online task offloading decisions into a closed-loop experimental framework, which can further evaluate the robustness and practical applicability of the proposed method under real-world operating conditions. REFERENCES [1] Y. Mao, C. You, J. Zhang, K. Huang, and K. B. Letaief, “A survey on mobile edge computing: The communication perspective,” IEEE Commun. Surv. Tutor. , vol. 19, no. 4, pp. 2322–2358, Fourthquarter 2017. [2] H. Jiang, X. Dai, Z. Xiao, and A. Iyengar, “Joint task offloading and resource allocation for energy-constrained mobile edge computing,” 
+
+IEEE Trans. Mobile Comput. , vol. 22, no. 7, pp. 4000–4015, July 2023. [3] C. Sun, X. Wu, X. Li, Q. Fan, J. Wen, and V. C. M. Leung, “Cooperative computation offloading for multi-access edge computing in 6G mobile networks via soft actor critic,” IEEE Trans. Netw. Sci. Eng. , vol. 11, no. 6, pp. 5601–5614, Nov. 2024. [4] F. Pervez, A. Sultana, C. Yang, and L. Zhao, “Energy and latency efficient joint communication and computation optimization in a multi-UAV-assisted MEC network,” IEEE Trans. Wireless Commun. , vol. 23, no. 3, pp. 1728–1741, March 2024. [5] Y. Chen, K. Li, Y. Wu, J. Huang, and L. Zhao, “Energy efficient task offloading and resource allocation in air-ground integrated MEC systems: A distributed online approach,” IEEE Trans. Mobile Comput. ,vol. 23, no. 8, pp. 8129–8142, Aug. 2024. [6] X. Lin, A. Liu, C. Han, X. Liang, K. Pan, and Z. Gao, “LEO satellite and UAVs assisted mobile edge computing for tactical Ad-Hoc network: A game theory approach,” IEEE Internet Things J. , vol. 10, no. 23, pp. 20 560–20 573, Dec. 2023. [7] C. Lei, W. Feng, P. Wei, Y. Chen, N. Ge, and S. Mao, “Edge information hub: Orchestrating satellites, UAVs, MEC, sensing and communications for 6G closed-loop controls,” IEEE J. Sel. Aeras Commun. , vol. 43, no. 1, pp. 5–20, Jan. 2025. [8] S. D. Ali Shah, M. A. Gregory, and S. Li, “A distributed control plane architecture for handover management in MEC-enabled vehicular networks,” in 2021 31st IEEE Int. Telecommun. Netw. Appl. Conf. (ITNAC) , Nov., pp. 188–191. [9] Y. Ding, H. Han, W. Lu, Y. Wang, N. Zhao, X. Wang, and X. Yang, “DDQN-based trajectory and resource optimization for UAV-aided MEC secure communications,” IEEE Trans. Veh. Technol. , vol. 73, no. 4, pp. 6006–6011, April 2024. [10] S. Xia, Z. Yao, Y. Li, and S. Mao, “Online distributed offloading and computing resource management with energy harvesting for heteroge-neous MEC-enabled IoT,” IEEE Trans. Wireless Commun. , vol. 20, no. 10, pp. 6743–6757, Oct. 2021. [11] H. Zhou, K. Jiang, S. He, G. Min, and J. Wu, “Distributed deep multi-agent reinforcement learning for cooperative edge caching in internet-of-vehicles,” IEEE Trans. Wireless Commun. , vol. 22, no. 12, pp. 9595– 9609, 2023. [12] Z. Ning, Y. Yang, X. Wang, Q. Song, L. Guo, and A. Jamalipour, “Multi-agent deep reinforcement learning based UAV trajectory optimization for differentiated services,” IEEE Trans. Mobile Comput. , vol. 23, no. 5, pp. 5818–5834, May 2024. [13] L. Wang, Q. Zhou, and Y. Shen, “Computation efficiency maximization for UAV-assisted relaying and MEC networks in urban environment,” 
+
+IEEE Trans. Green Commun. Netw. , vol. 7, no. 2, pp. 565–578, June 2023. [14] Y. Zhang, X. Hou, H. Du, L. Zhang, J. Du, and W. Men, “Joint trajectory and resource optimization for uav and D2D-enabled heterogeneous edge computing networks,” IEEE Trans. Veh. Technol. , vol. 73, no. 9, pp. 13 816–13 827, Sep. 2024. [15] C. Liu, Y. Zhong, R. Wu, S. Ren, S. Du, and B. Guo, “Deep rein-forcement learning based 3D-trajectory design and task offloading in UAV-enabled MEC system,” IEEE Trans. Veh. Technol. , vol. 74, no. 2, pp. 3185–3195, Feb. 2025. [16] Z. Hu, Y. Yang, W. Gu, Y. Chen, and J. Huang, “DRL-based trajectory optimization and task offloading in hierarchical aerial MEC,” IEEE Internet Things J. , vol. 12, no. 3, pp. 3410–3423, Feb. 2025. [17] Y. Wei, Z. Wan, Y. Xiao, S. Leng, K. Wang, and K. Yang, “Joint split offloading and trajectory scheduling for UAV-enabled mobile edge computing in iot network,” IEEE Trans. Netw. Sci. Eng. , vol. 11, no. 6, pp. 6180–6193, Nov. 2024. [18] A. Ranjha, D. Naboulsi, M. E. Emary, and F. Gagnon, “Consumer-centric sustainability: Empowering URLLC in multi-UAV-assisted MEC systems for industry 5.0,” IEEE Trans. Consum. Electron. , pp. 1–1, early access 2024. [19] J. Zhang, H. Luo, X. Chen, H. Shen, and L. Guo, “Minimizing response delay in UAV-assisted mobile edge computing by joint UAV deployment and computation offloading,” IEEE Trans. Cloud Comput. , vol. 12, no. 4, pp. 1372–1386, Oct. 2024. [20] P. Consul, I. Budhiraja, and D. Garg, “Task offloading in AIoT-enabled UAV-assisted MEC network: A digital twin-empowered approach with FedRL,” IEEE Trans. Consum. Electron. , pp. 1–1, early access 2024. [21] H. Sun, Y. Zhou, H. Zhang, L. Ale, H. Dai, and N. Zhang, “Joint optimization of caching, computing, and trajectory planning in aerial mobile edge computing networks: An MADDPG approach,” IEEE Internet Things J. , vol. 11, no. 24, pp. 40 996–41 007, Dec. 2024. [22] C. Gu, F. Li, D.-S. Liu, Y.-X. Wu, and H.-X. Wang, “DRL-based joint task scheduling and trajectory planning method for UAV-assisted MEC scenarios,” IEEE Access , vol. 12, pp. 156 224–156 234, Dec. 2024. [23] S. Liu, H. Yang, M. Zheng, L. Xiao, Z. Xiong, and D. Niyato, “UAV-enabled semantic communication in mobile edge computing under jamming attacks: An intelligent resource management approach,” IEEE Trans. Wireless Commun. , vol. 23, no. 11, pp. 17 493–17 507, Sept. 2024. [24] S. Liu, H. Yang, L. Xiao, M. Zheng, H. Lu, and Z. Xiong, “Learning-based resource management optimization for UAV-assisted MEC against jamming,” IEEE Trans. Commun. , vol. 72, no. 8, pp. 4873–4886, Aug. 2024. [25] Y. Tao, Z. Kuang, F. Hou, and A. Liu, “Online service selection and task offloading in UAV-assisted MEC via deep reinforcement learning,” 
+
+IEEE Trans. Cogn. Commun. Netw. , vol. 12, pp. 4159–4173, 2026. [26] C. Chen, S. Gong, W. Zhang, Y. Zheng, and Y. C. Kiat, “DRL-based contract incentive for wireless-powered and UAV-assisted backscattering MEC system,” IEEE Trans. Cloud Comput. , vol. 12, no. 1, pp. 264–276, Jan. 2024. [27] B. Shi and Z. Chen, “A stackelberg game-based trajectory planning strategy for multi-AAVs-assisted MEC system,” IEEE Trans. Netw. Service Manage. , vol. 22, no. 2, pp. 1716–1726, April 2025. [28] Z. Wang, J. Chen, G. Sun, H. Yu, and M. Guizani, “Joint energy-efficient task scheduling and trajectory optimization for multi-UAV MEC networks in low-altitude economy,” IEEE Trans. Cogn. Commun. Netw. ,vol. 12, pp. 3058–3072, 2026. [29] M. Mukherjee, V. Kumar, A. Lat, M. Guo, R. Matam, and Y. Lv, “Dis-tributed deep learning-based task offloading for UAV-enabled mobile edge computing,” in IEEE INFOCOM 2020 - IEEE Conf. Comput. Commun. Workshops (INFOCOM WKSHPS) , July 2020, pp. 1208–1212. [30] N. Waqar, S. A. Hassan, A. Mahmood, K. Dev, D.-T. Do, and M. Gid-lund, “Computation offloading and resource allocation in MEC-enabled integrated aerial-terrestrial vehicular networks: A reinforcement learning approach,” IEEE Trans. Intell. Transp. Syst. , vol. 23, no. 11, pp. 21 478– 21 491, Nov. 2022. 15 
+
+[31] Y. Ye, W. Wei, D. Geng, and X. He, “Dynamic coordination in UAV swarm assisted MEC via decentralized deep reinforcement learning,” in 
+
+2020 IEEE Int. Conf. Wireless Commun. Signal Process.(WCSP) , Oct., pp. 1064–1069. [32] C. Li, K. Jiang, G. He, F. Bing, and Y. Luo, “A computation offloading method for multi-UAVs assisted MEC based on improved federated DDPG algorithm,” IEEE Trans. Ind. Inform. , vol. 20, no. 12, pp. 14 062– 14 071, Dec. 2024. [33] M. Kim, H. Lee, S. Hwang, M. Debbah, and I. Lee, “Cooperative multiagent deep reinforcement learning methods for UAV-aided mobile edge computing networks,” IEEE Internet Things J. , vol. 11, no. 23, pp. 38 040–38 053, Dec. 2024. [34] Z. Yang, S. Bi, and Y.-J. A. Zhang, “Online trajectory and resource optimization for stochastic UAV-enabled MEC systems,” IEEE Trans. Wireless Commun. , vol. 21, no. 7, pp. 5629–5643, July 2022. [35] Q. Wu, J. Chen, Y. Xu, N. Qi, T. Fang, Y. Sun, and L. Jia, “Joint computation offloading, role, and location selection in hierarchical mul-ticoalition UAV MEC networks: A stackelberg game learning approach,” 
+
+IEEE Internet Things J. , vol. 9, no. 19, pp. 18 293–18 304, Oct. 2022. 
+
+Tiankui Zhang (M’10-SM’15) received the Ph.D. degree in Information and Communication Engineer-ing and B.S. degree in Communication Engineering from Beijing University of Posts and Telecommuni-cations (BUPT), China, in 2008 and 2003, respec-tively. Currently, he is a Professor in School of Infor-mation and Communication Engineering at BUPT. His research interests include artificial intelligence enabling wireless networks, UAV communications in 5G and beyond networks, intelligent mobile edge computing, signal processing for wireless commu-nications. He had published more than 240 papers including journal papers on IEEE Journal on Selected Areas in Communications, IEEE Transactions on Communications, etc., and conference papers, such as IEEE GLOBECOM and IEEE ICC. He is the co-recipient of the Best Paper Award in IEEE GLOBECOM 2022, the Best Paper Award in IEEE APCC 2011. He has served as a TPC Member for many IEEE conferences, such as GLOBECOM and PIMRC, the Technical Program Committee Chair for AiCON 2021. He has served as the guest editor for the special issue ”Future Network Architecture and Key Technologies” of the Journal of Beijing University of Posts and Telecommunications, the special issue ”Recent Advances in UAV Communications and Networks” of Sensors. 
+
+Wenlong Xu received the B.S. degree from China Agricultural University (CAU), Beijing, China, in 2022, and the M.S. degree from, Beijing University of Posts and Telecommunications (BUPT), Beijing, China, in 2025. His current research interests include UAV trajectory planning and resource allocation in mobile edge computing. 
+
+Tianyi Shi (Graduate Student Member, IEEE) re-ceived the B.S. degree in Communication Engineer-ing from Harbin Institute of Technology, Weihai, China, in 2021. She is currently pursuing the Ph.D. degree in Information and Communication Engineer-ing at Beijing University of Posts and Telecom-munications, Beijing, China. She was a visiting Ph.D. student at Queen’s University Belfast, U.K., from September 2025 to August 2026. Her research interests include mobile edge computing, edge intel-ligence, and AI for wireless networks. 
+
+Xiaoxia Xu (Member, IEEE) received the B.Eng. and Ph.D. degrees from Wuhan University, China, in 2017 and 2023, respectively. From 2021 to 2022, she was a Visiting Student with the Queen Mary University of London (QMUL), London, U.K. She is currently a Post-Doctoral Researcher with the School of Electronic Engineering and Computer Sci-ence, QMUL. Her current research interests include millimetre-wave/terahertz communications, flexible-antenna techniques, next generation multiple access, AI for B5G/6G, and edge intelligence. For more information https://xiaoxiaxusummer.github.io/ 
+
+Arumugam Nallanathan (Fellow, IEEE) has been a Professor in wireless communications and the Founding Head of the Communication Systems Re-search (CSR) Group, School of Electronic Engineer-ing and Computer Science, Queen Mary University of London, since September 2017. He was with the Department of Informatics at King’s College London from December 2007 to August 2017, where he was Professor of Wireless Communications from April 2013 to August 2017 and a Visiting Professor from September 2017 till August 2020. He was an Assistant Professor in the Department of Electrical and Computer Engineering, National University of Singapore from August 2000 to December 2007. His research interests include Artificial Intelligence for Wireless Systems, Beyond 5G Wireless Networks and Internet of Things (IoT). He published more than 700 technical papers in scientific journals and international conferences. He is a co-recipient of the Best Paper Awards presented at the IEEE International Conference on Communications 2016 (ICC’2016), IEEE Global Communications Conference 2017 (GLOBECOM’2017) and IEEE Vehicular Technology Conference 2018 (VTC’2018). He is also a co-recipient of IEEE Communications Society Leonard G. Abraham Prize in 2022. He is an IEEE Distinguished Lecturer. He has been selected as a Web of Science Highly Cited Researcher in 2016, and 2022-2024. He was a Senior Editor for IEEE Wireless Communications Letters, an Ed-itor for IEEE Transactions on Wireless Communications, IEEE Transactions on Communications, IEEE Transactions on Vehicular Technology and IEEE Signal Processing Letters. He served as a Guest Editor for numerous special issues of IEEE Journal on Selected Areas in Communications (JSAC). He served as the Chair for the Signal Processing and Communication Electronics (SPCE) Technical Committee of IEEE Communications Society and Technical Program Chair and member of Technical Program Committees in numerous IEEE conferences. He received the IEEE Communications Society SPCE outstanding service award 2012 and IEEE Communications Society RCC outstanding service award 2014.

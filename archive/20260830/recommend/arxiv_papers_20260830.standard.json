@@ -1,0 +1,602 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-30T23:06:11.278885+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 8,
+    "deep_cap": 8,
+    "deep_selected": 8,
+    "quick_candidates": 6,
+    "quick_skim_target": 13,
+    "quick_selected": 6
+  },
+  "deep_dive": [
+    {
+      "id": "2608.24585v1",
+      "source": "arxiv",
+      "title": "Pivot-and-Station Multi-Agent Path Finding: Solvability, Complexity, and Algorithms",
+      "abstract": "Automated high-density storage systems (warehouses, robotic parking, plant logistics, etc.) require fleets of agents to move through scarce task-critical resources and then park without obstructing future operations. We introduce Pivot-and-Station Multi-Agent Path Finding (PS-MAPF), a MAPF variant in which a subset of tasked agents must each visit one of a set of interchangeable pivots (e.g., workstations) before the entire fleet terminates at anonymous stations, one agent per station. We characterize solvability completely: every instance on a 2-edge-connected graph is solvable, and, on arbitrary connected graphs, a structural effective-distance measure relative to the number of unoccupied vertices gives a necessary and sufficient condition. We prove that minimizing station-makespan or station-flowtime is NP-hard already with a single pivot. We present three algorithms, a complete baseline, a SAT-based optimal solver, and Pivot-Prioritized Planning (PPP), the last solving 74-89% of benchmark instances with makespan and flowtime orders of magnitude below the baseline.",
+      "authors": [
+        "Andrea Di Nezza",
+        "Mihir Patel",
+        "Fabio Fagnani",
+        "Sara Bernardini"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-25T14:10:28+00:00",
+      "link": "https://arxiv.org/pdf/2608.24585v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "directly introduces a new MAPF variant (Pivot-and-Station MAPF) with solvability, complexity and algorithms",
+      "llm_evidence_cn": "直接提出一种新的MAPF变体（枢轴-站点MAPF），并给出可解性、复杂度与算法",
+      "llm_evidence": "直接提出一种新的MAPF变体（枢轴-站点MAPF），并给出可解性、复杂度与算法",
+      "canonical_evidence": "直接提出一种新的MAPF变体（枢轴-站点MAPF），并给出可解性、复杂度与算法",
+      "llm_tldr_en": "Introduces Pivot-and-Station Multi-Agent Path Finding (PS-MAPF), characterizes solvability on 2-edge-connected and general graphs, and provides algorithms; direct MAPF contribution.",
+      "llm_tldr_cn": "高密度仓储与机器人停车等场景要求多智能体访问关键资源后停在匿名站点，已有MAPF模型难以刻画这一约束。为此提出枢轴-站点多智能体路径规划（PS-MAPF）变体，并证明在2-边连通图上所有实例可解。对于一般连通图，给出基于有效距离的结构性充要条件并设计相应算法。该工作丰富了MAPF问题族，为带中间任务约束的多智能体路径规划提供理论基础。",
+      "llm_tldr": "高密度仓储与机器人停车等场景要求多智能体访问关键资源后停在匿名站点，已有MAPF模型难以刻画这一约束。为此提出枢轴-站点多智能体路径规划（PS-MAPF）变体，并证明在2-边连通图上所有实例可解。对于一般连通图，给出基于有效距离的结构性充要条件并设计相应算法。该工作丰富了MAPF问题族，为带中间任务约束的多智能体路径规划提供理论基础。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.24618v1",
+      "source": "arxiv",
+      "title": "VIP: Variation-based Iterative-learning Planning for Robotic Navigation",
+      "abstract": "Over the past decade, autonomous robotic systems have been increasingly deployed in applications such as surveying, search and rescue, and last-mile delivery. These applications require robots to generate safe and efficient motion plans in large, complex, and obstacle-dense environments, often under limited onboard computing resources. However, conventional planning methods commonly rely on finite-dimensional trajectory parameterization or increasingly long prediction horizons, leading to rapidly growing computational costs, particularly in multi-robot scenarios. This paper presents a novel variation-based iterative-learning planning (VIP) framework for efficient motion planning of both single robots and robotic swarms. Instead of optimizing a large number of discrete trajectory variables, VIP directly updates the planning command as a continuous function in an infinite-dimensional function space. The same variation-based update can be implemented in a model-in-the-loop manner for offline planning or in a robot-in-the-loop manner between online physical executions. By avoiding the computational burden associated with horizon expansion and high-dimensional trajectory discretization, VIP maintains a per-iteration computational complexity of $\\mathcal{O}(n)$, where $n$ denotes the number of spatial discretization points. Extensive simulations and real-world experiments demonstrate that the proposed framework can efficiently generate and iteratively improve motion plans for different planning objectives, robotic platforms, and swarm configurations, highlighting its effectiveness, computational efficiency, and scalability as a general planning methodology.",
+      "authors": [
+        "Shuli Lv",
+        "Pengda Mao",
+        "Chen Min",
+        "Li Hong",
+        "Runxiao Liu",
+        "Shuai Wang",
+        "Quan Quan"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-25T14:38:20+00:00",
+      "link": "https://arxiv.org/pdf/2608.24618v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "learning-based multi-robot motion planning for efficient navigation",
+      "llm_evidence_cn": "面向多机器人运动规划的学习式方法，提升导航效率",
+      "llm_evidence": "面向多机器人运动规划的学习式方法，提升导航效率",
+      "canonical_evidence": "面向多机器人运动规划的学习式方法，提升导航效率",
+      "llm_tldr_en": "A variation-based iterative-learning planning framework for efficient single- and multi-robot motion planning, reducing computational cost in obstacle-dense environments by avoiding long-horizon trajectory optimization.",
+      "llm_tldr_cn": "在复杂障碍环境中，多机器人系统的运动规划常因长预测时域而导致计算开销急剧增长。本文提出基于变分的迭代学习规划框架（VIP），利用变分式迭代学习避免大规模轨迹优化，同时支持单机器人和机器人集群。实验表明VIP能在有限计算资源下生成安全高效的运动计划，相比传统方法显著降低多机器人场景的计算压力。该工作为多智能体路径规划提供了一种可扩展的学习式求解思路。",
+      "llm_tldr": "在复杂障碍环境中，多机器人系统的运动规划常因长预测时域而导致计算开销急剧增长。本文提出基于变分的迭代学习规划框架（VIP），利用变分式迭代学习避免大规模轨迹优化，同时支持单机器人和机器人集群。实验表明VIP能在有限计算资源下生成安全高效的运动计划，相比传统方法显著降低多机器人场景的计算压力。该工作为多智能体路径规划提供了一种可扩展的学习式求解思路。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent path finding learning-based approach",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.26759v1",
+      "source": "arxiv",
+      "title": "Fixed-Haven Reservation for Online Multi-Agent Pickup and Delivery in Dense Warehouses",
+      "abstract": "Dense warehouses often contain single-lane aisles, dead ends, and tree-like guidepaths that leave little room for idle agents to wait without blocking others. Existing Multi-Agent Pickup and Delivery (MAPD) guarantees for completing all finitely released tasks typically rely on extra waiting endpoints that planned paths can avoid, or on biconnected topology; these assumptions may fail in such layouts. We study fixed-Haven reservation for online MAPD, where pickup-delivery tasks are released over time. Each agent owns a fixed Safe Haven (Haven for short), usually its start cell, that only the owner may occupy and that other agents treat as blocked. For finite task releases, we prove that this fixed-Haven contract completes all released tasks under Haven-Reachability and explicit planning/progress assumptions. We implement the contract in SHARP, a Safe-Haven Retreat Planner that keeps every busy or retreating agent on a collision-free reserved route ending at its Haven. We compare SHARP with representative TP and PIBT-family MAPD baselines: Token Passing (TP), Priority Inheritance with Backtracking (PIBT), and PIBT with Temporary Priority and Temporary Avoidance (PIBTTP-TA) for biconnected main areas with attached trees. In the robustness sweep, SHARP is the only method with 100% success on all tested configurations, at substantially higher centralized planning cost on tree-like layouts. A TP-style fixed-home-return counterfactual with full-route validation also recovers robustness on tested tree-like layouts, suggesting that fixed return is a central robustness mechanism there. A no-overwrite variant shows that disabling mid-retreat reassignment worsens service time (release-to-delivery latency) by 1.89 times and makespan by 1.53 times in the tested high-load tree condition.",
+      "authors": [
+        "Taisei Hirayama",
+        "Kohei Yoshida",
+        "Hiroki Sakaji",
+        "Itsuki Noda"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.RO"
+      ],
+      "published": "2026-08-27T07:54:13+00:00",
+      "link": "https://arxiv.org/pdf/2608.26759v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Directly addresses multi-agent pickup and delivery, a MAPF variant.",
+      "llm_evidence_cn": "直接研究多智能体取送货，属于多智能体路径规划（MAPF）变体。",
+      "llm_evidence": "直接研究多智能体取送货，属于多智能体路径规划（MAPF）变体。",
+      "canonical_evidence": "直接研究多智能体取送货，属于多智能体路径规划（MAPF）变体。",
+      "llm_tldr_en": "In dense warehouses with single-lane aisles, existing MAPD guarantees fail; this paper introduces a fixed-Haven reservation contract where each agent owns a safe cell, proves completion of finite tasks, and extends guarantees to online multi-agent pickup and delivery.",
+      "llm_tldr_cn": "密集仓库中单车道、死胡同等拓扑常使闲置信道阻塞，现有MAPD方法依赖额外等待点或双连通拓扑而不适用。本文提出固定避难港（Haven）预留机制，每个智能体独占一个安全起始单元，其他智能体视其为障碍，并证明在有限任务释放下能完成所有任务。该方法为稠密仓库在线多智能体取送货提供了理论保证，是MAPF的重要拓展。",
+      "llm_tldr": "密集仓库中单车道、死胡同等拓扑常使闲置信道阻塞，现有MAPD方法依赖额外等待点或双连通拓扑而不适用。本文提出固定避难港（Haven）预留机制，每个智能体独占一个安全起始单元，其他智能体视其为障碍，并证明在有限任务释放下能完成所有任务。该方法为稠密仓库在线多智能体取送货提供了理论保证，是MAPF的重要拓展。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.27039v1",
+      "source": "arxiv",
+      "title": "Multi-Person Human Motion Forecasting in Complex Scenes",
+      "abstract": "Accurately forecasting the movement of people in complex scenes requires reasoning over the past and present state of the entire environment. In this context, effectively incorporating object information and social interactions into a unified framework remains particularly challenging. To address this, we propose Object-Conditioned Social Diffusion (OCSD), a conditional diffusion model that integrates motion history, multi-person interactions, and object cues into a single framework. OCSD uses an object-conditioning mechanism that modulates denoising at every timestep, enabling fine-grained human-object reasoning, and a social encoder that models the interactions between all humans in the scene. As a result, our model naturally handles varying group sizes, complex social interactions, and supports sampling multiple plausible futures. Extensive experiments show that OCSD achieves state-of-the-art results on the Humans in Kitchens (HiK) and HOI-M3 benchmarks. It reduces the two-second path error by 121.5 mm (31.3%) on HiK and 130.5 mm (33.2%) on HOI-M3 compared to prior work, and produces more realistic long-term forecasts.",
+      "authors": [
+        "Serdar Ozsoy",
+        "Lars Doorenbos",
+        "Juergen Gall"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-27T12:25:46+00:00",
+      "link": "https://arxiv.org/pdf/2608.27039v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multi-person human motion forecasting with social interactions",
+      "llm_evidence_cn": "多人运动预测，结合人与物体交互及社会交互建模",
+      "llm_evidence": "多人运动预测，结合人与物体交互及社会交互建模",
+      "canonical_evidence": "多人运动预测，结合人与物体交互及社会交互建模",
+      "llm_tldr_en": "Proposes Object-Conditioned Social Diffusion (OCSD) for multi-person motion forecasting, integrating object cues and social interactions.",
+      "llm_tldr_cn": "复杂场景中的多人运动预测需要整合环境历史、当前状态、物体信息与社会交互，为此提出基于条件扩散的OCSD框架。OCSD在每一步去噪时通过物体条件机制调制，并用社会编码器建模所有行人之间的交互，能够自然地处理不同群体规模与复杂社交情境。实验表明该模型在多个复杂场景数据集上实现更准确的未来轨迹预测，其统一框架对下游意图预测与避碰规划具有直接应用价值。",
+      "llm_tldr": "复杂场景中的多人运动预测需要整合环境历史、当前状态、物体信息与社会交互，为此提出基于条件扩散的OCSD框架。OCSD在每一步去噪时通过物体条件机制调制，并用社会编码器建模所有行人之间的交互，能够自然地处理不同群体规模与复杂社交情境。实验表明该模型在多个复杂场景数据集上实现更准确的未来轨迹预测，其统一框架对下游意图预测与避碰规划具有直接应用价值。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.27158v1",
+      "source": "arxiv",
+      "title": "Diffusion Policies for Short-Horizon Planning in Robot Crowd Navigation",
+      "abstract": "Robot crowd navigation requires safe and efficient decision-making under dense, dynamic, and multimodal human--robot interactions. Existing reinforcement-learning methods typically output a single reactive action at each timestep, which limits their ability to represent diverse short-term avoidance strategies. We propose Planning Diffusion Policy Optimization (PDPO), an offline-to-online reinforcement-learning framework that uses a diffusion policy to generate short-horizon action chunks for crowd navigation. PDPO is first pretrained on collision-avoidance demonstrations and then fine-tuned online with PPO by treating the denoising process as an internal decision process. During execution, the policy generates a five-step action chunk and applies it in a receding-horizon manner. Furthermore, we observe an evaluation artifact in common crowd-navigation benchmarks: without explicit boundary constraints, learned agents may leave the valid domain and bypass dense crowds. To address this, we introduce a setting in which boundary violations are treated as collisions. Experiments show that PDPO obtains an improved success rate over strong baselines, and ablations demonstrate that action chunks are especially important for the modified bounded benchmark.",
+      "authors": [
+        "Wendong Li",
+        "Jochen Garcke"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-27T14:10:39+00:00",
+      "link": "https://arxiv.org/pdf/2608.27158v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "diffusion policy short-horizon planning for robot crowd navigation",
+      "llm_evidence_cn": "扩散策略短视界规划用于机器人人群导航",
+      "llm_evidence": "扩散策略短视界规划用于机器人人群导航",
+      "canonical_evidence": "扩散策略短视界规划用于机器人人群导航",
+      "llm_tldr_en": "Proposes PDPO, an offline-to-online RL framework using a diffusion policy for short-horizon action chunks in crowd navigation, pretrained on collision-avoidance demonstrations and fine-tuned with PPO.",
+      "llm_tldr_cn": "针对机器人人群导航中单步反应动作难以表达多样避碰策略的问题，本文提出规划扩散策略优化（PDPO），利用扩散策略生成五步动作块，先从避碰演示中预训练，再用PPO在线微调，将去噪过程视为内部决策过程。实验与验证表明，该方法在密集动态人群中能更安全高效地规划短视界动作，优于传统单步反应式策略，为多模态避碰策略学习提供了新范式。",
+      "llm_tldr": "针对机器人人群导航中单步反应动作难以表达多样避碰策略的问题，本文提出规划扩散策略优化（PDPO），利用扩散策略生成五步动作块，先从避碰演示中预训练，再用PPO在线微调，将去噪过程视为内部决策过程。实验与验证表明，该方法在密集动态人群中能更安全高效地规划短视界动作，优于传统单步反应式策略，为多模态避碰策略学习提供了新范式。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "congestion avoidance multi-agent crowd navigation",
+      "matched_requirement_id": "req-26",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.25610v1",
+      "source": "arxiv",
+      "title": "Advantage-Driven Explicit Memory for Social Navigation",
+      "abstract": "Robot policies are predominantly learned with classical parametric variants of imitation learning or RL, where training stores the agent's behavior exclusively in the policy's network parameters, putting a heavy burden on the representation learning algorithm. We propose a new navigation agent equipped with non-parametric memory which explicitly indexes prior steps leading to critical events. The advantages are twofold: first, it allows the policy to outsource some of its behavior into an explicit memory; second, it encourages a form of continual learning by allowing an agent to collect data from its testing episodes during deployment and therefore to better generalize to OOD situations. In the context of social navigation, we show that this improves the agent's capability to retain sparse, high-cost failures, such as human collisions. If the policy is trained in simulation, this also naturally addresses the sim-to-real gap, partially, by basing some of the decision making on real data. We integrate the explicit memory into a recurrent PPO architecture and use hidden states for memory retrieval to capture continuous spatiotemporal dynamics. The goal of exploiting rare, high-impact events is achieved by leveraging the RL agent's advantage signals. We train our agent in simulation with a combination of photorealistic rendering and non-visual crowd simulation and show that the agent is robust with respect to OOD social behavior.",
+      "authors": [
+        "Yeonsoo Park",
+        "Mattia Racca",
+        "Guillaume Bono",
+        "Steeven Janny",
+        "Gianluca Monaci",
+        "Tomi Silander",
+        "Christian Wolf"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-26T10:27:08+00:00",
+      "link": "https://arxiv.org/pdf/2608.25610v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "social navigation with RL and explicit memory for crowd environments",
+      "llm_evidence_cn": "社交导航，用强化学习与显式记忆优化人群环境中的导航能力",
+      "llm_evidence": "社交导航，用强化学习与显式记忆优化人群环境中的导航能力",
+      "canonical_evidence": "社交导航，用强化学习与显式记忆优化人群环境中的导航能力",
+      "llm_tldr_en": "Introduces a navigation agent with non-parametric explicit memory indexing prior critical steps, reducing policy parameter burden and enabling continual learning for better social navigation.",
+      "llm_tldr_cn": "现有机器人策略将行为全部存入网络参数，造成表示学习负担且难以持续学习。本文提出带非参数显式记忆的社交导航智能体，索引先前通往关键事件的步骤，将部分行为外包给记忆，并支持在部署中持续收集数据。实验表明该方法提升了社交导航能力，尤其是在分布外场景中泛化更好。该方法通过显式记忆减轻策略参数负担，并引入持续学习机制，使模型在测试中不断吸收经验，从而应对新环境，为人群环境中的机器人导航提供了轻量且可持续改进的方案。",
+      "llm_tldr": "现有机器人策略将行为全部存入网络参数，造成表示学习负担且难以持续学习。本文提出带非参数显式记忆的社交导航智能体，索引先前通往关键事件的步骤，将部分行为外包给记忆，并支持在部署中持续收集数据。实验表明该方法提升了社交导航能力，尤其是在分布外场景中泛化更好。该方法通过显式记忆减轻策略参数负担，并引入持续学习机制，使模型在测试中不断吸收经验，从而应对新环境，为人群环境中的机器人导航提供了轻量且可持续改进的方案。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "congestion avoidance multi-agent crowd navigation",
+      "matched_requirement_id": "req-26",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.26939v1",
+      "source": "arxiv",
+      "title": "Dynamic Haven Selection for Multi-Agent Pickup and Delivery in Constrained Warehouses",
+      "abstract": "Space-efficient warehouse layouts often contain single-agent-width aisles and dead-end workstations where robots have few places to wait without blocking others. In Multi-Agent Pickup and Delivery (MAPD) on such constrained layouts, robots must accept online pickup-delivery tasks while preserving protected waiting locations called Havens. The Safe HAven Retreat Planner (SHARP) introduced a mechanism that extends each committed task path with a validated retreat to the agent's dedicated initial Haven, but fixed-Haven commitments can send agents toward distant Havens after deliveries. We present A-sharp (Adaptive SHARP), which changes an agent's retreat target at task assignment time. A naive switch can cause two agents to rely on the same waiting location or let another committed path pass through a location that is still occupied or reserved. A-sharp prevents these failures with an availability test for candidate Havens and a pending-release rule that keeps the previous Haven protected until the agent departs. Under explicit Haven-structure and Safe Interval Path Planning (SIPP) assumptions, we prove invariant preservation and finite-release completeness: every task in any finite release sequence is delivered in finite time. Across 72,000 runs on 14,400 paired map-agent-count-rate-seed cases over four maps, both SHARP and A-sharp complete their respective 14,400 runs. For makespan (final delivery time), a prespecified paired comparison with Holm correction over all 138 configurations with more Havens than agents finds A-sharp significantly better in 107 configurations and never significantly worse than SHARP; on the tested tree map, the median reduction is 16.7%.",
+      "authors": [
+        "Taisei Hirayama",
+        "Kohei Yoshida",
+        "Hiroki Sakaji",
+        "Itsuki Noda"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.RO"
+      ],
+      "published": "2026-08-27T10:40:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.26939v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multi-agent pickup and delivery path planning in constrained warehouses, an MAPF-family problem",
+      "llm_evidence_cn": "受限仓库多智能体取送与路径协调，属于MAPF问题家族",
+      "llm_evidence": "受限仓库多智能体取送与路径协调，属于MAPF问题家族",
+      "canonical_evidence": "受限仓库多智能体取送与路径协调，属于MAPF问题家族",
+      "llm_tldr_en": "A-sharp adaptively selects agent haven retreats at task-assignment time for MAPD in constrained warehouses, extending task paths with validated retreats while avoiding shared-haven conflicts. Directly relevant to MAPF-family multi-agent path coordination.",
+      "llm_tldr_cn": "在单行道和死胡同工作站的受限仓库中，机器人必须在线接受取送任务并保留受保护等待位置。该文提出A-sharp，在任务分配时动态改变智能体的避让区目标，并为每条提交路径附加经过验证的撤退路径，同时避免两个智能体依赖同一避让区。实验表明该方法能减少因固定避让区造成的绕行，并保持可行性和无冲突协调。这项研究为MAPF/MAPD类多智能体路径规划提供了实用的避让机制。",
+      "llm_tldr": "在单行道和死胡同工作站的受限仓库中，机器人必须在线接受取送任务并保留受保护等待位置。该文提出A-sharp，在任务分配时动态改变智能体的避让区目标，并为每条提交路径附加经过验证的撤退路径，同时避免两个智能体依赖同一避让区。实验表明该方法能减少因固定避让区造成的绕行，并保持可行性和无冲突协调。这项研究为MAPF/MAPD类多智能体路径规划提供了实用的避让机制。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.26683v1",
+      "source": "arxiv",
+      "title": "SIGMA: Structured Noise-Effect-Aware Grouped Multi-Agent Aggregation",
+      "abstract": "Cooperative multi-agent reinforcement learning (MARL) faces significant challenges in maintaining robust coordination under noisy observations. Although observation disturbances are often introduced independently across agents, their downstream effects on cooperative decision-making can become structured through underlying cooperation structures. We characterize this phenomenon as structured noise effects, where noise-induced decision effects exhibit local correlation among agents with stronger task-related dependencies while remaining globally heterogeneous across different agents and local structures. Existing robust MARL methods, however, rarely explicitly characterize or exploit such structure-dependent noise effects. To address this limitation, we propose SIGMA, a hierarchical collaboration framework that exploits cooperation structures to learn robust representations under noisy observations. SIGMA first organizes agents into adaptive local structures through density-based grouping and performs intra-group consensus aggregation to preserve shared task-relevant information while smoothing agent-specific representation deviations. Inter-group attention then adaptively integrates information across different groups to preserve global coordination while accommodating their heterogeneous contributions. Experiments on noisy-observation tasks in StarCraft II empirically validate the structured noise effects and demonstrate that SIGMA consistently improves robustness under observation noise while maintaining competitive performance in noise-free environments.",
+      "authors": [
+        "Li Mingqian"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG",
+        "cs.MA"
+      ],
+      "published": "2026-08-27T06:40:42+00:00",
+      "link": "https://arxiv.org/pdf/2608.26683v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Cooperative MARL grouped aggregation for robust coordination under structured noise",
+      "llm_evidence_cn": "面向结构化噪声鲁棒协调的分组多智能体聚合方法",
+      "llm_evidence": "面向结构化噪声鲁棒协调的分组多智能体聚合方法",
+      "canonical_evidence": "面向结构化噪声鲁棒协调的分组多智能体聚合方法",
+      "llm_tldr_en": "Proposes SIGMA, a structured noise-effect-aware grouped aggregation method for cooperative MARL, explicitly modeling how noise-induced decision effects correlate across agents; improves coordination robustness under noisy observations.",
+      "llm_tldr_cn": "针对多智能体强化学习在噪声观测下协调鲁棒性差的问题，现有方法未显式利用噪声影响的结构化特性。本文提出SIGMA方法，根据任务依赖关系对智能体分组聚合，刻画噪声影响的局部相关与全局异质。实验表明该方法在噪声环境下能有效提升协作协调性能。这项工作为鲁棒多智能体协作提供了结构化聚合的新思路。",
+      "llm_tldr": "针对多智能体强化学习在噪声观测下协调鲁棒性差的问题，现有方法未显式利用噪声影响的结构化特性。本文提出SIGMA方法，根据任务依赖关系对智能体分组聚合，刻画噪声影响的局部相关与全局异质。实验表明该方法在噪声环境下能有效提升协作协调性能。这项工作为鲁棒多智能体协作提供了结构化聚合的新思路。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.27085v1",
+      "source": "arxiv",
+      "title": "Pass the Bucket: Efficient, Robust, Local Load Balancing for Teams of Heterogeneous Robots",
+      "abstract": "We study the problem of decentralized, self-organized task sharing for a swarm of heterogeneous robots that collaborate in transportation or other objectives that require coordinated motion planning. To this end, we present theoretical and practical results for the simple but effective mechanism of \\emph{bucket brigades} for load balancing, in which a team of heterogenous robots share a spatial task in a confined, one-dimensional space, while only being able to sense collisions with neighbors or walls. The goal is to optimize throughput of the overall system, without central control or information, aiming at an interval partition proportional to robot velocities. We address possible chaotic system behavior by developing a stabilization mechanism based on simple local aid, a ``token'', that temporarily decelerates robots after an encounter. This purely local change eliminates persistent oscillations, resulting in convergence towards a stable system state. We accelerate system convergence by comparing a single boundary token to ubiquitous two-directional tokens and optimizing the deceleration factor. Event-driven simulations report convergence times and robustness: For a large variety of perturbations (such as robot deletion, position or velocity jittering), the system reliably re-converges. The results suggest a local, practical mechanism for robust load balancing for heterogeneous teams of robots that promises an effective tool as basis for more complex scenarios.",
+      "authors": [
+        "Tobias Wallner",
+        "Dominik Krupke",
+        "Arne Schmidt",
+        "Sándor P. Fekete"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-27T13:09:45+00:00",
+      "link": "https://arxiv.org/pdf/2608.27085v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Decentralized self-organized motion planning and load balancing for robot teams, aligns with decentralized MAPF.",
+      "llm_evidence_cn": "面向机器人团队的分散式自组织运动规划与负载均衡，与分散式MAPF目标一致。",
+      "llm_evidence": "面向机器人团队的分散式自组织运动规划与负载均衡，与分散式MAPF目标一致。",
+      "canonical_evidence": "面向机器人团队的分散式自组织运动规划与负载均衡，与分散式MAPF目标一致。",
+      "llm_tldr_en": "The paper studies decentralized load balancing for heterogeneous robot swarms using bucket brigades, where robots coordinate motion planning with only local collision sensing. Theoretical and practical results show stable interval partitions that optimize throughput without central control, contributing to decentralized multi-agent motion coordination.",
+      "llm_tldr_cn": "该工作关注异构机器人团队在无中心控制和有限感知条件下协同完成运输任务的问题，提出基于bucket brigade的分布式负载均衡机制，仅依靠与邻居或墙壁的碰撞感知在一维空间内进行任务划分与运动协调。理论分析与实际结果表明该机制能实现稳定的区间划分并优化整体吞吐量。同时开发了稳定化规则以抑制混沌行为。这项工作提供了一种无需全局信息的分散式多机器人运动协调方案，与分散式多智能体路径规划的目标契合，但并未采用学习或强化学习方法。",
+      "llm_tldr": "该工作关注异构机器人团队在无中心控制和有限感知条件下协同完成运输任务的问题，提出基于bucket brigade的分布式负载均衡机制，仅依靠与邻居或墙壁的碰撞感知在一维空间内进行任务划分与运动协调。理论分析与实际结果表明该机制能实现稳定的区间划分并优化整体吞吐量。同时开发了稳定化规则以抑制混沌行为。这项工作提供了一种无需全局信息的分散式多机器人运动协调方案，与分散式多智能体路径规划的目标契合，但并未采用学习或强化学习方法。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.23013v1",
+      "source": "arxiv",
+      "title": "CED-EF: Compressed Exact Diffusion with Error Feedback for Multi-Agent Learning",
+      "abstract": "We study decentralized stochastic optimization over a network of $N$ agents under compressed communication. We propose CED-EF, an exact diffusion-based method with error feedback that directly accommodates biased $δ$-contractive compressors while communicating one compressed model-sized vector per node per iteration. For smooth nonconvex objectives with unbiased stochastic gradients whose variance is bounded by $σ^2$, where $σ\\geq0$, we establish a convergence rate whose leading stochastic term is $\\mathcal O(σ/\\sqrt{NK})$. For $σ>0$, the dominant dependence of the corresponding transient time on the number of agents, compression level, and spectral gap $Δ_λ$ is $\\mathcal O(N^3/(δ^4Δ_λ^4))$, with fixed problem-dependent factors suppressed. Under the Polyak--Łojasiewicz condition, CED-EF attains a leading stochastic term $\\widetilde{\\mathcal O}(σ^2/(NK))$ with transient time on the order of $\\widetilde{\\mathcal O}(N/(δ^2Δ_λ^2))$. These dependencies improve the compression and/or network dependence of existing results. Numerical experiments on least-squares and logistic-regression problems illustrate the performance advantages of CED-EF.",
+      "authors": [
+        "Sulaiman A. Alghunaim",
+        "Kun Yuan"
+      ],
+      "primary_category": "math.OC",
+      "categories": [
+        "math.OC",
+        "cs.DC"
+      ],
+      "published": "2026-08-24T09:15:00+00:00",
+      "link": "https://arxiv.org/pdf/2608.23013v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Compressed communication with error feedback for decentralized multi-agent learning, relevant to sparse communication",
+      "llm_evidence_cn": "面向多智能体学习的压缩通信与误差反馈方法，与稀疏通信主题相关",
+      "llm_evidence": "面向多智能体学习的压缩通信与误差反馈方法，与稀疏通信主题相关",
+      "canonical_evidence": "面向多智能体学习的压缩通信与误差反馈方法，与稀疏通信主题相关",
+      "llm_tldr_en": "Proposes CED-EF, an exact diffusion method with error feedback for decentralized multi-agent optimization under biased compressors, achieving convergence with one compressed vector per node per iteration; relevant to communication-efficient MARL.",
+      "llm_tldr_cn": "针对多智能体网络中压缩通信带来的优化偏差问题，现有方法难以兼容有偏压缩算子。本文提出CED-EF，一种基于误差反馈的精确扩散方法，每轮仅需传输一个压缩模型向量即可保持收敛。理论上给出了依赖于网络谱间隙与压缩程度的收敛界。该方法为通信受限的多智能体学习提供了高效的压缩通信框架。",
+      "llm_tldr": "针对多智能体网络中压缩通信带来的优化偏差问题，现有方法难以兼容有偏压缩算子。本文提出CED-EF，一种基于误差反馈的精确扩散方法，每轮仅需传输一个压缩模型向量即可保持收敛。理论上给出了依赖于网络谱间隙与压缩程度的收敛界。该方法为通信受限的多智能体学习提供了高效的压缩通信框架。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.23123v1",
+      "source": "arxiv",
+      "title": "Distributed Trajectory Planning and Resource Allocation for Dynamic Multi-UAV Collaborative Computing",
+      "abstract": "This paper investigates a multiple uncrewed aerial vehicles (UAVs)-enabled distributed mobile edge computing (MEC) framework, where the set of collaborative UAVs dynamically varies over time due to their energy states and service loads. The joint optimization of trajectory planning and resource allocation is formulated as a Stackelberg game, where UAVs and mobile terminals (MTs) are modeled as leaders and followers, respectively. UAVs aim to maximize their benefits by balancing executed workload, energy cost, and resource allocation revenue, while MTs seek to minimize their total overhead, composed of computing delay and resource costs, through offloading and resource-request decisions. A hierarchical joint optimization algorithm is developed within a multi-agent deep reinforcement learning (MADRL) framework to coordinate UAVs and MTs in a distributed manner. At the leader level, UAVs jointly determine their trajectories, task migration ratios, MT-UAV association, and unit computing resource pricing. Each UAV is modeled as an agent in a partially observable Markov decision process, and the agents are jointly trained via multi-agent proximal policy optimization (MAPPO) under the centralized-training-and-decentralized-execution paradigm. At the follower level, MTs determine their optimal task offloading ratios and requested computing resources using a two-stage iterative algorithm. Simulation results demonstrate stable convergence under dynamic UAV participation. Compared to the no-collaboration benchmark, the proposed algorithm improves UAV efficiency by 18.58% through inter-UAV task migration and reduces average MT overhead by 33.77% over the fully offloading scheme. It also outperforms other benchmarks under varying network scales and capabilities by jointly optimizing UAV operations and resource utilization.",
+      "authors": [
+        "Tiankui Zhang",
+        "Wenlong Xu",
+        "Tianyi Shi",
+        "Xiaoxia Xu",
+        "Arumugam Nallanathan"
+      ],
+      "primary_category": "cs.NI",
+      "categories": [
+        "cs.NI"
+      ],
+      "published": "2026-08-24T11:32:17+00:00",
+      "link": "https://arxiv.org/pdf/2608.23123v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "distributed multi-UAV trajectory planning and resource allocation",
+      "llm_evidence_cn": "分布式多无人机轨迹规划与资源分配",
+      "llm_evidence": "分布式多无人机轨迹规划与资源分配",
+      "canonical_evidence": "分布式多无人机轨迹规划与资源分配",
+      "llm_tldr_en": "Formulates joint trajectory planning and resource allocation for dynamic multi-UAV MEC as a Stackelberg game and proposes hierarchical optimization.",
+      "llm_tldr_cn": "动态多无人机边缘计算中，无人机集合随时间变化，联合优化轨迹规划与资源分配极具挑战。本文将问题建模为Stackelberg博弈，无人机作为领导者平衡工作负载、能耗与资源收益，移动终端作为追随者决定卸载与资源请求，并提出分层联合优化算法求解。该工作为分布式多智能体轨迹规划提供了博弈论建模与优化工具，但并非基于强化学习的路径规划方法。",
+      "llm_tldr": "动态多无人机边缘计算中，无人机集合随时间变化，联合优化轨迹规划与资源分配极具挑战。本文将问题建模为Stackelberg博弈，无人机作为领导者平衡工作负载、能耗与资源收益，移动终端作为追随者决定卸载与资源请求，并提出分层联合优化算法求解。该工作为分布式多智能体轨迹规划提供了博弈论建模与优化工具，但并非基于强化学习的路径规划方法。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.25099v1",
+      "source": "arxiv",
+      "title": "A Control-Theoretic Approach for Resource-Aware Consensus in Multi-Agent AI",
+      "abstract": "Large language model multi-agent systems (LLM-MAS) rely on inter-agent communication to solve complex reasoning tasks, yet rigorous guarantees relating consensus performance to computational resources remain limited. Here, we present a novel way to characterize collective belief dynamics as a discrete-time switched system in which communication topologies have distinct consensus-contraction rates and token costs. By augmenting the belief dynamics with the remaining computational budget, we define a consensus safe set that jointly captures agreement and resource feasibility. We derive explicit bounds on consensus time and token expenditure and construct a consensus-budget certificate region guaranteeing finite-time convergence without resource exhaustion. We further establish conditions under which adaptive topology switching achieves a trade-off between convergence speed and communication cost relative to fixed-topology strategies. Numerical experiments and live LLM-MAS deployments show the predicted consensus-cost trade-offs, demonstrating how control-theoretic certificates can enable resource-aware coordination in AI systems.",
+      "authors": [
+        "James Flagg",
+        "Esteban A. Hernandez-Vargas"
+      ],
+      "primary_category": "math.OC",
+      "categories": [
+        "math.OC",
+        "math.DS"
+      ],
+      "published": "2026-08-25T19:50:28+00:00",
+      "link": "https://arxiv.org/pdf/2608.25099v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "token-cost communication topologies for resource-aware consensus in multi-agent systems",
+      "llm_evidence_cn": "基于token代价的通信拓扑建模，实现资源感知的稀疏通信与共识",
+      "llm_evidence": "基于token代价的通信拓扑建模，实现资源感知的稀疏通信与共识",
+      "canonical_evidence": "基于token代价的通信拓扑建模，实现资源感知的稀疏通信与共识",
+      "llm_tldr_en": "A control-theoretic view of LLM multi-agent consensus: belief dynamics as switched systems, trading consensus speed against token costs, with certificate regions for finite-time convergence within resource budgets.",
+      "llm_tldr_cn": "大规模语言模型多智能体系统依赖智能体间通信来求解复杂任务，但共识性能与计算资源之间的保证关系尚不明确。本文把集体信念动态刻画为离散时间切换系统，让不同通信拓扑具有各自的共识收缩率与token代价，并定义共识安全集与共识-预算证书。理论推导给出共识时间与token开销的显式界限，证明可在不耗尽资源的前提下实现有限时间收敛。这为通信稀疏化与资源受限条件下的多智能体协作提供了可验证的设计依据。",
+      "llm_tldr": "大规模语言模型多智能体系统依赖智能体间通信来求解复杂任务，但共识性能与计算资源之间的保证关系尚不明确。本文把集体信念动态刻画为离散时间切换系统，让不同通信拓扑具有各自的共识收缩率与token代价，并定义共识安全集与共识-预算证书。理论推导给出共识时间与token开销的显式界限，证明可在不耗尽资源的前提下实现有限时间收敛。这为通信稀疏化与资源受限条件下的多智能体协作提供了可验证的设计依据。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.25193v1",
+      "source": "arxiv",
+      "title": "Simulating Cognitive Smart Freight Corridors with Agent-Based Models and Reinforcement Learning",
+      "abstract": "Smart freight corridors offer a practical pathway for connected and automated vehicle (CAV) deployment in freight transportation, but physical experimentation is expensive and existing approaches rely on predefined control policies that cannot capture adaptive behaviors. This paper presents an agent-based modeling (ABM) framework coupling a physical infrastructure layer, a connectivity layer (V2X), and a decision layer integrating reinforcement learning (RL) and multi-agent reinforcement learning (MARL) for platoon formation and charging coordination. We evaluate three scenarios (Baseline, Assisted, and Cognitive) using throughput, congestion, energy, emissions, and robustness metrics. Preliminary results indicate that the Cognitive scenario achieves higher throughput and lower congestion than the baseline, while the Assisted scenario delivers meaningful energy savings per kilometer through platooning. Sensitivity analysis shows that the throughput advantage of the smart corridor widens under conditions with high demand and that MARL coordination extracts greater utilization from fixed charging capacity than rule-based assignment.",
+      "authors": [
+        "Madelaine Martinez-Ferguson",
+        "Chun Wang",
+        "Mustafa Can Camur",
+        "Xueping Li"
+      ],
+      "primary_category": "cs.ET",
+      "categories": [
+        "cs.ET",
+        "cs.LG"
+      ],
+      "published": "2026-08-25T22:17:33+00:00",
+      "link": "https://arxiv.org/pdf/2608.25193v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Uses MARL for multi-agent coordination in freight corridors, related to path planning and congestion.",
+      "llm_evidence_cn": "使用MARL进行货运走廊多智能体协调，与路径规划和拥塞相关。",
+      "llm_evidence": "使用MARL进行货运走廊多智能体协调，与路径规划和拥塞相关。",
+      "canonical_evidence": "使用MARL进行货运走廊多智能体协调，与路径规划和拥塞相关。",
+      "llm_tldr_en": "The paper presents an agent-based modeling framework integrating RL and MARL for platoon formation and charging coordination in smart freight corridors. Evaluated on three scenarios, the cognitive approach shows improvements in throughput and congestion, demonstrating MARL as a viable tool for multi-agent coordination.",
+      "llm_tldr_cn": "该工作针对智能货运走廊物理实验昂贵、预定义控制策略难以自适应的问题，提出一种将物理基础设施层、V2X连接层与RL/MARL决策层耦合的智能体建模（ABM）框架，用于车队编队与充电协调。在基准、辅助、认知三种场景上评估吞吐量、拥堵、能耗与鲁棒性，初步结果表明认知场景在多项指标上更优。研究验证了MARL在交通流组织与多智能体协调中的价值，尤其对拥堵规避有启示，但并未直接处理地图级路径规划或通信协议。",
+      "llm_tldr": "该工作针对智能货运走廊物理实验昂贵、预定义控制策略难以自适应的问题，提出一种将物理基础设施层、V2X连接层与RL/MARL决策层耦合的智能体建模（ABM）框架，用于车队编队与充电协调。在基准、辅助、认知三种场景上评估吞吐量、拥堵、能耗与鲁棒性，初步结果表明认知场景在多项指标上更优。研究验证了MARL在交通流组织与多智能体协调中的价值，尤其对拥堵规避有启示，但并未直接处理地图级路径规划或通信协议。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.25690v1",
+      "source": "arxiv",
+      "title": "Trust-Aware Sequential Decision Making and Rollout Planning for Resilient Multi-Robot Systems",
+      "abstract": "Sequential decision-making in multi-robot systems typically assumes that planning information is reliable and that agents execute the actions anticipated by the planner. Compromised agents can violate both assumptions, creating a mismatch between the planning model and physical execution. We study this problem in online multi-robot routing under localization spoofing. We introduce a distance-constrained spoofing model for monitor-aware adversaries, together with a tiered bipartite matching strategy that maximizes assignment influence while limiting spoofing magnitude. To mitigate such attacks, we develop a trust-aware monitor that combines probabilistic localization trust, calibrated using real GPS spoofing data, with behavioral evidence from task execution to classify agents and remove detected adversaries from subsequent planning. We further show that undetected adversaries can cause rollout to lose its expected cost-improvement behavior by violating planner-execution consistency. Trust-aware removal restores this consistency after detection, enabling stable routing and recovery of rollout's empirical advantage over the base policy. Experiments using real GPS spoofing datasets and San Francisco taxicab demand demonstrate effective detection and resilient routing across varying spoofing capabilities, adversarial fleet sizes, adaptive attacks, monitoring configurations, and rollout horizons.",
+      "authors": [
+        "Roee M. Francos",
+        "Daniel Garces",
+        "Orhan Eren Akgün",
+        "Nathaniel D. Bastian",
+        "Stephanie Gil"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.RO"
+      ],
+      "published": "2026-08-26T12:09:08+00:00",
+      "link": "https://arxiv.org/pdf/2608.25690v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "online multi-robot routing under localization spoofing with trust-aware planning",
+      "llm_evidence_cn": "定位欺骗下在线多机器人路径规划与信任感知决策",
+      "llm_evidence": "定位欺骗下在线多机器人路径规划与信任感知决策",
+      "canonical_evidence": "定位欺骗下在线多机器人路径规划与信任感知决策",
+      "llm_tldr_en": "Proposes trust-aware monitor and tiered bipartite matching for resilient multi-robot routing under localization spoofing.",
+      "llm_tldr_cn": "在线多机器人路径规划通常假设规划信息可靠且机器人按预期执行，但受攻击智能体会破坏该假设。本文研究定位欺骗下的多机器人路径规划问题，引入距离约束的欺骗模型和分层二分匹配策略，并设计结合概率定位信任与行为监测的信任感知监视器。实验验证该方法能有效抵抗欺骗攻击，提升多机器人系统的鲁棒性，属于分散式多智能体路径规划的重要安全扩展。",
+      "llm_tldr": "在线多机器人路径规划通常假设规划信息可靠且机器人按预期执行，但受攻击智能体会破坏该假设。本文研究定位欺骗下的多机器人路径规划问题，引入距离约束的欺骗模型和分层二分匹配策略，并设计结合概率定位信任与行为监测的信任感知监视器。实验验证该方法能有效抵抗欺骗攻击，提升多机器人系统的鲁棒性，属于分散式多智能体路径规划的重要安全扩展。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

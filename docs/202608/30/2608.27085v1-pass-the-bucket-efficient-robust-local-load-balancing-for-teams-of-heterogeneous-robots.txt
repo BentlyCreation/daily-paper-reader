@@ -1,0 +1,551 @@
+Title: Pass the Bucket: Efficient, Robust, Local Load Balancing for Teams of Heterogeneous Robots
+
+URL Source: https://arxiv.org/pdf/2608.27085v1
+
+Published Time: Fri, 28 Aug 2026 01:03:20 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Pass the Bucket: Efficient, Robust, Local Load Balancing for Teams of Heterogeneous Robots 
+
+Tobias Wallner 1, Dominik Krupke 1, Arne Schmidt 1, and Sándor P. Fekete 1,2
+
+Abstract — We study the problem of decentralized, self-organized task sharing for a swarm of heterogeneous robots that collaborate in transportation or other objectives that require coordinated motion planning. To this end, we present theoretical and practical results for the simple but effective mechanism of bucket brigades for load balancing, in which a team of heterogenous robots share a spatial task in a confined, one-dimensional space, while only being able to sense collisions with neighbors or walls. The goal is to optimize throughput of the overall system, without central control or information, aiming at an interval partition proportional to robot velocities. We address possible chaotic system behavior by developing a stabilization mechanism based on simple local aid, a “token”, that temporarily decelerates robots after an encounter. This purely local change eliminates persistent oscillations, resulting in convergence towards a stable system state. We accelerate system convergence by comparing a single boundary token to ubiquitous two-directional tokens and optimizing the decelera-tion factor. Event-driven simulations report convergence times and robustness: For a large variety of perturbations (such as robot deletion, position or velocity jittering), the system reliably re-converges. The results suggest a local, practical mechanism for robust load balancing for heterogeneous teams of robots that promises an effective tool as basis for more complex scenarios. 
+
+I. I NTRODUCTION 
+
+Multi-robot coordination promises efficiency through par-allelism and robustness through redundancy, but faces chal-lenges in communication overhead, centralized control scala-bility, and resilience to perturbations—especially for hetero-geneous teams of autonomous mobile robots (AMRs) with minimal sensing capabilities. We study collision-driven bucket brigades for load bal-ancing on a one-dimensional interval: robots move back and forth, reversing direction upon collision with neighbors or boundaries (Fig. 1). Such one-dimensional coordination arises in confined robotic environments including warehouse aisles, agricultural rows, and infrastructure corridors (see Section VI). Classical Operations Research has shown that bucket brigades can optimize assembly-line throughput under appropriate worker ordering [1]. Rather than relying on such ordering, we study how collision-driven dynamics can self-organize territory partitioning: each robot covers a share of the interval proportional to its speed, achieving balanced          
+
+> This work was supported by DFG project „Space Ants“ (FE 407/22-1).
+> 1Department of Computer Science, TU Braunschweig, Braunschweig, Germany. {wallner, krupke, aschmidt}@ibr.cs.tu-bs.de ,
+> s.fekete@tu-bs.de .2L3S Research Center, Germany This paper was submitted to IROS 2026 on March 2nd and accepted on June 17th. © 2026 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any current or future media, including reprinting/republishing this material for advertising or promotional purposes, creating new collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other works. 0.00.20.40.60.81.0
+
+Position  
+
+> 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+> Clock Time
+> Robot 1 Robot 2 Robot 3
+> Fig. 1. Example configuration: 3 robots; velocities 1, 2, 3; starting positions 0.1, 0.6, 0.7; starting directions left, right, right. The dashed gray vertical lines indicate the equilibrium borders of the robot pairs.
+
+spatial load distribution. In Section VI, we present examples where the shared interval represents a physical domain; more generally, it could also model stages of a sequential task. The challenge lies in minimal individual capabilities: robots sense only local collisions and can reverse direction. They have no shared clock, no communication beyond physical contact, and minimal memory (one stored scalar for damping). Such requirements suit resource-constrained plat-forms and infrastructure-limited environments, as discussed in Section VI. Despite these constraints, the collective must autonomously form a balanced steady state and recover from disturbances such as velocity changes or robot additions and removals. For heterogeneous velocities, the desirable equilibrium partitions the line into subintervals proportional to velocities, with neighboring robots meeting at fixed bound-aries in synchronized cycles. Achieving this from arbitrary initial conditions is nontrivial: the dynamics are intricate and, even with two identical robots, indefinitely oscillating. 
+
+Contributions: We develop an event-based analysis of collision dynamics, showing that undamped systems ex-hibit conservative behavior that prevents asymptotic conver-gence. We introduce a token damping mechanism —storing a single collision position per robot and decelerating upon crossing—that reliably induces convergence in simulation. Perturbation experiments demonstrate robustness to robot addition/removal, velocity changes, and localization noise. Finally, we discuss potential application domains, consider-ations on physical deployment, and alternative approaches. arXiv:2608.27085v1 [cs.RO] 27 Aug 2026 II. R ELATED WORK 
+
+Bucket brigades originate in Operations Research for assembly lines. Bartholdi and Eisenstein [1], [2] showed that deterministic lines with workers ordered by increasing velocity and infinite backward speed self-balance. Extensions address throughput maximization [3], stochastic task times [4], [5], and tree topologies [6]. Two-directional (cellular) variants are studied in [7], [8]. Finite backward motion complicates convergence: equal finite backward velocity pre-serves self-balancing [9], while distinct forward/backward velocities require ordering by inverse-velocity differences [10] (not applicable here, as we assume identical bidirec-tional velocities). [11] shows that one-directional damping between the first pair ensures convergence for homogeneous velocities—an idea we generalize to heterogeneous teams. 
+
+Fence patrolling [12]–[14] addresses related questions: agents with different velocities minimize point latency on a line segment. The canonical periodic schedule partitions the line proportionally to velocities, mirroring our equilibrium. Robotic bucket brigade deployments remain sparse: for-aging [15], [16], assembly [17], and transport [18]. These works demonstrate feasibility in principle but lack systematic analysis of heterogeneous teams, damping mechanisms, and convergence—which we address in this work. Relevant studies regarding potential robotic applications as well as alternative approaches to load balancing and coordi-nation in multi-robot systems are discussed in Section VI. III. P RELIMINARIES 
+
+Setting and objective: We consider n robots on the line segment [0, 1]. Robot i has constant velocity magnitude 
+
+vi > 0, a position pi(t) ∈ [0, 1] with pi(0)̸ = p j(0) for all 
+
+i̸ = j, and a direction di(t) ∈ {− 1, +1}. Robots move at constant velocity between discrete events and reverse only upon interactions: (i) head-on neighbor encounters cause both to reverse; (ii) same-direction catch-ups make only the faster one reverse; (iii) wall contacts at 0 or 1 cause a reversal. Left-to-right order is preserved (no overtakes), and we assume that in case of degeneracy, i.e., multiple event coinciding, collision events are handled ordered by their index. 
+
+Event-based state-collision abscissas: For each adja-cent pair (i, i+1), let xi(k) ∈ [0, 1] be the position of their k-th collision with boundary markers x0 := 0, xn := 1. We focus on the rotational regime in which only alternating head-on encounters occur; then every adjacent pair collides infinitely often and the sequences {xi(k)} are well defined. Empir-ically, the resulting xi(k) trace smooth, almost-sinusoidal patterns; see Figs. 2 and 3. 
+
+Equilibrium partition: The goal is a balanced equilib-rium partition in which neighbors meet at fixed points and the subinterval lengths are proportional to velocities. The equilibrium points are x∗ 
+
+> i
+
+= ∑ij=1 v j   
+
+> ∑nj=1vj
+
+, i = 1, . . . , n − 1.
+
+As we will show in the following section, the system will never converge to equilibrium without additional damping. To foreshadow our damping mechanism, consider two robots 0.0 0.2 0.4 0.6 0.8 1.0           
+
+> Position
+> 050 100 150 200
+> Clock Time
+> Robot 1 - Robot 2 Robot 2 - Robot 3
+> Fig. 2. Collision positions for the configuration of Fig. 1. Dashed lines: equilibrium borders x∗
+> i.0.00.20.40.60.81.0
+> Position
+> 0510 15 20
+> Clock Time
+> Robot 1 - Robot 2 Robot 2 - Robot 3 Robot 3 - Robot 4 Robot 4 - Robot 5
+> Fig. 3. Collision positions for another start configuration of 5 robots. Dashed lines: equilibrium borders x∗
+> i.
+
+with velocities v1, v2 > 0 and let pk be their k-th meeting point. We induce damping by slowing down a robot by a constant factor upon crossing pk. To illustrate this, drop a 
+
+token at pk: the first robot returning to pk (after its wall bounce) picks it up and moves at velocity αvi with 0 < α < 1; the other keeps full velocity. Upon collision the token is dropped again. 
+
+Lemma 1 (Affine contraction toward x ∗): Let x∗ := v1 
+
+> v1+v2
+
+.Wlog assume pk < x∗ (else swap indices). Then for each α ∈
+
+(0, 1), there is κ ∈ (−1, 1) such that pk+1 − x∗ = κ (pk − x∗).
+
+Proof: With robot 1 returning first, equate travel times  
+
+> 2pk
+> v1
+
++ pk+1−pk
+
+> αv1
+
+| {z }
+
+> carrying token (slow only on last leg)
+
+= (1−pk)+( 1−pk+1)
+
+> v2
+
+| {z }
+
+> other
+
+,
+
+multiply by αv1v2 and solve for pk+1:
+
+pk+1 = 2αv1 +  v2(1 − 2α) − αv1
+
+pk
+
+v2 + αv1
+
+.
+
+Recenter at x∗ = v1 
+
+> v1+v2
+
+to obtain 
+
+pk+1 − x∗ = κ (pk − x∗), κ = v2(1 − 2α) − αv1
+
+v2 + αv1
+
+∈ (−1, 1).
+
+Hence, with each collision, the abscissa pk is pulled closer to the equilibrium x∗, and we converge. IV. M ATHEMATICAL ANALYSIS 
+
+Now we provide a rigorous algebraic analysis of collision dynamics, using an affine map to describe the update from one set of collision abscissas to the following one. By prov-ing key properties of this map, we show that the undamped xi − xi−1                    
+
+> x′
+> i−xi−1
+> xi+1−xi
+> xi+1−x′
+> i
+> x′
+> i+1−x′
+> i
+> x′
+> i+2−xi+1
+> x′
+> i+2−x′
+> i+1
+> xi−1
+> xi
+> x′
+> i
+> xi+1
+> x′
+> i+1
+> x′
+> i+2
+> Fig. 4. Closed time-matching quadrilaterals around pair (i,i+1)(shown for odd i) yield the two linear relations for (x′
+> i,x′
+> i±1)in one alternating sweep.
+
+system is stable and cannot converge to the equilibrium unless started there. We then give an outlook to the analysis of the damped case with a single or several tokens. 
+
+A. Original System 
+
+We track only discrete robot–robot and robot–wall col-lisions on [0, 1] for n robots with velocities v1, . . . , vn > 0. Let m := n − 1 denote the number of adjacent pairs and let 
+
+xi(k) ∈ [0, 1] be the abscissa of the k-th collision of pair 
+
+(i, i+1), with boundary markers x0 := 0 and xn := 1. In the initial phase, two types of robot-robot collisions can occur: head-on encounters, where both robots reverse direction, and same-direction catch-ups, where only the faster robot reverses. Empirical observations indicate that, after a while, the system enters a rotational regime , where only head-on collisions of robots with different movement directions occur. As the desired equilibrium and any state that is close to it fulfill this rotational property, we focus on this catch-up-free regime in the following analysis. Collect the most recent collision positions into x =(x1, . . . , xm)⊤ with x0 = 0 and xn = 1. One alternating sweep of head-on encounters maps x 7 → x′ through a sparse, neighbor-coupled system. As illustrated in Fig. 4, equating travel times along the two closed quadrilaterals around pair 
+
+(i, i+1) yields the odd/even relations odd i : x′ 
+
+> i
+
+= − xi + 2 vi
+
+vi + vi+1
+
+xi+1 + 2 vi+1
+
+vi + vi+1
+
+xi−1,
+
+even i : (vi + vi+1) x′ 
+
+> i
+
+− 2 vi+1 x′ 
+
+> i−1
+
+− 2 vi x′ 
+
+> i+1
+
+= −(vi + vi+1) xi.
+
+Stacking these m relations yields a three-banded system 
+
+A x ′ = B x + c ⇔ x′ = A−1B x + A−1c, where A and B reflect the coefficients of x′ and x in the odd/even relations, and c
+
+collects the constants. Let x∗ denote the velocity-proportional equilibrium partition defined in Section III. With u := x −
+
+x∗, the centered dynamics are linear: u′ = M u , with M :=
+
+A−1B ∈ Rm×m. Note that x∗ is the unique fixed point of the affine map x 7 → A−1Bx + A−1c, and, equivalently, u 7 → Mu 
+
+has the unique fixed point u = 0. Now, we show that there exists a quadratic invariant of the dynamics, which allows us to interpret the motion as a rigid rotation on ellipsoids. 
+
+Lemma 2 (Rotation radius (G-isometry)): There exists a symmetric positive definite tridiagonal matrix G ∈ Rm×m
+
+such that MT
+
+GM = G.
+
+Proof: We give a sketch of the proof; some details and explicit computations are omitted due to space constraints. 
+
+Local update. In centered coordinates u (with u0 = um+1 =
+
+0), the two time-matching quadrilateral equalities for pair i
+
+(the “odd” and “even” cases shown above) both reduce— after subtracting the equilibrium and eliminating x∗—to the same linear row update of the form u′ 
+
+> i
+
+= − ui + ai ui+1 +
+
+bi ui−1, i.e., replacing only the i-th coordinate by this combi-nation of its two neighbors; all other u j remain unchanged. Define for each i ∈ { 1, . . . , m}, the linear single-event oper-ator Ei ∈ Rm×m such that (Eiu) j = −ui + aiui+1 + biui−1 for 
+
+j = i and (Eiu) j = u j otherwise. Thus a single head-on event at pair i applies u 7 → Eiu.
+
+Choice of G. We now construct a symmetric tridiagonal matrix G with diagonal entries gi > 0 and off-diagonals hi < 0(Gi,i = gi, Gi,i+1 = Gi+1,i = hi) that makes every single-event operator Ei a G-isometry: ET 
+
+> i
+
+GE i = G for all i. Because Ei
+
+alters only coordinate i, the change in Q(u) := uT
+
+Gu depends only on the 3 × 3 block involving indices i − 1, i, i + 1. We choose hi and gi such that ET 
+
+> i
+
+GE i = G for all i.
+
+Positive definiteness (so Q(u) = uT
+
+Gu is a norm). Choose any scale gm > 0, set gi = bi+1 
+
+> ai
+
+gi+1 (backwards), then hi =
+
+−(ai/2)gi; hence all gi > 0 and hi < 0. We use a standard continuant for determinants of tridiagonal matrices and in-ductively show that all leading minors are positive and G ≻ 0. 
+
+Single event invariance. Event i changes ui to −ui +
+
+aiui+1 + biui−1. The change in Q(u) depends only on ui−1,
+
+ui, ui+1. G is chosen such that Q is preserved: ET 
+
+> i
+
+GE i = G.
+
+One sweep as product. Let Eodd = ∏↗  
+
+> iodd
+
+Ei, Eeven =
+
+∏↗  
+
+> ieven
+
+Ei. Odd rows update using original neighbors; then even rows use the already updated odd neighbors—exactly the two-phase physical sweep derived from Ax ′ = Bx + c. A direct row-wise check of Ax ′ = Bx +c shows: each odd row is satisfied after the first phase, each even row after substituting the updated odd neighbors; by invertibility of A this forces 
+
+x′ = Eeven Eodd x = Mx . Thus M = Eeven Eodd .
+
+Global invariance. Using transposition reversal and single-event invariance: MT
+
+GM = ( Eeven Eodd )T
+
+G(Eeven Eodd ) = 
+
+ET
+
+> odd
+
+(ET
+
+> even
+
+GE even )Eodd = G. Thus M is a G-isometry. 
+
+Corollary 1 (Rotation form): Each trajectory lies on the invariant ellipsoid {u : uT
+
+Gu = R2}.
+
+Proof: The product uT
+
+Gu is invariant under u 7 → Mu :
+
+(Mu )T
+
+G(Mu ) = uT
+
+(MT
+
+GM )u = uT
+
+Gu by Lemma 2. 
+
+Remark 1 (Geometric note): The map is a composition of planar rotations in the G-inner product. Fig. 5 illustrates this rotational evolution for the configuration of Fig. 1. We now formalize the non-convergence consequence. 
+
+Theorem 1 (No convergence without equilibrium start): 
+
+In the rotational regime, uk → 0 if and only if u0 = 0. 
+
+Proof: From Lemma 2, uT 
+
+> k
+
+Gu k = uT 
+
+> 0
+
+Gu 0 for all k. If 
+
+u0̸ = 0, then uT 
+
+> k
+
+Gu k is a fixed positive constant, so uk cannot converge to 0. Conversely, if u0 = 0, then uk = 0. 
+
+Remark 2: Lemma 2 and complementing computations additionally imply that M, its characteristic polynomial χM
+
+and its spectrum σ (M) have these algebraic properties: (i) det M = ( −1)m, showing that M is volume-preserving for m even, and a composition of a volume-preserving map and a reflection for m odd. (ii) All eigenvalues of M lie on 0100 200 300       
+
+> Time (Pair 1)
+> 0.00.10.20.3
+> Position (Pair 1)
+> 0.20.30.40.50.60.70.80.9
+> Position (Next Collision: Pair 2)
+> Pair1 →next Pair2 map Fig. 5. Collision positions of both pairs for exemplary start configuration of Fig. 1. This illustrates the rotational evolution of (x,y).
+
+the unit circle, establishing that M represents a composite of planar rotations and causes oscillating collision abscissas. (iii) χM is self-reciprocal : χM (λ ) = λ m χM
+
+  1
+
+> λ
+
+ with λ ∈ C.
+
+The eigenvalues appear in conjugate pairs {λ , λ }, plus the single real number −1 if m is odd. (iv) −1 is an eigenvalue if and only if m is odd (and then with multiplicity one). 
+
+B. Damped System: Token Mechanics 
+
+The undamped rotational transfer u′ = Mu is conservative and yields no contraction toward the equilibrium. To induce damping, we introduce a token : a stored colli-sion abscissa between adjacent robots. When a robot crosses the token, it slows by factor α ∈ (0, 1) until its next reversal. At a collision with another robot, the token is dropped. This modifies only the local timing of the adjacent pair. A token always remains between its original robot pair. 
+
+1) Single, one-directional token (" Token-1 "): As the simplest version of this technique, place a single token between robots 1 and 2 that only affects the velocity of robot 1; robot 2 also picks up and drops the token, but without adjusting its velocity. We call this token one-directional , as it only impacts one robot. This changes only the first pair’s relation: 2x1 
+
+> v1
+
++ x′ 
+
+> 1−x1
+> αv1
+
+= x2−x1 
+
+> v2
+
++ x2−x′ 
+
+> 1
+> v2
+
+, all other equations remain unchanged. In matrix form, with the same A, replace 
+
+B by Bα and obtain u′ = Mα u, with Mα := A−1Bα .
+
+Mα now represents the collision abscissa update for a step where the first robot actually picks up and carries the token. Otherwise, the original M applies. We aim at following an argument similar to the undamped case, but now Mα is not a G-isometry anymore. As a first step towards convergence, we show that the determinant contracts. 
+
+Lemma 3 (Determinant contraction with one token): For each 0 < α < 1 we have | det Mα | < 1. 
+
+Proof: [Proof sketch] Only the first row of B is modi-fied. Express det (A−1Bα ) = det (Bα )/ det (A) and evaluate the continuant for det (Bα ) by Laplace expansion anchored at the modified row; the unchanged tail cancels with det (A). The resulting rational form reduces to the expression, det Mα =(−1)m−1 v2(1−2α)−αv1 
+
+> v2+αv1
+
+, with | det Mα | < 1 for 0 < α < 1. 0.0 0.2 0.4 0.6 0.8 1.0 
+
+> Position
+> 0246810
+> Clock Time
+> Robot 1 - Robot 2 Robot 2 - Robot 3
+> Fig. 6. Collision positions for exemplary start configuration of Fig. 1 with one-directional token in-between the first pair ( Token-1 ). The system approaches the equilibrium quickly.
+
+The main convergence result requires a full spectral con-traction proof, which we leave as an open problem in the theoretical part. In Section V, we present simulation results that strongly support the following conjecture. 
+
+Conjecture 1 (Spectral contraction): The damped trans-fer map M α is repeatedly applied and its spectral radius satisfies ρ(Mα ) < 1, such that u → 0 for 0 < α < 1.
+
+A formal contraction proof remains open but does not impede practical deployment (Sections V and VI). Fig. 6 illustrates the effect of such a token placed for the exemplary start configuration of Fig. 1, inducing convergence of the collision abscissas towards the equilibrium. 
+
+2) Ubiquitous tokens (" Token-all "): Finally, we con-sider placing one token between any subsequent pair. This would correspond to every robot having the ability to store its last collision abscissa with both adjacent robots and to alter its velocity accordingly. V. S IMULATION EXPERIMENTS 
+
+To complement the theoretical analysis, we turn to sim-ulations to develop empirically grounded hypotheses about aspects of the system that remain analytically unresolved. This leads us to the following research questions: RQ1 Do all systems always converge to the rotational, catch-up-free regime? RQ2 How do convergence speed and tail behavior de-pend on the initial token placement? RQ3 How does heterogeneity in agent velocities influ-ence convergence? RQ4 How does the token slow-down factor α impact convergence dynamics? RQ5 How does the system behave after different types of perturbations? 
+
+A. Experiment Design 
+
+Our approach relies on Monte Carlo simulations across randomized trials, where we vary key parameters and record relevant metrics to address each research question. To con-duct these experiments, we implemented a Python-based simulator that employs high precision arithmetic through the decimal module. Since velocities change only at pre-dictable collision events, we adopt an event-driven simulation strategy, ensuring both efficiency and accuracy. Metric track-ing and termination checks are restricted to these events. We typically perform N = 1000 trials, each involving up to n = 9 robots initialized with random positions in [0, 1],random directions, and velocities sampled uniformly from 
+
+[0.5, 10 ]. Comparisons are made between settings with no tokens, a single one-directional token between the first pair (Token-1 ), and two-directional tokens between all adja-cent pairs ( Token-all ). For most experiments, we utilize empirical complementary cumulative distribution functions (CCDFs), which plot the fraction of trials that have not yet satisfied a specified criterion (e.g., convergence) by time t.The full set of experiments, including the simulator, will be made available in an open-source repository. 
+
+Definition 1 (Convergence criterion): We say the system is converged if, for every adjacent robot pair, the previous 10 collision abscissas have not been more than ε = 5 × 10 −4
+
+apart from the respective equilibrium abscissa. 
+
+RQ1: As it is impossible to empirically validate that a system will remain catch-up free indefinitely, we instead demonstrate that the ratio of catch-up events rapidly drops to zero, with no tested run exhibiting a same-direction catch-up beyond a certain time. The ratio is computed per time step, with the step size increasing exponentially to scale with the logarithmic plot. We compare the system with no tokens, 
+
+Token-1 , and Token-all (slow-down factor α = 0.5). 
+
+RQ2: We conduct N randomized trials for both token variants and for n ∈ { 3, 5, 7}. The convergence times (as defined in Definition 1) are then compared using CCDFs. 
+
+RQ3: We sweep the upper bound of the uniformly sampled velocities (keeping the lower bound fixed at 0.5) and plot the resulting convergence CCDFs (illustrated for 
+
+n = 5 with Token-all ) to observe the impact of higher maximum velocities on collision frequency and balancing. 
+
+RQ4: The influence of the slow-down factor α is assessed by measuring the average convergence time for 
+
+n ∈ { 3, 5, 7, 9} with Token-all . For each n, α is varied over (0, 1) in increments of 0 .01, using the same N samples for all α. The resulting mean convergence time curves are plotted as functions of α. The minimum of each curve indicates the empirically optimal α for that n.
+
+RQ5: Starting from an equilibrium-like state (equilib-rium abscissas, alternating directions), we apply perturba-tions: remove or add one randomly chosen robot, jitter the velocity of one randomly chosen robot by factor 0 .5 or 2, and jitter the positions of one randomly chosen robot or all robots. We form reconvergence CCDFs ( n ∈ { 3, 5, 7}, both token settings, α = 0.5). Additionally, we sweep the position jitter amplitude from 0% to 25% of the interval length and plot mean convergence time as a function of amplitude for 
+
+n ∈ { 3, 5, 7, 9} with Token-all . For velocity perturbations, we compare reconvergence times to random-start baselines using one-sided Mann–Whitney U tests with Bonferroni correction ( αcorr = 0.0125, 4 independent configurations). 21 23 25 27 29 211                                       
+
+> Clock time (log)
+> 0.00.51.01.5
+> Catch-up collisions (%)  n=5, no token
+> n=5, Token-1
+> n=5, Token-All
+> Fig. 7. Ratio of catch-up events to total collisions per clock time bucket, here shown for n=5 (other nlook similar). Even without tokens, the system reaches the rotational, catch-up free state quickly. 0510 15 20 25 30
+> Clock time
+> 0% 20% 40% 60% 80% 100%
+> Runs not yet converged  n=3, Token-1
+> n=5, Token-1
+> n=7, Token-1
+> n=3, Token-all
+> n=5, Token-all
+> n=7, Token-all
+> Fig. 8. Empirical CCDFs for n∈ { 3,5,7}.Token-all induces faster convergence than just Token-1 . More robots take longer to converge.
+
+B. Results RQ1: For all tested n ∈ { 3, 5, 7} (n = 5 shown in Fig. 7), the ratio of catch-up events to total collisions per clock time step decreases rapidly, reaches zero eventually, and does not recover within the extensive simulation timeframe. Tokens both reduce the initial ratio and accelerate the decline. 
+
+RQ2: The CCDFs in Fig. 8 show that systems with tokens between all pairs converge more quickly, with little variation across n ∈ { 3, 5, 7}. In contrast, with Token-1 ,the convergence time increases noticeably as n grows. 
+
+RQ3: As shown for n = 5 with Token-all in Fig. 9, increasing the maximum of the uniformly sampled velocity range accelerates convergence. This applies to all tested n ∈{3, 5, 7} and both token configurations. 
+
+RQ4: The results in Fig. 10 show distinct mean con-vergence time curves for different values of n, with the minimum of each curve shifting leftward as n increases. Specifically, the empirically optimal values are approxi-mately α ≈ 0.38 , 0.35 , 0.33 , 0.29 for n = 3, 5, 7, 9. The av-erage convergence time grows super-linearly when deviating from the optimal α in either direction. 
+
+RQ5: Across all tested perturbation types, the system reliably reconverges to the (possibly new) equilibrium. After robot addition/removal (Fig. 11), the system reliably converges to the correct new equilibrium without coordi-nation. Reconvergence after removal is consistently faster than after addition; Token-all reduces convergence times versus Token-1 . The position jitter sweep (Fig. 12) shows that mean convergence time increases with jitter amplitude 0 5 10 15 20 25 30 
+
+Clock time                        
+
+> 0% 20% 40% 60% 80% 100%
+> Runs not yet converged  vmax =1
+> vmax =5
+> vmax =10
+> vmax =15
+> vmax =20 all speeds = 1 Fig. 9. Empirical CCDFs for n=5 with Token-all , varying the maximum velocity. 0.00.10.20.30.40.50.60.70.8
+
+α              
+
+> 23456
+> Mean convergence time
+> n=3
+> n=5
+> n=7
+> n=9
+> Fig. 10. Mean convergence times with Token-all , varying the slow-down factor α. The αinducing the fastest convergence depends on n.
+
+but exhibits at most linear growth; we observe no super-linear or catastrophic degradation, even at 25% displacement. A power-law fit T (δ ) = t0 + a · δ b and bootstrap 95% con-fidence intervals confirm sub-linear or linear growth. Non-zero convergence time at zero jitter reflects detection latency of the convergence criterion (Definition 1). Reconvergence after velocity perturbation (Fig. 13) is significantly faster than from random starts (Mann–Whitney U, all p < 0.0125 after Bonferroni correction). Consistently with RQ3, ×2 yields faster reconvergence than ×0.5. 
+
+C. Discussion RQ1: The observation of the ratio of catch-up events per time step declining to 0 supports the hypothesis that the system always reaches the rotational state, but does not constitute a formal proof that catch-ups never re-emerge. For final conclusiveness, a theoretical argument is needed. 
+
+RQ2: Token-all consistently shortens convergence times relative to Token-1 ; larger n slows convergence. This supports the claim that broader damping distribution improves practical convergence. 
+
+RQ3: The results suggest that increasing only the upper bound of a uniform velocity interval accelerates convergence. This could be explained by the increased collision rate, due to the higher average velocity, dominating any added disparity in these settings. However, the exact dynamic changes and asymptotic behavior with increasing n remain to be explored. 
+
+RQ4: Based on the curves in Fig. 10, we hypothesize that the optimal α decreases as n increases. Since even for 0 5 10 15 20 25 30 
+
+Clock time                              
+
+> 0% 20% 40% 60% 80% 100%
+> Runs not yet re/converged  n=5, Token-all, Add
+> n=5, Token-all, Remove
+> n=5, Token-1, Add
+> n=5, Token-1, Remove
+> n=7, Token-all, Add
+> n=7, Token-all, Remove
+> n=7, Token-1, Add
+> n=7, Token-1, Remove
+> Fig. 11. Perturbation of adding/removing one randomly chosen robot from an equilibrium-like state, resulting in n∈ { 5,7}after the change. Reconvergence after removing a robot is faster than reconvergence after adding one; Token-all induces faster reconvergence than Token-1 .0510 15 20 25
+
+Jitter amplitude (% of interval length)                
+
+> 0123456
+> Mean reconvergence time
+> n=3
+> n=5
+> n=7
+> n=9
+> Fig. 12. Mean convergence time vs. position jitter amplitude (all robots perturbed) with Token-all , for n∈ { 3,5,7,9}. Growth is at most linear; no catastrophic degradation occurs even at 25% displacement.
+
+n = 3 the best value is below 0 .4, selecting a larger α is likely suboptimal for any configuration. 
+
+RQ5: The system reliably reconverges across all tested perturbation types and magnitudes, supporting operational resilience. The jitter sweep (Fig. 12) provides a quantita-tive robustness characterization: convergence time grows at most linearly with perturbation amplitude, indicating graceful degradation for position inaccuracies or external perturba-tions. For velocity perturbations, reconvergence is faster than from random starts, indicating quick recovery from battery drain or load-induced velocity changes. Robot addi-tion/removal shows robust system reconfiguration behavior in case of individual robot failure or increased team size. 
+
+D. Threats to Validity 
+
+Our criteria for reaching a catch-up-free state and for convergence serve as strong indicators but do not constitute formal guarantees. The random generation procedure is also unlikely to produce certain edge cases, particularly highly symmetric initial configurations. To probe the robustness of our criteria, we applied stricter conditions and examined manually crafted scenarios, but these did not reveal coun-terexamples. The simulations reported here focus on small numbers of robots, which appear sufficient to reveal the relevant patterns. Additional exploratory simulations with larger numbers of robots were conducted but are not reported here due to space constraints. 0.0 2.5 5.0 7.5 10 .0 12 .5 15 .0 17 .5 20 .0                   
+
+> Clock time
+> 0% 20% 40% 60% 80% 100%
+> Runs not yet re/converged  n=5, Token-all, one speed×0.5
+> n=5, Token-all baseline
+> n=5, Token-all, one speed×2
+> n=5, Token-1, one speed×0.5
+> n=5, Token-1 baseline
+> n=5, Token-1, one speed×2 Fig. 13. Reconvergence CCDFs after velocity perturbation (factor 0 .5or 2) of one robot from equilibrium, for n=5, vs. random-start baseline. Reconvergence is faster than baseline (Mann–Whitney U, p<0.0125).
+
+VI. A PPLICATIONS & P RACTICAL CONSIDERATIONS 
+
+A. Target Application Domains a) Warehouse & Intralogistics: Large-scale warehouse robotics has focused initially on open-grid layouts with centralized coordination [19], but AMRs increasingly sup-port decentralized decision-making [20], [21]. As centralized control faces scalability limits with large fleets, tangible decentralization approaches gain attention [21]. Meanwhile, operations along narrow aisles [22], [23] and heterogeneous robot deployments [24]—where dedicated aisle assignments reduce throughput time by up to 26%—motivate coordination mechanisms suited to confined, one-dimensional paths. Our bucket brigade approach addresses these challenges: it provides fully decentralized coordination without commu-nication, achieving emergent territorial partitioning where heterogeneous capabilities map to velocity-proportional load balancing. Reconvergence after perturbations (Fig. 11) en-ables dynamic fleet adjustments under failures or demand surges—a robustness property desired in current AMR re-search [20]. 
+
+b) Agricultural Automation: Agricultural robotics faces environmental challenges (occlusion, harsh conditions, in-frastructure limits), and effective commercialization remains challenging due to task complexity [25], [26]. Multi-robot greenhouse teams are promising [27], but coordination re-mains centralized in most studies, relying on communication infrastructure that cannot always be guaranteed [28]. Narrow-aisle operations [27], [28] in row-constrained spaces motivate one-dimensional coordination models. Our bucket brigade provides decentralized coordination without communication infrastructure, also allowing for het-erogeneous robot teams. Self-recovery (Figs. 11 and 12) ad-dresses fault tolerance needs [27], while velocity adaptation (Fig. 13) models battery/payload variations. 
+
+c) Infrastructure Inspection: Inspection of linear struc-tures (pipelines, tunnels) has relied on single-robot systems [29], [30]. Multi-robot inspection remains mostly limited to open environments [31], as coordination in confined linear spaces faces challenges where communication infrastructure is unavailable. Our decentralized, communication-free ap-proach enables multi-robot teams in such settings. 
+
+B. From Model to Physical Systems a) Physical Robot Constraints: Our idealized model assumes point agents with instantaneous velocity changes and precise collision detection. In practice, robots with body radius r and sensor range d operate in the free space between physical boundaries. The model’s unit interval represents this available space, with detection events (via IR/ultrasonic sen-sors [22] or compliant bumpers [32]) corresponding to model collisions at separation d. Acceleration limits mean tokens trigger velocity ramps rather than instantaneous changes; the model needs to be adjusted accordingly. Position jitter experiments (Fig. 12) indicate localization tolerance, how-ever, guarantees outside the idealized system are heuristic. Tokens can be implemented via memory (store last collision position) or physical markers (RFID, visual fiducials) for minimal-computation platforms. The latter does not require any position or distance sensing of the robots. Regarding physical safety, body size, regulations, and wall/marker de-tection errors reduce usable length and may bias steady borders; safety envelopes and stop accuracy must exceed any hysteresis. 
+
+b) Robustness: Simulation experiments (Sec. V) demonstrate resilience to operational disturbances: robot ad-dition/removal (Fig. 11), velocity changes (Fig. 13) and posi-tion jitter (Fig. 12) model fleet scaling, battery degradation or payload variations, and localization uncertainty. Simulations showing reliable reconvergence after perturbations suggest inherent system resilience. The zero-communication design eliminates infrastructure requirements. 
+
+C. Comparison to Alternative Approaches a) Non-zero communication extensions: Adding com-munication can simplify the problem but requires addi-tional capabilities: exchanging velocities at collision lets pairs compute equilibrium boundaries directly, yet requires accurate velocity self-knowledge (fragile under battery drain or payload changes), on-board arithmetic, and precise target navigation. Remote position sharing eliminates physical col-lisions entirely but demands full infrastructure (localization, radio, waypoint control). The token mechanism requires none of these—convergence emerges from dynamics rather than computation, requiring only the recognition of crossing the previous collision position, and automatically adapts under perturbations. 
+
+b) Other coordination approaches: Prior coordination approaches explore components of our problem separately and make different infrastructure trade-offs: centralized methods achieve load balancing [24], [33] and path op-timization [34], [35] but require infrastructure; distributed algorithms [36]–[39] improve scalability through message passing; heterogeneous-speed patrolling has been optimized via offline scheduling [13]; and communication-free coordi-nation has been demonstrated in foraging [15], [16]. We com-plement these approaches by combining communication-free operation, heterogeneous speeds, and persistent patrolling through collision-based bucket brigade coordination. VII. C ONCLUSION & O UTLOOK 
+
+We presented an event-based analysis of heterogeneous bucket brigades, showing that undamped collision dynam-ics are conservative. A token mechanism storing a single collision position per robot induces damping and consistent convergence. The approach achieves velocity-proportional territory partitioning through collision-based coordination without communication or centralized planning. Simulations demonstrate robustness against various perturbation types. Extensions to graph topologies are underway. Prelimi-nary results show complications (e.g., unreachable subgraphs under certain traversal rules, altered convergence behavior) but suggest using boundary markers to partition graphs into linear segments. We also consider slightly more complex but still local coordination mechanisms (e.g., token types with different effect, tokens with α = 1, “traffic lights”). Deployment requires only velocity measurement, acceler-ation control, collision detection, and single-value memory (token storage) per robot. These minimal system require-ments position this as a complementary coordination ap-proach for infrastructure-limited environments where com-munication overhead or centralized control are impractical. ACKNOWLEDGMENTS 
+
+We thank Aaron T. Becker and Erik Demaine for helpful discussions. OpenAI GPT-5 was used to assist with language editing, code drafting, and standard algebraic operations. REFERENCES [1] J. J. Bartholdi III and D. D. Eisenstein, “A production line that balances itself,” Oper. Res. , vol. 44, no. 1, 1996. [2] J. J. Bartholdi III, L. A. Bunimovich, and D. D. Eisenstein, “Dynamics of two-and three-worker “bucket brigade” production lines,” Oper. Res. , vol. 47, no. 3, 1999. [3] Y. F. Lim and K. K. Yang, “Maximizing throughput of bucket brigades on discrete work stations,” Prod. Oper. Manag. , vol. 18, no. 1, 2009. [4] J. J. Bartholdi III, D. D. Eisenstein, and R. D. Foley, “Performance of bucket brigades when work is stochastic,” Oper. Res. , vol. 49, no. 5, 2001. [5] P. Wang, K. Pan, Z. Yan, and Y. F. Lim, “Managing stochastic bucket brigades on discrete work stations,” Prod. Oper. Manag. , vol. 31, no. 1, 2022. [6] J. J. Bartholdi, D. D. Eisenstein, and Y. F. Lim, “Bucket brigades on in-tree assembly networks,” Eur. J. Oper. Res. , vol. 168, no. 3, 2006. [7] Y. F. Lim, “Cellular bucket brigades,” Oper. Res. , vol. 59, no. 6, 2011. [8] Y. F. Lim and Y. Wu, “Cellular bucket brigades on u-lines with discrete work stations,” Prod. Oper. Manag. , vol. 23, no. 7, 2014. [9] A. I. Bratcu and A. Dolgui, “Some new results on the analysis and simulation of bucket brigades (self-balancing production lines),” Int. J. Prod. Res. , vol. 47, no. 2, 2009. [10] J. Bartholdi, D. D. Eisenstein, and Y. F. Lim, “Chaos and convergence in bucket brigades with finite walk-back velocities,” Dept. of Industrial Engineering, Georgia Institute of Technology, Tech. Rep., 2004. [11] R. A. Mensing, “Ansätze für Bewegungsplanungs-Probleme mit dem Ziel der verketteten Arbeitsteilung,” 2021, Bachelor’s thesis. [12] J. Czyzowicz, L. G ˛ asieniec, A. Kosowski, and E. Kranakis, “Boundary patrolling by mobile agents with distinct maximal speeds,” in Eur. Symp. Algorithms (ESA) , 2011. [13] A. Kawamura and Y. Kobayashi, “Fence patrolling by mobile agents with distinct speeds,” Distributed Computing , 2015. [14] K. Chen, A. Dumitrescu, and A. Ghosh, “On fence patrolling by mobile agents,” in Can. Conf. Comput. Geom. (CCCG) , 2013. [15] A. Lein and R. Vaughan, “Adaptive multi-robot bucket brigade forag-ing,” Artificial Life , 2008. [16] E. H. Ostergaard, G. S. Sukhatme, and M. J. Matari, “Emergent bucket brigading: a simple mechanisms for improving performance in multi-robot constrained-space foraging tasks,” in Int. Conf. Auton. Agents ,2001. [17] E. Klavins and D. E. Koditschek, “A formalism for the composition of concurrent robot behaviors,” in IEEE Int. Conf. Robot. Autom. (ICRA) ,2000. [18] H. Itani, M. Noda, M. Natsume, H. Itoh, H. Tanaka, H. Hattori, H. Tanase, M. Asano, T. Nohara, K. Hasegawa, T. Matsuoka, T. Mat-sui, M. Ando, W. Nogimori, and Y. Naruse, “A study of mini-robots bucket brigade system,” in Int. Symp. Micro Mach. Hum. Sci. (MHS) ,1995. [19] P. R. Wurman, R. D’Andrea, and M. Mountz, “Coordinating hundreds of cooperative, autonomous vehicles in warehouses,” AI Mag. , 2008. [20] G. Fragapane, R. d. Koster, F. Sgarbossa, and J. O. Strandhagen, “Planning and control of autonomous mobile robots for intralogistics: Literature review and research agenda,” Eur. J. Oper. Res. , 2021. [21] R. Keith and H. M. La, “Review of autonomous mobile robots for the warehouse environment,” arXiv.org , 2024. [22] J. Borenstein, D. Wehe, L. Feng, and Y. Koren, “Mobile robot navigation in narrow aisles with ultrasonic sensors,” in ANS Topical Meeting on Robotics and Remote Systems , vol. 12, 1995. [23] S. F. Thomsen, M. Davidsen, L. Naik, A. Kollakidou, L. Bodenhagen, and N. Krüger, “Improving throughput of mobile robots in narrow aisles,” VISIGRAPP , 2023. [24] Y. Kang, R. Wang, Z. Qin, P. Yang, and Y. Yan, “Warehouses with het-erogeneous robots collaboration: operational policies and performance analysis,” Int. J. Prod. Res. , 2025. [25] C. Bac, E. v. Henten, J. Hemming, and Y. Edan, “Harvesting robots for high-value crops: State-of-the-art review and challenges ahead,” J. Field Robotics , 2014. [26] S. Fountas, N. Mylonas, I. Malounas, E. Rodias, C. H. Santos, and E. Pekkeriet, “Agricultural robotics for field operations.” Sensors ,2020. [27] J. J. Roldan, P. Garcia-Aunon, M. Garzón, J. d. l. F. León, J. d. Cerro, and A. Barrientos, “Heterogeneous multi-robot system for mapping environmental variables of greenhouses,” Sensors , 2016. [28] H. Song, K. Qi, W. Feng, Y. Mu, J. Li, X. Lv, Z. Liang, and F. Wang, “Design of robot navigation system under spatial constraints in shiitake mushroom fruiting room,” Comput. Electron. Agric. , vol. 243, 2026. [29] A. G. Rumson, “The application of fully unmanned robotic systems for inspection of subsea pipelines,” Ocean Engineering , 2021. [30] H. Jang, T. Y. Kim, Y. C. Lee, Y. H. Song, and H. R. Choi, “Autonomous navigation of in-pipe inspection robot using contact sensor modules,” IEEE/ASME Trans. Mechatronics , 2022. [31] J. Liu, J. Wang, J. Peng, H. Yuan, and T. Shao, “Multi-robot coopera-tive inspection planning of substation based on genetic algorithm and deep reinforcement learning,” IEEE Access , 2025. [32] S. Haddadin, A. D. Luca, and A. Albu-Schäffer, “Robot collisions: A survey on detection, isolation, and identification,” IEEE Trans. Robot. ,2017. [33] E. Åblad, D. Spensieri, R. Bohlin, J. S. Carlson, and A.-B. Strömberg, “Spatial-temporal load balancing and coordination of multi-robot stations,” IEEE Trans. Autom. Sci. Eng. , 2023. [34] G. Sharon, R. Stern, A. Felner, and N. Sturtevant, “Conflict-based search for optimal multi-agent pathfinding,” Artif. Intell. , 2015. [35] J. Li, A. Felner, E. Boyarski, S. Koenig, and H. Ma, “Improved heuristics for multi-agent path finding with conflict-based search: Preliminary results,” Symp. Combinatorial Search , 2019. [36] W. Ren and R. W. Beard, “Consensus seeking in multiagent systems under dynamically changing interaction topologies,” IEEE Trans. Autom. Control , 2005. [37] J. Cortes, S. Martinez, T. Karatas, and F. Bullo, “Coverage control for mobile sensing networks,” IEEE Trans. Robot. Autom. , vol. 20, no. 2, 2004. [38] D. Portugal and R. P. Rocha, “Distributed multi-robot patrol: Ascalable and fault-tolerant framework,” Robot. Auton. Syst. , 2013. [39] F. Pasqualetti, J. W. Durham, and F. Bullo, “Cooperative patrolling via weighted tours: Performance analysis and distributed algorithms,” 
+
+IEEE Trans. Robot. , 2012.

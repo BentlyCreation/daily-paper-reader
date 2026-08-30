@@ -1,0 +1,2485 @@
+Title: VIP: Variation-based Iterative-learning Planning for Robotic Navigation
+
+URL Source: https://arxiv.org/pdf/2608.24618v1
+
+Published Time: Wed, 26 Aug 2026 01:29:27 GMT
+
+Number of Pages: 28
+
+Markdown Content:
+# VIP: Variation-based Iterative-learning Planning for Robotic Navigation 
+
+> Journal Title XX(X):1–28 ©The Author(s) 2016 Reprints and permission: sagepub.co.uk/journalsPermissions.nav DOI: 10.1177/ToBeAssigned www.sagepub.com/
+
+SAGE 
+
+Shuli Lv 1, Pengda Mao 1, Chen Min 1, Li Hong 1, Runxiao Liu 1, Shuai Wang 2 and Quan Quan 1,2 
+
+Abstract 
+
+Over the past decade, autonomous robotic systems have been increasingly deployed in applications such as surveying, search and rescue, and last-mile delivery. These applications require robots to generate safe and efficient motion plans in large, complex, and obstacle-dense environments, often under limited onboard computing resources. However, conventional planning methods commonly rely on finite-dimensional trajectory parameterization or increasingly long prediction horizons, leading to rapidly growing computational costs, particularly in multi-robot scenarios. This paper presents a novel variation-based iterative-learning planning (VIP) framework for efficient motion planning of both single robots and robotic swarms. Instead of optimizing a large number of discrete trajectory variables, VIP directly updates the planning command as a continuous function in an infinite-dimensional function space. The same variation-based update can be implemented in a model-in-the-loop manner for offline planning or in a robot-in-the-loop manner between online physical executions. By avoiding the computational burden associated with horizon expansion and high-dimensional trajectory discretization, VIP maintains a per-iteration computational complexity of O(n), where n
+
+denotes the number of spatial discretization points. Extensive simulations and real-world experiments demonstrate that the proposed framework can efficiently generate and iteratively improve motion plans for different planning objectives, robotic platforms, and swarm configurations, highlighting its effectiveness, computational efficiency, and scalability as a general planning methodology. 
+
+Keywords 
+
+Variation Optimization, Iterative Learning Planning, Robotic Navigation 
+
+1 Introduction 
+
+In recent years, robots have been increasingly deployed across a wide range of applications, including delivery services, photography, and search-and-rescue operations (Singamaneni et al. (2024)). As robotic systems move from structured settings to complex real-world environments, motion planning has become a fundamental capability for autonomous operation. A planner must generate safe, dynamically feasible, and efficient motion commands while accounting for environmental constraints. This requirement becomes particularly challenging with the limited onboard computing resources of robotic platforms, where the number of planning variables and coupled constraints can grow rapidly. Therefore, developing a computationally efficient and scalable planning methodology for both single robots and robotic swarms is an important research problem (Tordesillas et al. (2021)). 
+
+1.1 Motivations 
+
+To generate motion plans for a single robot, existing meth-ods can be broadly categorized into prediction-based plan-ning and reactive-based planning methods (Rousseas et al. (2024); Florence et al. (2020)). Prediction-based planners, such as model predictive control, formulate the planning problem as a multi-step optimization problem over a finite prediction horizon. The planned motion may be represented by discrete states, parameterized continuous trajectories such as polynomials or B-splines, or candidate trajectories gener-ated through sampling and search. These formulations can explicitly incorporate system dynamics, motion constraints, and predicted environmental information. However, their computational cost generally increases with the prediction horizon, trajectory resolution, and number of decision vari-ables. Reactive planners instead determine motion com-mands primarily from the current robot state and locally observed environment. Although they typically require less online computation, their planning performance may be sensitive to local environmental structures and limited look-ahead information. Consequently, obtaining high-quality motion plans with low computational cost remains difficult, especially in large and obstacle-dense environments. The computational challenge becomes more significant when extending motion planning from a single robot to robotic swarms. Multi-robot planning requires not only generating feasible motion commands for individual robots,   
+
+> 1School of Automation Science and Electrical Engineering, Beihang University, Beijing, P.R. China
+> 2Tianmushan Laboratory, Beihang University, Hangzhou, P.R. China
+> Corresponding author:
+> Quan Quan, is with the School of Automation Science and Electrical Engineering, Beihang University, Beijing 100191, P.R.China, and also with the Tianmushan Laboratory, Beihang University, Hangzhou 311115, P.R. China Email: qq buaa@buaa.edu.cn
+> Prepared using sagej.cls [Version: 2017/01/17 v1.20] arXiv:2608.24618v1 [cs.RO] 25 Aug 2026
+
+2 Journal Title XX(X) Goal  
+
+> (a) Euclidean optimization (b) Functional optimization
+> 1x
+> 2x
+
+ 1 2, , , nnx x x x      
+
+> 3x1nxnxs
+
+ x s  
+
+> kx
+> 1kx
+
+ 1J x
+
+#  * 
+
+> Jx
+
+ kJ x
+
+ 1kJ x   
+
+> (c) Offline flight in unknown environment (d) Online learning of swarm (e) Online learning of lifting-wing quadcopter
+
+##  
+
+> Figure 1. Overview of the proposed variation-based iterative-learning planning (VIP) framework and its real-world experimental validation. (a) Euclidean optimization, where a trajectory is parameterized by a finite set of waypoints. (b) Functional optimization adopted by VIP, where the trajectory is directly optimized in an infinite-dimensional function space. (c) Offline flight in an unknown environment. (d) Online learning of a robot swarm. (e) Online learning of a lifting-wing quadcopter.
+
+but also accounting for inter-robot interactions, collision-avoidance constraints, and collective-motion objectives. Centralized planners generally optimize the motion of all robots in a joint state space, causing the problem dimension and computational burden to increase rapidly with the swarm size. Distributed planners alleviate centralized computation by solving local planning problems, but their performance may depend strongly on communication conditions, local coordination rules, and simplified assumptions regarding neighboring robots. Formation-based methods provide a structured way to coordinate a swarm, but fixed or weakly adaptive formations may restrict the feasible planning space and reduce the ability of the swarm to pass efficiently through cluttered environments. These limitations indicate that scalability should be addressed at the level of the planning formulation itself, rather than only through additional computational resources or distributed implementation. Beyond the limitations of individual planning algorithms, a more fundamental issue concerns how collective motion-planning problems are formulated. Existing multi-robot approaches largely follow a bottom-up philosophy, in which swarm motion emerges from predefined local coordination and control rules (Crespi et al. (2008)). Although this paradigm supports distributed implementation, it provides limited ability to directly optimize swarm-level planning objectives. Top-down approaches instead describe collective motion through concise macroscopic variables and models (Wiedemann et al. (2025)), providing a more systematic representation of swarm-level objectives and constraints. In particular, partial differential equation models offer a promising way to connect individual robot motion with macroscopic swarm evolution (Sinigaglia et al. (2022)). However, existing formulations are often not designed as general-purpose planning mechanisms and may still require computationally demanding numerical optimization. These observations motivate a unified planning methodology that can represent both individual and collective motion objectives, directly optimize planning commands, and retain low computational complexity as the planning dimension or swarm size increases. 
+
+1.2 Contributions 
+
+To address these planning challenges without relying on conventional computational scaling strategies, this paper proposes a variation-based iterative-learning planning (VIP) framework. As shown in Fig. 1, the central philosophy of VIP is to directly optimize the planning command in an infinite-dimensional function space, rather than using a large number of point-wise decision variables in Euclidean space. From an energy-oriented perspective, different planning objectives are represented through corresponding system-energy functionals, and the planning command is iteratively improved according to the variation of the energy response. This formulation converts motion planning into a function-level iterative optimization process and avoids repeatedly solving a high-dimensional trajectory-optimization problem. To further remove the need for computationally expensive analytical gradients and accurate dynamic models, a model-free implementation is developed in which the planning command is updated using energy variations recorded from previous rollouts. Consequently, VIP provides a unified formulation for offline planning, execution-based online planning, and iterative replanning.  
+
+> Prepared using sagej.cls 3
+
+Building upon our previous studies on time-optimal spatial iterative learning in vector fields (Lv et al. (2025)), swarm motion planning (Lv et al. (2024)), and single-robot planning (Lv et al. (2026)), this work establishes a VIP framework that systematically connects these previously separate formulations. Unlike our earlier studies, which focused on specific planning scenarios or individual optimization objectives, the present framework formulates different single-robot and swarm planning problems from the common perspective of energy variation. It therefore extends variation-based iterative learning from task-specific solutions to a general planning methodology that can be adapted to different systems, performance objectives, motion representations, and collective-planning settings. The main contributions are summarized as follows. (i) A unified energy-variation planning formulation : A unified planning framework is established by representing different performance objectives through corresponding system-energy functionals. Rather than being restricted to a specific trajectory representation, robotic platform, or time-optimal objective, VIP provides a common formulation in which planning objectives can be incorporated through the definition of the energy functional and its variation. The same planning principle applies to both single-robot and multi-robot systems, enabling different motion-planning tasks to be addressed within a consistent mathematical framework. (ii) Low computational complexity through functional optimization : VIP directly updates the planning command in an infinite-dimensional function space, avoiding the need to construct and repeatedly solve a high-dimensional trajectory-optimization problem. The variation-based update is evalu-ated along the planned motion with a computational com-plexity that grows linearly with the number of spatial dis-cretization points. For the model-free implementation, the overall complexity after k∗ learning iterations is O(k∗n),where n is the number of discretization points. As con-ceptually illustrated in Fig. 1, this function-level optimiza-tion mechanism limits the growth of decision variables and coupled constraints associated with trajectory refine-ment, prediction-horizon expansion, and multi-robot plan-ning, making VIP suitable for computationally constrained onboard platforms. (iii) Online and model-free planning based on execution history : A model-free planning mechanism is developed to update the planning command directly from energy varia-tions recorded during robot-in-the-loop execution, without requiring an explicit dynamic model or computationally expensive analytical gradient evaluation. Moreover, the same variation-based update can be implemented in a model-in-the-loop mode using simulated rollouts for offline plan-ning. By incorporating the actual closed-loop response in planning layer, the resulting plan reflects practical tracking behavior, dynamic limitations, disturbances, and modeling uncertainties, rather than relying solely on geometric paths or nominal system predictions. This execution-aware formula-tion extends iterative learning from conventional trajectory-tracking control to planning-command optimization and enables motion plans to be continuously improved through repeated execution. Extensive simulations and real-world experiments validate the planning effectiveness, computa-tional efficiency, and scalability of the proposed VIP frame-work. 
+
+1.3 Paper organization 
+
+The remainder of this paper is organized as follows. 
+
+Section 2 reviews single-robot navigation, swarm navigation, and iterative learning. Section 3 introduces the geometric and spatial-domain preliminaries. Following a concrete-to-abstract order, Section 4 first formulates the single-robot and robotic-swarm systems, then derives their common energy systems and formulates the unified optimization problem. Section 5 develops the model-based and model-free VIP laws directly for this unified system and analyzes convergence, computational complexity, and implementation modes. Sections 6 and 7 provide task-specific realization and verification details without repeating the unified derivation. Sections 8 and 9 report simulations and real-world experiments. Section 10 concludes the paper. 
+
+1.4 Notations 
+
+Unless otherwise specified, all vectors are column vectors. 
+
+∇z ≜ ∂/∂ z and ∥z∥ ≜ √zTz. The operators Dz and ∂z
+
+denote the total and partial derivatives with respect to z,respectively, and δz denotes a functional variation. For a spatial or temporal domain D, the Hilbert space L2(D)
+
+is equipped with the norm ∥f ∥L2(D) = ( R 
+
+> D
+
+|f |2dζ)1/2 and inner product ⟨f, g ⟩D = R 
+
+> D
+
+f g dζ. In particular, D = (0 , L )
+
+for spatial learning profiles and D = T for swarm-density fields. 
+
+2 Related work 
+
+In this section, an overview of related studies on topics is provided, as shown in Tab. 1, including single robot navigation, robotic swarm navigation, and iterative learning. 
+
+2.1 Single robot motion planning 
+
+In the field of robotic navigation, various methodologies have been developed to optimize motion primitives. Motion planning generally entails solving an optimal control problem to minimize a predefined cost function subject to certain constraints. Prediction-based planning involves identifying the optimal sequence of control commands at each sampling interval. A prevalent optimization-based method, MPC, addressing trajectory planning by utilizing precise model information, is often a choice for aggressive maneuvers (Nguyen et al. (2021)), such as nonlinear MPC (NMPC) (Sun et al. (2022)), model predictive contouring control (MPCC) (Liniger et al. (2015)), and perception-aware MPC (PAMPC) (Falanga et al. (2018)). However, achieving superior outcomes often requires accurate modeling, and optimizing nonlinear models also imposes a significant computational load (Song et al. (2023)). As a result, it is typically challenging to apply these methods in real time for longer-horizon optimization. To improve optimization efficiency and prediction horizon, polynomial (Richter et al. (2016); Tordesillas et al. (2021)) and B-spline (Zhou et al. (2020)) representations are employed, leveraging differential flatness (Mueller et al.  
+
+> Prepared using sagej.cls
+
+4 Journal Title XX(X) 
+
+Table 1. Comparison of planning paradigms for single robots and robotic swarms.             
+
+> Paradigm Subclass Single robot Robotic swarm
+> Prediction-based planning Optimization-based Explicit optimization ; constraint handling; model dependence; high computation Coordinated trajectories; collision avoidance; increasing computation and communication
+> Parameterized trajectory Reduced variables; smooth trajectories; complex time optimization Individual trajectory parameterization; demanding
+> joint optimization
+> Sampling-based Nonlinear objectives; flexible search; sampling dependence Flexible motion generation; conflict resolution; limited scalability Reactive-based planning Vector/potential field
+> Fast response ; low computation; convergence-oriented Local interactions; distributed coordination; limited global optimization CBF/flocking Safety constraints; reactive collision avoidance; online optimization Collision avoidance; connectivity; cooperation; dense-swarm complexity Iterative learning Model-based ILC Function-space update; model information;
+> tracking-level learning
+> Repetitive collective tracking; predefined references; model dependence Model-free ILC Execution-data reuse; model independence;
+> tracking-level learning
+> Data-driven collective tracking; predefined collective motion
+> Proposed VIP Planning-level learning ;low complexity ;online and model-free Macroscopic learning ; microscopic coordination
+
+Table 2. Bottom-up and top-down swarm navigation paradigms.     
+
+> Paradigm Principle Main trade-off
+> Bottom-up Generates collective motion through individual planning, control, or local interactions Explicit individual coordination, but increasing computation and communication Top-down Describes the swarm using shared regions, macroscopic variables, or density evolution High scalability, but limited direct control of individual motion performance
+
+(2015)). These methods transform the optimization variable from discrete control inputs to a parameterized trajectory. The widely recognized minimum snap (Mellinger and Kumar (2011); Mellinger et al. (2012)) method is known to reduce the aggressiveness of control inputs (Foehn et al. (2021)). Nevertheless, the transformation to minimize flight time, as discussed in certain studies, introduces complexity to the objective function and may lead to deviations from the original constraints (Han et al. (2021)). Consequently, the task is often formulated as a constrained optimization problem, whose conversion into an unconstrained form may increase complexity and potentially produce solutions that violate the original constraints ˙ Is ¸leyen et al. (2022). Given the considerable computational burden, many methods alleviate the challenge by limiting the solution space or approximating the original problem (Karaman and Frazzoli (2011); Webb and Van Den Berg (2013)). For example, sampling-based planning (Orthey et al. (2023)), such as the dynamic window approach (DWA) (Fox et al. (1997)), enhances computational efficiency by sampling and evaluating simulated trajectories within a velocity search space. Model predictive path integral (MPPI) control samples a batch of forward rollouts and updates the control sequence through cost-weighted averaging, making it applicable to nonlinear dynamics and non-smooth objectives (Williams et al. (2017)). Along this line, sampling-based model predictive control has become an important tool for real-time motion generation. To ensure smooth control inputs and prevent deviations from the planned path, sampling-based planning is frequently combined with state-to-state trajectories, such as polynomials, representing a common strategy. In the above prediction-based methods, adding extra waypoints (higher resolution) typically introduces more constraints or an expanded search space, increasing computational demands and making solutions harder to find. An alternative approach is provided by reactive planning (Rousseas et al. (2024); Florence et al. (2020)). As aform of reactive planning, VF-based planning emerges as a distinctive methodology (Goncalves et al. (2010)). VF-based planning retains the benefits of low computational burden, ensuring optimal use of environmental and search information for safe navigation (Rub´ ı et al. (2020)). However, traditional VF methods primarily emphasize path convergence rather than rapid, efficient performance. The control barrier function (CBF) method (Ames et al. (2016, 2019)) combines the VF-based and optimization-based methods, avoids collisions by introducing state constraints, and is more suitable for precise control and scenarios with complex constraints. The CBF is utilized to simultaneously achieve control objectives, collision avoidance, and connectivity maintenance; however, it requires more computational resources. 
+
+2.2 Robotic swarm motion planning 
+
+From a single robot to a swarm, prediction-based methods generate collision-free trajectories with higher-order continuity for each robot, either in a centralized or distributed fashion, and then guide each robot to follow its corresponding trajectory (Toumieh and Lambert (2022); Park et al. (2025)). To reach a specified target point, each robot in the swarm system should first find a discrete geometric path in the global map before locally optimizing the path to produce a feasible trajectory that avoids obstacles and other robots’ trajectories (Zhou et al. (2022); Tordesillas and How (2021)). If multi-robot trajectory planning is centralized, a designated central node computes trajectories for all robots and then broadcasts them via wireless communication; the maximum number of robots that can be handled is constrained by the central node’s computational power. To reduce this burden, an optimal virtual tube (Mao et al. (2024)) is proposed to guide the swarm within a shared collision-free tube, but scalability is still limited by  
+
+> Prepared using sagej.cls 5
+
+communication and coordination overhead. In contrast, in a distributed fashion, each robot shares its planned trajectory with its neighbors via wireless communication, and the maximum number of robots that can be accommodated is limited by their communication capabilities (Tordesillas and How (2021)). Reactive-based methods are well-suited for managing a large robotic swarm. These methods typically employ straightforward controllers that react promptly to obstacles or other robots, enabling fast, responsive operation in dynamic environments with low computational and communication resource requirements. From a single robot to a swarm, these methods need to ensure the swarm can avoid collisions and cooperate. Popular examples include the potential field method (Khatib (1986); Gonc ¸alves et al. (2020)) and flocking-based method (V´ as´ arhelyi et al. (2018)). For a robotic swarm, CBF is used to simultaneously achieve control objectives, collision avoidance among robots in the swarm and with obstacles, and connectivity maintenance (Glotfelter et al. (2017)), while ensuring that the feasible solution set for the QP problem is nonempty. The research area of multi-robot systems places considerable emphasis on formation control (Alonso-Mora et al. (2017)). The leader-follower approach is the most common method in formation control, including the displacement-based method (Chen et al. (2020)), distance-based method (Bae et al. (2020)), and bearing-based method (Zhao et al. (2019)). However, scalability, adaptability, and efficiency present significant challenges. For instance, when the number of robots is scaled up, the physical size of the formation becomes too large for practical use. To enable scalable deployment and coordinated global configuration of large robotic swarms, as shown in Tab. 2, a top-down design paradigm has attracted increasing attention. Rather than explicitly planning or controlling the motion of individual robots, these approaches describe collective behaviors at the macroscopic level using partial differential equations (PDEs) (Krishnan and Martinez (2018); Sinigaglia et al. (2022)). In particular, mean-field PDE models provide a systematic framework for characterizing the evolution of swarm density and establishing a connection between individual robot dynamics and emergent collective behavior (Elamvazhuthi et al. (2018)). By formulating coordination objectives in terms of spatial density distributions, PDE-based methods can reduce dependence on swarm size, thereby improving scalability for large-scale deployment. 
+
+2.3 Iterative learning 
+
+Iterative learning control (ILC) is a control methodology designed to improve the performance of systems that repetitively execute a task over multiple iterations (Bristow et al. (2006); Sun and Wang (2002)). ILC provides an infinite-dimensional optimization perspective from afunctional standpoint, allowing iterative solutions to be computed over the entire navigation space rather than optimizing in a discrete or local space. A number of ILC design methods have been proposed and can generally be divided into two categories: model-based ILC design and model-free ILC design, depending on whether information on system dynamics is used. Model-based ILC design uses an explicit (though not necessarily accurate) system model to design the input updating law (Gao et al. (2026)); examples include gradient-based ILC (Owens (2016)), norm-optimal ILC (Ratcliffe et al. (2006)), predictive-optimal ILC (Amann et al. (1998)), and so on. On the other hand, model-free design directly updates the system input without using model information (Janssens et al. (2012)). Data from previous iterations is exploited, and the gained experience is used to improve the performance of subsequent executions by updating the feedforward input signal (Xu (2011)). With this, the algorithm compensates for unmodeled system dynamics, repetitive noise, or parametric uncertainties (Zhang et al. (2022)). Despite these advantages, directly applying conventional ILC to robotic navigation is not straightforward. Classical ILC typically assumes a repetitive task with a given reference, whereas navigation requires the robot to determine its motion under environmental constraints (Zhang and Shen (2026)). Moreover, most ILC methods focus on reducing tracking errors rather than optimizing planning-level objectives such as traversal time or motion efficiency, and when applied to navigation, they usually rely on a preplanned trajectory that is subsequently tracked by the controller (Purwin and D’Andrea (2011); Zhong et al. (2025)); in this case, the improvement mainly occurs at the execution layer, while the traversal-time optimization remains separated from the learning process. These challenges motivate the proposed VIP framework, which extends iterative learning from trajectory tracking to planning-oriented navigation by updating the planning command while maintaining computational efficiency. 
+
+3 Preliminaries 
+
+3.1 Definitions in robotic navigation 
+
+In the field of mobile robotics, various approaches have been proposed for planning feasible paths and optimizing motion primitives. The classic navigation framework for the robot typically comprises three components: perception, planning, and control. From the perception layer, the space occupied by obstacles in the environment is obtained, and defined as Ω ⊂ R3.The traversable area is defined as C = S − Ω, C ⊂ R3,which indicates the difference set from the whole space 
+
+S ⊂ R3 to Ω ⊂ R3. In the navigation mission, the robot needs to move from the starting point bp ∈ R3 to the ending point gp ∈ R3 without collision as soon as possible. Considering the obstacle-free configuration space C ⊂ R3,with a path planner, a feasible smooth path V ⊂ C from start to end is obtained. Let γ (s) : R≥0 → R3 be a parametric representation for V, with s ∈ [0 , L ] being the arc length, and 
+
+L denoting the path length. For a robot at any position p, as shown in Fig. 3, the parameters of the closest points on the curve is defined as 
+
+l (p) : R3 → R≥0, where the multivalued l is discussed in Rezende et al. (2021). The closest point on γ is defined through the mapping m : p ∈ R3 → γ (l), that 
+
+l (p) = arg min 
+
+> s∈[0 ,L ]
+
+∥p − γ (s) ∥2
+
+m (p) = γ (l) ,
+
+(1)  
+
+> Prepared using sagej.cls
+
+6 Journal Title XX(X) 
+
+where the corresponding arc length of γ (l) from γ (0) to 
+
+γ (l) is denoted as l. This mapping gives the robot a way to index the spatial coordinate l along the path. The tangent vector of the closest point on the path is defined through 
+
+tc (l) = D lγ (l) , (2) which indicates the unit tangent direction (Rezende et al. (2021)) at the location l along γ. Then the tangent direction of the robot is defined as 
+
+tc (p) = tc (l (p)) . (3) More details about the properties can be found in Rezende et al. (2021); Quan et al. (2023). An example of the definitions above is also illustrated in Fig. 2 and Fig. 3. 
+
+3.2 Virtual tube for navigation 
+
+In the previous work, the virtual tube was proposed for 
+
+planning (Mao et al. (2024)) and passing-through control 
+
+(Gao et al. (2025)). Restricting robots within the safety zone can simplify control, requiring only that no collisions occur between robots and the boundary of the virtual tube. 
+
+> 0,
+> γq
+> ,m
+> γq
+> 0
+> 1
+> ∂l
+> p
+
+( )m p   
+
+> Figure 2. Modified by (Mao et al. (2024)). Definition of the virtual tube for spatial navigation. The tube is constructed from the terminal cross-sections
+
+C0 and C1, the generator curve γ,intermediate cross-sections Cl, providing a safe traversal space for subsequent single-robot and swarm navigation. 
+
+The related definitions of the virtual tube for planning are drawn to propose the following content. As shown in Fig. 2, the virtual tube is defined as a set in an n-dimensional space represented by a 4-tuple (C0, C1, f , h) where C0, C1
+
+are terminals and disjoint bounded convex subsets, f is a diffeomorphism that C0 → C 1, and there is a set of order pairs P = {(q0, qm) |q0 ∈ C 0, qm = f (q0) ∈ C 1}. As for any q0 ∈ C 0 and the fixed diffeomorphism f , h denotes the map P × [0 , L ] → T , so the virtual tube is defined as 
+
+T = {h (q0, qm, l ) | (q0, qm) ∈ P , l ∈ [0 , L ]} (4) where l denotes curve parameter in (Mao et al. (2024)). Given an order pair (q0, qm), h (q0, qm, l ) denotes the path with q0 as the starting point and qm as the end point, so the generator curve γ (l) starting at q0,γ is also denoted as h (q0,γ , qm,γ , l ), where l denotes the arc length in the following content. Then, the cross section Cl at l is defined as 
+
+Cl = {h (q0, qm, l ) | (q0, qm) ∈ P} . (5) The surface of T is the boundary, defined as ∂T . To plan a virtual tube in obstacle environments, the Tube-RRT* algorithm Mao et al. (2025) is proposed as a implement, which is utilized in the simulations and experiments. 
+
+3.3 Transformation from Time Domain to Space Domain 
+
+The conversion between the time coordinate t and space coordinate l (Xu and Huang (2008)) is denoted as 
+
+Dt = ddt = ddl
+
+dl
+
+dt = vDl, (6) where v = D tl denotes the progression speed along the spatial coordinate. For the single robot, l is the closest-point coordinate on the path and v is the executable tangential speed. For the swarm, l is the effective macroscopic progression coordinate associated with the common traversal field. Since l(t) = R t 
+
+> 0
+
+v(s) d s, the time-to-space transformation is well defined whenever v > 0.This positivity is guaranteed by selecting a strictly positive traversal command and restricting the analysis to the bounded operating set specified below. Therefore, l(t) is strictly increasing and admits a global inverse, and any time-domain signal can be expressed as a function of l.
+
+4 Problem formulations 
+
+This section introduces the two navigation formulations before extracting the common energy systems analyzed in 
+
+Section 5 . The single-robot formulation is expressed by a finite-dimensional path error, whereas the robotic-swarm formulation is expressed by a distribution error. Starting from the concrete closed-loop systems makes the origin and physical meaning of the common model explicit. For both formulations, the executable velocity is generated by the radial saturation mapping 
+
+sat( x, v m) = 
+
+(
+
+x, ∥x∥ ≤ vm,vmx/∥x∥, ∥x∥ > v m,κv (x) = 
+
+(
+
+1, ∥x∥ ≤ vm,vm/∥x∥, ∥x∥ > v m,
+
+(7) where vm > 0 is the executable velocity limit, and 
+
+sat( x, v m) = κv (x)x.
+
+4.1 Single-robot formulation Saturation p
+
+ m p ct  
+
+> tr
+> 
+> 
+> c
+> v
+> cvn
+> v
+> t
+> v
+> 
+> l
+> Figure 3. Geometric decomposition of the single-robot command. The nominal component regulates path error, the traversal component advances the robot along the tangent direction, and saturation produces the executable command.
+
+Consider a robot whose position and velocity satisfy 
+
+˙p = v, ˙v = τ (vc − v) , (8) where τ > 0 represents the closed-loop velocity response. With the path and closest-point map defined in Section 3.1  
+
+> Prepared using sagej.cls
+
+7
+
+and Fig. 3, define 
+
+ep = m(p) − p, V s = 12 e2p, e p = ∥ep∥. (9) Here Vs is a function measuring deviation from the geometric path rather than mechanical energy. 
+
+Assumption 1. The low-level loop satisfies v = vc + δv
+
+with ∥δv∥ ≤ ε on the considered operating set. 
+
+The controller for navigating from start to the end is designed as 
+
+vc(p) = sat ( v′
+
+> c
+
+(p), v m) ,
+
+v′
+
+> c
+
+(p) = v′
+
+> n
+
+(p) + v′
+
+> t
+
+(p),
+
+v′
+
+> n
+
+(p) = −kpVs∇pep(p),
+
+v′
+
+> t
+
+(p) = vt(l(p)) tc(p).
+
+(10) Here kp > 0 is the gain, the nominal component v′ 
+
+> n
+
+corrects the path error, whereas v′ 
+
+> t
+
+determines the progression rate along the path, and vt = ∥v′
+
+> t
+
+∥ is the traversal-speed profile. Let vn = ∥v′
+
+> n
+
+∥. Using eTp tc = 0 and allowing a bounded velocity-execution error, the resulting dynamics is 
+
+˙Vs = −λsκv v3/2n + εsv1/2n , (11) where λs > 0 and εs is bounded. Thus, increasing vt may reduce κv under active saturation and leave less command authority for path-error correction. Appendix A gives the complete calculation. 
+
+4.2 Robotic-swarm formulation 
+
+Let T ⊂ R3 be a bounded, connected virtual-tube domain with a Lipschitz boundary. The collective state of the swarm is represented by a normalized density ρ(t, p), satisfying 
+
+ρ ≥ 0,
+
+Z
+
+> T
+
+ρ(t, p) d p = 1 . (12) For the microscopic motion ˙pi = vc(t, pi), i = 1 , . . . , M ,the corresponding macroscopic density evolves according to the continuity equation (Krishnan and Martinez (2018); Lv et al. (2024)) 
+
+∂ρ ∂t = −∇ p · (ρvc) , p ∈ T ,
+
+nTρvc = 0 , p ∈ ∂T .
+
+(13) Here, n denotes the unit inner normal to the boundary ∂T .During the analyzed traversal interval, the density support remains away from the terminal cross sections, so the boundary term generated by integration by parts vanishes without prohibiting forward motion. The Wasserstein-space interpretation of (13) and the finite-swarm density reconstruction are provided in Appendix B .Let ρd(t, p) be a continuously differentiable desired density satisfying 
+
+ρd ≥ 0,
+
+Z
+
+> T
+
+ρd(t, p) d p = 1 . (14) Its construction from the occupied cross sections of the virtual tube, followed by a feasible forward shift along the tube, is given in Appendix B . The shift provides a feasible mechanism for limiting aggregate antagonism between the density-regulation and traversal fields; it does not impose a pointwise alignment requirement. Define the density error and the associated energy as 
+
+ϕ(t, p) = ρ(t, p) − ρd(t, p), V m = 12
+
+Z
+
+> T
+
+ϕ2(t, p) d p.
+
+(15) Because both densities are normalized, R 
+
+> T
+
+ϕ dp = 0 . The nominal regulation component and the traversal component are selected as 
+
+v′ 
+
+> n
+
+≜ v′ 
+
+> ϕ
+
+= −kρ
+
+∇pϕρ , v′ 
+
+> t
+
+= vttc, kρ > 0. (16) The analysis is restricted to an operating set on which ρ is positive over the swarm support; in implementation, ρ in the denominator can be replaced by ρ + δρ with a small δρ > 0.For a stationary ρd, the nominal density-regulation field is exponentially dissipative: 
+
+˙Vm ≤ − 2kρ
+
+C2P
+
+Vm, (17) where CP > 0 depends only on T . The exact identity and its Poincar´ e–Wirtinger derivation are given in Appendix B .To regulate the density while moving the swarm forward, apply the pointwise saturated composite field 
+
+vc(t, p) = κv (t, p) ( v′ 
+
+> n
+
++ v′
+
+> t
+
+) ,κv (t, p) = min 
+
+
+
+1, vm
+
+∥v′ 
+
+> n
+
++ v′
+
+> t
+
+∥
+
+
+
+. (18) Let vn ≜ kρ∥∇ pϕ∥L2(T ). Direct differentiation of Vm along (13) and (18) yields 
+
+˙Vm = − 1
+
+kρ
+
+¯κv v2n + βρ
+
+kρ
+
+vtvn + ε1,m, (19) where ¯κv ∈ (0 , 1] represents the effect of velocity saturation, 
+
+βρ characterizes the interaction between forward traversal and density regulation, and ε1,m accounts for variation of the desired density. These coefficients are bounded on the considered compact operating set. Their exact integral definitions, bounds, and the complete calculation are given in Appendix B .
+
+4.3 Common energy system 
+
+Although the two formulations evolve on different state spaces, their regulation performance is characterized by the scalar energies defined in (9) and (15). Then the unified energy 
+
+V ≜
+
+(
+
+Vs, for the single robot 
+
+Vm, for the robotic swarm (20) is introduced. By construction, V is quadratic in the corresponding regulation error and satisfies V ≥ 0 with V =0 ⇐⇒ ep = 0 or ϕ = 0 , and V > 0 otherwise. Hence, V is positive definite with respect to the corresponding regulation error. The term energy is used in this Lyapunov sense rather than in the sense of mechanical energy.  
+
+> Prepared using sagej.cls
+
+8 Journal Title XX(X) 
+
+From above, equations (10) and (18) share the command decomposition 
+
+v′ 
+
+> c
+
+= v′ 
+
+> n
+
++ v′
+
+> t
+
+, vc = sat ( v′
+
+> c
+
+, v m) , (21) where v′ 
+
+> n
+
+dissipates the energy by regulating the corre-sponding error, whereas v′ 
+
+> t
+
+generates the overall navigation motion. 
+
+Proposition 1. For the single-robot and robotic-swarm formulations, the energy V satisfies 
+
+˙V = −λ1κE vp 
+
+> n
+
++ εv o 
+
+> t
+
+vq 
+
+> n
+
++ ε1, (22) 
+
+where λ1 > 0, p > q ≥ 0, o ≥ 0, 0 < κ E ≤ 1, and ε and ε1
+
+are bounded on a compact operating set. 
+
+Proof. See Appendix C .Equation (22) consists of a nominal energy-dissipation term and bounded coupling and residual terms. In the nominal case ε = ε1 = 0 ,
+
+˙V = −λ1κE vp 
+
+> n
+
+≤ 0. (23) Moreover, under the path-geometry and normalized-density assumptions stated above, vn = 0 if and only if V = 0 .Consequently, 
+
+V > 0 = ⇒ ˙V < 0, V = 0 = ⇒ ˙V = 0 , (24) so V is a Lyapunov function for the single-robot error dynamics and a Lyapunov function for the swarm error dynamics. Under bounded nonideal effects, (22) gives the corresponding perturbed energy dynamics. On the considered compact operating set, boundedness of the unsaturated composite command ensures that there exists 
+
+κE > 0 such that 
+
+0 < κ E ≤ κE ≤ 1. (25) If |ε| ≤ ¯ε, |ε1| ≤ ¯ε1, and vt ≤ ¯vt, then 
+
+˙V ≤ − λ1κE vp 
+
+> n
+
++ ¯ ε¯vo 
+
+> t
+
+vq 
+
+> n
+
++ ¯ ε1. (26) Since p > q , the dissipative term dominates the lower-order coupling term for sufficiently large vn, yielding negative energy drift outside a bounded neighborhood determined by 
+
+¯ε and ¯ε1.The spatial movement formulated by VIP is generated by the executable traversal component. Accordingly, both formulations use 
+
+v = κE vt. (27) For the single robot, this relation follows by projecting the saturated command onto tc, since the nominal regulation component is normal to the path. For the swarm, v denotes the effective macroscopic progression rate associated with the same energy-weighted saturation coefficient appearing in (19). Thus, the energy dynamics and the spatial coordinate use the same effective command scaling. By designing vt ≥ vt > 0, (25) and (27) give 
+
+v ≥ κE vt > 0, (28) which guarantees the invertibility required by the time-to-space transformation in (6). VIP is subsequently developed directly from the common energy dynamics (22). 
+
+4.4 Regularity and saturation properties 
+
+The following derivatives are understood almost everywhere because the radial saturation map is piecewise continuously differentiable. For the swarm, differentiation with respect to 
+
+V follows the radial scalarization of the current regulation field specified in Appendix D .
+
+Proposition 2. Suppose that the nominal-command magni-tude is nondecreasing with the energy. For the single robot, use the normal–tangent command decomposition in (10). For the swarm, construct the desired density by the forward-shift design in Appendix B.2 , with the shift selected according to (82). Then 
+
+∂κ E
+
+∂V ≤ 0, ∂κ E
+
+∂v t
+
+≤ 0, ∂(κE vt)
+
+∂v t
+
+≥ 0. (29) 
+
+The inequalities are strict whenever the corresponding regulation or traversal component is nonzero on a set of nonzero weighted measure. 
+
+Proof. See Appendix D .
+
+Remark 1. For the single robot, the required signs follow from the orthogonal command construction and therefore introduce no additional geometric condition. For the swarm, they follow from the integral acute-angle criterion used to select the forward shift of the desired density. This criterion constrains only the weighted aggregate interaction between the two fields; local opposing motions remain admissible during density redistribution. This design aims to ensure that, during the optimization process, all variables can be optimized by optimizing only one variable. In other words, it achieves this by saturating and harmonizing the relationships between variables. 
+
+4.5 Problem formulation 
+
+By combining Proposition 1, the saturation relation in 
+
+Remark 1 , and (27), the traversal time T = R L 
+
+> 0
+
+v−1dl can be expressed in the spatial domain. Accordingly, the navigation problem is formulated in the following unified integral form: 
+
+min  
+
+> vt(l), l ∈[0 ,L ]
+
+J =
+
+Z L
+
+> 0
+
+ 1
+
+κE vt
+
++ kV V
+
+
+
+dl, 
+
+s.t. (22) , ∥vc∥ ≤ vm,
+
+(30) where kV > 0 is a weighting coefficient that balances traversal efficiency and navigation safety. The term 1/(κE vt) represents the local traversal-time cost per unit path length; minimizing its spatial integral encourages a larger admissible tangential velocity and, consequently, a shorter overall traversal time. The term 
+
+kV V penalizes the accumulated energy-like state deviation along the route, thereby discouraging excessive deviation from the desired navigation state and improving the safety and regularity of the resulting motion. Meanwhile, through 
+
+Proposition 1 , the original system dynamics are equivalently represented by the spatial energy model (22), allowing the navigation performance and system evolution to be optimized within a unified energy-based formulation.  
+
+> Prepared using sagej.cls
+
+9
+
+5 VIP: variation-based iterative-learning planning 
+
+This section develops VIP in two layers. The model-based variation law provides a theoretical reference direction in the function space, whereas the model-free law approximates that direction from the energy profile recorded during a rollout. The latter is the practical mechanism used to achieve 
+
+low computational cost and online model-free learning 
+
+across heterogeneous tasks. 
+
+5.1 Preliminary 
+
+Firstly, the following lemmas are presented (Debnath and Mikusinski (2005); Rafajłowicz and Rafajłowicz (2018)), which are well known. For a given vt ∈ L 2(0 , L ), define the Hamiltonian Hof J
+
+as 
+
+H (V, v t, ψ ) = 1
+
+κE vt
+
++ kV V + ψDlV, (31) where DlV = ˙V /v follows from (6). The corresponding adjoint variable ψ is determined by 
+
+Dlψ = − ∂H ∂V , ψ (L) = 0 . (32) 
+
+Lemma 1. The Gateaux differential of J at vt ∈ L 2 (0 , L )
+
+in the direction v ∈ L 2 (0 , L ) has the following form: 
+
+dJ (vt + ϵv )dϵ |ϵ=0 =
+
+Z L
+
+> 0
+
+F (V, v t, ψ ) v (l) d l. (33) 
+
+If the Frechet derivative of J exists, then F in this case is equal to 
+
+F (V, v t, ψ ) = ∂H (V, v t, ψ )
+
+∂v t
+
+. (34) 
+
+Lemma 2. Suppose that J is Fr´ echet differentiable at vt
+
+and that F (V, v t, ψ ) is its L2-gradient. If F (V, v t, ψ )̸ ≡ 0,then 
+
+v = −F (V, v t, ψ ) (35) 
+
+is a descent direction of J at vt. If F (V, v t, ψ ) ≡ 0, then vt
+
+satisfies the first-order stationarity condition. 
+
+The optimization process is illustrated in Fig. 4, where 
+
+F acts as variation gradient flow to optimize J from a functional perspective. 
+
+5.2 Model-based VIP 
+
+5.2.1 Variation Using (27), the time-to-space transforma-tion gives 
+
+DlV = −λ1κE vp 
+
+> n
+
++ εv o 
+
+> t
+
+vq 
+
+> n
+
++ ε1
+
+κE vt
+
+. (36) In the following partial-derivative calculation, λ1, p, q , and 
+
+o are fixed parameters, vn = vn(V ), and κE = κE (V, v t, l ).The bounded coefficients ε(l) and ε1(l) are treated as exogenous spatial profiles during one rollout. This is the same dependence convention used in the model-free sign analysis below. By introducing the Hamiltonian H with (36), there exists 
+
+H = 1
+
+κE vt
+
++ kV V
+
+| {z }
+
+> H1
+
++ψ(l) −λ1κE vp 
+
+> n
+
++ εv o 
+
+> t
+
+vq 
+
+> n
+
++ ε1
+
+κE vt
+
+| {z }
+
+> H2
+
+, (37) ( ) 
+
+         
+
+> t,0 ,0, Lvll1. Initial the profile
+> 2. Forward rollout DlVVv=
+> 3. Backward adjoint & gradient
+
+( )          
+
+> ,t
+> D,0ln k
+> HVLFHv
+> = −  ==  
+> 4. Learning & update
+
+( ) ( ) ( )             
+
+> 1,t, +1 t, kknkFlvlvlb=−
+> 4. Learning & update
+
+( )  
+
+> t, kvl
+
+( )   
+
+> t, +1 kvl
+
+Figure 4. Workflow of model-based optimization. The profile is initialized, propagated forward, corrected with the backward adjoint and gradient, and iteratively updated until convergence. 
+
+and the optimal condition is written as 
+
+Dlψ (l) = − ∂H ∂V = − ∂H 1
+
+∂V − ψ (l) ∂H 2
+
+∂V 
+
+= W (l) + ψ (l) P (l)
+
+(38) with W (l) = −∂H 1/∂V and P (l) = −∂H 2/∂V .The Gateaux differential is then calculated 
+
+Fn (l) = ∂H ∂v t
+
+= ∂H 1
+
+∂v t
+
++ ψ (l) ∂H 2
+
+∂v t
+
+= M (l) + ψ (l) N (l)
+
+(39) with M (l) = ∂H 1/∂v t and N (l) = ∂H 2/∂v t.Let {vt,k } denote the sequence of commands generated through iterative learning, where k ≥ 0 is the learning-iteration index. For a given iterate vt,k , applying Lemma 1 
+
+along the direction v = −Fn,k gives 
+
+dJ (vt,k − ϵF n,k )dϵ |ϵ=0 = −
+
+Z L
+
+> 0
+
+F 2
+
+> n,k
+
+(l)d l ≤ 0. (40) Thus, by Lemma 2 , −Fn,k provides a local steepest-descent direction of J. Taking a finite step along this direction yields the learning law 
+
+vt,k +1 (l) = vt,k (l) − b1Fn,k (l), (41) where b1 > 0 is the learning step size and k denotes the learning-iteration index. So from (39) there exists 
+
+vt,k +1 (l) = vt,k (l) − b1 (Mk (l) + ψk (l) Nk (l)) . (42) By solving (38), the adjoint variable is obtained as 
+
+ψk (l) = eR l  
+
+> 0Pk(s)d s
+
+Z l
+
+> 0
+
+Wk (s) e−R s   
+
+> 0Pk(σ)d σ
+
+ds + b2
+
+!
+
+(43) where b2 = ψ (0) > 0 is selected so as to ensure ψ (L) = 0 .After finding such b2 and substituting it into (43), there exists the “reverse” expression 
+
+ψk (l) = −eR l  
+
+> 0Pk(s)d s
+
+Z Ll
+
+Wk (s) e−R s   
+
+> 0Pk(σ)d σ
+
+ds. (44)  
+
+> Prepared using sagej.cls
+
+10 Journal Title XX(X) 5.2.2 Convergence 
+
+Theorem 1. Assume that J is bounded from below and that its Fr´ echet derivative with respect to vt is Fm-Lipschitz continuous on the considered neighborhood. For the model-based IL law (42), if 0 < b 1 < 2/F m, then 
+
+{J(vt,k )} is monotonically non-increasing and convergent, and lim k→∞ ∥Fn,k ∥L2(0 ,L ) = 0 .
+
+Proof. See Appendix E .
+
+5.3 Model-free VIP 
+
+The model-based law gives the exact functional-gradient direction, but its implementation requires κE , the energy modeling, their derivatives, and the adjoint variable. The model-free design therefore uses the model-based result only to determine how the update direction should change with the recorded energy. No analytical derivative is evaluated during implementation. 
+
+5.3.1 Approximate learning law Using v = κE vt, the two Hamiltonian terms in (37) can be written directly as 
+
+H1 = 1
+
+κE vt
+
++ kV V, H2 = − λ1vp
+
+> n
+
+vt
+
++ εv o−1t vq
+
+> n
+
+κE
+
++ ε1
+
+κE vt
+
+.
+
+(45) This form is valid for both formulations: κE = κv for the single robot and κE = ¯ κv for the swarm. During one rollout, 
+
+vn = vn(V ), while ε and ε1 are treated as bounded spatial profiles, consistently with the model-based calculation. The direct traversal-time contribution to the gradient in (39) is 
+
+M (l) = ∂H 1
+
+∂v t
+
+= − 1(κE vt)2
+
+∂(κE vt)
+
+∂v t
+
+≤ 0,
+
+(46) where the inequality follows from Proposition 2 . Therefore, increasing the traversal command can only increase or maintain the executable traversal speed, and consequently can only decrease or maintain the local traversal-time cost 
+
+1/v .Differentiating H2 with respect to vt gives 
+
+N (l) = ∂H 2
+
+∂v t
+
+= λ1vp
+
+> n
+
+v2t
+
++ εv q
+
+> n
+
+ (o − 1) vo−2t
+
+κE
+
+− vo−1t
+
+κ2
+
+> E
+
+∂κ E
+
+∂v t
+
+
+
+− ε1
+
+(κE vt)2
+
+∂(κE vt)
+
+∂v t
+
+.
+
+(47) The first term in (47) is positive and proportional to vp
+
+> n
+
+. The remaining terms contain either vq 
+
+> n
+
+or the bounded residual ε1.Since p > q , vt and κE are bounded away from zero by (25)– (28), and the derivatives of κE are bounded on the compact operating set, the positive regulation term becomes dominant as vn increases. To determine the sign of the adjoint variable, note that 
+
+W (l) = − ∂H 1
+
+∂V 
+
+= 1
+
+κ2 
+
+> E
+
+vt
+
+∂κ E
+
+∂V − kV
+
+≤ − kV < 0,
+
+(48) where ∂κ E /∂V ≤ 0 follows from Proposition 2 : pointwise orthogonality gives the result for the single robot, while the integral acute-angle design in Appendix B.2 gives it for the swarm. Therefore, the original requirement kV > 0 is sufficient; no additional lower bound on the objective weight is introduced. The coefficient P (l) = −∂H 2/∂V remains bounded on the same compact operating set; its sign is not required. From the reverse adjoint expression (44), W (l) < 0
+
+and ψ(L) = 0 imply 
+
+ψ(l) ≥ 0, l ∈ [0 , L ]. (49) The sign transition of the exact model-based direction now follows without introducing task-specific sensitivity variables. From (39), 
+
+Fn(l) = M (l) + ψ(l)N (l). (50) When the energy is small, the regulation command vn is small and the nonpositive traversal term M favors increasing 
+
+vt whenever additional progression authority is available. As the energy increases, vn increases and the positive vp 
+
+> n
+
+term in 
+
+N eventually dominates the lower-order and bounded terms. Since ψ ≥ 0, the exact gradient can consequently change from negative to positive. This gives the same acceleration– deceleration principle for both Vs and Vm: accelerate when the recorded energy is small and decelerate when regulation requires more command authority. The approximate model-free learning law is therefore designed as 
+
+vt,k +1 = vt,k − b3g (ζk) , (51) where b3 > 0 and ζk ≜ keVk, with ke > 0 mapping the energy to a common dimensionless coordinate. The scaling coefficient ke is distinct from the single-robot regulation gain kp in (10). The function g(ζk) increases vt when the normalized energy coordinate is small, decreases it when the coordinate is large, and leaves it unchanged inside the admissible band. Specifically, g(ζ) is designed to satisfy 
+
+g(ζ) = 0 , ζ ∈ [ζmin , ζ max ],
+
+0 ≤ Dζ g ≤ β, Dζ g = 0 ⇐⇒ ζ ∈ [ζmin , ζ max ], (52) where ζmin , ζ max , β ∈ R+ are design constants. Because 
+
+vn is nondecreasing with respect to V , the same energy band represents the sign-transition region of the model-based direction after scaling. The condition vn ≥ vm at ζ =
+
+ζmin can be used to place the lower boundary near the onset of saturation. Thus, the recorded-energy law preserves the qualitative direction derived from (46)–(48) without evaluating κE , its derivatives, or the adjoint variable online.  
+
+> Prepared using sagej.cls
+
+11 
+
+Remark 2. Recalling the objective interaction represented by (22), the proposed model-free law also accommodates the non-conflicting case ∂ ˙V /∂v t ≤ 0. If a larger traversal command improves energy dissipation, the recorded Vk
+
+remains small and the learning law does not introduce an unnecessary deceleration correction. The traversal command can therefore increase toward the admissible limit while the energy continues to decrease. Therefore, the proposed learning law is not limited by the design limitations of Proposition 2 . This design is merely for the purpose of simplifying the analysis. 
+
+The model-based calculation establishes the sign change that motivates the update, whereas the practical model-free implementation requires only the spatial energy profile Vk(l)
+
+recorded during the preceding rollout. 
+
+5.3.2 Convergence With the design of the model-free learning law (52), the approximate convergence of the learned traversal command can be stated as follows. 
+
+Theorem 2. Assume that J is bounded from below and that its Fr´ echet derivative with respect to vt is Lipschitz continuous with constant Fm > 0. Suppose that the zero point of the model-based descent direction is contained in the admissible energy band [ζmin , ζ max ]. Then, for a sufficiently small learning gain b3 > 0, the model-free learning law (51) generates a monotonically non-increasing cost sequence {J(vt,k )}. Moreover, lim k→∞ ∥gk∥L2(0 ,L ) =0. Therefore, the learned energy approaches the admissible band determined by keVk(l) ∈ [ζmin , ζ max ].
+
+Proof. See Appendix F .min 
+
+ max 
+
+*
+
+   Energy indicator mid 
+
+ 
+
+> Figure 5. Admissible energy band and approximation offset in the model-free learning law.
+
+Remark 3. As shown in Fig. 5, the parameters ζmin and 
+
+ζmax in (52) determine the admissible energy band of the model-free learning law. Since the exact zero point of the model-based descent direction is generally unavailable, the designed band may deviate from the ideal stationary point. Let ζ∗ denote the zero point of the model-based descent direction, namely, 
+
+Fn,k (ζ∗) = 0 , (53) 
+
+and let ζmid = ( ζmin + ζmax ) /2 denote the center of the designed admissible band. If the learned energy converges to a point ζ∞ ∈ [ζmin , ζ max ], then it can be written as 
+
+ζ∞ = ζ∗ + δζ , (54) 
+
+where δζ denotes the offset between the learned solution and the zero point of the model-based descent direction. The offset satisfies 
+
+|δζ | ≤ | ζmid − ζ∗| + ζmax − ζmin 
+
+2 . (55) 
+
+Therefore, the approximation error is determined by both the center offset |ζmid − ζ∗| and the band width ζmax − ζmin .Let bJ(ζ) denote the restriction of J to the local one-parameter family indexed by the normalized energy coordinate. Since the Fr´ echet derivative is Lipschitz continuous and Fn,k (ζ∗) = 0 , the local cost variation satisfies 
+
+bJ(ζ∞) − bJ(ζ∗) ≤ Fm
+
+2 ∥δζ ∥2
+
+> L2(0 ,L )
+
+. (56) 
+
+Hence, a smaller band width and a more accurate band center lead to a smaller sub-optimality gap. In practice, 
+
+[ζmin , ζ max ] provides a tunable compromise: a narrow band improves approximation accuracy, whereas a wider band improves robustness to modeling uncertainty, measurement noise, and iteration fluctuations. 
+
+5.3.3 Time complexity The computational efficiency of the proposed model-free VIP mainly stems from its data-driven and pointwise update structure. After each trial, only the energy-related quantities distributed along the spatial coordinate are recorded, based on which the traversal command is updated. At each discretized point, the update requires only the evaluation of the scalar function g(·)
+
+and an algebraic correction of vt,k . Therefore, no adjoint equation, system Jacobian, lifted input–output model, matrix inversion, or constrained optimization problem is required. In contrast, conventional trajectory optimization methods usually parameterize the trajectory using finite-dimensional variables. For example, polynomial-based methods optimize polynomial coefficients or waypoints subject to boundary, continuity, dynamic-feasibility, and collision-avoidance con-straints. MPCC optimizes predicted states and control inputs over a finite horizon while considering system dynamics, contouring errors, and input constraints. These coupled optimization problems generally require repeated gradient evaluations, matrix factorizations, or numerical iterations, and their computational burden increases with the number of decision variables and constraints. Depending on the problem formulation and numerical solver, the resulting complexity can exhibit superlinear growth, such as O(n2)
+
+or higher in some cases, with n path segments. VIP instead optimizes the traversal command directly in the function space and updates its spatial profile using the recorded energy information. It therefore avoids repeatedly solving coupled optimization problems. Since each spatial point requires only a constant number of scalar evaluations and algebraic operations, the computational complexity of one learning iteration is O(n). The memory complexity is also O(n), as only the traversal-command profile and the recorded energy-related quantities need to be stored. If the learning process terminates after at most k∗ iterations, the total update complexity is O(k∗n).Thus, the computational advantage of VIP arises from replacing the coupled optimization of finite-dimensional trajectory variables with pointwise scalar evaluations and explicit algebraic updates, making it suitable for computation-constrained implementations. This analysis considers only the computational overhead of the learning update. The execution time of a physical experiment or simulation rollout is determined by the plant or simulator and is not included in O(k∗n). 
+
+> Prepared using sagej.cls
+
+12 Journal Title XX(X) Learning Term    
+
+> Iteration
+> Spatial Coordinate
+> ……
+> Energy Record
+> Iteration
+> Spatial Coordinate
+> ……
+> Iteration
+> Passing Time
+> Variation
+> Rollout
+> Record
+> Learning l0L0k=1k=*
+> kk=0L0LJ
+> Iteration 1
+> Variation Flow
+> Optimal
+
+1
+
+2
+
+3
+
+4
+
+5Learning Term across Iterations 
+
+> Single/Multi Robots Rollout
+> Energy Record across Iterations
+> Objective Variation
+> Update through Learning Law L0
+
+Figure 6. Structure of VIP and its two rollout modes. The energy may describe path tracking error or swarm-distribution error. In the model-in-the-loop mode, rollouts are generated by a nominal simulator before deployment. In the robot-in-the-loop mode, the energy profile is recorded during a physical traversal and the command is updated before the next repeated traversal. Both modes use the same spatial model-free update, whose role is to determine how fast the robot or swarm traverses each path location. 
+
+5.4 Implementation modes of VIP 
+
+Fig. 6 summarizes a common rollout–record–evaluate– update structure. The traversal profile vt,k (l) is discretized over l ∈ [0 , L ] during the kth rollout. The geometric planner or virtual tube determines where motion is feasible, while VIP learns how fast the system should traverse each location. Two rollout modes are distinguished. In the model-in-the-loop offline mode , a simulator or prediction model generates the energy profile Vk(l) before physical execution. The model is used only as a rollout generator; the update itself remains the model-free law in (51). This mode is suitable when repeated physical trials are expensive. In the robot-in-the-loop online mode , the physical robot or swarm completes one traversal, records Vk(l) and Tk, and updates vt,k +1 (l) before the next repeated traversal. Thus, “online” refers to learning from successive real executions rather than to an adaptation occurring continuously within one traversal. Spatial recording aligns rollouts of different durations at the same path locations. At each of the n discretization points, the model-free update evaluates one scalar function 
+
+g(·) and performs one algebraic correction. The same implementation is therefore retained for path tracking error, swarm distribution error, or another energy satisfying 
+
+Section 4 .
+
+6 Single-robot realization and model-free implementation 
+
+The single-robot model, energy, and composite controller have already been introduced in Subsection 4.1. This section only provides the execution condition and the resulting model-free implementation; it does not repeat the unified system derivation. 
+
+6.1 Energy system verification 
+
+Under Assumption 1 , the path-normal/tangent orthogonality yields the energy model (11), which is the single-robot instance of the unified system (22) with 
+
+p = 32 , q = 12 , o = 0 . (57) The complete derivative calculation is given in Appendix A .The physical interpretation is immediate: increasing vt can reduce κv under saturation and therefore weaken path-error correction. 
+
+6.2 Model-free VIP law 
+
+For the single-robot task, let Vk = Vs,k in the generic law of Subsection 5.3.1. The traversal profile is updated by 
+
+vt,k +1 (l) = vt,k (l) − b3g (keVs,k (l)) . (58) Here ke is the scaling coefficient defined in Subsection 5.3.1, whereas kp remains the single-robot regulation gain in (10).  
+
+> Prepared using sagej.cls
+
+13 
+
+When the measured path energy is below the admissible band, the update increases traversal speed; when the energy exceeds the band, it decreases traversal speed. The law uses the measured Vs,k (l) and does not require τ , λs, or εs for online implementation. A derivative-enhanced implementation may use g(ζd,k ),where ζd,k = keVs,k + kd ˙Vs,k , and kd > 0. Proposition 2 
+
+gives the explicit local saturation sensitivity 
+
+γ1 ≜
+
+∂
+
+
+
+κv v3/2n
+
+
+
+∂v t
+
+= − κv v3/2n vt
+
+v2n + v2t
+
+< 0 (59) in the active-saturation region with vn, v t > 0. The following result gives a compact boundedness statement; the detailed mean-value expansion is retained in the appendix. 
+
+Theorem 3. Suppose that Assumption 1 holds, the controller is given by (10), and g(ζ) ≥ kg ζ − ζth for some 
+
+kg , ζ th > 0. If the derivative-enhanced update satisfies, uniformly on the considered compact active-saturation set, 
+
+−1 < b 3kg kdλsγ1 < 0, (60) 
+
+then vt,k is uniformly ultimately bounded as k → ∞ .
+
+Proof. See Appendix G .
+
+Remark 4. The VIP update acts on the desired velocity profile and does not require the full robot dynamics. A dynamic platform is included whenever its low-level controller guarantees Assumption 1. Appendix A
+
+gives a standard Lagrangian-system controller as one sufficient construction. In the offline mode, a dynamic model can generate prediction rollouts; in the online mode, the same update is driven directly by recorded physical rollouts. Thus, the dynamic extension is treated as an implementation condition rather than as another independent VIP formulation. 
+
+7 Robotic-swarm model-free implementation and microscopic realization 
+
+The macroscopic density system, energy, and composite velocity field have been established in Subsection 4.2 , while the KDE realization and desired-density construction are detailed in Appendix B . This section therefore retains only the model-free traversal update and the connection between the macroscopic fields and the microscopic distributed controller. 
+
+7.1 Model-free VIP law 
+
+Using Vk = Vm,k in the generic update of Subsection 5.3.1 gives 
+
+vt,k +1 (l) = vt,k (l) − b3g (keVm,k (l)) . (61) The same ke notation is used to scale the swarm energy Vm
+
+to the admissible band; its numerical value may be selected according to the swarm-density tolerance. The parameter mapping in Proposition 1 is 
+
+p = 2 , q = 1 , o = 1 . (62) The update uses the density-error energy Vm,k computed from the KDE density in (74) and does not require online identification of kρ, βρ, or ∂ρ d/∂t .
+
+7.2 Physical interpretation 
+
+The low-altitude air city transport model in Safadi et al. (2023) connects microscopic robot interactions with amacroscopic fundamental diagram relating flow, density, and speed. The diagram indicates that increasing swarm density generally reduces achievable traversal speed. Therefore, the swarm exhibits the same competition represented by (22): the common traversal command should increase when the density error is small and decrease when additional distribution-regulation authority is needed. Transpor                                      
+
+> 11 Y. Safadi et al.
+> Fig. 7. Example 1: LAAT simulation MFD results for the relationship between Flow 𝑄 , Density 𝐾 , and Speed 𝑈 . D
+> (720 ,900 ,…,7560) [aircraf t∕h] ) are used to obtain the results.
+> Example 5: The microscopic LAAT model with destination lines , described in Section 2.2, is examine in Section 4.1, and the tested network is 0.5 [km] by 0.5 [km] . The results are shown Example 6: The microscopic LAAT model in Section 2.1 is tested for a 3D network with a motion can travel on X-Y-Z space. The network size is set to 0.5 [km] by 0.5 [km] by 0.1 [km
+> 0.5 [h] . The other settings are according to Section 4.1. The results are shown in Secti
+> 4.2.1. Example 1: constructing an MFD
+> In this example, a 2 [km] by 2 [km] area of airspace network is considered. The full shape of the scenarios, as each scenario has a different maximum inflow rate in the aircraft inflow profile, inflow rate value 𝑄 in ,mvaries from 720 [aircraf t∕h] to 7560 [aircraf t∕h] 4(0.2 [aircraf t∕s] to 2.1 [airc
+> results of the MFD relationship between speed, density, and flow, see (26), (27), (29), respective aggregated value of 1 [min] of simulated data. Similar to ground traffic flow, the presented MFD
+> by an exponential function as observed in Fig. 7, where its maximum flow point divides the shap and congestion. The maximum flow value represents the network’s capacity.
+> 4Note that the maximum inflow rate value in a unit of [aircraf t∕h] is equal to the same value for total inflow in u
+> profile in Fig. 6 and simulation duration of 𝑡 f= 1 .5 [h] .
+
+Figure 7. Qualitative inverse relationship between swarm density and traversal speed revealed by the macroscopic fundamental diagram (Safadi et al. (2023)). 
+
+7.3 Relationship with a distributed virtual tube controller 
+
+A distributed vector-field controller for guiding a robotic swarm through a curved virtual tube is developed in Quan et al. (2023); Gao et al. (2025). Its robot-avoidance and tube-keeping components are 
+
+urep ,i = − X
+
+j∈N 
+
+∂V rep ,ij 
+
+∂∥epij ∥
+
+epij 
+
+∥epij ∥ ,
+
+ut,i = ∂V t,i 
+
+∂d t,i 
+
+ep(pi)
+
+∥ep(pi)∥ ,
+
+(63) where epij = pi − pj , N is the neighbor set, and dt,i is the distance margin to the tube boundary. The forward component is u1,i = vmtc, which is parallel to the macroscopic traversal term v′
+
+t in (18). Differentiating (74) gives 
+
+∇pρ(p) = − 1
+
+M h 5
+
+X
+
+j∈N 
+
+K
+
+ p − pj (t)
+
+h
+
+
+
+(p − pj ). (64) Thus, at robot i, the diffusion component v′
+
+ϕ has the same local repulsive structure as urep ,i . The macro–micro correspondence is therefore: (i) v′
+
+t determines the learned common forward speed, corresponding to u1,i ; (ii) v′
+
+ϕ
+
+regulates density, corresponding to inter-robot dispersion; and (iii) ut,i enforces the local tube boundary. VIP modifies only the common traversal magnitude, while the established microscopic controller maintains local safety and distribution. 
+
+Prepared using sagej.cls 14 Journal Title XX(X) 
+
+8 Simulations and comparisons 
+
+To demonstrate the effectiveness and capabilities of the proposed method, this section presents simulations and comparisons for the two energy systems introduced in 
+
+Subsections 4.1 and 4.2 . The corresponding implementation details are given in Sections 6 and 7. The unknown-environment scenarios in Subsection 8.1 evaluate the single-robot case, whereas Subsection 8.2 evaluates swarm navigation in a virtual tube. Together, they assess computational efficiency, traversal-time improvement, and bounded error across different operational scales. 
+
+8.1 Single robot autonomous offline planning in unknown environments 
+
+8.1.1 Simulations in complex environments Simulations are conducted in two random forest environments, denoted as Map 1 and Map 2. The proposed method is evaluated from the start point to the goal point on a workstation equipped with an Intel Core i7-12700F CPU and 16 GB RAM. The algorithm is implemented in C++. Each map has a size of 
+
+40m × 20m × 5m , and the maximum speed is set to 5m /s.Tube-RRT* (Mao et al. (2025)) is first used to generate a feasible path or virtual tube, and VIP is then applied to learn the traversal-speed profile along the spatial coordinate. The simulation results are shown in Fig. 8. In both maps, the robot successfully navigates through obstacle-dense forest-like environments. The generated path or tube provides spatial feasibility, while VIP further adjusts the traversal command according to the local geometric and tracking requirements. In relatively open and smooth regions, the learned traversal command increases the speed to reduce traversal time. In narrow passages or turning regions, the command becomes more conservative, leaving more control authority for path convergence and safety regulation. This behavior is consistent with the energy–traversal trade-off discussed in Subsection 4.1: rapid traversal is encouraged when the tracking energy remains small, whereas deceleration is introduced when large deviation may degrade the stability of path following. The computational results further verify the lightweight property of the proposed method. The planning time is 
+
+0.28ms for 50 waypoints and 0.52ms for 100 waypoints, indicating an approximately linear increase with the number of path points. The average speed reaches 2.98m /s under the maximum-speed constraint of 5m /s. These results are consistent with the complexity analysis in Section 5.3.3 :VIP updates the traversal profile along the spatial coordinate and avoids solving a long-horizon nonlinear optimization problem at each planning step, making it suitable for real-time navigation with dense waypoint information. The related code is open-source and publicly available *.
+
+8.1.2 Comparisons After obtaining the smooth path from a path planner, comparison simulations are conducted utilizing various methods in this subsection. In the obstacle environments shown in Fig. 9, Tube-RRT* is used to plan the virtual tube. Considering both the path length and the volume of openings, the path found by Tube-RRT* algorithm pass through large openings, which are suitable for constructing the virtual tube and for safe navigation. The comparison methods include MPCC (Romero et al. (a) VIP for single drone in random unknown environment 1.  
+
+> (b) VIP for single drone in random unknown environment 2.
+> Figure 8. VIP-based single-drone navigation in two random forest environments.
+
+(2022)) and the polynomial technique with the combination of time-optimal time allocation (Teissing et al. (2024)) and minimum snap trajectory (Mellinger and Kumar (2011)). All methods are implemented in MATLAB, and the simulations are run on Intel(R) Core(TM) i9-10900 CPU @ 2.80 GHz. The optimization problems with MPCC and polynomial are solved with a QP solver Quadprog. The comparisons results are shown in Fig. 9 and Tab. 3, unknown scenarios with 60, 80, and 100 random obstacles in a 230m × 200m × 30m environment are generated, and the maximum speed is set to 10m/s. For traversal time, the proposed VIP demonstrates consistent competitiveness, showing 1.31-1.57% improvements over MPCC and Polynomial methods in the 60-obstacle scenario. While its advantage varies across scenarios (ranging from -1.31% to 1.37% compared to MPCC), it maintains superior performance against Polynomial (up to 6.80% improvement). More strikingly, VIP exhibits exceptional performance in computational efficiency, achieving 47.4-87.7% reductions in average replanning time across all test scenarios compared to both benchmark algorithms. The Polynomial method’s higher replanning time stems from its computationally intensive time-allocation optimization and QP solving. This suggests VIP’s particular strength in real-time applications where rapid replanning is crucial. Especially with the expansion of the number of planning points and the scope, VIP will better demonstrate its advantage in linear complexity. These results collectively demonstrate that VIP offers a favorable balance between path efficiency (traversal time) and computational performance (replanning time), making it particularly suitable for dynamic environments requiring frequent trajectory updates.  
+
+> ∗https://github.com/lyushuli/VIP
+> Prepared using sagej.cls
+
+15 
+
+Table 3. Performance comparison of different algorithms (VIP results in bold with relative change) 
+
+Obstacle Number Traversal Time (s) Avg. Replanning Time (ms) MPCC Polynomial VIP vs. Others MPCC Polynomial VIP vs. Others 
+
+60 34.30 34.39 33.85 -1.31% vs. MPCC -1.57% vs. Poly 5.32 17.66 2.37 -55.5% vs. MPCC -86.6% vs. Poly 80 25.55 27.79 25.90 +1.37% vs. MPCC -6.80% vs. Poly 4.98 21.32 2.62 -47.4% vs. MPCC -87.7% vs. Poly 100 25.05 26.77 25.25 +0.80% vs. MPCC -5.68% vs. Poly 5.44 19.81 2.45 -55.0% vs. MPCC -87.6% vs. Poly (a) VIP with Tube RRT* in 60 obstacles environment.  (b) VIP with Tube RRT* in 80 obstacles environment.  (c) VIP with Tube RRT* in 100 obstacles environment.   
+
+> 0
+> 5
+> 10
+> Speed (m/s)
+> (d) MPCC with Tube RRT* in 60 obstacles environment. (e) MPCC with Tube RRT* in 80 obstacles environment. (f) MPCC with Tube RRT* in 100 obstacles environment.
+> (g) Polynomial with Tube RRT* in 60 obstacles environment.
+> (h) Polynomial with Tube RRT* in 80 obstacles environment.
+> (i) Polynomial with Tube RRT* in 100 obstacles environment.
+
+Figure 9. Numerical comparisons of single robot autonomous navigation in unknown environments. 
+
+8.2 Swarm online learning in the virtual tube 
+
+All swarm simulations in this subsection are implemented in MATLAB and executed on the same Intel(R) Core(TM) i9-10900 CPU @ 2.80 GHz platform. The purpose is to verify whether the proposed learning strategy can be extended from a single robot to a robotic swarm without optimizing the trajectory of each robot individually. In the swarm setting, VIP regulates the macroscopic traversal speed along the virtual tube, while the virtual-tube controller maintains the microscopic distribution and boundary constraints. 
+
+8.2.1 Enhance effectiveness in 2-D virtual tube In this simulation, VIP is used to improve the planning efficiency of a robotic swarm controlled by (Quan et al. (2023); Gao et al. (2025)), as introduced in Section 7.3 . The proposed method uses the recorded data from previous iterations to refine the swarm traversal command. The virtual tube is generated in a 110m × 20m environment, the swarm consists of 30 homogeneous agents, and the maximum speed of each robot is set to 6m /s. 
+
+> Prepared using sagej.cls
+
+16 Journal Title XX(X) 0 10  20  30  40  50  60  70  80  90  100                                                      
+
+> -20
+> -10
+> 0
+> 10
+> 20
+> 30
+> 010 20 30 40 50 60 70 80 90 100
+> -20
+> -10
+> 0
+> 10
+> 20
+> 30
+> 010 20 30 40 50 60 70 80 90 100
+> -20
+> -10
+> 0
+> 10
+> 20
+> 30
+> 010 20 30 40 50 60 70 80 90 100
+> -20
+> -10
+> 0
+> 10
+> 20
+> 30
+> 010 20 30 40 50 60 70 80 90 100
+> -20
+> -10
+> 0
+> 10
+> 20
+> 30
+> 010 20 30 40 50 60 70 80 90 100
+> -20
+> -10
+> 0
+> 10
+> 20
+> 30
+> X [m]
+> Y
+> [m]
+> X [m]
+> Y
+> [m]
+> X [m]
+> Y[m]
+> X [m]
+> Y[m]
+> X [m]
+> Y[m]
+> X [m]
+> Y[m]
+> (a) Comparison at T = 3 s.
+> Swarm with VIP
+> Swarm without VIP
+> Swarm with VIP
+> Swarm without VIP
+> Swarm with VIP
+> Swarm without VIP
+> Swarm with VIP
+> Swarm without VIP
+> Swarm with VIP
+> Swarm without VIP
+> Swarm with VIP
+> Swarm without VIP
+> (b) Comparison at T = 6 s. (c) Comparison at T = 10 s.
+> (d) Comparison at T = 12 s. (e) Comparison at T = 14 s. (f) Comparison at T = 16 s.
+
+Figure 10. Numerical comparison of robot swarm navigation in a virtual tube. 
+
+The comparison results are shown in Fig. 10. Without VIP, the swarm follows the virtual tube with a relatively conservative traversal profile. With VIP, the swarm moves faster along the tube while maintaining a bounded spatial distribution. The snapshots at different time instants show that the learned command increases forward progress without destroying the tube constraint. This indicates that the macroscopic traversal-speed learning does not conflict with the microscopic distribution regulation. The time descent process is shown in Fig. 11. The traversal time decreases over learning iterations and then tends to stabilize, consistent with the convergence behavior of the model-free learning law. From the density-based formulation in Subsection 4.2 , the swarm energy describes the mismatch between the current density and the desired distribution. VIP improves efficiency by adjusting the common traversal component, while the distribution-related component continues to regulate the swarm configuration. Therefore, the simulation illustrates the intended division of roles: the virtual tube ensures spatial safety and maintains distribution, whereas VIP learns to traverse the tube more efficiently. 
+
+8.2.2 Enhance effectiveness in 3-D complex environ-ment The proposed framework is further evaluated in a 3-D obstacle environment. The distributed controller (Quan et al. (2023); Gao et al. (2025)) is implemented in a 3-D form, and VIP is used to learn the traversal-speed profile of the swarm. As shown in Fig. 12(a), random obstacles are generated in a 
+
+230m × 200m × 30m environment, which is consistent with the single-robot comparison setting in Section 8.1.2 . Tube-RRT* is used for tube planning, as illustrated in Fig. 12(d). The swarm size is set to 20, and the maximum speed of each robot is set to 8m /s.The results in Fig. 12(b)–(c) and Fig. 12(e)–(f) show that the swarm can pass through the planned 3-D virtual tube while maintaining a feasible collective distribution. 0 2 4 6 8 10  12  14  16  18  20 
+
+> 15
+> 20
+> 25
+> 30
+> 35
+> 40
+> 45
+> Iteration Number
+> Time (s)
+
+Figure 11. Passing-time descent process of swarm navigation under VIP. The curve shows that the learned common traversal command progressively reduces traversal time and then settles as the model-free IL update converges. 
+
+The learned profile improves the overall traversal speed, while the tube controller confines the agents inside the safe corridor. Compared with the 2-D case, the 3-D environment introduces more complex spatial curvature and obstacle distribution. The successful execution in this setting supports the scalability of the VIP framework from planar tube navigation to spatial tube navigation. The single-robot and swarm simulations together demon-strate the role of VIP as a general learning layer for navi-gation efficiency improvement. For single robots, the energy term is defined by tracking deviation. For robotic swarms, the energy term is defined by density-distribution error. Although the physical meanings of the energy functions are different, both cases share the same learning logic: the traversal command is increased where the energy remains acceptable and reduced where rapid traversal may lead to large deviations. This consistency confirms the unified for-mulation developed in the theoretical sections.  
+
+> Prepared using sagej.cls
+
+17 (a) T he 3 -D environment with random obstacles . (b) Comparison at T = 6s.  (c) Comparison at T = 24s.  
+
+> (e) Comparison at T = 45s. (f) Comparison at T = 54s. (d) Virtual tube searched by Tube RRT*.
+> Swarm with VIP
+> Swarm without VIP
+
+Figure 12. Three-dimensional swarm navigation in an obstacle environment. Tube-RRT* constructs a virtual tube through random obstacles, and VIP improves swarm traversal efficiency while the virtual-tube controller preserves safety and distribution regulation. 
+
+9 Experiments 
+
+To further validate the deployability of the proposed VIP framework, real-world experiments are conducted on three robotic platforms and scenarios: a LiDAR-based quadcopter flying in an unknown outdoor environment, a lifting-wing quadcopter, and a multi-robot swarm flying in a virtual tube. The experiments are designed to examine whether the learned spatial traversal command can be executed on physical platforms under onboard sensing, localization, actuation, communication, and environmental constraints. The simulation results in Section 8 mainly verify the computational and algorithmic properties of VIP. The experiments in this section further examine the feasibility of its implementation. In all experiments, VIP is used as a planning or traversal-command learning layer. This setting is consistent with the structure in Fig. 6, where the learning term is updated from recorded process data and then applied to the next execution. 
+
+9.1 Offline flight in unknown environment 
+
+9.1.1 Experiment settings To validate the performance of the proposed method in an unknown outdoor environment, a LiDAR-based quadcopter platform is used, as shown in Fig. 13. The platform is equipped with an onboard NVIDIA Jetson Orin computer and a Livox Mid-360 LiDAR. The LiDAR point cloud is used for mapping and localization with Fast-LIO (Xu et al. (2022)). Based on the reconstructed map, a collision-free path is generated by Tube RRT* (Mao et al. (2025)) and then transformed into a spatial reference for VIP. In this experiment, the perception, planning, and control modules run in an integrated onboard pipeline. The LiDAR and Fast-LIO modules provide the local map and pose estimation. The planner generates the spatial path in the reconstructed environment. VIP then determines the traversal command along the path. This setting is closer to practical autonomous navigation than to offline simulation because it involves sensing noise, localization drift, computational delays, and actuation constraints. Furthermore, a replanning mechanism is implemented to adapt to long-distance, unknown environments, and the algorithm’s real-time performance and low computational complexity are verified. 1
+
+> NVIDIA Jetson Orin
+> Livox Mid-360
+> PIXHAWK
+> 550 mm
+> Sensing and localization
+> Path and trajectory planning
+> Flight control
+
+Figure 13. Experimental platform for LiDAR-based drone navigation. 
+
+9.1.2 Experimental results The outdoor navigation result is shown in Fig. 14, where the drone traverses an unknown outdoor field with a total flight distance of approximately 
+
+150m . Fig. 15 presents three repeated experiments with the reconstructed point clouds and the corresponding recorded trajectories. The environment contains trees, buildings, and open corridors, which impose practical requirements on perception reliability, planning quality, replanning frequency, and trajectory execution. The experimental results show that the drone can pass through the outdoor environments while maintaining feasible and continuous motion. During the flight tests, the drone achieves a maximum speed of about 10m /s, demonstrating  
+
+> Prepared using sagej.cls
+
+18 Journal Title XX(X) Planning  Speed Profile (m/s)    
+
+> 0
+> 10
+> Figure 14. Aerial view of single-drone fast navigation in an unknown outdoor environment. The recorded flight trajectory covers approximately 150m and verifies real-flight execution of the VIP traversal-speed profile under onboard perception and localization.
+
+that the proposed framework can support fast navigation on a real aerial platform. This result is not only related to the maximum velocity command, but also to the compatibility between the planned spatial path, the learned traversal-speed profile, and the onboard tracking capability. If the traversal command is too aggressive in narrow or highly curved regions, the accumulated tracking error may lead to unstable path following or unsafe motion. The successful high-speed flight therefore indicates that VIP can adjust the traversal command according to the local navigation difficulty rather than simply increasing speed along the entire path. In the onboard implementation, the RRT*-based planner continuously performs accumulated sampling and local sampling for path replanning, while VIP rapidly updates the traversal-speed profile along the spatial coordinate. In this pipeline, RRT* mainly provides spatial feasibility by searching for a collision-free path in the reconstructed environment, whereas VIP further improves traversal efficiency by learning how fast the drone should move along the generated path. Therefore, the two modules have different roles: the sampling-based planner determines where to fly, and VIP determines how fast to traverse the resulting spatial path under the energy-traversal trade-off. With the onboard computing platform, VIP achieves a computation time of 0.93ms for 100 path points, thereby verifying its lightweight nature and real-time responsiveness. The computation result also supports the complexity analysis of the proposed method. Since VIP updates the traversal-speed profile directly along the spatial coordinate, its computation mainly scales with the number of path points rather than with a long prediction horizon or a large nonlinear programming problem. The ability to replan within 
+
+1ms shows that VIP can handle refined and dense spatial path information generated by the onboard planner. This is important for unknown outdoor navigation, where the path may be frequently updated due to newly observed obstacles, local map changes, and localization uncertainty. These results indicate that VIP can be executed efficiently together with onboard LiDAR perception and real-time localization. Compared with the simulations in Section 8.1 ,this experiment further verifies that the method can tolerate practical sensing noise, localization error, replanning delay, and onboard computational constraints. The real-flight result also shows that the learned traversal command remains executable after being integrated into the complete perception–planning–control pipeline, rather than being valid only in offline simulation. The repeated trials in Fig. 15 further demonstrate the repeatability and implementation robustness of the proposed method. The spatial planning is generated in real time from the reconstructed environment, and the traversal command is updated according to the real-time information. This supports the use of VIP as a lightweight traversal-command learning layer for fast autonomous navigation in unknown outdoor scenarios. 
+
+9.2 Application on online learning with a Lifting-Wing Quadcopter 
+
+9.2.1 Experimental Settings The experimental platform is a lifting-wing quadcopter, as shown in Fig. 16. The control and allocation modules are designed in Simulink, automatically converted into C/C++ code, and integrated into the Pixhawk/PX4 autopilot through the Pixhawk Support Package toolbox. Different from a conventional multirotor, the lifting-wing quadcopter is influenced by both rotor-generated thrust and lifting-wing aerodynamic effects during forward flight (Quan et al. (2025)). Therefore, this platform  
+
+> Prepared using sagej.cls
+
+19 50  75 0 25 -25  125  150 100           
+
+> 25
+> 0
+> -25
+> Y (m)
+> 50 75 025 -25 125 150 100 X (m)
+> 25
+> 0
+> -25
+> Y (m)
+> 50 75 025 -25 125 150 100 X (m)
+> 25
+> 0
+> -25
+> Y (m)
+> (c) Bird eye view of experiment 2.
+> (e) Bird eye view of experiment 3.
+> (b) 3D point cloud and trajectory of experiment 1.
+> (d) 3D point cloud and trajectory of experiment 2.
+> (f) 3D point cloud and trajectory of experiment 3.
+> (a) Bird eye view of experiment 1.
+> X (m)
+
+Figure 15. Repeated single-drone navigation trials with reconstructed point clouds and recorded trajectories. The bird’s-eye and 3-D views show repeatable fast traversal in an unknown outdoor environment using onboard LiDAR perception and VIP-based traversal-command learning. 
+
+provides a practical test for evaluating whether the learned traversal command can be executed on a physical aerial system with more complex motion characteristics. The experiment is conducted in an outdoor environment, as shown in Fig. 17. The plant is commanded to follow a predefined spatial path consisting of long straight segments and large turning maneuvers. During flight, the VIP-generated traversal command is sent to the low-level flight controller, while the onboard controller tracks the corresponding velocity or position references. Before the outdoor flight test, hardware-in-the-loop simulation is used to perform iterative validation and obtain a converged traversal-speed profile. Then, two additional iterations are conducted in real flight to further adapt the learned command to the physical platform. This experiment is used to verify the continuous executability of the spatial-domain command generated by VIP on a real lifting-wing aerial platform. 
+
+9.2.2 Experimental Results The flight result is shown in Fig. 17, and the flight visualization is shown in Fig. 18. The recorded trajectory shows that the lifting-wing quadcopter successfully completes the planned path with continuous motion. This platform is selected to provide a more challenging validation case for the proposed model-free VIP. Since the model-free learning law updates the traversal command based on recorded execution data rather than relying on an explicit analytical model of the vehicle dynamics, the lifting-wing quadcopter is well-suited for testing its applicability to complex physical systems. The platform passes through straight, turning, and crossing PIXHAWK 
+
+> Flight controller
+> RTK GNSS receiver
+> Positioning module
+
+Figure 16. Experimental platform of the lifting-wing quadcopter. 
+
+regions without obvious interruption, indicating that the learned traversal command can be accepted by the onboard controller and transformed into feasible physical motion. The iteration-wise result in Fig. 19 further illustrates the learning process of VIP on the lifting-wing quadcopter. During the hardware-in-the-loop simulation stage, the traversal time decreases from 77 .4s to 42 .7s , indicating that the traversal-speed profile is progressively improved prior to physical deployment. After transferring the learned command to the real platform, two additional real-world iterations further reduce the traversal time from 42 .1s to 
+
+41 .3s . This result indicates that simulation iterations can provide an effective initialization for VIP, while a small  
+
+> Prepared using sagej.cls
+
+20 Journal Title XX(X) 
+
+Figure 17. Outdoor flight trajectory of the lifting-wing quadcopter. The recorded trajectory demonstrates continuous execution of the VIP traversal command through straight, turning, and crossing regions on a physical platform. 
+
+number of physical rollouts can compensate for platform-specific effects such as aerodynamic uncertainty, actuation delay, and tracking mismatch. The experiment also demonstrates the practical effect of the energy-traversal trade-off. In straight segments, the vehicle can maintain a relatively high traversal speed because the path-following error is easier to regulate. In turning regions, the trajectory becomes more sensitive to velocity and attitude tracking errors, and the traversal command is correspondingly more conservative to preserve sufficient control authority. This behavior is consistent with the design intuition of VIP: traversal speed increases when tracking energy remains acceptable and decreases when aggressive motion may degrade path-following stability. The successful flight indicates that VIP can be integrated into an existing flight-control architecture as an outer-loop planning and traversal-command learning module. Path length (m)        
+
+> Y (m)
+> Z (m)
+> Speed (m/s)
+> 0
+> 15
+> 10
+> 5
+> Speed (m/s)
+> 025 50 75 100 125 150 175
+> 0
+> 5
+> 10
+> 15
+> X (m)
+> 0
+> -10
+> -20
+> 10
+> 20
+> 30 0
+> -10
+> -20
+> -30
+> -40
+> -50
+> 0
+> -10
+> -20
+> 10
+> 20
+> -30
+
+Figure 18. Visualization of the lifting-wing quadcopter flight experiment. The image sequence illustrates the real-flight execution process and verifies the compatibility between the learned traversal command and the onboard flight-control architecture. Sim 1 Sim 2 Sim 3 Sim 4 Sim 5 Sim 6 Real 1 Real 2       
+
+> Iteration
+> 20 30 40 50 60 70 80 90 100
+> Time (s)
+> 77.4s 56.2s 48.3s 45.9s 44.5s 42.7s 42.1s 41.3s
+> Simulation iterations Real-world iterations
+> Simulation Real-world
+
+Figure 19. Iteration-wise traversal time reduction for the lifting-wing quadcopter experiment. The traversal time is first reduced through hardware-in-the-loop simulation iterations and is then further refined in real-world flight iterations, demonstrating the transferability and executability of the learned VIP traversal command on the physical platform. 
+
+9.3 Swarm online learning in a virtual tube 
+
+9.3.1 Experimental Settings The swarm experiment is conducted with three homogeneous quadcopters in an outdoor environment. The hardware configuration of each quadcopter is the same as that used in the single-drone experiment. A virtual tube is constructed along the planned traversal corridor, and each robot is guided by its corresponding virtual-tube controller. VIP is used to regulate the swarm’s common traversal motion along the tube, while the virtual-tube controller maintains the relative distribution, inter-robot spacing, and boundary constraints. This experiment is designed to verify the extension of VIP from single-robot navigation to multi-robot flight. The energy modeling of the swarm experiment follows the formulation used in the simulation, in which the energy term describes the swarm’s distribution deviation within the virtual tube. Unlike methods that optimize a separate  
+
+> Prepared using sagej.cls
+
+21  
+
+> Figure 20. Image sequence of three-quadcopter swarm flight inside an outdoor virtual tube. The snapshots show coordinated forward traversal while maintaining bounded relative configuration and virtual-tube safety constraints.
+
+trajectory for each robot, the proposed framework operates on the common traversal component at the swarm level. The microscopic controller then regulates local interactions among robots and maintains the tube constraint. This division is consistent with the macro–micro connection discussed in Subsection 7.3: the macroscopic learning term determines the swarm’s forward progress, while the microscopic interaction terms maintain local distribution and safety. 
+
+9.3.2 Experimental Results The swarm flight process is shown in Fig. 20. The overlaid snapshots illustrate that the three quadcopters move forward along the outdoor virtual tube while maintaining a bounded relative configuration. The corresponding 3-D and bird’s-eye trajectories are shown in Fig. 22. The initial traversal speed of the swarm is set to 0.5m /s.After five iterations, the maximum traversal speed reaches 
+
+2m /s. This result shows that VIP can progressively increase the common traversal command as long as the swarm distribution energy remains within an acceptable range. At the same time, the virtual-tube controller maintains the local distribution and boundary constraints, preventing the increased traversal speed from directly causing unsafe divergence among robots. The iteration-wise traversal time is plotted in Fig. 21. The traversal time decreases from 241s in the first rollout to 
+
+82s after six iterations, confirming that VIP progressively improves the swarm-level traversal command through repeated executions. This reduction is achieved without optimizing independent trajectories for all quadcopters. Instead, VIP updates the macroscopic traversal component shared by the swarm, whereas the virtual-tube controller preserves microscopic distribution regulation and collision-safe motion. Therefore, Fig. 21 directly supports the proposed macro–micro structure for improving swarm traversal efficiency with low computational burden. These results provide practical evidence for extending VIP to multi-robot systems. In the single-drone experiment, the energy term corresponds to path-following deviation. In the swarm experiment, the energy term represents the deviation in distribution within the virtual tube. Although the physical meanings of the energy functions differ, the learning mechanism remains the same: VIP adjusts the traversal command based on the recorded energy variation. Therefore, the experiment demonstrates that the proposed framework can accommodate different energy definitions while preserving a unified traversal-command learning structure. The swarm experiment also illustrates the benefit of separating macroscopic traversal learning from microscopic interaction control. VIP does not need to optimize each quadcopter’s individual trajectory. Instead, it learns a common traversal profile for the swarm, while the virtual-tube controller handles local spacing and boundary regulation. This structure reduces the burden of multi-robot trajectory optimization and provides a practical implementation path for enhancing traversal efficiency at the swarm level. Together with the single-drone experiment, the result supports the central claim of this paper: VIP can serve as a unified outer-loop learning layer for improving traversal efficiency in both single-robot and robotic-swarm navigation.  
+
+> Prepared using sagej.cls
+
+22 Journal Title XX(X) 1 2 3 4 5 6        
+
+> Iteration
+> 50 100 150 200 250 241s 172s 128s 96s 84s 82s
+> T/[s] Time (s)
+> Figure 21. Iteration-wise traversal time reduction for the three-quadcopter swarm experiment. The common traversal command learned by VIP reduces the swarm traversal time across iterations, while the virtual-tube controller maintains inter-robot spacing, distribution regulation, and boundary constraints during real flight. 40 020 -20 60 X (m)
+> 20
+> 0
+> -20
+> Y (m)
+> -10
+> 10
+> (b) Bird eye view of swarm trajectory.
+> (a) 3D view of swarm trajectory.
+> Figure 22. Recorded trajectories of the three-quadcopter swarm in the reconstructed point cloud and bird’s-eye view. The results demonstrate virtual-tube-constrained swarm motion and the execution of the learned common traversal command in real flight.
+
+10 Conclusion 
+
+This paper established VIP as a unified planning-level iterative-learning framework with three core capabilities. First, a unified energy-variation planning formulation represents task-dependent performance objectives through a common energy function, enabling the same spatial learning principle to address single-robot path following and robotic-swarm density regulation. Second, function-level planning optimization yields an O(n) computational complexity per model-free update without requiring online adjoint solution or horizon-based optimization. Third, online and model-free planning is realized through execution feedback: the same update law uses simulated rollouts in the model-in-the-loop mode and recorded physical rollouts in the robot-in-the-loop mode. The theoretical analysis establishes descent and neighborhood-approximation properties, while simulations and real-world experiments demonstrate reduced traversal time, bounded task error, and applicability across different robotic platforms and swarm configurations. Future work will investigate within-rollout adaptation, dynamic environments, explicit uncertainty-aware safety constraints, and larger robot swarms with fully onboard learning. 
+
+Appendix A Detailed derivation for the single-robot formulation 
+
+This appendix collects the calculations omitted from 
+
+Subsection 4.1 and Section 6 , so that the main text can retain the concrete-to-abstract sequence and present only the energy result needed by VIP. For compactness, write V = Vs
+
+throughout this appendix. 
+
+Lemma 3. For ep = m(p) − p, there hold ∇pep =
+
+−ep/e p and tTc ep = 0 (Goncalves et al. (2010)). 
+
+First consider perfect velocity execution, ˙p = vc, and only the nominal command in (10). Since ∥v′
+
+> n
+
+∥ = λ2V with λ2 =
+
+kp, Lemma 3 gives 
+
+˙V = eTp
+
+
+
+tc ˙l − ˙p
+
+
+
+= −eTp v′
+
+> n
+
+= −√2λ2V 3/2 = −λs∥v′
+
+> n
+
+∥3/2,
+
+(65) for an appropriate λs > 0. This establishes the nominal single-robot dissipation term with p = 3 /2.For the velocity dynamics (8), Assumption 1 gives v =
+
+vc + δv. Before saturation, 
+
+˙V = −eTp (v′ 
+
+> n
+
++ δv)= −√2λ2V 3/2 + εs
+
+√2V = −λsv3/2n + εsv1/2n , (66) where bounded factors have been absorbed into εs. Under the saturated composite command (10), the nominal term is multiplied by κv and the tangent term vanishes in the direct inner product because eTp tc = 0 . Therefore, 
+
+˙V = −λsκv v3/2n + εsv1/2n , (67) which is Eq. (11) and yields the unified energy form (22) with p = 3 /2, q = 1 /2, and o = 0 .
+
+B Supplementary material for the robotic-swarm formulation 
+
+This appendix collects the Wasserstein-space interpretation, KDE realization, desired-density construction, and integral calculations omitted from Subsection 4.2. The symbols ρ, ρd,
+
+ϕ, Vm, v′
+
+> n
+
+, v′
+
+> t
+
+, and vn retain exactly the definitions given in the main text. 
+
+B.1 Wasserstein-space interpretation 
+
+Let P2(T ) be the set of probability measures on T with finite second moments, 
+
+P2(T ) ≜
+
+
+
+μ :
+
+Z
+
+> T
+
+∥x∥2 dμ(x) < ∞
+
+
+
+. (68)  
+
+> Prepared using sagej.cls
+
+23 
+
+For μ, η ∈ P 2(T ), the 2-Wasserstein distance is 
+
+W2(μ, η ) ≜
+
+
+
+inf 
+
+> γ∈Υ( μ,η )
+
+Z
+
+> T ×T
+
+∥x − y∥2 dγ(x, y)
+
+1/2
+
+,
+
+(69) where Υ( μ, η ) denotes the set of transport plans with marginals μ and η. This representation allows the swarm state to be described by a probability density independently of the number of robots. For a sufficiently regular functional E : P2(T ) → R, its formal Wasserstein gradient-flow velocity is 
+
+vE = −∇ p
+
+δE
+
+δρ . (70) Selecting the negative differential entropy 
+
+E(ρ) = 
+
+Z
+
+> T
+
+ρ(p) log ρ(p) d p (71) gives 
+
+vE = −∇ p log ρ = − ∇pρρ . (72) Substitution into the continuity equation (13) yields 
+
+∂ρ ∂t = ∆ ρ, (73) which explains the diffusion interpretation of the nominal swarm-distribution field. 
+
+B.2 KDE realization and desired-density construction 
+
+For a finite swarm, the density is reconstructed from the robot positions using KDE (Zheng et al. (2021)): 
+
+ρM (t, p) = 1
+
+M h 3
+
+> M
+
+X
+
+> i=1
+
+K
+
+ p − pi(t)
+
+h
+
+
+
+, (74) where h > 0 is the bandwidth and the Gaussian kernel is 
+
+K(x) = 1(2 π)3/2 exp 
+
+
+
+− 12 xTx
+
+
+
+. (75) Under standard density-regularity and bandwidth conditions, including h = hM → 0 and M h 3 
+
+> M
+
+→ ∞ as M → ∞ , ρM
+
+consistently approximates the underlying density. When kernel mass is truncated by the tube boundary, the estimator is renormalized over T . In the main text, ρ denotes either the macroscopic density or this finite-swarm KDE realization. Let li = l(pi) be the spatial coordinate of robot i, and define 
+
+ls = min  
+
+> i
+
+li, l b = max  
+
+> i
+
+li, pm = 1
+
+M
+
+> M
+
+X
+
+> i=1
+
+pi, l m = l(pm).
+
+(76) The occupied region is defined rigorously as the union of tube cross sections, 
+
+O(t) = [
+
+> l∈[ls,l b]
+
+Cl. (77) (a) KDE contour.                      
+
+> -0.2 00.2 0.4 0.6 0.8 11.2
+> x1
+> 0
+> 5
+> 10
+> 15
+> 0
+> 0.02
+> 0.04
+> 0.06
+> 0.08
+> 0.1
+> 0.12
+> 0.14
+> 0.16
+> 0.18
+> 0.2
+> (c) KDE heatmap.
+> -0.2 00.2 0.4 0.6 0.8 11.2
+> x1
+> 0
+> 5
+> 10
+> 15
+> -0.2 00.2 0.4 0.6 0.8 11.2
+> x1
+> 0
+> 5
+> 10
+> 15
+> x2
+> (d) Data points with KDE contours.
+> (b) Probability density.
+> 0
+> 0.02
+> 0.04
+> 0.06
+> 0.08
+> 0.1
+> 0.12
+> 0.14
+> 0.16
+> 0.18
+> 0.2
+> 0
+> 0.02
+> 0.04
+> 0.06
+> 0.08
+> 0.1
+> 0.12
+> 0.14
+> 0.16
+> 0.18
+> 0.2
+> x2
+> x2
+
+Figure 23. Kernel-density reconstruction and diffusion-gradient field for swarm-distribution regulation. 
+
+First construct a center-preserving base support without a backward extension, 
+
+l+d,0 = max {lb, 2lm − ls} , Od,0(t) = [
+
+> l∈[ls,l +d,0]
+
+Cl. (78) Let ρd,0 be a continuously differentiable normalized approximation of the uniform density on Od,0. For a feasible shift ∆l ∈ [0 , ∆max ], define the forward tube map S∆l by preserving the normalized cross-sectional coordinate of each point and increasing its longitudinal coordinate from l to 
+
+l + ∆ l. The final desired support and density are 
+
+Od(t) = S∆l (Od,0(t)) , ρ d(t, ·) = ( S∆l )#ρd,0(t, ·), (79) where (S∆l )# denotes the push-forward operation. The upper bound ∆max keeps the shifted support inside the virtual tube. To determine the shift, define 
+
+μ(p) = ∥∇ pϕ(p)∥2
+
+∥∇ pϕ∥2 
+
+> L2(T)
+
+, r = ∥v′
+
+> c
+
+∥, (80) and let 
+
+Ta = {p ∈ T : r(p) > v m}, w(p) = μ(p) κv (p)
+
+r2(p) .
+
+(81) The feasible forward shift is selected to satisfy the integral acute-angle criterion 
+
+Cnt (∆ l) ≜
+
+Z
+
+> Ta
+
+w(p)v′Tn (p; ∆ l)v′
+
+> t
+
+(p) d p ≥ 0. (82) Condition (82) requires alignment only after spatial aggregation over the active-saturation region. Therefore, it does not require the two fields to form an acute angle at every spatial location, and local counter-motion remains admissible during density redistribution. Since ∆l is scalar, the criterion can be checked by a one-dimensional search over [0 , ∆max ]. Proposition 2 applies whenever the resulting feasible-shift set is nonempty. The choice ∆l = 0 recovers the center-preserving construction when it already satisfies (82).  
+
+> Prepared using sagej.cls
+
+24 Journal Title XX(X) 
+
+B.3 Nominal energy dissipation 
+
+For a stationary desired density and vc = v′
+
+> n
+
+, differentiating (15) along (13) gives 
+
+˙Vm = −
+
+Z
+
+> T
+
+ϕ∇p · (ρv′
+
+> n
+
+) d p
+
+=
+
+Z
+
+> T
+
+∇pϕTρv′ 
+
+> n
+
+dp
+
+= −kρ
+
+Z
+
+> T
+
+∥∇ pϕ∥2 dp.
+
+(83) The second equality follows from the divergence theorem. The boundary term vanishes because of the lateral no-flux condition and the assumed separation of the density support from the terminal cross sections. Since ρ and ρd
+
+are normalized, ϕ has zero spatial mean. The Poincar´ e– Wirtinger inequality therefore gives 
+
+Z
+
+> T
+
+ϕ2 dp ≤ C2P
+
+Z
+
+> T
+
+∥∇ pϕ∥2 dp, (84) which yields (17). 
+
+B.4 Composite-field energy identity and coefficient bounds 
+
+For later use, define 
+
+Aϕ ≜ ∥∇ pϕ∥L2(T ), vn ≜ kρAϕ. (85) For Aϕ > 0, let 
+
+¯κv ≜
+
+Z
+
+> T
+
+κv ∥∇ pϕ∥2 dp
+
+A2
+
+> ϕ
+
+,βρ ≜
+
+Z
+
+> T
+
+κv ρ∇pϕTtc dp
+
+Aϕ
+
+,
+
+(86) and set ¯κv = 1 and βρ = 0 when Aϕ = 0 . The desired-density variation residual is 
+
+ε1,m ≜ −
+
+Z
+
+> T
+
+ϕ ∂ρ d
+
+∂t dp. (87) These quantities satisfy 
+
+0 < ¯κv ≤ 1, |βρ| ≤ ∥ ρ∥L2(T ), |ε1,m| ≤ p2Vm
+
+∂ρ d
+
+∂t L2(T )
+
+.
+
+(88) For compactness, write V = Vm. From ϕ = ρ − ρd and (13), 
+
+˙V =
+
+Z
+
+> T
+
+ϕ
+
+ ∂ρ ∂t − ∂ρ d
+
+∂t 
+
+
+
+dp
+
+= −
+
+Z
+
+> T
+
+ϕ∇p · (ρvc) d p −
+
+Z
+
+> T
+
+ϕ ∂ρ d
+
+∂t dp.
+
+(89) Applying the divergence theorem under the same boundary conditions gives 
+
+˙V =
+
+Z
+
+> T
+
+∇pϕTρvc dp + ε1,m. (90) Substituting (18) and ρv′ 
+
+> n
+
+= −kρ∇pϕ gives 
+
+˙V = −kρ
+
+Z
+
+> T
+
+κv ∥∇ pϕ∥2 dp
+
++ vt
+
+Z
+
+> T
+
+κv ρ∇pϕTtc dp + ε1,m.
+
+(91) With the definitions in (85) and (86), (91) becomes exactly (19). Finally, since 0 < κ v ≤ 1 and ∥tc∥ = 1 , the Cauchy– Schwarz inequality gives 
+
+|βρ| ≤ ∥κv ρtc∥L2 ∥∇ pϕ∥L2
+
+∥∇ pϕ∥L2
+
+≤ ∥ ρ∥L2 ,
+
+|ε1,m| ≤ ∥ ϕ∥L2
+
+∂ρ d
+
+∂t L2
+
+= p2Vm
+
+∂ρ d
+
+∂t L2
+
+.
+
+(92) These inequalities establish (88) and the boundedness statements used in Proposition 1 .
+
+C Proof of Proposition 1 
+
+Proof. Equation (11) has the form (22) with (p, q, o ) = (3 /2, 1/2, 0) , λ1 = λs, κE = κv , ε = εs, and ε1 = 0 .Equation (19) gives (p, q, o ) = (2 , 1, 1) , λ1 = 1 /k ρ, κE =¯κv , ε = βρ/k ρ, and ε1 = ε1,m. Boundedness follows from 
+
+Assumption 1 and (88). 
+
+D Detailed conditions and proof of Proposition 2 
+
+On the considered compact operating set, vn is nondecreas-ing with V . For the swarm, the partial derivative with respect to V is evaluated along the radial scalarization 
+
+∂v′
+
+> n
+
+∂V = αV v′
+
+> n
+
+, αV ≥ 0, ∂μ ∂V = 0 , (93) where μ = ∥∇ pϕ∥2/A 2
+
+> ϕ
+
+. This scalarization freezes only the normalized field shape during the partial differentiation; the physical density profile remains time varying through the coefficients and residuals in (22). At a fixed spatial location, write 
+
+v′ 
+
+> n
+
+= an bn, v′ 
+
+> t
+
+= vtbt, r = ∥v′
+
+> c
+
+∥, (94) with unit vectors bn and bt. In the unsaturated region, κv = 1 ,and hence 
+
+∂κ v
+
+∂V = 0 , ∂κ v
+
+∂v t
+
+= 0 , ∂(κv vt)
+
+∂v t
+
+= 1 . (95) In the active-saturation region, κv = vm/r , and direct differentiation gives 
+
+∂κ v
+
+∂V = − κv
+
+r2 v′Tc
+
+∂v′
+
+> n
+
+∂V , ∂κ v
+
+∂v t
+
+= − κv
+
+r2vt
+
+v′Tc v′
+
+> t
+
+. (96) Moreover, ∂(κv vt)
+
+∂v t
+
+= κv
+
+r2 v′Tc v′
+
+> n
+
+. (97) 
+
+Proof. For the single robot, the command construction in (10) gives bnTbt = 0 . Therefore, using v′ 
+
+> c
+
+= v′ 
+
+> n
+
++ v′
+
+> t
+
+,
+
+v′Tc v′ 
+
+> n
+
+= ∥v′
+
+> n
+
+∥2,
+
+v′Tc v′ 
+
+> t
+
+= ∥v′
+
+> t
+
+∥2. (98)  
+
+> Prepared using sagej.cls
+
+25 
+
+Since ∂v′
+
+> n
+
+/∂V = ( ∂a n/∂V )bn with ∂a n/∂V ≥ 0, substitu-tion of (98) into (96)–(97) proves (29) for the single robot. Thus, no additional non-opposition condition is imposed. For the swarm, use the active and unsaturated sets and the weight w defined in Appendix B.2 . Define the weighted self-products 
+
+An ≜
+
+Z
+
+> Ta
+
+w∥v′
+
+> n
+
+∥2 dp, At ≜
+
+Z
+
+> Ta
+
+w∥v′
+
+> t
+
+∥2 dp. (99) By the forward-shift design (82), Cnt ≥ 0. Expanding the composite field inside the two weighted integrals gives 
+
+Z
+
+> Ta
+
+wv′Tc v′ 
+
+> n
+
+dp = An + Cnt ≥ 0,
+
+Z
+
+> Ta
+
+wv′Tc v′ 
+
+> t
+
+dp = At + Cnt ≥ 0.
+
+(100) Hence, the two signs needed in the saturation calculation are consequences of the integral acute-angle design; they are not imposed pointwise. Integrating (96) over Ta and using (93) and (100) yields 
+
+∂¯κv
+
+∂V = −αV (An + Cnt ) ≤ 0,∂¯κv
+
+∂v t
+
+= − 1
+
+vt
+
+(At + Cnt ) ≤ 0.
+
+(101) The unsaturated set contributes directly to the progression derivative. Combining (95), (97), and (100) gives 
+
+∂(¯ κv vt)
+
+∂v t
+
+=
+
+Z
+
+> Ta
+
+μ dp + An + Cnt ≥ 0. (102) This proves (29) for the swarm. The proof shows that Proposition 2 is a direct consequence of the command constructions already introduced for the two tasks. In particular, the swarm result uses only the integral criterion in Appendix B.2 ; no pointwise acute-angle or pointwise non-opposition condition is required. 
+
+E Proof of Theorem 1 
+
+Proof. By the Lipschitz continuity of the Fr´ echet derivative, the following descent inequality holds: 
+
+J(vt,k +1 ) ≤ J(vt,k ) + ⟨Fn,k , v t,k +1 − vt,k ⟩(0 ,L )
+
++ Fm
+
+2 ∥vt,k +1 − vt,k ∥2
+
+> L2(0 ,L )
+
+. (103) Substituting the update law vt,k +1 = vt,k − b1Fn,k gives 
+
+J(vt,k +1 ) ≤ J(vt,k ) −
+
+
+
+b1 − Fmb21
+
+2
+
+
+
+∥Fn,k ∥2
+
+> L2(0 ,L )
+
+.
+
+(104) Since 0 < b 1 < 2/F m, there exists 
+
+b1 − Fmb21
+
+2 > 0. (105) Therefore, {J(vt,k )} is monotonically non-increasing. Since 
+
+J is bounded from below, {J(vt,k )} is convergent. Summing the above inequality from k = 0 to infinity yields ∞X
+
+> k=0
+
+∥Fn,k ∥2 
+
+> L2(0 ,L )
+
+< ∞. (106) Hence, 
+
+lim  
+
+> k→∞
+
+∥Fn,k ∥L2(0 ,L ) = 0 . (107) This means that the update direction vanishes asymptotically, and any accumulation point of {vt,k } satisfies the first-order stationarity condition. If the stationary solution in the considered neighborhood is unique, the generated sequence converges to this solution. 
+
+F Proof of Theorem 2 
+
+Let Fn,k denote the Fr´ echet derivative of J with respect to vt at the k-th iteration, and define ζk(l) ≜ keVk(l) and 
+
+gk(l) ≜ g (ζk(l)) . By the Lipschitz continuity of the Fr´ echet derivative, the following descent inequality holds: 
+
+J(vt,k +1 ) ≤ J(vt,k ) + ⟨Fn,k , v t,k +1 − vt,k ⟩(0 ,L )
+
++ Fm
+
+2 ∥vt,k +1 − vt,k ∥2
+
+> L2(0 ,L )
+
+. (108) Substituting the model-free learning law (51) into the above inequality gives 
+
+J(vt,k +1 ) ≤ J(vt,k ) − b3⟨Fn,k , g k⟩(0 ,L )
+
++ Fmb23
+
+2 ∥gk∥2
+
+> L2(0 ,L )
+
+. (109) According to the sign analysis before the construction of the model-free law, gk is designed as a recorded-energy-based surrogate of the model-based descent direction. Therefore, when gk̸ ≡ 0, the update direction satisfies the descent-consistency relation 
+
+⟨Fn,k , g k⟩(0 ,L ) > 0. (110) Equivalently, define 
+
+μk = ⟨Fn,k , g k⟩(0 ,L )
+
+∥gk∥2
+
+> L2(0 ,L )
+
+> 0. (111) Then, 
+
+J(vt,k +1 ) ≤ J(vt,k ) −
+
+
+
+b3μk − Fmb23
+
+2
+
+
+
+∥gk∥2
+
+> L2(0 ,L )
+
+.
+
+(112) Thus, for a sufficiently small learning gain satisfying 
+
+0 < b 3 < 2μk
+
+Fm
+
+, (113) the coefficient in the bracket is positive, and hence 
+
+J(vt,k +1 ) ≤ J(vt,k ). (114) If a fixed learning gain is used over the considered neighborhood, it is sufficient to choose 
+
+0 < b 3 < 2μFm
+
+, μ = inf   
+
+> k:gk̸≡0
+
+μk > 0. (115)  
+
+> Prepared using sagej.cls
+
+26 Journal Title XX(X) 
+
+Therefore, {J(vt,k )} is monotonically non-increasing. Since 
+
+J is bounded from below, {J(vt,k )} is convergent. Summing the descent inequality over k yields 
+
+> ∞
+
+X
+
+> k=0
+
+∥gk∥2 
+
+> L2(0 ,L )
+
+< ∞, (116) which implies 
+
+lim  
+
+> k→∞
+
+∥gk∥L2(0 ,L ) = 0 . (117) According to the construction of g(·) in (52), the zero set of g corresponds to the admissible energy band [ζmin , ζ max ].Therefore, ∥gk∥L2(0 ,L ) → 0 means that the model-free correction vanishes asymptotically, and the learned energy approaches the admissible band in the L2 sense. Since the admissible band is assumed to contain the zero point of the model-based descent direction, the obtained result can be interpreted as a neighborhood approximation of the stationary solution. 
+
+G Proof of Theorem 3 
+
+Proof. For the derivative-enhanced coordinate ζd,k =
+
+keVk + kd ˙Vk and g(ζ) ≥ kg ζ − ζth ,
+
+vt,k +1 ≤ vt,k − b3kg keVk − b3kg kd ˙Vk + b3ζth . (118) On the compact active-saturation set, apply the mean-value theorem to χ(vn, v t) = κv v3/2n . Since the single-robot nominal and traversal directions are orthogonal, r2 = v2n +
+
+v2t , and direct differentiation gives 
+
+γ1 = ∂χ ∂v t
+
+= − κv v3/2n vt
+
+v2n + v2t
+
+< 0,γ2 = ∂χ ∂v n
+
+= κv v1/2n
+
+ 32 − v2n
+
+v2n + v2t
+
+
+
+> 0.
+
+(119) The second expression is exactly (59), while the first is positive because v2n/(v2n + v2t ) < 1. The affine remainder and the bounded disturbance term in (11) can be collected into a bounded quantity Mk. Substitution into (118) yields 
+
+vt,k +1 ≤ (1 + b3kg kdλsγ1) vt,k + Rk, |Rk| ≤ ¯R. (120) The stated condition implies 0 < 1 + b3kg kdλsγ1 < 1.Hence (120) is a scalar contraction with bounded input, and 
+
+lim sup 
+
+> k→∞
+
+|vt,k | ≤ ¯R
+
+1 − | 1 + b3kg kdλsγ1| . (121) Therefore vt,k is uniformly ultimately bounded. 
+
+References 
+
+Alonso-Mora J, Baker S and Rus D (2017) Multi-robot formation control and object transport in dynamic environments via constrained optimization. The International Journal of Robotics Research 36(9): 1000–1021. Amann N, Owens DH and Rogers E (1998) Predictive optimal iterative learning control. International Journal of Control 
+
+69(2): 203–226. Ames AD, Coogan S, Egerstedt M, Notomista G, Sreenath K and Tabuada P (2019) Control barrier functions: Theory and applications. In: 2019 18th European control conference (ECC) . IEEE, pp. 3420–3431. Ames AD, Xu X, Grizzle JW and Tabuada P (2016) Control barrier function based quadratic programs for safety critical systems. 
+
+IEEE Transactions on Automatic Control 62(8): 3861–3876. Bae YB, Lim YH and Ahn HS (2020) Distributed robust adaptive gradient controller in distance-based formation control with exogenous disturbance. IEEE Transactions on Automatic Control 66(6): 2868–2874. Bristow DA, Tharayil M and Alleyne AG (2006) A survey of iterative learning control. IEEE Control Systems Magazine 
+
+26(3): 96–114. Chen L, Mei J, Li C and Ma G (2020) Distributed leader–follower affine formation maneuver control for high-order multiagent systems. IEEE Transactions on Automatic Control 65(11): 4941–4948. Crespi V, Galstyan A and Lerman K (2008) Top-down vs bottom-up methodologies in multi-agent system design. Autonomous Robots 24: 303–313. Debnath L and Mikusinski P (2005) Introduction to Hilbert spaces with applications . Elsevier. Elamvazhuthi K, Kuiper H, Kawski M and Berman S (2018) Bilinear controllability of a class of advection–diffusion– reaction systems. IEEE Transactions on Automatic Control 
+
+64(6): 2282–2297. Falanga D, Foehn P, Lu P and Scaramuzza D (2018) Pampc: Perception-aware model predictive control for quadrotors. In: 
+
+2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) . IEEE, pp. 1–8. Florence P, Carter J and Tedrake R (2020) Integrated perception and control at high speed: Evaluating collision avoidance maneuvers without maps. In: Algorithmic Foundations of Robotics XII: Proceedings of the Twelfth Workshop on the Algorithmic Foundations of Robotics . Springer, pp. 304–319. Foehn P, Romero A and Scaramuzza D (2021) Time-optimal planning for quadrotor waypoint flight. Science Robotics 6(56): eabh1221. Fox D, Burgard W and Thrun S (1997) The dynamic window approach to collision avoidance. IEEE Robotics & Automation Magazine 4(1): 23–33. Gao S, Shen D and Tayebi A (2026) Robust adaptive learning control for a class of nonaffine nonlinear systems. IEEE Transactions on Automatic Control 71(7): 4450–4464. Gao Y, Bai C and Quan Q (2025) Distributed and differentiable vector field control within a curved virtual tube for a robotic swarm under field-of-view constraints. IEEE Transactions on Automatic Control 70(8): 5190–5205. Glotfelter P, Cort´ es J and Egerstedt M (2017) Nonsmooth barrier functions with applications to multi-robot systems. IEEE Control Systems Letters 1(2): 310–315. Gonc ¸alves VM, Adorno BV, Crosnier A and Fraisse P (2020) Stable-by-design kinematic control based on optimization. 
+
+IEEE Transactions on Robotics 36(3): 644–656. Goncalves VM, Pimenta LC, Maia CA, Dutra BC and Pereira GA (2010) Vector fields for robot navigation along time-varying curves in n-dimensions. IEEE Transactions on Robotics 26(4): 647–659.  
+
+> Prepared using sagej.cls
+
+27 
+
+Han Z, Wang Z, Pan N, Lin Y, Xu C and Gao F (2021) Fast-racing: An open-source strong baseline for SE (3) planning in autonomous drone racing. IEEE Robotics and Automation Letters 6(4): 8631–8638. ˙Is ¸leyen A, van de Wouw N and Arslan ¨O (2022) From low to high order motion planners: Safe robot navigation using motion prediction and reference governor. IEEE Robotics and Automation Letters 7(4): 9715–9722. Janssens P, Pipeleers G and Swevers J (2012) A data-driven constrained norm-optimal iterative learning control framework for lti systems. IEEE Transactions on Control Systems Technology 21(2): 546–551. Karaman S and Frazzoli E (2011) Sampling-based algorithms for optimal motion planning. The International Journal of Robotics Research 30(7): 846–894. Khatib O (1986) Real-time obstacle avoidance for manipulators and mobile robots. The International Journal of Robotics Research 
+
+5(1): 90–98. Krishnan V and Martinez S (2018) Distributed control for spatial self-organization of multi-agent swarms. SIAM Journal on Control and Optimization 56(5): 3642–3667. Liniger A, Domahidi A and Morari M (2015) Optimization-based autonomous racing of 1: 43 scale rc cars. Optimal Control Applications and Methods 36(5): 628–647. Lv S, Gao Y and Quan Q (2025) High-efficiency vector field by time-optimal spatial iterative learning. IEEE Transactions on Robotics 41: 5624–5644. Lv S, Mao P, Min C, Hong L, Liu Y and Quan Q (2026) Time-optimal iterative learning planning for lagrangian systems and its application to quadcopters. IEEE Transactions on Automation Science and Engineering 23: 8556–8570. Lv S, Mao P and Quan Q (2024) Mean-field based time-optimal spatial iterative learning within a virtual tube. IEEE Control Systems Letters 8: 2021–2026. Mao P, Fu R and Quan Q (2024) Optimal virtual tube planning and control for swarm robotics. The International Journal of Robotics Research 43(5): 602–627. Mao P, Lv S and Quan Q (2025) Tube RRT*: Efficient homotopic path planning for swarm robotics passing-through large-scale obstacle environments. IEEE Robotics and Automation Letters 
+
+10(3): 2247–2254. Mellinger D and Kumar V (2011) Minimum snap trajectory generation and control for quadrotors. In: 2011 IEEE International Conference on Robotics and Automation (ICRA) .IEEE, pp. 2520–2525. Mellinger D, Michael N and Kumar V (2012) Trajectory generation and control for precise aggressive maneuvers with quadrotors. 
+
+The International Journal of Robotics Research 31(5): 664– 674. Mueller MW, Hehn M and D’Andrea R (2015) A computationally efficient motion primitive for quadrocopter trajectory genera-tion. IEEE Transactions on Robotics 31(6): 1294–1310. Nguyen H, Kamel M, Alexis K and Siegwart R (2021) Model predictive control for micro aerial vehicles: A survey. In: 2021 European Control Conference (ECC) . IEEE, pp. 1556–1563. Orthey A, Chamzas C and Kavraki LE (2023) Sampling-based motion planning: A comparative review. Annual Review of Control, Robotics, and Autonomous Systems 7. Owens DH (2016) Norm optimal iterative learning control. Iterative Learning Control: An Optimization Paradigm : 233–276. Park J, Lee Y, Jang I and Kim HJ (2025) Decentralized trajectory planning for quadrotor swarm in cluttered environments with goal convergence guarantee. The International Journal of Robotics Research 44(8): 1336–1359. Purwin O and D’Andrea R (2011) Performing and extending aggressive maneuvers using iterative learning control. Robotics and Autonomous Systems 59(1): 1–11. Quan Q, Gao Y and Bai C (2023) Distributed control for a robotic swarm to pass through a curve virtual tube. Robotics and Autonomous Systems 162: 104368. Quan Q, Wang S and Gao W (2025) Lifting-wing quadcopter modeling and unified control. Journal of Guidance, Control, and Dynamics 48(3): 689–699. Rafajłowicz E and Rafajłowicz W (2018) Iterative learning in optimal control of linear dynamic processes. International Journal of Control 91(7): 1522–1540. Ratcliffe JD, Lewin PL, Rogers E, Hatonen JJ and Owens DH (2006) Norm-optimal iterative learning control applied to gantry robots for automation applications. IEEE Transactions on Robotics 22(6): 1303–1307. Rezende AM, Goncalves VM and Pimenta LC (2021) Constructive time-varying vector fields for robot navigation. IEEE Transactions on Robotics 38(2): 852–867. Richter C, Bry A and Roy N (2016) Polynomial trajectory planning for aggressive quadrotor flight in dense indoor environments. In: Robotics Research: The 16th International Symposium ISRR . Springer, pp. 649–666. Romero A, Sun S, Foehn P and Scaramuzza D (2022) Model predictive contouring control for time-optimal quadrotor flight. 
+
+IEEE Transactions on Robotics 38(6): 3340–3356. Rousseas P, Bechlioulis C and Kyriakopoulos K (2024) Reactive optimal motion planning to anywhere in the presence of moving obstacles. The International Journal of Robotics Research 43(13): 2027–2048. Rub´ ı B, P´ erez R and Morcego B (2020) A survey of path following control strategies for UAVs focused on quadrotors. Journal of Intelligent & Robotic Systems 98(2): 241–265. Safadi Y, Fu R, Quan Q and Haddad J (2023) Macroscopic fundamental diagrams for low-altitude air city transport. 
+
+Transportation Research Part C: Emerging Technologies 152: 104141. Singamaneni PT, Bachiller-Burgos P, Manso LJ, Garrell A, Sanfeliu A, Spalanzani A and Alami R (2024) A survey on socially aware robot navigation: Taxonomy and future challenges. The International Journal of Robotics Research 43(10): 1533– 1572. Sinigaglia C, Manzoni A and Braghin F (2022) Density control of large-scale particles swarm through pde-constrained optimization. IEEE Transactions on Robotics 38(6): 3530– 3549. Song Y, Romero A, M¨ uller M, Koltun V and Scaramuzza D (2023) Reaching the limit in autonomous racing: Optimal control versus reinforcement learning. Science Robotics 8(82): eadg1462. Sun M and Wang D (2002) Iterative learning control with initial rectifying action. Automatica 38(7): 1177–1182.  
+
+> Prepared using sagej.cls
+
+28 Journal Title XX(X) 
+
+Sun S, Romero A, Foehn P, Kaufmann E and Scaramuzza D (2022) A comparative study of nonlinear and differential-flatness-based control for quadrotor agile flight. IEEE Transactions on Robotics 38(6): 3357–3373. Teissing K, Novosad M, Penicka R and Saska M (2024) Real-time planning of minimum-time trajectories for agile uav flight. 
+
+IEEE Robotics and Automation Letters 9(11): 10351–10358. Tordesillas J and How JP (2021) MADER: Trajectory planner in multiagent and dynamic environments. IEEE Transactions on Robotics 38(1): 463–476. Tordesillas J, Lopez BT, Everett M and How JP (2021) Faster: Fast and safe trajectory planner for navigation in unknown environments. IEEE Transactions on Robotics 38(2): 922–938. Toumieh C and Lambert A (2022) Decentralized multi-agent planning using model predictive control and time-aware safe corridors. IEEE Robotics and Automation Letters 7(4): 11110– 11117. V´ as´ arhelyi G, Vir´ agh C, Somorjai G, Nepusz T, Eiben AE and Vicsek T (2018) Optimized flocking of autonomous drones in confined environments. Science Robotics 3(20): eaat3536. Webb DJ and Van Den Berg J (2013) Kinodynamic RRT*: Asymptotically optimal motion planning for robots with linear dynamics. In: 2013 IEEE International Conference on Robotics and Automation (ICRA) . IEEE, pp. 5054–5061. Wiedemann T, Scheffler M, Shutin D and Lilienthal AJ (2025) Physics-informed robotic airflow exploration and mapping with a swarm of mobile robots. The International Journal of Robotics Research .Williams G, Aldrich A and Theodorou EA (2017) Model predictive path integral control: From theory to parallel computation. 
+
+Journal of Guidance, Control, and Dynamics 40(2): 344–357. Xu JX (2011) A survey on iterative learning control for nonlinear systems. International Journal of Control 84(7): 1275–1294. Xu JX and Huang D (2008) Spatial periodic adaptive control for rotary machine systems. IEEE Transactions on Automatic Control 53(10): 2402–2408. Xu W, Cai Y, He D, Lin J and Zhang F (2022) Fast-lio2: Fast direct lidar-inertial odometry. IEEE Transactions on Robotics 38(4): 2053–2073. Zhang Y, Chu B and Shu Z (2022) Model-free predictive optimal iterative learning control using reinforcement learning. In: 
+
+2022 American Control Conference (ACC) . IEEE, pp. 3279– 3284. Zhang Z and Shen D (2026) User preferences-based incompatible multiobjective iterative learning tracking control. IEEE Transactions on Automatic Control 71(1): 427–442. Zhao S, Li Z and Ding Z (2019) Bearing-only formation tracking control of multiagent systems. IEEE Transactions on Automatic Control 64(11): 4541–4554. Zheng T, Han Q and Lin H (2021) Transporting robotic swarms via mean-field feedback control. IEEE Transactions on Automatic Control 67(8): 4170–4177. Zhong G, Wang L and Sun M (2025) An initial-rectifying-constraint optimization scheme for repetitive motion planning by using prescribed-time zeroing neural networks. IEEE Transactions on Automation Science and Engineering 22: 11087–11098. Zhou X, Wang Z, Ye H, Xu C and Gao F (2020) Ego-planner: An esdf-free gradient-based local planner for quadrotors. IEEE Robotics and Automation Letters 6(2): 478–485. Zhou X, Wen X, Wang Z, Gao Y, Li H, Wang Q, Yang T, Lu H, Cao Y, Xu C et al. (2022) Swarm of micro flying robots in the wild. 
+
+Science Robotics 7(66): eabm5954.

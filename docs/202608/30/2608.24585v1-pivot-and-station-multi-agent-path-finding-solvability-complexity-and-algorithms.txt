@@ -1,0 +1,1644 @@
+Title: Pivot-and-Station Multi-Agent Path Finding: Solvability, Complexity, and Algorithms
+
+URL Source: https://arxiv.org/pdf/2608.24585v1
+
+Published Time: Wed, 26 Aug 2026 01:27:03 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# Pivot-and-Station Multi-Agent Path Finding: Solvability, Complexity, and Algorithms 
+
+# Andrea Di Nezza 1∗, Mihir Patel 2∗, Fabio Fagnani 1, Sara Bernardini 2
+
+> 1
+
+Department of Mathematical Sciences, Politecnico di Torino, Turin, Italy 
+
+> 2
+
+Department of Computer Science, University of Oxford, Oxford, United Kingdom 
+
+Abstract 
+
+Automated high-density storage systems (warehouses, robotic parking, plant logistics, etc.) require fleets of agents to move through scarce task-critical resources and then park without obstructing future operations. We introduce Pivot-and-Station Multi-Agent Path Finding (PS-MAPF) , a MAPF variant in which a subset of tasked agents must each visit one of a set of interchangeable pivots (e.g., workstations) before the entire fleet terminates at anonymous stations, one agent per station. We characterize solvability completely: every instance on a 2-edge-connected graph is solvable, and, on arbitrary connected graphs, a structural effective-distance measure relative to the number of unoccupied vertices gives a necessary and suffi-cient condition. We prove that minimizing station-makespan or station-flowtime is NP-hard already with a single pivot. We present three algorithms, a complete baseline, a SAT-based optimal solver, and Pivot-Prioritized Planning (PPP), the last solving 74-89% of benchmark instances with makespan and flowtime orders of magnitude below the baseline. 
+
+# 1 Introduction and Related Work 
+
+Infrastructure-based high-density automated storage systems (warehouses, robotic parking, plant logistics; e.g., Ocado, Amazon Sequoia, Versatile, Robotic Parking, WPS) move fleets of agents (robots, shuttles, or motorized cells) through a fixed mechanical topology of rails, lifts, conveyors, or grid cells. At any moment, some agents are moving toward a pivot :a task-critical resource that must be visited, such as a worksta-tion, a pickup or drop-off point, or a charging interface; in a given system, pivots form a single class of functionally inter-changeable resources (systems with several classes give rise to typed pivots; we treat one). The other agents, having vis-ited a workstation or not needing one, must park at a station :an admissible terminal position (storage cell, staging area) from which they remain available for future tasks without obstructing traffic; any agent may terminate at any station, one agent per station. Poor terminal placement propagates congestion, and poorly coordinated pivot access causes ac-tive agents to queue; the two should therefore be optimized 
+
+jointly : a locally good route to a pivot may leave agents obstructing others’ paths or blocking terminal placements, while convenient station assignments may ignore upcoming access to scarce resources. 
+
+> ∗
+
+These authors contributed equally. 
+
+We call the combined problem Pivot-and-Station Multi-Agent Path Finding (PS-MAPF) , a new variant of Multi-Agent Path Finding (MAPF) (Stern et al. 2019): on a graph whose vertices include pivots and stations, a subset of agents is tasked and must visit at least one pivot (any pivot serves any tasked agent) before reaching its terminal position; the remaining untasked agents have no pivot requirement but still occupy space and interact with tasked agents throughout. Every agent must terminate at a distinct station, and a solution is a set of collision-free paths satisfying both the pivot-access and terminal-station requirements. In classical MAPF (Stern et al. 2019), feasibility is polynomial-time decidable via pebble motion (Kornhauser, Miller, and Spirakis 1984), whereas optimizing makespan or flowtime is NP -hard (Yu and LaValle 2013b). Optimal solvers are search-based, e.g., CBS (Sharon et al. 2015), or reduction-based, encoding MAPF as SAT (Surynek et al. 2016), which often dominates in dense settings (Asín Achá et al. 2022; Surynek 2019); scalable suboptimal methods in-clude rule-based algorithms (Luna and Bekris 2011; Surynek 2009), prioritized planning (Erdmann and Lozano-Pérez 1987), whose modern variants tune agent orderings (Sil-ver 2005; Ma et al. 2019), the near-optimal LaCAM* (Oku-mura 2024), and MAPF-HD (Makino and Ito 2026) for high-density settings. Our optimal solver builds on the SAT line, and our fast method is a prioritized planner. PS-MAPF captures a coordination structure not fully ad-dressed by existing variants (Ma et al. 2016). In Anonymous MAPF (AMAPF), destinations are unassigned and makespan optimization is polynomial (Yu and LaValle 2013a); in Tar-get Assignment and Path Finding (TAPF), destinations are interchangeable only within subgroups, which is NP -hard (Ma and Koenig 2016); neither models mandatory access to scarce intermediate resources. Generalized TAPF (Nguyen et al. 2017) and Multi-Goal MAPF (Surynek 2021) assign each agent or group a specific sequence of targets, whereas PS-MAPF treats pivots as unassigned, interchangeable re-sources. Multi-Agent Combinatorial Path Finding (MCPF) (Ren, Rathinam, and Choset 2021, 2022) is the nearest, com-bining intermediate targets with anonymous terminal assign-ment, but the requirement points the opposite way (in MCPF every target must be visited by some agent; in PS-MAPF ev-ery tasked agent must visit some pivot, and a pivot no agent needs is never visited). MCPF treats agents symmetrically, arXiv:2608.24585v1 [cs.AI] 25 Aug 2026 while PS-MAPF distinguishes tasked/untasked agents and places the entire fleet. MAPF with Unassigned Agents (Fel-ner and Stern 2026) distinguishes tasked and untasked agents but does not require anonymous terminal reconfiguration of the whole fleet. Multi-Agent Pickup and Delivery (Ma et al. 2017) shares the intermediate requirement but is lifelong with assigned pickup and delivery locations, whereas PS-MAPF is one-shot with anonymous pivots and stations. This paper makes the following contributions. (i) A new MAPF variant , PS-MAPF, motivated by high-density auto-mated storage systems (Sec. 2). (ii) A complete character-ization of solvability checkable in polynomial time: suffi-ciency via 2-edge connectivity and, on arbitrary connected graphs, a necessary and sufficient condition comparing an effective-distance measure with the number of unoccupied vertices (Sec. 3). (iii) A sharp complexity threshold : min-imizing station-makespan and station-flowtime is NP -hard already for a single pivot (Sec. 4). (iv) Algorithms and ex-periments : a complete baseline derived from our construc-tive solvability proof, a reduction-based optimal solver, and Pivot-Prioritized Planning (PPP), incomplete but fast (pri-oritized pivot routing plus flow-based station assignment), solving 74–89% of benchmark instances at orders-of-mag-nitude lower cost than the baseline (Sec. 5 and 6). 
+
+# 2 Problem Statement 
+
+We consider a connected, undirected graph G = ( V, E) with-out self-loops, with a set of pivots P ⊆ V , a set of stations 
+
+S ⊆ V , and a set A of agents moving on the graph. A con-figuration is an injective function c : A → V assigning to each agent a distinct vertex (hence |V| ≥ |A| ). Agents’ initial positions are specified by a configuration o : A → V , called the origin configuration ; we refer to o(i) as the origin of agent i. Agents are partitioned into tasked agents At, which must pass through one of the pivots in P before reaching a station, and untasked agents Au, which can go directly to a station. Any pivot serves any tasked agent, and any agent may terminate at any station. 
+
+Definition 1. Given a graph G = ( V, E), a set of pivots 
+
+P ⊆ V , a set of stations S ⊆ V , a set of tasked agents 
+
+At, a set of untasked agents Au, and an origin function 
+
+o : A → V , where A = At ∪ A u, At ∩ A u = ∅, o is injective and |S| ≥ |A| , we define a PS-MAPF Instance as the tuple I = ( G, P, S, At, Au, o).
+
+Example 1. Figure 1a illustrates instance I =(G, P, S, At, Au, o), where G is a grid graph with black cells representing obstacles; pivots P = {p1, p 2} (orange), sta-tions S = {s1, .., s 6} (yellow), tasked agents At = {1, 2, 3}
+
+(red circles) and untasked agents Au = {4} (blue circle), with each agent starting at the indicated position. 
+
+A path in G = ( V, E) from x ∈ V to y ∈ V is a function 
+
+π : [0 ..T ] → V , T ∈ N, with π(0) = x, π(T ) = y, and, for every t ∈ [0 ..T − 1] , (π(t), π (t + 1)) ∈ E (moving) or 
+
+π(t+1) = π(t) (waiting); T is the path’s length . The distance 
+
+d(x, y ) between two vertices x and y is the minimum length among all paths between them. Given W ⊆ V , the subgraph induced by W is G[W] = ( W, E ∩ (W × W )) .     
+
+> p1
+> p2s1s2s3
+> s4s5s6
+
+1234          
+
+> (a)
+> 012345012345601234012345
+> (b)
+
+Figure 1: Example of a PS-MAPF instance I and its solution 
+
+Π on a grid graph with black obstacles. Pivots P = {p1, p 2}
+
+and storage destinations S = {s1, .., s 6} are highlighted in orange and yellow, respectively. In 1a, the problem instance, showing the labeled positions of pivots and destinations, along with the starting positions of tasked agents (red cir-cles 1, 2, 3) and the untasked agent (blue circle 4). In 1b, the corresponding solution, showing the non-conflicting paths 
+
+Π = ( π1, π 2, π 3, π 4) toward their targets, with time markers indicating the agent positions at each time step. Movements must avoid two types of conflicts between paths πi, π j : [0 ..T ] → V . A vertex conflict occurs at time 
+
+t ∈ [0 ..T ] if πi(t) = πj (t); a swapping conflict occurs at time 
+
+t ∈ [0 ..T − 1] if πi(t) = πj (t + 1) and πi(t + 1) = πj (t),with πi(t)̸ = πi(t + 1) and πj (t)̸ = πj (t + 1) (the two agents traverse the same edge in opposite directions). Paths πi and 
+
+πj are conflict-free if neither conflict occurs at any time step; the definitions extend to paths of different lengths by padding the shorter one with wait actions. For an agent’s path π : [0 ..T ] → V , the time-at-pivot is the first time at which the agent reaches a pivot, tP (π) = min {t ∈ [0 ..T ] | π(t) ∈ P} , and the time-at-station is the first time at which the agent reaches a station vertex and never leaves it, tS (π) = min {t ∈ [0 ..T ] | ∃ q ∈ S ∀ τ ∈
+
+[t..T ], π (τ ) = q}; for both, min ∅ = ∞. An untasked agent 
+
+i ∈ A u’s path π is successful if π(0) = o(i) and tS (π) < ∞;a tasked agent i ∈ A t’s path π is successful if π(0) = o(i),
+
+tP (π) < ∞ and tS (π) < ∞.
+
+Definition 2. Given a PS-MAPF instance I =(G, P, S, At, Au, o), a tuple of paths Π = {πi}i∈A , all of the same length T , is called a feasible motion of length T if all paths are pairwise conflict-free, and a successful motion 
+
+if, moreover, all paths are successful. A successful motion 
+
+Π is also called a solution for I. We denote the set of all solutions for I by Sol (I).Given a feasible motion Π = {πi}i∈A of length T , Π( t) is the configuration i 7 → πi(t) (well-defined since Π is conflict-free); a feasible motion need not start at o.
+
+Example 2. Figure 1b depicts a solution Π = (π1, π 2,π3, π 4) for the instance I introduced in Figure 1a. The non-conflicting paths are illustrated by the colored trajectories, with time markers indicating the time steps. Tasked agents 1, 2, and 3 successfully reach a pivot with tP values of 1, 3, and 2, respectively, before reaching their storage destina-tions with tD values of 5, 6, and 5, respectively. The untasked agent 4 reaches its storage destination with a tS value of 4. 
+
+Below, we define two cost functions based on the time all agents reach their stations. Definition 3. Given a PS-MAPF instance I and a solu-tion Π = {πi}i∈A , the Station-Makespan and the Station-Flowtime of Π are M IS (Π) = max i∈A tS (πi) and ΣIS (Π) = P 
+
+> i∈A
+
+tS (πi).
+
+Example 3. The example solution in Figure 1b has M IS (Π) = 6 and ΣIS (Π) = 20 , which are all minimal for this instance. 
+
+We aim to find optimal solutions w.r.t. these functions. 
+
+# 3 Solvability 
+
+We analyze when a PS-MAPF instance admits a solution. When no agent is tasked ( At = ∅ and A = Au), PS-MAPF coincides with anonymous MAPF (Yu and LaValle 2013a), and we call the instance pivot-free . The following proposition follows from classical results on the unlabeled pebble motion 
+
+problem (Kornhauser, Miller, and Spirakis 1984). 
+
+Proposition 1. A pivot-free PS-MAPF instance I =(G, P, S, ∅, Au, o) always admits a solution ( Sol (I)̸ = ∅). Prop. 1 implies that solvability never depends on where the stations lie: once the tasked agents have completed their pivot visits, routing the whole fleet onto S is a pivot-free instance. Only the pivot requirement can obstruct solvability, e.g., on a path graph, no two agents can ever exchange their relative order, so if a single pivot is located at an endpoint, and there are two tasked agents, the farther one can never reach the pivot, no matter how many vertices are unoccupied (see Figure 2). 
+
+Figure 2: An unsolvable instance: red vertices are origins of tasked agents, the green vertex is the only pivot, every vertex is a station. To present the results, we first introduce some prelim-inary notation. A path γ : [0 ..T ] → V is called simple 
+
+if γ(t)̸ = γ(t′) for every t, t ′ ∈ [0 ..T ] with t̸ = t′ and 
+
+{t, t ′}̸ = {0, T }. A simple path is called a cycle if T > 2
+
+and γ(0) = γ(T ). Often, a cycle γ is identified with the set of edges {(γ(t), γ (t + 1)) | t = [0 ..T − 1] }. We can asso-ciate every cycle γ : [0 ..T ] → V with T ≥ 3 with a feasible length-one motion rotation , Πγ = {πγi }i∈A , defined by a synchronized rotation of all agents present in the vertices of the cycle. Formally, for i ∈ A in position γ(ti) for some 
+
+ti ∈ [0 ..T − 1] , we put (πγi (0) , π γi (1)) = ( γ(ti), γ (ti + 1)) .For the remaining i ∈ A whose location is outside the cycle, we instead put πγi (0) = πγi (1) = o(i). Finally, we introduce two operations on motions. If Π = {πi}i∈A is a motion of length T , the inversion of Π is the motion Π− = {π− 
+
+> i
+
+}i∈A 
+
+of length T where π− 
+
+> i
+
+(t) = πi(T − t) for t = 0 ..T . We also have a natural concept of motion concatenation. Two tuples of paths Π1 = {π1 
+
+> i
+
+}i∈A and Π2 = {π2 
+
+> i
+
+}i∈A , with 
+
+πri : [0 ..T r ] → V for i ∈ A and r = 1 , 2, are called con-catenable if π1 
+
+> i
+
+(T1) = π2 
+
+> i
+
+(0) for every i ∈ A . We define their concatenation Π2 ◦ Π1 = {π2 
+
+> i
+
+◦ π1 
+
+> i
+
+}i∈A by putting 
+
+(π2 
+
+> i
+
+◦π1 
+
+> i
+
+)( t) = π1 
+
+> i
+
+(t) for t ≤ T1 and (π2 
+
+> i
+
+◦π1 
+
+> i
+
+)( t) = π2 
+
+> i
+
+(t−T1)
+
+for T1 < t ≤ T1 + T2. The inversion of a feasible motion or ipv
+
+Figure 3: Two edge-independent paths linking the origin of an agent (in red) to a pivot (in green). Concatenation of rotation along the obtained cycles eventually leads i in p.the concatenation of concatenable feasible motions is always feasible. We also recall a classical concept from graph theory. Given a graph G = ( V, E), we say that two vertices u, v ∈ V are 
+
+2-edge connected if the removal of any single edge from G
+
+does not disconnect u from v. By Menger’s theorem (Diestel 2017), this condition is equivalent to saying that there are two paths with no common edge linking u to v (such paths are called edge-independent ). Moreover, G is 2-edge connected 
+
+if any pair of vertices is 2-edge connected. 
+
+3.1 Existence on 2-Edge-Connected Graphs 
+
+Grids, warehouses, and similar layouts are 2-edge connected, the case dominating in practice; there, solvability is always guaranteed: Thm. 1’s per-agent hypothesis holds for every instance on a 2-edge-connected graph with P̸ = ∅.
+
+Theorem 1. Let I = ( G, P, S, At, Au, o) be a PS-MAPF instance in which, for every tasked agent i, there exists a pivot 
+
+p ∈ P such that o(i) and p are 2-edge connected. Then, the instance admits a solution ( Sol (I)̸ = ∅). 
+
+Proof. Consider any tasked agent i ∈ A t and assume that 
+
+o(i) and p ∈ P are 2-edge connected. By assumption, there exist two edge independent simple paths γ′ = ( γ′
+
+> 0
+
+..γ ′ 
+
+> l′
+
+) and 
+
+γ′′ = ( γ′′  
+
+> 0
+
+..γ ′′  
+
+> l′′
+
+) in G such that γ′ 
+
+> 0
+
+= γ′′  
+
+> 0
+
+= o(i) and γ′ 
+
+> l′
+
+=
+
+γ′′  
+
+> l′′
+
+= p. If the two paths have no intermediate vertex in common, then the concatenation of γ′ with the reverse of 
+
+γ′′ yields a cycle. A concatenation of l′ rotations, moving 
+
+i along γ′, yields a motion bringing i into p. If instead the two paths have common intermediate vertices, we consider the one of them closest to o(i) along γ′, say v = γ′ 
+
+> h′
+
+= γ′′ 
+
+> h′′
+
+and arguing as before, we construct a motion composed of rotations bringing i into v. A direct inductive argument based on the common intermediate points between γ′ and γ′′ now permits us to construct a motion bringing i to p (see Figure 3). Finally, notice that all agents whose starting points are within the vertices belonging to the two paths γ′ and γ′′ remain 2-edge connected to p under such rotations. The remaining agents have not moved and thus remain 2-edge connected to some pivot vertex. We can iterate this construction for each tasked agent and, by concatenating all such feasible motions, obtain a motion Π of length T by which all tasked agents pass through a pivot. We now consider the pivot-free instance I′ =(G, P, S, ∅, A, Π( T )) . By Prop. 1, a solution exists for I′,call it Π′. The concatenation Π′ ◦Π is finally, by construction, a successful feasible motion for I.3.2 Existence on General Graphs 
+
+For arbitrary connected graphs, solvability admits a com-plete , polynomial-time-checkable characterization based on the number and distribution of tasked and untasked agents, as well as on the topology of G.Given any subset of vertices W ⊆ V and a configuration 
+
+c, we define H(W, c) = W \ c(A), i.e. the set of W’s unoccupied vertices when the agents are in configuration c.We also define h(W, c) = |H(W, c)|.The following lemma shows that, on any connected sub-graph G′, feasible motions can arbitrarily move the set of unoccupied vertices in V′, while keeping at rest all agents outside of it. 
+
+Lemma 1. Let I = ( G, P, S, At, Au, o) be a PS-MAPF instance, and let G′ = ( V′, E′) be a connected induced subgraph of G. Let D ⊆ V ′ be such that |D| = h(V′, o).Then, there exists a feasible motion Π of length T such that 
+
+Π(0) = o, H(V′, Π( T )) = D, and πi(t) = o(i) for every t
+
+if o(i)̸ ∈ V ′.
+
+Proof. Consider the pivot-free sub-instance restricted to the set of agents A′ currently in G′, defining V′ \ D as the set of their stations: I′ = ( G′, P, V′ \ D , ∅, A′, o|A′ ). Since G′
+
+is connected and, by construction, |A ′| = |V ′| − h(V′, o) = 
+
+|V ′ \ D| , Prop. 1 guarantees a solution to this anonymous MAPF problem. By extending the paths of all agents outside 
+
+G′ with wait actions, this yields the desired feasible motion on the entire graph G.We now investigate motion constraints in arbitrary topolo-gies. We notice that 2-edge connectivity is an equivalence relation that decomposes the set of vertices V into disjoint subsets C1..C s, inducing subgraphs that are maximally 2-edge connected. We call such subsets the 2-edge connected components of G. We indicate with T = ( N , F) the 2-edge condensation tree of G: the tree with vertices N = {C1..C s}
+
+and with an edge (Ci, C j ) if in G there exists an edge be-tween a node in Ci and a node in Cj (we refer to such edges as bridges ). In our analysis, we need to distinguish among the various 
+
+2-edge connected components. To this aim, we decompose the set N as N = N 01 ∪ N 11 ∪ N >1. N 01 and N 11 indicate the set of singleton components of degree not larger than 
+
+2 and above 2, respectively, while N>1 indicates the set of non-singleton components (thus of cardinality at least 3). We refer to the components in N 11 as singleton branching . It will be useful to consider configurations in which all unoc-cupied vertices form a single connected region containing p; intuitively, the free space is gathered at the pivot rather than dispersed through the graph. 
+
+Definition 4. The configuration o is called p-adapted if the set of unoccupied vertices H(V, o) is either empty or it con-tains p and the induced subgraph G[H(V, o)] is connected. The following result shows that the agents can always be brought to a p-adapted configuration, for any pivot p.
+
+Proposition 2. Let I = ( G, P, S, At, Au, o) be a PS-MAPF instance and let p ∈ P . There exists a feasible motion Π of length T such that Π( T ) is a p-adapted configuration. 
+
+Figure 4: In the top figure, a tasked agent i is positioned at the red vertex, at distance 6 from the pivot p in green. Despite there being only 4 unoccupied vertices (in white), a feasible motion that brings i to p exists and can be easily constructed by starting from the initial condition and then passing through the two intermediate configurations (central and bottom figures). 
+
+Proof. Consider any set of vertices W of cardinality h(V, o)
+
+that contains p and such that the induced subgraph is con-nected. Lemma 1 yields a motion leading to a configuration 
+
+o′ such that H(V, o′) = W. This proves the result. We now consider a fixed (tasked) agent i and a pivot vertex 
+
+p in P, and investigate the existence of a feasible motion that brings agent i from o(i) to p. We will give an explicit characterization of the existence, assuming the starting point is a p-adapted configuration. A clear sufficient condition for the existence of such a feasible motion is that d(o(i), p ) ≤
+
+h(V, o ). Indeed, in this case, as the original configuration is p-adapted, one can distribute the unoccupied vertices to follow exactly a minimal path from o(i) (excluded) to p
+
+without moving i. Then, a direct motion, in which only agent 
+
+i moves along the empty path, leads it to p. However, this is not at all a necessary condition, as shown in the instance presented in Figure 4. Below, we describe a computable method for determining whether feasible motions exist that lead a tasked agent to a pivot p. It applies only to initial configurations that are p-adapted, so our characterization of the existence of solutions is not fully explicit. However, since the reduction to p-adapted configurations is achieved via polynomial algorithms, it is indeed fully computable. We indicate with C′ and C′′ the 2-edge connected com-ponents to which o(i) and p respectively belong. We then consider the unique path in the 2-edge condensation tree T
+
+from C′ to C′′ , say C′ = C0, C 1, . . . , C l = C′′ . Further-more, we let 0 = m0 < m 1 < m 2 < · · · < m r = l be such that Cmh ∈ N 11 ∪ N >1 for every h = 1 , . . . , r − 1,while Ck ∈ N 01 for all k ∈ { 1, . . . , l } \ { m1, . . . , m r }. For 
+
+h = 0 , . . . , r , the binary variable ρh is set to 1 exactly when 
+
+0 < h < r and Cmh ∈ N 11 , namely when we are not con-sidering the initial or final component and the component is a singleton of degree greater than two. We finally define the 
+
+effective distance of agent i to p as the quantity 
+
+d eff  
+
+> p
+
+(o(i)) := max 
+
+> 0≤h≤r−1
+
+(mh+1 − mh + ρh + ρh+1 ) (1) assuming, by convention, the maximum is 0 on empty sets. In the definition of d eff  
+
+> p
+
+(o(i)) , we are considering the maximum distance between two subsequent components that are not degree two singletons, augmented by one or two, depending on whether one or both components are singletons. Notice that, by construction, d eff  
+
+> p
+
+(o(i)) ≤ d(o(i), p ).Figure 4 (top) depicts a p-adapted configuration with a path of l = 6 2 -edge connected components from o(i) to p.Notice that in this case m1 = 3 , m 2 = 6 and ρ1 = 1 so that 
+
+d eff  
+
+> p
+
+(o(i)) = max {3 + 1 , 3 + 1 } = 4 .As the next result shows, this distance is of fundamental importance, as it determines the minimum number of un-occupied vertices required for a feasible motion that brings agent i to p to exist. 
+
+Lemma 2. Let I = ( G, P, S, At, Au, o) be a PS-MAPF instance and assume that o is p-adapted with respect to some pivot p. Given an agent i ∈ A t, there exists a feasible motion that brings i to p if and only if the following condition holds: 
+
+d eff  
+
+> p
+
+(o(i)) ≤ h(V, o) = |V| − |A| (2) 
+
+Proof. Consider the unique path in the 2-edge condensation graph C0, C 1, . . . , C l connecting C0, the 2-edge connected component containing o(i), to Cl the 2-edge connected com-ponent containing p. We prove both directions by induction on l. If l = 0 , o(i) and p lie in the same 2-edge connected component and the result follows from Thm. 1 and is inde-pendent of h(V, o). From now on, we assume that l ≥ 1.We assume that condition (2) holds. If |C0| > 1 and C0
+
+contains at least one unoccupied vertex, then agent i, by first repositioning itself in the unique vertex v0 ∈ C0 connecting to C1 and then freely following the pattern of unoccupied vertices, can reach p. We now assume that all vertices in C0
+
+are occupied. We also assume that o(i) = v0, as it can always be reached with a motion only involving agents in C0 thanks to Thm. 1, and that d(v0, p ) > h (V, o); if not, by setting the unoccupied vertices along a minimal path from v0 to p, we again would directly construct the wanted feasible motion. Consider now the unique path in G, v0, v 1..v m1 where vk ∈
+
+Ck for k = 0 , 1..m 1. Removing C0, consider now the set of all vertices W belonging to the connected component of G
+
+containing p. By construction, we know that all unoccupied vertices are in W: h = h(V, o) = h(W, o).Assume first that ρ1 = 0 . Consider any subset D of W of cardinality h and possessing the property that {v1..v m1 } ⊆ D, while the h − m1 leftover vertices of D form a connected set of vertices containing p. Assumption (2) yields h ≥ m1,which together with the case assumption d(o(i), p ) > h 
+
+ensures such a choice of D is possible. It follows from Lemma 1 that there exists a motion bringing the unoccupied vertices into D while maintaining fixed all agents j with o(j)̸ ∈ W ,so, in particular, agent i. Afterward, agent i can move to vertex vm1 along the path of empty vertices. If r = 1 , vm1
+
+and p are in the same 2-edge connected component, and we conclude using Thm. 1 again. Otherwise, |Cm1 | > 1.If there are unoccupied vertices within Cm1 , then there is a path of unoccupied vertices leading to p and, as above, we could find a feasible motion bringing i to p. If not, let 
+
+v+ 
+
+> m1
+
+∈ Cm1 be the unique point in Cm1 that is connected through an edge to some node in Cm1+1 . 2-edge connectivity implies that there exists v′ ∈ Cm1 that is connected with an edge to vm1 and whose removal does not disconnect vm1
+
+from v+ 
+
+> m1
+
+. A motion within the 2-edge connected component 
+
+Cm1 leads agent i to v′ and, afterward, unoccupied vertices can be again distributed to form a connected set containing 
+
+p while leaving agent i still in node v′. We are thus now again in a p-adapted configuration, and the number of 2-edge connected components between the position of i and p
+
+is equal to l − m1 < l . Induction then applies. If instead ρ1 = 1 so that Cm1 is a branching component, consider any vertex v′̸ ∈ { vm1−1, v m1+1 } connected to vm1 .Consider now any subset D of W of cardinality h(W, o) and possessing the property that {v1..v m1 , v ′} ⊆ D , while the remaining vertices form a connected set containing p. As-sumption (2) yields h ≥ m1 + 1 , which together with the case assumption d(o(i), p ) > h ensures such a choice of D
+
+is possible. t follows from Lemma 1 that there exists a motion bringing the unoccupied vertices into D while maintaining fixed all agents j with o(j)̸ ∈ W , so, in particular, agent 
+
+i. Afterward, agent i can move to vertex v′ along the path of empty vertices. If we now remove vertex v′, we notice that, by construction, all empty vertices are in the compo-nent containing p (in the line {v0..v m1 } and in a connected subset containing p). This implies that there exists a feasible motion leading again to a p-adapted configuration without moving agent i currently in v′. Now, the new distance in the condensation tree between the components containing i and 
+
+p is equal to l − m1 + 1 . If m1 > 1, this is strictly less than l. In the case when m1 = 1 , we cannot directly apply the inductive reasoning. However, notice that, in this case, 
+
+d eff  
+
+> p
+
+(o(i)) ≥ m2 − m1 + ρ2 + ρ1 = m2 + ρ2. This implies that, in this case, we can work directly with the path from 
+
+o(i) to Cm2 , omitting the intermediate step Cm1 . In both cases ρ2 = 0 and ρ2 = 1 , previous considerations allow us to apply the inductive argument and thus conclude the proof. Conversely, suppose that there exists a feasible motion 
+
+Π = {πj }j∈A that brings i to p. Necessarily, agent i will need to touch all 2-edge-connected components along the path C0, C 1, . . . , C l during its motion. Let v0 ∈ C0 be the only node that is connected to C1 through an edge. Consider then the unique path in G, v0, v 1..v m1 where vk ∈ Ck for 
+
+k = 0 , 1..m 1. Let t1 be the first time i visits vm1 and let 
+
+t0 be the last time below t1 that i visits v0. Then, at every instant t ∈ [t0, t 1], agent i will be in one of the vertices vk(t)
+
+for k(t) ∈ 0..m 1.Indicate with h0 ≤ h(V, o) the number of unoccupied vertices at time t0 present in the connected component con-taining p when v0 is removed. We indicate with h(t) the number of unoccupied vertices at time t present in the con-nected component containing p when the node vk(t) contain-ing i is removed. A direct inductive reasoning shows that 
+
+h(t) = h0 − k(t). In particular, 0 ≤ h(t1) = h0 − m1 that yields h0 ≥ m1. In case ρ1 = 1 and h0 = m1, there is no unoccupied position in the connected component containing 
+
+p when the node vm1 is removed, and thus, since all edges connecting vm1 to nodes different from vm1−1 are bridges, no further motion is possible. We assume that Π is a solution, so eventually i must move further, contradicting the assump-tion made. This implies that h0 ≥ m1 + 1 . In any case, this proves that 
+
+h(V, o) ≥ m1 + ρ1 (3) As in the direct implication, in the case m1 = 1 and ρ1 = 1 ,we can not directly apply the inductive argument on distance, as when i reaches v′, it is at the same distance from p as it was in v0. In this case, we argue that also the condition 
+
+h(V, o) ≥ m2 + ρ2 (4) holds. This can be seen as follows. Let s2 be the first time 
+
+i visits vm2 and let s1 be the last time below s2 that i
+
+visits v1 = vm1 . Consider, moreover, s− 
+
+> 1
+
+= max {t ≤
+
+s1 | π(t)̸ = vm1 }. By construction, we have that, at every instant t ∈ [s− 
+
+> 1
+
++ 1 , s 2], agent i will be in one of the ver-tices vk(t) for k(t) ∈ m1..m 2. Indicate now with h1 the number of unoccupied vertices at time s− 
+
+> 1
+
++ 1 present in the connected component containing p when vm1 is removed. Notice that the motion of i at time s− 
+
+> 1
+
+has left at least one empty node in one of the components not containing p. This yields h(V, o) ≥ h1 + 1 . As above, we indicate with h(t)
+
+the number of unoccupied vertices at time t present in the connected component containing p when the node vk(t) con-taining i is removed. Direct inductive reasoning shows that 
+
+h(t) = h1 −k(t)+1 . In particular, 0 ≤ h(s2) = h1 −m2 +1 
+
+that yields h1 ≥ m2 − 1. With the same argument as above, we can improve the estimation to h1 ≥ m2 − 1 + ρ2 that, together with h(V, o) ≥ h1 + 1 , yields (4). In both cases (either (3) or, when m1 = ρ1 = 1 , (4)), using the direct implication (i.e. that condition (2) is sufficient for existence), we can bring i, through a feasible motion Π′ of length T ′, into a new position o′(i) = π′
+
+> i
+
+(T ) whose distance in the condensation graph to p is strictly reduced, and the configuration o′ = π′(T ) is still p-adapted. Notice that from 
+
+o′ there exists a feasible motion bringing i to p: it is sufficient to consider the concatenation of the inversion of Π′ with 
+
+Π, namely the feasible motion Π ◦ (Π ′)−. By induction, 
+
+d eff  
+
+> p
+
+(o′(i)) ≤ h(V, o′) = h(V, o) and since, by the way o′
+
+was defined, 
+
+d eff  
+
+> p
+
+(o′(i)) = max 
+
+> 1≤h≤r−1
+
+(mh+1 − mh + ρh + ρh+1 )
+
+combined with h(V, o) ≥ h0 ≥ m1 + ρ1 yields the validity of relation (2). The effective distance defined in (1) depends on the partic-ular p-adapted configuration we choose. However, the state-ment itself of Lemma 2 implies that condition (2) is a char-acterization of existence and thus it does not depend on the particular p-adapted configuration. Lemma 2 yields the following result. 
+
+Theorem 2. A PS-MAPF instance I = ( G, P, S, At, Au, o)
+
+is solvable if and only if, for every tasked agent i ∈ A t, there exist a pivot p ∈ P and a p-adapted configuration c, reachable from o by a feasible motion, such that 
+
+d eff  
+
+> p
+
+(c(i)) ≤ h(V, o) = |V| − |A| . (5) 
+
+Proof. ’If’: Proposition 2 and Lemma 2 (using condition (5)) guarantee, for every tasked agent i, the existence of a feasible motion Πi bringing agent i to touch a pivot. The concatena-tions of all such motions with their inversions (i.e., for agent 
+
+i, we create a motion that reaches c(i), visits p, and inverts back to o(i), and then we concatenate these motions across agents) yield a feasible motion Π allowing all tasked agents to touch a pivot. We now consider the pivot-free instance 
+
+I′ = ( G, P, S, ∅, A, Π( T )) . By Prop. 1, a solution Π′ exists for I′. The concatenation Π′ ◦ Π is finally, by construction, a successful feasible motion for I.’Only if’: Suppose Π = {πi}i∈A is a solution of length T .For every agent i ∈ A t, let p be a pivot such that πi(ti) = p
+
+for some ti ≤ T . Consider the restriction Π|[0 ,t i] of Π to the time interval [0 , t i]. Let ˜Πi be a motion of length T i
+
+that brings the system, originally in configuration o, into a 
+
+p-adapted configuration c. Then, Π|[0 ,t i] ◦ ˜Πi− is a feasible motion from configuration c that leads i to pivot p. Thanks to Lemma 2, condition (5) holds true. Algorithmically, the check of necessary conditions in Thm. 2 can proceed as follows. For every pivot p ∈ P ,we bring the system into any p-adapted configuration, and we let At(p) be the set of tasked agents for which condition (2) is satisfied. Existence of a solution is then equivalent to 
+
+∪p∈P At(p) = At. The complexity is bounded, in the worst case, by |P| polynomial reductions to pivot adapted config-urations, and for each of them, the check of |A t| conditions as (5). Finally, a simple structural condition guarantees solvabil-ity and underlies our experimental instances. 
+
+Definition 5. A PS-MAPF instance I =(G, P, S, At, Au, o) is well-formed if, for every tasked agent 
+
+i ∈ A t, there is a path from o(i) to some pivot p ∈ P none of whose vertices, other than the start o(i), is the origin o(j)
+
+of another agent j̸ = i.
+
+Proposition 3. Every well-formed instance is solvable. 
+
+Proof. Let I = ( G, P, S, At, Au, o) be a well-formed in-stance and consider a tasked agent i ∈ A t. Since I is well-formed, there exists a pivot p ∈ P and a path γ from o(i) to 
+
+p such that all vertices along γ, with the exception of o(i),are unoccupied by any other agent. Consider the subgraph G′ induced by the vertices of γ,
+
+V′, and the corresponding restricted sub-instance for agent 
+
+i: I = ( G′, {p}, V′, i, ∅, o(i)) . In this restricted setting, the initial configuration is trivially p-adapted and clearly satisfies condition (2). Thus, we can obtain a feasible motion Πii that routes agent i from o(i) to p within G′.We can then construct a feasible motion Πi for the full instance I by applying the movements of Πii to agent i
+
+while assigning wait actions to all other agents. This mo-tion is strictly feasible because only agent i moves (preclud-ing swapping conflicts), and it does so exclusively through unoccupied vertices (precluding vertex conflicts). By concatenating Πi with its inversion Πi−, agent i visits 
+
+p and the system subsequently returns to the initial config-uration o. Iterating this construction sequentially across all tasked agents yields a concatenated feasible motion Π of length T that allows every tasked agent to touch a pivot. pvx1 v′     
+
+> x1
+> vx2v′
+> x2
+> vx3v′
+> x3
+> vx4v′
+> x4
+> vc1
+> vc2
+> vc3
+> v′
+> c1v′
+> c2v′
+> c3
+
+Figure 5: Construction of PS-MAPF instance I from 3SAT formula (x1 ∨ x3 ∨ x4) ∧ (x1 ∨ x2 ∨ x4) ∧ (x2 ∨ x3 ∨ x4).Red/blue vertices are tasked/untasked agent origins, respec-tively. Yellow vertices are stations; orange vertices are pivots. We now consider the pivot-free instance I′ =(G, P, S, ∅, A, Π( T )) . By Proposition 1, a solution Π′ exists for I′. The concatenation Π′ ◦ Π is finally, by construction, a successful feasible motion for I.
+
+# 4 Complexity Analysis 
+
+We prove the NP -hardness of minimum station-makespan (MSM) and station-flowtime (MSF) decision problems. 
+
+Problem 1. Given a PS-MAPF instance I and k ∈ N, is there a solution Π with F IS (Π) ≤ k, where F ∈ { M, Σ}?We refer to the MSM decision problem when F = M , and to the MSF decision problem when F = Σ .We reduce from 3SAT (Cook 1971) in a similar fashion to Yu and LaValle (2013b). Our key additional insight is that strategically positioning the pivot in our constructed instance forces every agent to a predetermined station, thereby making the analysis similar to classical MAPF. Let (X, C ) be a 3SAT instance with n variables and m
+
+clauses, in conjunctive normal form (Sipser 2012) with at most three literals per clause. For each variable xi, create vertices vxi and v′ 
+
+> xi
+
+joined by two internally disjoint paths of length m + 3 , the “upper” and the “lower” path (Fig. 5); for each clause cj , create vertices vcj and v′ 
+
+> cj
+
+, connecting the 
+
+v′ 
+
+> cj
+
+as a path from v′ 
+
+> c1
+
+to v′ 
+
+> cm
+
+; create a vertex p adjacent to 
+
+v′ 
+
+> cm
+
+and to all the vxi . Finally, for each cj and each literal 
+
+xi ∈ cj , connect vcj to the jth vertex from vxi on the upper path if xi is unnegated in cj , and on the lower path if negated. The stations are S = Sc ∪ S x with Sc = {v′ 
+
+> cj
+
+| j ∈ [1 ..m ]},and Sx = {v′ 
+
+> xi
+
+| i ∈ [1 ..n ]}; the agents are m tasked “clause agents” acj with o(acj ) = vcj and n untasked “variable agents” axi with o(axi ) = vxi , yielding the instance I =(G, {p}, S, At, Au, o).
+
+Proposition 4. If (X, C ) ∈ 3SAT, then there is a solution 
+
+Π with station-makespan M IS (Π) at most m + 3 .
+
+Proof. For each xi ∈ X, if xi is set to true in the satisfying assignment, let axi use the lower path to v′ 
+
+> xi
+
+. If set to false, let it use the upper path. Because this is a satisfying assignment, each cj ∈ C contains at least one true literal, say correspond-ing to the variable xi. If xi is unnegated in cj , then xi is set to true, and we have routed axi on the lower path. By our construction, vcj connects to the upper path, which is now guaranteed to be unobstructed. Alternatively, if xi is negated in cj , then xi is false and thus axi uses the upper path. In this case, we would have connected vcj to the lower path, which is again unobstructed for acj . In short, each acj will have an unobstructed path to a vxi .Furthermore, because each clause origin connect to up-per/lower paths at a unique index, the clause agents arrive to the vxi vertices at staggered times, preventing vertex con-flicts. Specifically, ac1 will arrive first, proceeding to p ∈ V
+
+and then to v′ 
+
+> c1
+
+, followed sequentially by the remaining clause agents, which will filter into their respective stations. We have now described a solution Π where all agents traverse m + 3 
+
+edges without stopping, thus M IS (Π) ≤ m + 3 .To prove the converse statement, we first establish several preliminary results. 
+
+Lemma 3. The graph G has the following properties: (i) d(vxi , v ′ 
+
+> xi
+
+) = m + 3 for every i in [1 ..n ];(ii) d(vxi , v ′ 
+
+> xℓ
+
+) ≥ m + 5 for every i, ℓ in [1 ..n ] with i̸ = ℓ;(iii) d(p, v ′ 
+
+> xi
+
+) = m + 4 for every i in [1 ..n ];(iv) d(p, v ′ 
+
+> cj
+
+) = m − j + 1 for every j in [1 ..m ];(v) d(p, v cj ) = j + 2 for every j in [1 ..m ];
+
+Proof. Direct consequences of the way G is defined. A solution Π = {πi}i∈A is called non-crossing if πa(T ) ∈Sc when a ∈ A t and πa(T ) ∈ S x when a ∈ A u. The following result holds. 
+
+Lemma 4. Suppose Π = {πi}i∈A is a solution of I such that M IS (Π) ≤ m + 3 . Then, Π is non-crossing. 
+
+Proof. Suppose to the contrary that there is a j ∈ [1 ..m ] such that πacj (T ) ∈ S x. Since clause agents must pass through p,items (iii) and (v) of Lemma 3 imply that 
+
+tS (πacj ) ≥ m + 6 + j > m + 3 ,
+
+contradicting the assumption that M IS (Π) ≤ m + 3 .
+
+Lemma 5. Suppose Π = {πi}i∈A is a solution for I of length T such that M IS (Π) ≤ m + 3 . Then, 
+
+πaxi (T ) = v′ 
+
+> xi
+
+∀i ∈ [1 ..n ], πacj (T ) = v′ 
+
+> cj
+
+∀j ∈ [1 ..m ].
+
+Proof. Considering the variable agents, Lemma 4 tells us that Π is non-crossing and, because of (i) and (ii) of Lemma 3, we must have that πaxi (T ) = v′ 
+
+> xi
+
+for every i ∈ [1 ..n ].Regarding the clause agents, let Ω = {j | πacj (T )̸ = v′ 
+
+> cj
+
+}. If 
+
+Ω is empty, the proof is complete. Otherwise, for ¯h = max Ω ,we must have πac¯h (T ) = v′ 
+
+> ch
+
+with some h < ¯h. It then follows from items (iv) and (v) of Lemma 3 that 
+
+tS (πac¯h ) ≥ m + 3 + ¯h − h > m + 3 ,
+
+a contradiction. 
+
+Proposition 5. If there is a solution Π with M IS (Π) ≤ m+3 ,then (X, C ) ∈ 3SAT. Proof. It follows from Lemmas 3 and 5 that each agent a
+
+follows a shortest path πa to its station destination without wait actions. In particular, since upper and lower paths are internally disjoint, a shortest path between vxi and v′ 
+
+> xi
+
+is one of these two paths exclusively. Consequently, the variable agent axi occupies only one of these paths to reach v′ 
+
+> xi
+
+,ensuring the other path is free of variable agents and available for clause agents to move left on unobstructed. We extract a satisfying assignment for (X, C ) based on the paths that the clause agents take. Suppose acj uses the upper path of vxi . By construction, vcj connects to the upper path of vxi only if xi is unnegated in cj . So, in this case, we set xi to true and thus cj is satisfied. Alternatively, if acj uses the lower path, then xi must be negated in cj , so we set xi to false. Each clause agent must go through some unobstructed upper/lower path, so we can use this process to satisfy each clause. Thus, (X, C ) has a satisfying assignment. 
+
+Theorem 3. The MSM decision problem is NP -hard. 
+
+Proof. Direct consequence of Prop. 4 and 5. For the MSF decision problem, we show that ΣIS (Π) ≤
+
+(m + n)( m + 3) is equivalent to M IS (Π) ≤ m + 3 on the constructed instance. 
+
+Lemma 6. Given a solution Π = {πi}i∈A of the instance I
+
+of length T , the following facts hold. (i) if an agent ¯a is such that π¯a(T ) ∈ S c, then tS (π¯a) ≥
+
+m + 1 .(ii) if Π is non-crossing, tS (πa) ≥ m + 3 for every a ∈ A .
+
+Proof. Suppose ¯a is an agent such that π¯a(T ) = v′ 
+
+> cj
+
+for some 
+
+j ∈ [1 ..m ]. Let A′ be the set of agents (tasked or untasked) 
+
+a′ such that πa′ (T ) ∈ { v′ 
+
+> c1
+
+, . . . , v ′ 
+
+> cj−1
+
+}. As every path from origins to any clause-stations passes through p, every agent 
+
+a ∈ A ′ ∪{ ¯a} must necessarily pass through p in their motion 
+
+πa. Moreover, if we let τa = max {t ∈ [0 ..T ] | πa(t) = p} to be the last time that agent a visits the pivot node p, we must have 
+
+τ¯a > τ a′ ∀a′ ∈ A ′ (6) This can be seen formally as follows. Consider the natural total order on the line graph induced by the vertices Sc ∪{ p},increasing from left to right. Then, πa(t) ∈ S c and πa(t) < p 
+
+for every t > τ a for every a in A′ ∪ { ¯a}. If τ¯a < τ a′ for some 
+
+a′ ∈ A ′, then, both agents ¯a and a′ are in Sc ∪ { p} from 
+
+τa′ on. Since, by construction, π¯a(τa′ ) < π a′ (τa′ ) = p, the two agents must maintain such order of position at any future times (as we are assuming the absence of vertex or edge conflicts). However, this contradicts the fact that πa′ (T ) <v′ 
+
+> cj
+
+= π¯a(T ).As the absence of conflicts implies that a 7 → τa is injective among the agents passing through p, inequality (6) yields 
+
+τ¯a ≥ j. Finally, 
+
+tS (π¯a) ≥ τ¯a + d(p, v ′ 
+
+> cj
+
+) ≥ j + m − j + 1 = m + 1 ,
+
+proving (i). If Π is non-crossing, in the above considerations, we have that A′ ⊆ A t and the stronger inequality τa′ ≥ 3
+
+for every a′ ∈ A ′. The estimation above now reads 
+
+tS (π¯a) ≥ τ¯a + d(p, v ′ 
+
+> cj
+
+) ≥ j + 2 + m − j + 1 = m + 3 .
+
+Finally if a ∈ A u, tS (πa) ≥ m + 3 because of estimations (i) and (ii) in Lemma 3. This proves (ii). 
+
+Lemma 7. Given any solution Π = {πi}i∈A of the con-structed instance I, if ΣIS (Π) ≤ (m + n)( m + 3) , then Π is non-crossing. 
+
+Proof. Let Au(Π) = {a ∈ A u | πa(T ) ∈ S c}, At(Π) = 
+
+{a ∈ A t | πa(T ) ∈ S x}, Au(Π) c = Au \ A u(Π) , and 
+
+At(Π) c = At \ A t(Π) . Since |A| = |S| , necessarily, q =
+
+|A u(Π) | = |A t(Π) |. For every tasked agent acj ∈ At(Π) c,we let ℓj ∈ [1 ..m ] to be the index such that πacj (T ) = v′
+
+> cℓj
+
+.We now estimate the station-flowtime as follows: 
+
+ΣIS (Π) = P
+
+> a∈A
+
+tS (πa)= P
+
+> a∈A u(Π)
+
+tS (πa) + P
+
+> a∈A u(Π) c
+
+tS (πa)+ P
+
+> a∈A t(Π)
+
+tS (πa) + P
+
+> a∈A t(Π) c
+
+tS (πa)
+
+≥ q(m + 1) + ( n − q)( m + 3) + P 
+
+> acj∈A t(Π)
+
+(j + 2 + m + 4) + P 
+
+> acj∈A t(Π) c
+
+(m + 3 + j − ℓj )= q(m + 1) + ( n − q)( m + 3) + (m + 6) q + ( m + 3)( m − q)+ mP
+
+> j=1
+
+j − P 
+
+> acj∈A t(Π) c
+
+ℓj
+
+≥ (m + n)( m + 3) + q, 
+
+(7) where we have used Lemmas 3 and 6 in the first inequality, and the fact that j 7 → ℓj is an injective map in the second inequality. Thus, the assumption implies that q = 0 , telling us Π is non-crossing. 
+
+Proposition 6. Given any solution Π = {πi}i∈A of the constructed instance I, ΣIS (Π) ≤ (m + n)( m + 3) if and only if M IS (Π) ≤ m + 3 .
+
+Proof. We only need to show the “only if” part. Assume that 
+
+ΣIS (Π) ≤ (m+n)( m+3) . We know from Lemma 7 that Π is non-crossing. Then, Lemma 6 implies that tS (πa) ≥ m + 3 
+
+for every agent a. Consequently, tS (πa) = m + 3 for every 
+
+a ∈ A and thus M IS (Π) = m + 3 .
+
+Theorem 4. The MSF decision problem is NP -hard. 
+
+Proof. Consequence of Theorem 3 and Proposition 6. Thms. 3 and 4 highlight a sharp complexity jump: pivot-free PS-MAPF is anonymous MAPF, hence polynomial-time solvable, yet our reduction uses a single pivot, so combining anonymous destinations with even one pivot-visit require-ment makes both problems intractable. 5 Algorithms 
+
+Building on Secs. 3 and 4, we develop three algorithms: a 
+
+complete baseline (BA, Sec. 5.1) derived from the construc-tive solvability analysis, which solves every solvable instance but with very poor quality; a SAT-based solver (Sec. 5.3) computing makespan-optimal solutions at worst-case expo-nential cost; and, between the two, polynomial-time Pivot-Prioritized Planning (PPP, Sec. 5.2), of far higher quality than BA at the price of completeness: it may fail on solvable instances, but any solution it returns is correct. 
+
+5.1 Baseline Algorithm (BA) 
+
+Our solvability analysis in Section 3 is constructive and di-rectly yields a complete algorithm, which we adopt as a baseline and call BA . The algorithm processes tasked agents one at a time: for each tasked agent, it first brings the fleet into a p-adapted configuration (Proposition 2) and then routes the agent to a pivot via the motion constructed in the proof of Lemma 2. Once all tasked agents have passed through a pivot, the residual instance is pivot-free and is solved as an anonymous MAPF problem (Proposition 1). Concatenat-ing these feasible motions yields a solution whenever one exists (Theorem 2), making the algorithm complete. BA, however, prioritizes completeness over solution quality: its sequential, one-agent-at-a-time construction yields station-makespan and station-flowtime values that leave substantial room for improvement. In Phase 1 , tasked agents sequentially compute and exe-cute paths to a pivot, subsequently rewinding the system state to ensure independent solvability (lines 4-32). The procedure relies on the graph’s 2-edge condensation tree, which is com-puted (line 2) and partitioned into distinct component types (line 3): non-singletons, branching singletons, and degree-two singletons. For a given tasked agent a ∈ A t, the algo-rithm identifies an activatable pivot p (line 6) and determines the shortest path of components in the condensation tree lead-ing to it (lines 9-10). The core of the pivot-routing logic (lines 11-23) iteratively prepares the graph for the agent’s progres-sion: it repositions the unoccupied vertices (holes) to "clear" the way to the next component along the sequence. This is achieved using specific subroutines depending on whether the current component is a non-singleton 2-edge component or a branching singleton (lines 13-17), before advancing the agent into it (lines 19-21). A final advance step is performed if the pivot lies within a non-singleton component (lines 24-28). Crucially, to prevent agents from blocking each other, the algorithm inverts the agent’s entire motion sequence Π′
+
+into Π′− (line 29). Applying this inverse motion (line 30) completely rewinds the global state σ back to the initial con-figuration o. The concatenated forward and reverse motions are appended to the global solution (line 31), guaranteeing that every subsequent agent operates under the exact same initial conditions without interference. In Phase 2 , after all tasked agents have visited their des-ignated pivots and the global state has been safely restored to σ = o, the problem reduces to a pivot-free instance. The algorithm executes an anonymous MAPF routing (line 33) to direct the entire fleet to the final station vertices in S. Because Algorithm A: Baseline Algorithm (BA) 
+
+Input: Feasible Instance I = ( G, P, S, At, Au, o)
+
+Output: Global Solution Π 
+
+> 1:
+
+Π ← ∅ , σ ← o 
+
+> 2:
+
+{N , F} ← 2EdgeCondensationTree (G) 
+
+> 3:
+
+{N 01 , N 11 , N>1} ← Decompose (N ) 
+
+> 4:
+
+for all a ∈ A t do  
+
+> 5:
+
+Π′ ← ∅  
+
+> 6:
+
+p, π setup ← SelectActivatablePivot (a, σ, P, G) 
+
+> 7:
+
+ApplyMotion (πsetup , σ ) 
+
+> 8:
+
+append πsetup to Π′ 
+
+> 9:
+
+P ← ShortestPath (σ(a), p, (N , F))  
+
+> 10:
+
+{m0, . . . , m r } ← DecomposePath (P, N 11 ∪ N >1) 
+
+> 11:
+
+for all h = 0 to r − 1 do  
+
+> 12:
+
+u ← mh, v ← mh+1  
+
+> 13:
+
+if u ∈ N >1 then  
+
+> 14:
+
+πclear ← Clear2EC (u, v, G, σ, a ) 
+
+> 15:
+
+else  
+
+> 16:
+
+πclear ← ClearBranching (u, v, G, σ, a ) 
+
+> 17:
+
+end if  
+
+> 18:
+
+ApplyMotion (πclear , σ ) 
+
+> 19:
+
+append πclear to Π′ 
+
+> 20:
+
+πadv ← Advance (u, v, G, σ, a ) 
+
+> 21:
+
+ApplyMotion (πadv , σ ) 
+
+> 22:
+
+append πadv to Π′ 
+
+> 23:
+
+end for  
+
+> 24:
+
+if mr ∈ N >1 then  
+
+> 25:
+
+πadv ← Advance (mr , p, G, σ, a ) 
+
+> 26:
+
+ApplyMotion (πadv , σ ) 
+
+> 27:
+
+append πadv to Π′ 
+
+> 28:
+
+end if  
+
+> 29:
+
+Π′− ← InvertMotion (Π ′) 
+
+> 30:
+
+ApplyMotion (Π ′− , σ ) 
+
+> 31:
+
+append Π′ followed by Π′− to Π 
+
+> 32:
+
+end for  
+
+> 33:
+
+πf inal ← ARouting (G, σ, S) 
+
+> 34:
+
+append πf inal to Π 
+
+> 35:
+
+return Π
+
+all pivot requirements are already satisfied in Phase 1, this final step leverages classical flow-based techniques to move the agents to their destinations without tracking their iden-tities. The resulting motion πf inal is appended to complete the global solution Π (lines 34-36). 
+
+Complexity Analysis. Let n = |V| , m = |E| . Computing the 2-edge condensation tree and its decomposition (lines 2-3) takes O(n + m) time. In Phase 1, the outer loop pro-cesses |A t| ≤ n tasked agents. For each agent, SelectAc-tivatablePivot (line 6) evaluates at most |P| ≤ n pivots. For each candidate, verifying condition (2) requires reduc-ing the system to a p-adapted configuration. Because this sub-problem is anonymous , we only need to route at most n
+
+unoccupied vertices (holes). Repositioning these holes along a spanning tree requires at most O(n2) operations (Yu and LaValle 2013a). Crucially, because the global state is re-wound to o after each agent, this evaluation can be computed once offline for all pivots and cached, taking O(|P| n2) time globally across the entire algorithm. Determining the shortest path in the condensation tree (line 9) takes O(n). The inner loop (lines 11-23) advances the agent across at most n com-ponents. At each step, repositioning the holes (Clear2EC, ClearBranching) reduces to an anonymous MAPF prob-lem costing O(n2) operations (Yu and LaValle 2013a). Ad-vancing the agent through a 2-edge-connected component (as established in Theorem 1) requires finding two edge-independent paths and performing synchronous cycle rota-tions; this moves at most n agents along a path of length at most n, taking O(n2) time. Thus, clearing and advancing costs O(n2) per component, leading to O(n3) for the entire inner loop. Generating and applying the inverse motion (lines 29-30) traces back this sequence, taking another O(n3). Pro-cessing a single agent therefore takes O(n3) time, and over all tasked agents, Phase 1 costs O(|A t|n3) ≤ O (n4). In Phase 2, ARouting (line 33) solves a final pivot-free instance; ap-plying flow-based anonymous routing requires time at most 
+
+O(n3). Therefore, Phase 1 dominates, and the Baseline Algo-rithm runs in O(|A t|n3) ≤ O (n4) worst-case time, proving it is strictly polynomial in the instance size. 
+
+5.2 Pivot-Prioritized Planning (PPP) 
+
+PPP trades completeness for solution quality and speed, working in two phases : tasked agents are first routed to a pivot; the residual configuration is then an anonymous MAPF problem in which all agents move to the stations. Algorithm B: Pivot-Prioritized Planning (PPP)                                                                                                     
+
+> Require: Instance I= ( G,P,S,At,Au,o), Priority order σ=(σ1, . . . , σ |A t|)
+> Ensure: Valid solution Π, or ∅if failure 1: R ← { (o(a), t )|a∈ A t, t ∈[0 ,∞)}
+> 2: for j= 1 to |A t|do
+> 3: a←σj
+> 4: R ← R \ { (o(a), t )|t∈[0 ,∞)}
+> 5: πa←ST-A ∗ o(a),P,G,R,max  {0} ∪ { τσi}i<j ) + |V| 
+> 6: if πais ∅then
+> 7: return ∅
+> 8: end if
+> 9: τa←arrival_time (πa,P)
+> 10: R ← R ∪ Reserve (πa)
+> 11: end for
+> 12: τmax ←max  {0} ∪ { τa|a∈ A t}
+> 13: for T=τmax to τmax + 2 |V| do
+> 14: f←MaxFlow  G(T)
+> ext,un (I,R,{(πa, τ a)}a∈A t)
+> 15: if |f|== |A| then
+> 16: Π←ReconstructPaths (f, {πa})
+> 17: return Π
+> 18: end if
+> 19: end for
+> 20: return ∅
+
+In Phase 1 , tasked agents sequentially compute conflict-free paths to a pivot in priority order σ (lines 2-11), planning as if untasked agents were absent: moving them out of the way is deferred entirely to Phase 2. The start locations of lower-priority tasked agents are static obstacles: line 1 places an infinite-horizon reservation on every tasked origin in the table R, and line 4 lifts only the current agent’s own reser-vation before its Space-Time A* search (Silver 2005) (line 5); R stores occupied (vertex, time) and traversed (edge, time) pairs, preventing both vertex and swapping conflicts. If a tasked agent’s path traverses the initial location of an untasked agent at some t > 0, the crossing simply becomes a constraint on Phase 2, which must move that agent away before time t or fail. To guarantee termination even when a pivot is unreachable, the search horizon is bounded by the latest arrival time of any previously routed agent plus |V| 
+
+steps; if no path is found within it, the algorithm fails (lines 6-8). Otherwise, πa and its arrival time τa are stored, and R
+
+is updated (lines 9-10) with all reservations induced by πa,each traversed edge recorded in both directions. In Phase 2 , all agents must reach the stations in S without collisions; exploiting anonymity, we model this as a maxi-mum flow (line 14) on a customized time-expanded graph for a horizon T ≥ τmax = max a∈A t τa (τmax = 0 if At = ∅,line 12). As in Yu and LaValle (2013a), our graph G(T )
+
+> ext,un
+
+is built from the time-expanded graph of G for horizon T ,adding a super-source and a super-sink. We prune all re-served nodes and their incident edges except for the final arrival nodes of tasked agents, namely all (v, t ) ∈ R \ J,where J = {(πa(τa), τ a) | a ∈ A t}. This prevents con-flicts between the two phases. The super-source connects, through unit-capacity arcs, to the start locations of untasked agents at t = 0 and to the pivot locations of tasked agents at their arrival times t = τa (the injection nodes ); the super-sink connects to all station vertices at time T . If a flow of value |A| is found (line 15), the paths are extracted (line 16): tasked agents concatenate their Phase 1 and flow paths, untasked agents use the flow path; otherwise the horizon is incremented, failing once the window is exhausted (line 20). The window searched in line 13 is strictly sufficient: 
+
+Lemma 8. If a Phase 2 flow of value |A| exists for some horizon T ′ ≥ τmax , then one exists for some T ≤ τmax +2|V| − 1.
+
+Proof. We first analyze the temporal extent of the reserva-tions stored in R at the conclusion of Phase 1. Initially, line 1 assigns infinite-horizon reservations to the starting locations of all tasked agents. However, during the execution of the loop (lines 3-11), line 4 systematically removes this infinite-horizon reservation for each agent a ∈ A t prior to computing its path. The only reservations subsequently added to R (line 10) are those strictly induced by the spatial and temporal traversal of the computed paths πa. Because every path πa
+
+terminates at time τa, and by definition τmax = max a∈A t τa,it follows that for all t > τ max , no reservations exist in R.Now, assume that a valid Phase 2 flow of value |A| exists for some horizon T ′ ≥ τmax . This implies that the time-expanded graph G(T ′) 
+
+> ext,un
+
+supports a collision-free routing, meaning that at time τmax , all |A| agents (both tasked and untasked) are positioned at distinct vertices in G without any vertex or swapping conflicts. Let this valid configuration at time τmax be denoted as cτmax .Because R imposes no constraints for t > τ max , the time-expanded graph for t > τ max coincides exactly with the unconstrained time-expanded graph of G. Consequently, the routing problem from the intermediate configuration cτmax 
+
+to the set of stations S over the interval [τmax , T ′] reduces to a standard, unconstrained anonymous MAPF instance. According to classical bounds on anonymous multi-agent path finding (Yu and LaValle 2013a), if such an instance is solvable, it can be completed in at most |A| + |V| − 1 steps. Given that the number of agents is strictly bounded by the number of vertices ( |A| ≤ |V| ), the number of steps required from τmax to reach the stations cannot exceed 2|V| − 1.Therefore, if a flow exists for T ′, a valid flow of value |A| 
+
+is guaranteed to exist for a total horizon T satisfying T ≤
+
+τmax + 2 |V| − 1.Phase 2 feasibility is also monotone in T so the returned horizon is the minimum admitting a conflict-free completion of the Phase 1 motions. 
+
+Proposition 7. Given a PS-MAPF instance I, if PPP (Algo-rithm B) returns a set of paths Π̸ = ∅, then Π ∈ Sol (I).
+
+Proof. To prove that Π is a solution for I, we must show that 
+
+Π = {πi}i∈A is a feasible motion of length T and that all paths are successful. First, the algorithm terminates success-fully only if an integral maximum flow of value |A| is found at some horizon T . Such a flow decomposes into |A| arc-disjoint unit paths from the super-source to the super-sink; since each super-source arc has unit capacity and targets a distinct injection node, each unit path is unambiguously as-signed to one agent. Every path in Π has length exactly T :for a tasked agent a, the Phase 1 path on [0 ..τ a] is concate-nated with its flow path on [τa..T ], and the two agree at the handover node (πa(τa), τ a), so the concatenation is well defined. We verify conflict-freedom separately for each kind of pair of path segments. (i) Two Phase 1 paths. Each Space-Time A* search respects all vertex and edge reservations accu-mulated in R by higher-priority agents, while the origins of lower-priority tasked agents remain statically blocked until their turn; hence, no vertex or swapping conflict arises among Phase 1 paths. (ii) Two Phase 2 paths. The unit vertex ca-pacities of G(T ) 
+
+> ext
+
+make the flow paths vertex-disjoint at every time step, and its edge gadget forbids simultaneous opposite traversals of the same edge, excluding swapping conflicts. (iii) A Phase 1 path of agent a and a Phase 2 path of a dis-tinct agent b. Every vertex-time pair occupied by a Phase 1 motion belongs to R and, unless it lies in J, is deleted from 
+
+G(T )
+
+> ext,un
+
+; the flow path of b could therefore meet a Phase 1 motion only at an injection node. An integral flow of value 
+
+|A| saturates all |A| unit-capacity super-source arcs, so each injection node already carries the unit injected by the super-source, and its unit vertex capacity admits no further unit; hence b’s flow path visits no injection node other than its own. Swapping conflicts between the two phases are excluded be-cause reserved edge traversals are pruned in both directions. Consequently, the only vertex-time pair shared between a Phase 1 motion and a flow path is the handover node of one and the same tasked agent, which is not a conflict. Therefore, 
+
+Π is a feasible motion. Second, we verify that every path is successful. By the initialization of the search spaces and super-source, πi(0) = 
+
+o(i) holds for all i ∈ A . For any untasked agent i ∈ A u,the flow in Phase 2 connects its origin at t = 0 to the super-sink representing the stations S at time T . Thus, there exists a finite time-at-station tS (πi) ≤ T < ∞, making the path successful. For any tasked agent i ∈ A t, Phase 1 explicitly routes the agent to a pivot in P at some time τi ≤ τmax .Thus, there exists a finite time-at-pivot tP (πi) ≤ τmax < ∞.Phase 2 then routes this agent from its pivot location to the super-sink representing S at time T , guaranteeing a finite time-at-station tS (πi) ≤ T < ∞. Since all conditions are met, every path in Π is successful. Because Π is a feasible motion and all its paths are suc-cessful, Π is a successful motion. Hence, Π ∈ Sol (I).
+
+Complexity Analysis. Let n = |V| , m = |E| . Induction on the line-5 horizon bound yields τa ≤ |A t|n ≤ n2, so Phase 1 costs O(|A t|m(τmax + n) log n) over its Space-Time A* searches. Phase 2 tries O(n) horizons; for each, 
+
+G(T ) 
+
+> ext,un
+
+has O(mT ) arcs and a maximum flow needs at most 
+
+|A| ≤ n augmenting-path computations of cost O(mT ),giving O(n2m(τmax + n)) overall, which dominates. Since 
+
+τmax = O(n2), PPP runs in O(n4m) worst-case time, poly-nomial in the instance size. 
+
+5.3 SAT-Based Optimal Solver 
+
+Reduction-based algorithms often empirically outperform search-based for classical MAPF in densely occupied en-vironments (Surynek 2017; Stern 2019), the very regime motivating PS-MAPF. Consequently, our optimal solver fol-lows the classical reduction-based strategy of sequentially increasing time horizons (Kautz and Selman 1992; Surynek 2017). We first use BA to determine if I is solvable and, if so, obtain an upper bound on T ∗ which prevents an infi-nite search. Then, we initialize T with the lower bound of Thm. 6 (see below) and construct a pseudo-Boolean formula 
+
+Φ( T ) that is satisfiable if and only if I admits a solution with station-makespan at most T (Thm. 5 below). We query an off-the-shelf solver with Φ( T ), incrementing T and repeat-ing if Φ( T ) is unsatisfiable. The first satisfiable T equals T ∗,and the satisfying assignment yields an optimal solution. The standard “direct” encoding (Surynek 2022; Stern 2019) introduces a Boolean variable χa,v,t for every agent, vertex, and time step. However, we eliminate the dependency on |A| by observing that tasked agents are identical to un-tasked agents once they have visited a pivot, and that con-straints need not specify agent identities due to the anonymity of pivots and stations. Therefore, we say an agent is pivot-oriented (q = P) if it is tasked and has not yet visited a pivot, and station-oriented (q = S) otherwise. We call this encoding anonymized , with decision variables xqv,t = 1 iff any agent in state q occupies vertex v at time t ∈ [0 ..T ],and yqu,v,t = 1 iff an agent in state q moves from u to v
+
+between times t − 1 and t ∈ [1 ..T ]; the latter is defined for all (u, v ) ∈ E and for u = v (wait actions). Since reach-ing a pivot immediately transitions an agent to state S, a pivot-oriented agent never occupies a pivot: for q = P, xqv,t ^
+
+> v / ∈P
+> T
+
+^
+
+> t=0
+
+¬xP 
+
+> v,t
+
+∨ ¬ xS 
+
+> v,t
+
+(C1a) 
+
+> T
+
+^
+
+> t=1
+
+^
+
+> (u,v )∈E
+
+(¬yP 
+
+> u,v,t
+
+∧ ¬ yS
+
+> u,v,t
+
+) ∨ (¬yP 
+
+> v,u,t
+
+∧ ¬ yS
+
+> v,u,t
+
+) (C1b)  
+
+> T−1
+
+^
+
+> t=0
+
+^
+
+> v / ∈P
+
+(xP 
+
+> v,t
+
+= X 
+
+> u∈N[v]
+
+yP
+
+> v,u,t +1
+
+) (C2a) 
+
+> T
+
+^
+
+> t=1
+
+^
+
+> v / ∈P
+
+(xP 
+
+> v,t
+
+= X 
+
+> u∈N[v]\P
+
+yP
+
+> u,v,t
+
+) (C2b)  
+
+> T−1
+
+^
+
+> t=0
+
+^
+
+> v∈V
+
+(xS 
+
+> v,t
+
+= X 
+
+> u∈N[v]
+
+yS
+
+> v,u,t +1
+
+) (C2c) 
+
+> T
+
+^
+
+> t=1
+
+^
+
+> v / ∈P
+
+(xS 
+
+> v,t
+
+= X 
+
+> u∈N[v]
+
+yS
+
+> u,v,t
+
+) (C2d) 
+
+> T
+
+^
+
+> t=1
+
+^
+
+> v∈P
+
+(xS 
+
+> v,t
+
+= X 
+
+> u∈N[v]\P
+
+yP 
+
+> u,v,t
+
++ X 
+
+> u∈N[v]
+
+yS
+
+> u,v,t
+
+) (C2e) 
+
+^
+
+> v∈o(Au)
+
+xS 
+
+> v, 0
+
+∧ ^
+
+> v∈o(Au)\P
+
+¬xP 
+
+> v, 0
+
+(C3a) 
+
+^
+
+> v∈o(At)∩P
+
+xS 
+
+> v, 0
+
+∧ ^
+
+> v∈o(At)\P
+
+(xP 
+
+> v, 0
+
+∧ ¬ xS
+
+> v, 0
+
+) (C3b) 
+
+^
+
+> v / ∈o(A)
+
+¬xS 
+
+> v, 0
+
+∧ ^
+
+> v / ∈o(A)∪P
+
+¬xP 
+
+> v, 0
+
+(C3c) 
+
+^
+
+> v / ∈S
+
+¬xS 
+
+> v,T
+
+∧ ^
+
+> v / ∈P
+
+¬xP 
+
+> v,T
+
+(C3d) 
+
+Figure 6: Pseudo-Boolean formula Φ( T ).is defined only for v / ∈ P and yqu,v,t only for u / ∈ P . Any variable outside its defined domain is 0. With these vari-ables, Φ( T ) is the conjunction of the constraints in Fig. 6, where N [v] = {u ∈ V | (u, v ) ∈ E} ∪{ v} is the closed neighborhood of v.The anonymized encoding cannot represent two agents at the same (state, vertex, time), and the flow conservation constraints (C2a)–(C2e) forbid agent paths from merges or splits. This prevents vertex conflicts within each state, and constraint (C1a) is the relevant, cross-state/non-pivot case. Constraint (C1b) excludes swapping conflicts by forbidding simultaneous, opposite traversals of an edge in any combina-tion of states. Constraints (C2a)–(C2e) tie vertex occupancy to agent movement (an agent is at a vertex at time t iff exactly one incoming movement variable equals 1 at t and exactly one outgoing variable at t + 1 ) across pivot-/station-oriented and pivot/non-pivot vertex cases. Notably, (C2e) models an agent’s transition between states. Since (C2d) contains no yP
+
+terms, the transition can occur only at a pivot which, com-bined with (C3d), forces every pivot-oriented agent through a pivot by time T . Constraints (C3a)–(C3c) set the t = 0 states of untasked origins, tasked origins, and unoccupied vertices. (C3d) requires that, at time T , all non-station vertices are unoccupied and no agent is pivot-oriented. 
+
+Proposition 8. If Φ( T ) is satisfiable, then there exists Π
+
+with M IS (Π) ≤ T .
+
+Proof. Given a satisfying assignment for Φ( T ), we generate a path πa for each a ∈ A as follows. First, set πa(0) = 
+
+o(a). Since o(a) is injective, this gives us |A| distinct origin locations, i.e. paths. Next, for each t ∈ [0 ..T − 1] , if πa(t) = 
+
+u, find the unique v such that yP 
+
+> u,v,t
+
+or yS 
+
+> u,v,t
+
+equals 1. Then set πa(t + 1) = v and repeat until we have identified πa(T ).To show that Π = {πa}a∈A is a solution for I with 
+
+M IS (Π) ≤ T , we will first show that each πa is in fact a valid path from πa(0) to πa(T ). Then, we will show that Π
+
+meets all the criteria for a solution to I set out in Definition 2. As each path in Π is of length at most T , this achieves the desired result. 
+
+Claim. Each πa is a valid path, Π is conflict-free. We first demonstrate that Π is free of vertex conflicts. Sup-pose two distinct paths occupy a vertex v at time t. This would require either two agents in different states or two agents in the same state converging on v. The former directly violates constraint (C1a). The latter is impossible due to the flow con-servation constraints (C2b, C2d, C2e). Because variables are restricted to {0, 1} and the vertex variable is constrained to the sum of its incoming edge variables, at most one incoming edge variable can equal 1 for any given state. Thus paths can-not merge, implying that two paths of the same state cannot occupy the same vertex. Because we have established that exactly one agent occu-pies v at t, at most one of the outgoing flow constraints (C2a, C2c) can be activated. Consequently, constraints (C2a)-(C2e) enforce that a vertex variable equals 1 if and only if exactly one incoming and exactly one outgoing edge variable equal 1.Thus paths do not branch or spontaneously appear/disappear, making each πa a valid, continuous path. Finally, suppose a swapping conflict occurs between u
+
+and v at time t. This requires simultaneous traversals in opposite directions, meaning (yP 
+
+> u,v,t
+
+∨ yS
+
+> u,v,t
+
+) = 1 and 
+
+(yP 
+
+> v,u,t
+
+∨yS
+
+> v,u,t
+
+) = 1 , which directly violates constraint (C1b). Thus, Π is entirely conflict-free. 
+
+Claim. For all a ∈ A , πa(0) = o(a) and πa(T ) ∈ S .By construction, πa(0) = o(a) for all agents. Suppose there was a ∈ A such that πa(T ) = v with v / ∈ S . Given how we traced πa from the satisfying assignment, this would imply that either yP 
+
+> u,v,T
+
+or yS 
+
+> u,v,T
+
+equals 1 for some u ∈
+
+N [v]. Consequently, either xP 
+
+> v,T
+
+or xS 
+
+> v,T
+
+equals 1, due to the incoming flow constraints (C2b,C2d,C2e). Either case would violate (C3d) since v / ∈ S , contradicting the assumption that we have a satisfying assignment. 
+
+Claim. For all a ∈ A t, there exists p ∈ P and t ∈ [0 ..T ]
+
+such that πa(t) = p.Suppose there exists a ∈ A t with πa(t) /∈ P for all t ∈
+
+[0 ..T ]. As πa(0) is set to o(a) /∈ P , we know that xP 
+
+> o(a),0
+
+= 1 .Since a never occupies a pivot, (C2e) is never “activated”. That is to say, the flow and vertex variables associated with a
+
+are always pivot-oriented, implying that xP 
+
+> v,T
+
+= 1 where v =
+
+πa(T ). However, this violates (C3d), a contradiction. Proposition 9. If there exists Π with M IS (Π) ≤ T , then 
+
+Φ( T ) is satisfiable. 
+
+Proof. To construct a satisfying assignment for Φ( T ), we use each πa ∈ Π to determine which decision variables to set to 
+
+1, with all other variables set to 0. Using τa to abbreviate the time-at-pivot tP (πa), assign values as follows: 
+
+xP 
+
+> v,t
+
+= 1 ⇐⇒ ∃ a ∈ A t | πa(t) = v, t < τ a
+
+xS 
+
+> v,t
+
+= 1 ⇐⇒ ∃ a ∈ A u | πa(t) = v ∨∃a ∈ A t | πa(t) = v, t ≥ τa
+
+yP 
+
+> u,v,t
+
+= 1 ⇐⇒ ∃ a ∈ A t | πa(t − 1) = u, π a(t) = v, t ≤ τa
+
+yS 
+
+> u,v,t
+
+= 1 ⇐⇒ ∃ a ∈ A u | πa(t − 1) = u, π a(t) = v ∨∃a ∈ A t | πa(t − 1) = u, π a(t) = v, t > τ a
+
+We now verify this assignment satisfies all constraints of 
+
+Φ( T ).
+
+Claim. (C1a),(C1b) are satisfied. Since Π has no vertex conflicts, at most one agent occupies 
+
+v at time t for all v ∈ V and t ∈ [0 ..T ]. This single agent cannot be simultaneously tasked and untasked, nor before and after its time-at-pivot, thus our variable mapping will set at most one of xP 
+
+> v,t
+
+and xS 
+
+> v,t
+
+to 1, satisfying (C1a). Similarly, no two agents simultaneously traverse the same edge (u, v )
+
+in opposite directions for all (u, v ) ∈ E . Therefore, the con-ditions in our mapping for either yP 
+
+> u,v,t
+
+or yS 
+
+> u,v,t
+
+to be 1, and the conditions for either yP 
+
+> v,u,t
+
+or yS 
+
+> v,u,t
+
+to be 1, cannot both be satisfied. Thus at most one of ( yP 
+
+> u,v,t
+
+or yS
+
+> u,v,t
+
+) and ( yP
+
+> v,u,t
+
+or yS
+
+> v,u,t
+
+) can be 1, satisfying (C1b). 
+
+Claim. (C2a)-(C2e) are satisfied. As Π is a solution, all πa ∈ Π are continuous, conflict-free paths without vertex conflicts. Therefore, a vertex v is visited by an agent a at time t if and only if it is preceded by exactly one edge traversal (or wait action) from some u ∈ N [v] at t
+
+(for t ≥ 1), and succeeded by exactly one edge traversal (or wait action) to some w ∈ N [v] at t + 1 (for t ≤ T − 1). We show this fact satisfies (C2a)-(C2e) by looking at the three cases for the state of vertex v at time t.First, if no agent occupies v at time t, then our mapping will assign 0 to xP
+
+> v,t
+
+, x S
+
+> v,t
+
+, as well as to any flow variable containing v as an endpoint (incoming at time t, outgoing at time t+1 ). Thus both sides of each of (C2a)-(C2e) are 0, and satisfied. Second, if a pivot-oriented agent occupies v / ∈ P 
+
+at time t, then the mapping sets xP 
+
+> v,t
+
+= 1 and xS 
+
+> v,t
+
+= 0 . The incoming flow must therefore be pivot-oriented, not station oriented, as a ∈ A t and this traversal happens before τa.Thus (C2b) evaluates to 1 = 1 and (C2d) to 0 = 0 . The outgoing flow must similarly be pivot oriented, thus (C2a) and (C2c) are satisfied at 1 = 1 ,0 = 0 respectively. Third, if a station-oriented agent a occupies v at t, we set 
+
+xP 
+
+> v,t
+
+= 0 and xS 
+
+> v,t
+
+= 1 . For incoming flow, if v / ∈ P , then the incoming flow was already station-oriented. Thus (C2b) evaluates to 0 = 0 and (C2d) to 1 = 1 . If v ∈ P , either 
+
+a ∈ A t and (C2e) is 1 = 1 + 0 or a ∈ A u and it is 1 = 0 + 1 . We know that the pivot-oriented incoming flow ( a ∈At) can only come from non-pivots because otherwise the flow would not be pivot-oriented. Outgoing flow will all be station-oriented (as a is already station-oriented at time t), so (C2c) and (C2a) are satisfied at 1 = 1 , 0 = 0 respectively. 
+
+Claim. (C3a)-(C3d) are satisfied. For any v ∈ o(Au), an untasked agent begins at v, thus our construction assigns xS 
+
+> v, 0
+
+= 1 and xP 
+
+> v, 0
+
+= 0 , satisfying (C3a). For any v ∈ o(At), if v ∈ P , then the agent a with o(a) = v
+
+immediately has τa = 0 . Thus we assign xS 
+
+> v, 0
+
+= 1 . If v / ∈ P ,then τa > 0 and we set xP 
+
+> v, 0
+
+= 1 and xS 
+
+> v, 0
+
+= 0 . In either case, (C3b) is satisfied. If v ∈ V contains no agent at t = 0 ,we set xP 
+
+> v, 0
+
+= xS 
+
+> v, 0
+
+= 0 , satisfying (C3c). Finally, for (C3d), because M IS (Π) ≤ T , every agent terminates its path at a station s ∈ S by time T . Thus no agent occupies any v / ∈ S at time T , so we assign xS 
+
+> v,T
+
+= 0 for all of them. Furthermore, since every a ∈ A t reached a pivot at some time τa ≤ T , no 
+
+xP 
+
+> v,T
+
+will be set to 1.This proves each direction, giving us the desired equiva-lence. 
+
+Theorem 5. Let I = ( G, P, S, At, Au, o) be a PS-MAPF instance and T ∈ N. The formula Φ( T ) is satisfiable if and only if I admits a solution Π with M IS (Π) ≤ T .While (C2a)–(C2e) could be reduced to propositional logic with cardinality constraints (Cai et al. 2019; Frisch and Gi-annaros 2010) for a traditional SAT solver, doing so may cause a significant increase in the number of clauses. We thus maintain the pseudo-Boolean structure of Φ( T ) and rely on a solver with lazy clause generation, which dynami-cally generates Boolean conflict clauses from the sums only when necessary (Ohrimenko, Stuckey, and Codish 2026). 
+
+5.4 Lower Bounds 
+
+The number of variables in the anonymized encoding does not depend on |A| , so we expect it to outperform a direct encoding in dense instances. However, the algorithm’s effi-ciency depends heavily on a tight lower bound for T ∗, as every unsatisfiable query is a full SAT call. We derive one from the pivot bottleneck, assuming that At̸ = ∅, otherwise the instance reduces to Anonymous MAPF and can be solved optimally in polynomial time (Yu and LaValle 2013a). For each a ∈ A t, let δ(a) = min p∈P d(o(a), p ), the distance from its origin to its closest pivot. Sort the δ(a) distances in ascending order to create the sequence (δ1, . . . , δ |A t|).
+
+Lemma 9. Let I be a PS-MAPF instance with At̸ = 0 .For any solution Π of I, let (t1, t 2, . . . , t |A t|) be the time-at-pivots for tasked agents sorted in ascending order. Then, 
+
+ti ≥ δi ∀i ∈ { 1, 2, . . . |A t|} 
+
+ti ≥ ti−|P| + 1 ∀i ∈ {|P| + 1 , . . . |A t|} .
+
+Proof. For the first statement, consider a fixed i ∈{1, 2, . . . |A t|} and suppose that ti < δ i. Certainly the time-at-pivot of any agent a is at least δ(a), as an agent can only travel across one edge per time step. Furthermore, there are 
+
+i − 1 time-at-pivots smaller than ti, by definition. Therefore, 
+
+i of the δ(a) values are smaller than ti (and δi as well, by extension). However, this contradicts the definition of δi.For the second statement, observe that the set of pivots can “process” at most |P| agents per time step, else there would be a vertex conflict. Thus |P| + 1 agents cannot share the exact same time-at-pivot, i.e. the i-th agent to arrive at a pivot must arrive strictly later than the (i − |P| )-th agent. These lower bounds depend recursively on the actual time-at-pivots, making them difficult to apply directly. To construct an explicit, independently computable lower bound, we de-fine the sequence li for i ∈ [1 .. |A t|] as li = δi if i ≤ |P| ,and li = max( δi, l i−|P| + 1) if i > |P| .
+
+Lemma 10. Let I be a PS-MAPF instance with At̸ = 0 . For any solution Π, let (t1, t 2, . . . , t |A t|) be the time-at-pivots for tasked agents sorted in ascending order. Then ti ≥ li for all 
+
+i ∈ { 1, 2, . . . , |A t|} .
+
+Proof. We proceed by induction on i. The base cases ( i ≤|P| ) follow from Lemma 9 and the fact that li = δi in this case. Now fix some j > |P| , and assume that ti ≥ li for all i < j ; we will show that tj ≥ lj . By Lemma 9, we have that tj ≥ δj and tj ≥ tj−|P| + 1 . As tj−|P| ≥ lj−|P| by the inductive hypothesis, 
+
+tj ≥ max( δj , l j−|P| + 1) = lj .
+
+Theorem 6. For every solution Π of a PS-MAPF instance I
+
+with At̸ = ∅,
+
+M IS (Π) ≥ l|A t| + min  
+
+> p∈P ,s ∈S
+
+d(p, s ).
+
+Proof. First, we show that li is an monotone non-decreasing sequence. This implies no element in the sequence is larger than l|A t|, thus some tasked agent has a time-at-pivot of at least l|A t|. So suppose instead that i is the first index at which li > l i+1 . The δi sequence is sorted, meaning 
+
+δi ≤ δi+1 , leaving the case that i > |P| . We know that 
+
+li = max( δi, l i−|P| + 1) must take the value li−|P| + 1 , else 
+
+li+1 ≥ δi+1 would be greater than or equal to it. That is, 
+
+li−|P| + 1 = li > l i+1 ≥ li+1 −|P| + 1 .
+
+Subtracting one from both sides gives us that li−|P| >li+1 −|P| , contradicting the assumption that i is the first de-creasing index, as desired. The tasked agent which first reaches a pivot no earlier than l|A t| must still reach the station at which it terminates, requiring at least min p∈P ,s ∈S d(p, s ) further steps. 
+
+# 6 Experimental Study 
+
+Our experiments address two questions: on small grid in-stances where the optimal solver is viable, we map the em-pirical sources of difficulty of PS-MAPF, the tightness of the lower bound of Thm. 6, and PPP’s solution quality; on standard MAPF benchmarks probing those regimes at scale, we compare PPP against BA across five priority orderings and characterize PPP’s failure modes. The optimal solver was implemented using the C++ inter-face of CP-SAT (Perron and Didier 2025), while PPP and BA were programmed in Python 3.11. Experiments were run on a Linux cluster, with each Slurm job allocated 16 cores and 64 GB of RAM. Source code, preprocessing scripts, and generated instances will be made publicly available. 
+
+6.1 The SAT-Based Optimal Solver 
+
+Instances are generated by randomly assigning vertices on a 
+
+16 × 16 grid to satisfy five parameters: the percentage of grid vertices that are blocked (Obstacle%=0.2), the percentage of unblocked vertices containing an agent origin (Agent%), the percentage of tasked agents (Tasked%), and the percentages of unblocked vertices designated as stations (Station%, at least Agent%) and as pivots (Pivot%). To understand the im-pact of agent density, we generate 10 feasible instances per configuration, maintaining Station % ≥ Agent % by setting them equal. We evaluate only the optimal algorithm here, as generating the well-formed instances required by PPP be-comes prohibitively difficult at high agent densities. For pivot density, we compare the performance of all three solvers and fix Agent % = Station % = 0 .15 so that it is easier to find well-formed instances for PPP. We sweep pivot density ge-ometrically from 0.1% to 30%, generating 20 well-formed instances per data point and excluding instances unsolved by PPP from the makespan averages. We use a 60-sec timeout. Instances with a large gap between T ∗ and the bound of Thm. 6 are likelier to time out; discarding them would inflate the bound’s apparent tightness, so unsolved instances are plotted at the highest T reached before timeout. In the agent-density experiment, Figure 7(a) shows that performance depends on the combination of Agent% and Tasked%: runtimes spike at 50% agent density when all agents are tasked, while instances with 25% tasked agents remain tractable up to 90% density. An instance with 90% density and 25% tasked agents has significantly higher av-erage runtime than one with 30% density and 75% tasked agents, despite both having 22.5% of unblocked vertices as tasked origins: the number of untasked agents (67.5% vs. 7.5%) does, in fact, affect difficulty. We similarly analyze non-agent or pivot parameters. Un-surprisingly, higher obstacle densities increase difficulty. Generating feasible instances becomes prohibitively diffi-cult beyond 30% obstacles on 16 × 16 grids. Algorithm solve rates hold at 100% for obstacle densities up to 15%, but decline sharply to just 40% at 30% density. Conversely, increasing station density reduces problem difficulty. With Obstacle % = 0 .1 and Agent % = 0 .4, we solve all instances for station densities from 40% to 100%. Runtimes remain low throughout, and the average optimal makespan decreases lin-early from 9.8 (at 40% density) to 8.4 (at 100% density). In terms of scalability, our algorithm efficiently solves 100% of 5 feasible instances on grids up to 20 × 20 , and maintains an 80% success rate on 28 × 28 grids. An increase in pivot density is most impactful for small 
+
+|P| (1–10% density), as the gains in success rate and the reductions in makespan level off past that point. BA failed to solve any instance within the 60-sec limit, likely bottlenecked by repeated maximum-flow resolutions during its construc-tive phases. However, PPP excelled across all jointly solved instances, averaging a runtime of just 0.359 sec compared to 14.185 sec for the SAT solver and maintaining an average makespan gap strictly between 0.55 and 2.73 steps. (a) (b) 
+
+Figure 7: (a) Optimal-solver performance over 10 feasible 16 × 16 instances (Obstacle % = 0 .2) vs. agent density, by tasked percentage (Station % = Agent %, Pivot % = 0 .05 ); (b) Optimal-solver and PPP performances over 20 well-formed 16 × 16 
+
+instances (Obstacle % = 0 .2) vs. pivot density (Agent % = Station % = 0 .15 , Tasked % = 0 .5). 60-sec timeout.                                                                                       
+
+> Solver empty-48-48 random-64-64-10 warehouse-10-20-10-2-1 Runtime MISΣISSuccess Runtime MISΣISSuccess Runtime MISΣISSuccess
+> BA 22.29 3859.72 391533.70 100.0 64.78 6326.42 750692.14 100.0 282.32 23933.24 5740934.78 100.0 LH 8.76 31.33 2428.33 87.0 25.33 42.54 3855.11 84.0 141.53 91.90 17000.67 81.0
+> SH 8.67 30.88 2387.69 86.5 25.08 42.85 3844.63 85.0 151.12 92.17 16681.59 78.5 RND 8.42 30.98 2365.56 83.5 24.70 42.35 3811.54 82.0 148.66 91.22 16876.49 78.0 LC 8.91 31.17 2383.30 84.5 25.41 42.90 3773.30 81.0 143.45 90.00 15983.05 74.5 MC 8.82 31.38 2452.07 89.0 23.44 42.25 3842.34 83.5 137.76 91.74 16915.78 80.5
+
+Table 1: Average Runtime (s), Station-Makespan ( M IS ), Station-Flowtime ( ΣIS ) and Success Rate (%); for fairness, averages are over instances solved by all six algorithms. Best results among the PPP orderings are in bold. No time limit was imposed. 
+
+6.2 PPP vs. Baseline Algorithm 
+
+PPP uses a given priority order for the tasked agents, and we evaluate several well-known ordering heuristics (Ma et al. 2019; Bennewitz, Burgard, and Thrun 2001): SH (Shortest path first) prioritizes agents with shorter shortest paths to a pivot, LH (Longest path first) the opposite, and RND (Ran-dom) orders agents uniformly at random (fixed seed 42 for reproducibility). We also evaluate two conflict-based order-ings: for each tasked agent, we generate a static, shortest path to a pivot and count the spatio-temporal (vertex and edge) collisions it shares with the others’ static paths; LC (Least Conflicts first) prioritizes agents with fewer initial conflicts, 
+
+MC (Most Conflicts first) those with more. We perform experiments on three maps from the Moving AI benchmark (Stern et al. 2019): empty 48 × 48 grids, 64 ×
+
+64 grids with 10% obstacle density, and warehouse maps, covering diverse topologies and congestion levels. For each map, we generated 200 well-formed instances with number of pivots in {1, 5, 10 , 20 , 30 }, proportion of tasked agents in 
+
+{10% , 25% , 50% , 75% , 100% }, and total number of agents over eight evenly spaced values, from 1% of the map’s free cells to the maximum multiple of 10 yielding a well-formed instance: 150 (empty), 170 (random), 340 (warehouse). Table 1 presents the evaluated cost metrics and success rates. BA is complete but incurs prohibitive computational and qualitative costs; PPP sacrifices completeness for mas-sive efficiency gains, maintaining a 74–89% success rate while drastically outperforming BA across all metrics and solving warehouse instances in half the time with orders-of-magnitude lower makespan and flowtime. Among the heuris-tics, no ordering dominates, but MC is the strongest overall, achieving the lowest average runtimes on the two denser maps and the highest success rate on the empty map, while remaining competitive on every metric elsewhere. PPP’s fail-ures concentrate in extreme bottleneck scenarios (e.g., 1–5 pivots, 75–100% tasked agents): Phase 1 always completes on our instances but saturates R, and this prevents the Phase 2 flow from routing all agents within the allowed horizon, making all heuristics fail simultaneously at critical density thresholds, though MC resolves borderline instances where the others get stuck. 
+
+# 7 Conclusion and Future Work 
+
+We introduced PS-MAPF, a MAPF variant in which tasked agents must reach an anonymous pivot before the entire fleet terminates at anonymous stations. We characterized solvabil-ity completely, proved that minimizing station-makespan and station-flowtime is NP -hard already with a single pivot, and presented three algorithms: a complete, low-quality baseline, a SAT-based makespan-optimal solver, and the incomplete but fast Pivot-Prioritized Planning (PPP), with solutions or-ders of magnitude better than the baseline. Future work in-cludes pivot-based objectives, domain-specific solvers, and adapting state-of-the-art MAPF techniques to PS-MAPF. (a) Performance vs Obstacle %. 
+
+> (b) Performance vs Station %.
+> (c) Performance vs Grid Size
+
+# References 
+
+Asín Achá, R.; López, R.; Hagedorn, S.; and Baier, J. A. 2022. Multi-Agent Path Finding: A New Boolean Encoding. 
+
+Journal of Artificial Intelligence Research , 75: 597–624. Bennewitz, M.; Burgard, W.; and Thrun, S. 2001. Optimiz-ing Schedules for Prioritized Path Planning of Multi-Robot Systems. In Proceedings of the IEEE International Con-ference on Robotics and Automation , volume 1, 271–276. Piscataway, NJ: IEEE. Cai, J.; Su, Y.; Yang, X.; Min, J.; and Lai, Y. 2019. A New SAT Encoding Scheme for Exactly-One Constraints. Journal of Physics: Conference Series , 1288: 012035. Cook, S. A. 1971. The Complexity of Theorem-Proving Procedures. In Proceedings of the Third Annual ACM Sym-posium on Theory of Computing , 151–158. New York, NY: Association for Computing Machinery. Diestel, R. 2017. Graph Theory , volume 173 of Graduate Texts in Mathematics . Berlin, Heidelberg: Springer, 5th edi-tion. Erdmann, M.; and Lozano-Pérez, T. 1987. On Multiple Mov-ing Objects. Algorithmica , 2: 477–521. Felner, A.; and Stern, R. 2026. Multi-Agent Path Finding with Unassigned Agents (MAPFUA). In Proceedings of the AAAI Conference on Artificial Intelligence , volume 40, 39691–39698. Menlo Park, CA: AAAI Press. Frisch, A. M.; and Giannaros, P. A. 2010. SAT Encodings of the At-Most-k Constraint: Some Old, Some New, Some Fast, Some Slow. In Proceedings of the Tenth International Workshop of Constraint Modelling and Reformulation , 36. Kautz, H. A.; and Selman, B. 1992. Planning as Satisfiability. In Proceedings of the 10th European Conference on Artificial Intelligence , 359–363. Chichester: John Wiley and Sons. Kornhauser, D.; Miller, G. L.; and Spirakis, P. G. 1984. Coor-dinating Pebble Motion on Graphs, the Diameter of Permu-tation Groups, and Applications. In Proceedings of the 25th Annual Symposium on Foundations of Computer Science ,241–250. Washington, DC: IEEE Computer Society. Luna, R.; and Bekris, K. E. 2011. Push and Swap: Fast Co-operative Path-Finding with Completeness Guarantees. In 
+
+Proceedings of the Twenty-Second International Joint Con-ference on Artificial Intelligence , 294–300. Menlo Park, CA: IJCAI Organization. Ma, H.; Harabor, D.; Stuckey, P. J.; Li, J.; and Koenig, S. 2019. Searching with Consistent Prioritization for Multi-Agent Path Finding. In Proceedings of the Thirty-Third AAAI Conference on Artificial Intelligence , volume 33, 7643–7650. Menlo Park, CA: AAAI Press. Ma, H.; and Koenig, S. 2016. Optimal Target Assignment and Path Finding for Teams of Agents. In Proceedings of the 2016 International Conference on Autonomous Agents & Multiagent Systems , 1144–1152. Richland, SC: International Foundation for Autonomous Agents and Multiagent Systems. Ma, H.; Koenig, S.; Ayanian, N.; Cohen, L.; Hönig, W.; Kumar, T. K. S.; Uras, T.; Xu, H.; Tovey, C.; and Sharon, G. 2016. Overview: Generalizations of Multi-Agent Path Finding to Real-World Scenarios. In Proceedings of the IJCAI Workshop on Multi-Agent Path Finding .Ma, H.; Li, J.; Kumar, T. K. S.; and Koenig, S. 2017. Lifelong Multi-Agent Path Finding for Online Pickup and Delivery Tasks. In Proceedings of the 16th International Confer-ence on Autonomous Agents and Multiagent Systems , 837– 845. Richland, SC: International Foundation for Autonomous Agents and Multiagent Systems. Makino, H.; and Ito, S. 2026. MAPF-HD: Multi-Agent Path Finding in High-Density Environments. IEEE Robotics & Automation Magazine , 2–12. Nguyen, V.; Obermeier, P.; Son, T. C.; Schaub, T.; and Yeoh, W. 2017. Generalized Target Assignment and Path Find-ing Using Answer Set Programming. In Proceedings of the Twenty-Sixth International Joint Conference on Artificial In-telligence , 1216–1223. Menlo Park, CA: IJCAI Organization. Ohrimenko, O.; Stuckey, P.; and Codish, M. 2026. Lazy Clause Generation in Retrospect. Constraints .Okumura, K. 2024. Engineering LaCAM*: Towards Real-Time, Large-Scale, and Near-Optimal Multi-Agent Pathfind-ing. In Proceedings of the 23rd International Conference on Autonomous Agents and Multiagent Systems , 1501–1509. Richland, SC: International Foundation for Autonomous Agents and Multiagent Systems. Perron, L.; and Didier, F. 2025. CP-SAT (Version 9.12). https://developers.google.com/optimization/cp/cp_ solver/. Accessed: 2026-07-24. Ren, Z.; Rathinam, S.; and Choset, H. 2021. MS*: A New Exact Algorithm for Multi-Agent Simultaneous Multi-Goal Sequencing and Path Finding. In Proceedings of the IEEE In-ternational Conference on Robotics and Automation , 11560– 11565. Piscataway, NJ: IEEE. Ren, Z.; Rathinam, S.; and Choset, H. 2022. Conflict-Based Steiner Search for Multi-Agent Combinatorial Path Finding. In Proceedings of Robotics: Science and Systems . New York, NY: Robotics: Science and Systems Foundation. Sharon, G.; Stern, R.; Felner, A.; and Sturtevant, N. R. 2015. Conflict-Based Search for Optimal Multi-Agent Pathfinding. 
+
+Artificial Intelligence , 219: 40–66. Silver, D. 2005. Cooperative Pathfinding. In Proceedings of the First AAAI Conference on Artificial Intelligence and In-teractive Digital Entertainment , 117–122. Menlo Park, CA: AAAI Press. Sipser, M. 2012. Introduction to the Theory of Computation .Boston, MA: Cengage Learning, 3rd edition. Stern, R. 2019. Multi-Agent Path Finding – An Overview. In Osipov, G. S.; Panov, A. I.; and Yakovlev, K. S., eds., 
+
+Artificial Intelligence: 5th RAAI Summer School , 96–115. Cham: Springer International Publishing. Stern, R.; Sturtevant, N. R.; Felner, A.; Koenig, S.; Ma, H.; Walker, T. T.; Li, J.; Atzmon, D.; Cohen, L.; Kumar, T. K. S.; Boyarski, E.; and Bartak, R. 2019. Multi-Agent Pathfinding: Definitions, Variants, and Benchmarks. In Proceedings of the Twelfth Annual Symposium on Combinatorial Search ,volume 10, 151–158. Menlo Park, CA: AAAI Press. Surynek, P. 2009. A Novel Approach to Path Planning for Multiple Robots in Bi-connected Graphs. In Proceedings of the IEEE International Conference on Robotics and Automa-tion , 3613–3619. Piscataway, NJ: IEEE. Surynek, P. 2017. Time-expanded graph-based propositional encodings for makespan-optimal solving of cooperative path finding problems. Annals of Mathematics and Artificial In-telligence , 81(3–4): 329–375. Surynek, P. 2019. Unifying Search-Based and Compilation-Based Approaches to Multi-Agent Path Finding Through Sat-isfiability Modulo Theories. In Proceedings of the Twenty-Eighth International Joint Conference on Artificial Intelli-gence , 1177–1183. Menlo Park, CA: IJCAI Organization. Surynek, P. 2021. Multi-Goal Multi-Agent Path Finding via Decoupled and Integrated Goal Vertex Ordering. In Pro-ceedings of the AAAI Conference on Artificial Intelligence ,volume 35, 12409–12417. Menlo Park, CA: AAAI Press. Surynek, P. 2022. Problem Compilation for Multi-Agent Path Finding: A Survey. In Proceedings of the Thirty-First Inter-national Joint Conference on Artificial Intelligence , 5615– 5622. Menlo Park, CA: IJCAI Organization. Surynek, P.; Felner, A.; Stern, R.; and Boyarski, E. 2016. Efficient SAT Approach to Multi-Agent Path Finding Under the Sum of Costs Objective. In Proceedings of the Twenty-Second European Conference on Artificial Intelligence , 810– 818. Amsterdam, Netherlands: IOS Press. Yu, J.; and LaValle, S. M. 2013a. Multi-agent Path Planning and Network Flow. In Algorithmic Foundations of Robotics X, 157–173. Berlin, Heidelberg: Springer. Yu, J.; and LaValle, S. M. 2013b. Structure and Intractability of Optimal Multi-Robot Path Planning on Graphs. In Pro-ceedings of the Twenty-Seventh AAAI Conference on Artifi-cial Intelligence , 1443–1449. Menlo Park, CA: AAAI Press.
