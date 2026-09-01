@@ -1,0 +1,1337 @@
+Title: Toward Secure Communications for a UAV Swarm with Movable Antennas in SAGIN: CKM-Enabled Multi-Agent Reinforcement Learning Framework
+
+URL Source: https://arxiv.org/pdf/2608.27973v1
+
+Published Time: Mon, 31 Aug 2026 00:35:56 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+> 1
+
+# Toward Secure Communications for a UAV Swarm with Movable Antennas in SAGIN: CKM-Enabled Multi-Agent Reinforcement Learning Framework 
+
+Jiayang Wan, Graduate Student Member, IEEE , Yafei Wang, Graduate Student Member, IEEE ,Jiawei Zhuang, Graduate Student Member, IEEE , Wenjin Wang, Member, IEEE , Tony Q.S. Quek, Fellow, IEEE 
+
+Abstract —Space-air-ground integrated networks (SAGINs) can provide ubiquitous and reliable connectivity for unmanned aerial vehicles (UAVs). However, air-to-ground links, which are typically dominated by line-of-sight (LoS) propagation, are vulnerable to passive eavesdropping due to the broadcast nature of wireless channels. To enhance physical-layer security, we investigate a SAGIN-enabled secure downlink communication system in which UAVs select service links among satellite, aerial, and terrestrial networks while adjusting the positions of the movable antenna (MA) array to fully exploit connectivity and spatial degrees of freedom for improved secrecy communication performance. Specifically, we maximize the secrecy energy efficiency (SEE) of a UAV swarm by jointly optimizing the MA positions, UAV trajectories, and link selections, subject to UAV mobility, MA movement, and link connectivity constraints. To reduce the real-time channel state information (CSI) acquisition overhead, we propose a channel knowledge map (CKM)-assisted multi-agent reinforcement learning framework. Specifically, the CKM is first constructed from sparse channel measurements via Kriging inter-polation and is then leveraged together with satellite ephemeris information to enable efficient storage and retrieval of CSI. To reduce the action-space dimensionality and computational complexity, we model the MA array using rigid-body kinematics and adjust its position through global rigid-body translation, thereby constructing a low-dimensional hybrid action space for the joint optimization decisions. To align local decisions with system-wide performance under system constraints, we design an individual-team collaborative reward mechanism and introduce action masks to enforce constraints on UAV mobility, collision avoidance, MA regions, and connectivity capacity. Simulation results demonstrate that the proposed framework effectively improves the secrecy energy efficiency of the UAV swarm without incurring additional online CSI signaling overhead. 
+
+Index Terms —UAV, Movable-antenna (MA), SAGIN, secrecy energy efficiency (SEE), multi-agent reinforcement learning (MARL), channel knowledge map (CKM). 
+
+I. I NTRODUCTION 
+
+# THe low-altitude economy, as an emerging and integrated economic paradigm, encompasses a wide spectrum of low-altitude flight activities and associated industrial appli-cations conducted in airspace below 1000 meters [1]. Ex-isting terrestrial networks (TNs) cannot ensure continuous 
+
+Jiayang Wan, Yafei Wang, Jiawei Zhuang and Wenjin Wang are with the National Mobile Communications Research Laboratory, Southeast University, Nanjing 210096, China, and also with Purple Mountain Laboratories, Nanjing 211100, China (e-mail: {jywan, wangyf, jwzhuang, wangwj }@seu.edu.cn). Tony Q. S. Quek is with the Information Systems Technology and Design Pillar, Singapore University of Technology and Design, Singapore 487372, and also with the Yonsei Frontier Laboratory, Yonsei University, Seoul 03722, South Korea (e-mail: tonyquek@sutd.edu.sg). 
+
+and reliable coverage in low-altitude airspace characterized by significant altitude variations and high horizontal mo-bility, resulting in pronounced coverage gaps [2] [3]. With the evolution toward sixth-generation (6G) wireless networks, space-air-ground integrated networks (SAGINs), enabled by the deep integration of TNs, low-altitude wireless networks (LAWNs), and satellite networks (SNs), are emerging as a key technology for supporting future ubiquitous connectivity, with the potential to provide truly pervasive communication coverage for low-altitude airspace [4] [5] [6]. However, the high mobility of unmanned aerial vehicles (UAVs) leads to rapidly varying link geometries and prop-agation conditions, posing significant challenges to accurate and timely link selection in heterogeneous networks [7]. Although trajectory optimization can partially mitigate these effects, it operates at the macroscopic position level and thus cannot fully exploit local spatial channel variations. Moreover, conventional fixed-position antenna (FPA) arrays, constrained by their fixed geometries, have limited ability to exploit additional spatial diversity [8]. Movable antenna (MA) technology addresses this limitation by repositioning antenna elements within confined regions to exploit additional spatial degrees of freedom and attain more favorable channel conditions [8] [9]. Related reconfigurable antenna technologies include fluid antennas [10] and flexible antennas [11]. On UAV platforms, MA arrays add fine-grained spatial recon-figurability to macro-scale UAV mobility, enabling adaptive reshaping of spatial channel responses and performance gains over conventional FPA arrays [12]. Building on this, recent studies have increasingly explored the use of UAV swarms for security patrols, military reconnaissance, and confidential data transmission [13]. However, air-to-ground links are typ-ically dominated by line-of-sight (LoS) propagation, and the broadcast nature of wireless channels makes them vulnerable to passive eavesdropping [14]. Therefore, cooperative secure communication for UAV swarms is of significant importance. 
+
+A. Related Work 
+
+Existing studies primarily improve UAV service continu-ity in heterogeneous networks through link selection and trajectory optimization. Depending on whether link-selection decisions are made within a homogeneous network or across heterogeneous networks, link selection can be classified into intra-network [15] [16] and inter-network selection [17] [18] [1]. Intra-network link selection focuses on association and arXiv:2608.27973v1 [eess.SP] 28 Aug 2026 2
+
+handover among nodes of the same network type. In TNs, han-dover parameters, including hysteresis, time-to-trigger (TTT), and cell individual offset (CIO), are optimized, while learning-based schemes are employed to reduce frequent and redundant handovers [15]. In SNs, predictable orbital and ephemeris information is exploited to optimize satellite association and reduce handover-related signaling overhead [16]. By contrast, inter-network link selection coordinates TNs, LAWNs, and SNs with distinct propagation characteristics, coverage ranges, and link dynamics. Existing studies [17] [18] [1] have adopted stochastic-geometry modeling [17], TN-NTN coordination [18], and graph-based mobility management [1] to improve service continuity and avoid unnecessary handovers. Since the UAV position directly affects the propagation conditions of candidate links, trajectory optimization and link selection are inherently coupled. Conventional studies [19] [20] [21] optimize UAV trajectories under connectivity constraints using graph-theoretic methods [19], convex optimization [20], or dynamic programming [21] to reduce flight time and outage probability or limit the maximum disconnection duration. To overcome the reliance of conventional optimization meth-ods on accurate system models, recent studies [22] [23] have employed reinforcement learning (RL) to optimize UAV trajectories and mission execution, thereby improving long-term connectivity reliability and energy efficiency. However, existing approaches rely primarily on macro-scale UAV motion and fixed-position antenna arrays, leaving the spatial channel reconfigurability of MAs unexplored. To overcome the limited ability of FPA arrays to exploit local spatial channel variations, MAs and FASs reconfigure antenna positions within confined regions to obtain more favorable channel conditions and avoid deep fading [24]. Six-dimensional movable antennas (6DMAs) further introduce ro-tational degrees of freedom, thereby enhancing spatial channel reconfigurability [12]. Existing studies [25] [26] [27] have demonstrated the potential of MAs to improve array gain and multiple-input multiple-output (MIMO) capacity, and have begun to explore their integration with UAV platforms. For example, [26] optimizes the positions of directional MAs mounted on a UAV to reduce the data-collection time in backscatter sensor networks, whereas [27] deploy MA arrays on UAVs to improve the minimum array gain and system sum rate, respectively. Beyond improving transmission per-formance, integrating MAs with UAVs can also enhance com-munication security. Existing studies [28] [29] jointly optimize UAV trajectories, transmission strategies, and MA positions to improve secrecy communication performance. However, these studies are largely limited to single-UAV or single-network scenarios [29], without jointly considering link selection, UAV trajectories, and MA configurations for multi-UAV SAGINs. Moreover, their reliance on instantaneous channel state infor-mation (CSI) incurs considerable signaling and computational overhead. To reduce the overhead of real-time CSI acquisition, channel knowledge maps (CKMs) integrate offline channel measure-ments, location information, and environmental features to en-able low-overhead online channel querying and prediction [30] [31]. Meanwhile, multi-agent reinforcement learning (MARL) leverages inter-agent cooperation to address long-horizon se-quential decision-making in multi-UAV systems and has been applied to cooperative trajectory design, task scheduling, and communication mode selection [32] [33]. However, existing CKM and MARL studies have largely evolved independently: the former primarily supports channel prediction, whereas the latter typically relies on online CSI for cooperative task execution in UAV swarms. 
+
+B. Motivation and Main Contributions 
+
+Although significant progress has been made in link selec-tion, UAV trajectory optimization, and MA-enabled commu-nications, their joint optimization for secure UAV communi-cations in SAGINs remains largely unexplored. Specifically, MA position optimization, UAV trajectory optimization, and link selection all rely on timely and accurate CSI, whose acquisition in SAGINs incurs substantial signaling overhead. Moreover, the strong coupling among these optimization vari-ables, together with constraints on UAV mobility, MA move-ment ranges, and link connectivity, significantly increases the complexity of the joint optimization problem and may hinder algorithmic convergence. Meanwhile, cooperative control of a UAV swarm inherently introduces a high-dimensional trajec-tory decision space, while multi-antenna MA arrays require the joint optimization of individual antenna positions within confined movement regions. Consequently, the action-space dimensionality grows rapidly with the numbers of UAVs and antenna elements. Motivated by the above challenges, the main contributions of this work are summarized as follows:  
+
+> •
+
+To enhance physical-layer security, we investigate aSAGIN-enabled secure downlink communication system in which UAVs select service links among satellite, aerial, and terrestrial networks while adjusting the positions of the MA array to fully exploit connectivity and spatial degrees of freedom for improved secrecy communica-tion performance. Specifically, we maximize the secrecy energy efficiency (SEE) of a UAV swarm by jointly optimizing the MA positions, UAV trajectories, and link selections, subject to UAV mobility, MA movement, and link connectivity constraints.  
+
+> •
+
+To reduce CSI acquisition overhead, we propose a CKM-assisted MARL framework. The CKM is constructed offline from sparse channel measurements via Kriging interpolation and combined with satellite ephemeris in-formation to enable CSI storage, retrieval, and reuse. Accordingly, each UAV proactively queries the CSI corre-sponding to its location and candidate MA configurations, and uses the retrieved information as interaction data for subsequent decision-making. This approach eliminates the additional overhead of real-time CSI acquisition dur-ing online decision-making.  
+
+> •
+
+To address the strong coupling among link selection, UAV trajectory planning, and MA positioning, we construct a unified hybrid action space that enables a single policy to jointly generate the three types of decisions. An action-masking mechanism is employed to eliminate infeasible actions, thereby avoiding the suboptimality of stage-wise 3Satellite Backhaul 
+
+> Ground Backhaul
+> Data Network
+> LEO/ABS/GBS
+> UAV with MA
+> UAV service link
+> Candidate link
+> Traj ectory optimization
+> Link
+> Selection
+> MA position
+> optimization
+> Joint Optimization
+> Wiretap link
+> Eavesdropper
+> Fig. 1. Illustration of UAV secret communications in SAGIN with LEO satellites, ABSs, and GBSs, under joint trajectory, MA, and link selection optimization.
+
+optimization. To overcome the high computational com-plexity of independently selecting the position of each antenna and the exponential growth in action dimension-ality when jointly optimizing with other hybrid actions, we model the MA array using rigid-body kinematics, sub-stantially reducing the action-space dimensionality. Fur-thermore, an individual-team hybrid reward mechanism is designed to coordinate local decisions with overall system performance: the individual reward improves the SEE of each UAV, whereas the team reward promotes swarm cooperation, thereby enhancing training efficiency and stability. Simulation results validate the effectiveness of the proposed MA-positioning and link-selection degrees of freedom, as well as the contributions of the rigid-body modeling and individual-team hybrid reward mechanisms. Furthermore, the results demonstrate that the proposed framework achieves the optimal SEE of the UAV swarm while effectively reducing CSI acquisition and online inference overhead. 
+
+Organization: The remainder of this paper is organized as follows. Section II presents the system model for cooperative secure communications by a UAV swarm in SAGIN. Sec-tion III formulates the joint optimization problem. Section IV introduces the proposed CKM-assisted MAPPO framework. Section V presents the simulation results, and Section VI concludes the paper. II. S YSTEM MODEL AND PROBLEM FORMULATION 
+
+In this section, we first present the network model for a SAGIN-assisted secure downlink communication system with a UAV swarm in Section II-A. Section II-B develops the channel models for air-to-ground (A2G) and air-to-space (A2S) links, while Section II-C presents the corresponding signal models. 
+
+A. Network Model 
+
+We consider a SAGIN-assisted secure downlink commu-nication system, in which low Earth orbit (LEO) satellites, aerial base stations (ABSs), and ground base stations (GBSs) provide downlink communication services to a UAV swarm. As illustrated in Fig. 1, the UAV swarm cooperatively performs its tasks within a low-altitude service area jointly covered by space, aerial, and terrestrial networks. Specifically, the TN consists of a GBS equipped with a uniform planar array (UPA) of N GBS antenna elements. To ensure reliable and efficient communications in low-altitude airspace [34], a dedicated ABS is deployed, equipped with a UPA of N ABS antenna elements and an independently configured antenna uptilt angle. The SN comprises S LEO satellites, each equipped with a multibeam antenna array of N SN antenna elements and nadir-pointing beams fixed relative to the satellite body. Within this architecture, the gateway station integrates the gateway functions of the TN, AN, and SN segments and interconnects the three network layers, thereby supporting efficient Internet content delivery [1]. Meanwhile, a UAV swarm cooperatively performs secure communication tasks in low-altitude airspace, with each UAV equipped with an MA array comprising M
+
+antenna elements [24]. We focus on two types of UAV-related communication links:  
+
+> •
+
+A2G links : including GBS-UAV and ABS-UAV links, which connect a GBS bGBS and the u-th UAV, and an ABS bABS and the u-th UAV, respectively.  
+
+> •
+
+A2S links : corresponding to LEO-UAV links, which con-nect a LEO satellite bSN and the u-th UAV. For A2G links, the corresponding BSs are assumed to be deployed at fixed altitudes, thereby providing coverage over specific service areas accessible to UAVs. For A2S links, considering the high mobility of LEO satellites, we consider S
+
+LEO satellites to ensure continuous coverage along the UAV flight trajectory, thereby guaranteeing that at least one satellite can maintain connectivity with the UAV at any time instant. In this paper, we assume that each UAV can associate with only one serving BS at a time [1]. 
+
+B. Channel Model 
+
+We assume that each UAV is equipped with two functionally independent antenna subsystems [35]. The first is an M -element MA array mounted on a rectangular panel beneath the UAV, which establishes A2G links with GBSs and ABSs below the UAV [29]. The second is a uniform linear array (ULA) mounted on the upper side of the UAV, which establishes A2S links with LEO satellites above the UAV [1]. The two antenna subsystems are respectively oriented toward GBSs/ABSs be-low and LEO satellites above the UAV to accommodate the distinct spatial orientations and propagation characteristics of the two link types. 
+
+1) MA-Enabled A2G Links: For the A2G link, this paper adopts a LoS-probability-based channel model [36], where the dimensions of the transmit and receive regions are much smaller than the signal propagation distance. Suppose that the GBS or ABS is equipped with K transmit antennas. The position of the m-th MA element mounted on the u-th UAV is denoted by ru,m = [ xr,u,m , y r,u,m ]T ∈ C r , m = 1 , . . . , M, 
+
+where Cr denotes an LMA × LMA movable region [25]. Let U
+
+denote the set of UAVs, and let Mu = {ru, 1, ru, 2, . . . , ru,M }
+
+denote the set of MA positions of the u-th UAV. The posi-tions of all MAs mounted on the u-th UAV are stacked as 
+
+˜Ru = [ ru, 1, ru, 2, . . . , ru,M ] ∈ R2×M , where 4
+
+∥ru,p − ru,l ∥2 ≥ edmin , ∀u ∈ U , ∀p, l ∈ { 1, . . . , M }, p ̸ = l. 
+
+(1) The coordinates of the GBS (or ABS) and the UAV are respectively denoted by qB = [xB , y B , H B ]T and qU =[xU , y U , H U ]T . Accordingly, the link distance and the hor-izontal distance are given by d = ∥qU − qB ∥2, dh =p(xU − xB )2 + ( yU − yB )2. The corresponding elevation angle is expressed as ϑ = arctan 
+
+ HU −HB
+
+> dh
+
+
+
+. The elevation angle in degrees is defined as ϑdeg = 180  
+
+> π
+
+ϑ. The LoS probability [36] is given by P A2G LoS (ϑ) = 11+ a exp[ −b(ϑdeg −a)] ,
+
+where a and b are environment-dependent constants. The non-line-of-sight (NLoS) probability is P A2G NLoS (ϑ) = 1 − P A2G LoS (ϑ).
+
+Considering free-space path loss and additional LoS/NLoS losses, the average path loss is 
+
+PL( d, ϑ ) = 20 log 10 
+
+ 4πd λ
+
+
+
++P A2G LoS (ϑ)ηLoS +P A2G NLoS (ϑ)ηNLoS .
+
+(2) where λ is the carrier wavelength, and ηLoS and ηNLoS denote the additional losses of LoS and NLoS links, respectively. The large-scale channel power gain is β(d, ϑ ) = 10 − PL( d,ϑ )10 . The small-scale MIMO channel is modeled as a geometric channel with L effective paths. For the l-th path, let αl, ut,l , and 
+
+ur,l denote the complex gain, transmit direction, and receive direction, respectively. The transmit array response of the fixed UPA is given by at(ut,l ) = 
+
+h
+
+e−j 2πλ uTt,l t1 , . . . , e −j 2πλ uTt,l tK
+
+iT
+
+,
+
+where tK is the position of the K-th GBS (or ABS) antenna relative to the array reference point. For the movable receive array, the two-dimensional position of the m-th MA mounted on the u-th UAV is extended to ¯ru,m = [ xr,u,m , y r,u,m , 0] T .
+
+Accordingly, the receive array response depending on the MA positions, namely the MA steering vector, is expressed as [37] 
+
+ar ( ˜Ru, ur,l ) = 
+
+h
+
+e−j 2πλ uTr,l ¯ru, 1 , . . . , e −j 2πλ uTr,l ¯ru,M 
+
+iT
+
+. (3) Unlike fixed arrays, each phase term in this steering vector can be continuously adjusted by the corresponding MA position 
+
+¯ru,m , which provides the additional spatial degrees of freedom introduced by MAs [37]. Thus, the MA-enabled A2G channel matrix is 
+
+HA2G ( ˜Ru) = pβ(d, ϑ )
+
+> L
+
+X
+
+> l=1
+
+αlar ( ˜Ru, ur,l )aHt (ut,l ). (4) Since HA2G ( ˜Ru) explicitly depends on ˜Ru, the UAV can improve the channel condition by optimizing ˜Ru [25]. 
+
+2) A2S Links: Each UAV is assumed to be equipped with a K-element ULA mounted on its upper side. Accordingly, the A2S link is modeled as a K × K channel. Owing to the unobstructed LoS propagation path between the satellite and the UAV, and the fact that the transmission distance is much larger than the array apertures at both ends, a far-field single-path LoS channel model is adopted [1]. The distance between the s-th satellite and the u-th UAV is expressed as ds,u = ∥qs − qu∥2 , where qs and qu denote the three-dimensional positions of the s-th satellite and the 
+
+u-th UAV, respectively. The path loss of the A2S link [38] is given by PL A2S  
+
+> s,u
+
+= 20 log 10 
+
+ 4πd s,u 
+
+> λ
+
+
+
++ηLoS . Accordingly, the large-scale channel power gain is βA2S  
+
+> s,u
+
+= 10 − PL A2S  
+
+> s,u
+> 10
+
+. Define 
+
+us,u = (qu − qs)/d s,u as the unit direction vector from the s-th satellite to the u-th UAV. The satellite employs a 
+
+Kx × Ky UPA, where K = KxKy . Let ts,i ∈ R3 denote the position vector of the i-th antenna of the s-th satellite relative to the UPA reference point. The satellite UPA response is expressed as as(us,u ) = 
+
+h
+
+e−j 2πλ uTs,u ts, 1 , . . . , e −j 2πλ uTs,u ts,K 
+
+iT
+
+.
+
+Let pu,m ∈ R3 denote the position vector of the m-th element of the upper ULA of the u-th UAV relative to its reference point. The UAV receive-array response is ex-pressed as au(us,u ) = 
+
+h
+
+e−j 2πλ uTs,u pu, 1 , . . . , e −j 2πλ uTs,u pu,K 
+
+iT
+
+.
+
+Consequently, the channel matrix between the s-th satellite and the u-th UAV is expressed as [38] 
+
+HA2S  
+
+> s,u
+
+=
+
+q
+
+βA2S  
+
+> s,u
+
+exp 
+
+
+
+−j 2πd s,u 
+
+λ
+
+
+
+au(us,u )aHs (us,u ). (5) 
+
+C. Signal Model 
+
+To characterize the time-varying nature of UAV mobility, a discrete time-slotted model is adopted [22]. Specifically, the total mission duration Ts is equally divided into N
+
+time slots, yielding N + 1 discrete time instants indexed by 
+
+n = 0 , 1, . . . , N . The duration of each time slot is denoted by 
+
+δD and is defined as δD = Ts 
+
+> N
+
+. It is assumed that the UAVs fly at a fixed altitude H. Accordingly, the trajectory coordinates of the UAVs are subject to the following constraints: 
+
+qu[0] = qini  
+
+> u
+
+, qu[N ] = qfin  
+
+> u
+
+, ∀u ∈ U , (6) 
+
+qL ⪯ qu[n] ⪯ qU , ∀u ∈ U , ∀n, (7) 
+
+∥qu[n] − qv [n]∥2 ≥ dmin , ∀u, v ∈ U , ∀n, (8) where qL ≜ [xL, y L, H ]T and qU ≜ [xU , y U , H ]T denote the lower and upper boundaries of the two-dimensional (2D) airspace, respectively. 1 qini  
+
+> u
+
+and qfin  
+
+> u
+
+denote the initial and final positions of the u-th UAV, respectively. ⪯ denotes element-wise inequality and dmin is the minimum safety distance between any two UAVs. (6) ensures that each UAV departs from its prescribed initial location and reaches its designated final location. (7) restricts the UAV trajectories to the specified flight region. Moreover, the collision-avoidance constraint in (8) requires a minimum safety distance of dmin to be main-tained between any two UAVs, thereby preventing potential collisions. Let au,b [n] denote the link-selection indicator between the 
+
+u-th UAV and the b-th BS at the n-th time slot, where the considered BSs comprise GBS, ABS, and LEO satellite. The set of all BSs is defined as B = BG ∪B A ∪B L, where BG, BA,and BL denote the sets of GBSs, ABSs, and LEO satellites, respectively. Accordingly, the link selections are subject to the following constraints: 
+
+au,b [n] ∈ { 0, 1}, ∀u ∈ U , ∀b ∈ B , ∀n, (9) 
+
+X
+
+> b∈B
+
+au,b [n] ≤ 1, ∀u ∈ U , ∀n, (10) 
+
+> U
+
+X
+
+> u=1
+
+au,b [n] ≤ Cmax  
+
+> b
+
+, ∀b ∈ B , ∀n. (11) 
+
+> 1For simplicity, this paper focuses on two-dimensional trajectory optimiza-tion of UAVs, while three-dimensional trajectory optimization is left for future work. 5
+
+where (9) specifies that au,b [n] is a binary variable, where 
+
+au,b [n] = 1 indicates that the u-th UAV selects the b-th BS at time slot n, and au,b [n] = 0 otherwise. (10) ensures that each UAV selects at most one BS at each time slot, while a zero summation indicates that the UAV selects no BS. (11) limits the number of UAVs served by each BS at each time slot to at most Cmax  
+
+> b
+
+, thereby accounting for its limited communication capacity. Suppose that the b-th BS is equipped with Nb transmit antennas, while the u-th UAV is equipped with M receive antennas. Accordingly, the received signal after receive beamforming can be expressed as 
+
+yb,u [n] = pPb,u [n] vHb,u [n]Hb,u [n]wb,u [n]sb,u [n]
+
+| {z }
+
+> desired signal
+
++ X 
+
+> k∈U b[n]
+> k̸=u
+
+pPb,k [n] vHb,u [n]Hb,u [n]wb,k [n]sb,k [n]
+
+| {z }
+
+> intra-cell interference
+
++vHb,u [n]zb,u [n]
+
+| {z }
+
+> noise
+
+,
+
+(12) 
+
+where Ub[n] ≜ {u ∈ U | au,b [n] = 1 } denotes the set of UAVs served by the b-th BS in time slot n, and yb,u [n] ∈ C denotes the scalar signal after receive beamforming at the u-th UAV associated with the b-th BS. Moreover, wb,u [n] ∈ CNb×1 and 
+
+vb,u [n] ∈ CM ×1 denote the transmit beamforming vector at the b-th BS for the u-th UAV and the receive beamforming vec-tor at the u-th UAV, respectively, satisfying ∥vb,u [n]∥22 = 1 and 
+
+∥wb,u [n]∥22 ≤ 1. Further, Pb,u [n] denotes the transmit power from the b-th BS to the u-th UAV, sb,u [n] is the normalized information-bearing symbol satisfying E{| sb,u [n]|2} = 1 , and 
+
+zb,u [n] ∈ CM ×1 is the additive white Gaussian noise vector distributed as CN (0, σ 2
+
+> b,u
+
+IM ). Therefore, the received signal-to-interference-plus-noise ratio (SINR) at the u-th UAV served by the b-th BS during the n-th time slot can be expressed as 
+
+γb,u [n] = 
+
+Pb,u [n] vHb,u [n]Hb,u [n]wb,u [n] 2
+
+X 
+
+> k∈U b[n]
+> k̸=u
+
+Pb,k [n] vHb,u [n]Hb,u [n]wb,k [n] 2 + σ2
+
+> b,u
+
+.
+
+(13) Based on the legitimate downlink model, we further char-acterize the wiretap link. The eavesdropping threat is assumed to exist only in the GN band, where Eve passively intercepts the downlink transmissions from the GN without actively interfering with legitimate communications [39]. Following the standard assumptions commonly adopted in physical-layer security studies, Eve is equipped with a single antenna, and her location, denoted by qe, is assumed to be known [39], [29]. When the b-th GBS transmits data to the u-th UAV, the signals intended for the other UAVs in Ub[n] act as multiuser interference at Eve. Accordingly, Eve’s SINR for decoding the message intended for the u-th UAV is given by 
+
+γe,u,b [n] = 
+
+Pb,u [n] hHe,b [n]wb,u [n] 2
+
+P 
+
+> k∈U b[n]
+> k̸=u
+
+Pb,k [n] hHe,b [n]wb,k [n] 2
+
++ σ2
+
+> e
+
+, (14) where he,b [n] ∈ CNb×1 denotes the known GBS-to-Eve channel. Combining γe,u,b [n] with the legitimate link SINR 
+
+γb,u [n] in (13), the achievable GBS-link secrecy rate of the 
+
+u-th UAV associated with the b-th GBS at time slot n is 
+
+rsec ,G 
+
+> u,b
+
+[n] = [log 2 (1 + γb,u [n]) −log 2 (1 + γe,u,b [n])] +, b ∈ B G.
+
+(15) For ABS-UAV and LEO-UAV links, which are assumed to be free of eavesdropping, the secrecy rate reduces to the corresponding legitimate link rate. Thus, the secrecy rate over all candidate serving networks can be written uniformly as 
+
+rsec 
+
+> u,b
+
+[n] = 
+
+(log 2 (1 + γb,u [n]) , b ∈ B A ∪ B L,rsec ,G 
+
+> u,b
+
+[n], b ∈ B G. (16) Accordingly, the actual secrecy rate achieved by the u-th UAV at time slot n, after accounting for its link selection, is defined as Rsec  
+
+> u
+
+[n] = X
+
+> b∈B
+
+au,b [n]rsec 
+
+> u,b
+
+[n]. (17) Given the limited onboard energy of the UAV, we further establish its energy consumption model. The total energy consumption [40] comprises the propulsion, MA actuation, and communication energy expenditures, which are deter-mined by Pu, PMA , and Pcom , respectively, along with their corresponding operating durations. In this work, the u-th UAV is assumed to fly at a constant speed ¯vu throughout the entire mission. 2 Following the closed-form propulsion power model of rotary-wing UAVs [40], Pu is expressed as 
+
+Pu = P0 1 + 3¯ v2
+
+> u
+
+U 2tip 
+
+!
+
++ P1
+
+s
+
+1 + ¯v4
+
+> u
+
+4v40
+
+− ¯v2
+
+> u
+
+2v20
+
+!12
+
++ 12 rdrag ρ S A ¯v3
+
+> u
+
+,
+
+(18) where P0 and P1 denote the blade-profile power and the induced power in hovering status, respectively; Utip is the rotor-blade tip speed; v0 is the mean rotor-induced velocity in hovering; rdrag and S represent the fuselage drag ratio and the rotor solidity, respectively; A and ρ denote the rotor-disk area and the air density, respectively. 3
+
+III. P ROBLEM FORMULATION 
+
+In this work, each UAV performs link selection among the satellite, aerial, and terrestrial networks while adjusting the positions of its MA array. To fully exploit the connectivity and spatial degrees of freedom, we jointly optimize the MA positions ˜Ru[n], UAV trajectories qu[n], and link-selection variables au, b [n] to maximize the SEE of the UAV swarm. The resulting optimization objective is formulated as follows: 
+
+P1 : max  
+
+> {qu[n],˜Ru[n], a u,b [n]}
+
+PNn=1 
+
+Pu∈U 
+
+> b∈B
+
+au,b [n]rsec 
+
+> u,b
+
+[n]δD
+
+PNn=1 
+
+P 
+
+> u∈U
+
+P tot  
+
+> u
+
+[n]δD
+
+(19) 
+
+s.t. (1) , (6) , (7) , (8) , (9) , (10) , (11) .
+
+It can be observed that P1 is a non-convex mixed-integer nonlinear programming (MINLP) problem, whose global op-timum is generally difficult to obtain directly. Meanwhile, the             
+
+> 2To simplify the trajectory design, each UAV is assumed to fly at a prescribed constant horizontal speed ¯vu[22], which can be expressed as
+> ¯vu=1
+> δD∥qu[n+ 1] −qu[n]∥2,∀u∈ U ,∀n.
+> 3Since the propulsion energy consumption dominates over that incurred by MA actuation and communication [40], only the propulsion power is retained in the energy model. Incorporating the energy consumption associated with MA actuation and communication is left for future work.
+
+6Clipped Policy Objective   
+
+> Local
+> Observation
+> Local Obs.
+> Masked Softmax Masked Softmax Masked Softmax
+> Accepted Joint Action
+> State
+> Transition
+> Rewards
+> Next State
+
+## ...    
+
+> Local Obs.
+> UAV Swarm
+> Shared Actor
+> Link Selection
+> Head
+> MA Shift
+> Head
+> Joint Conflict Resolver
+> collision & capacity
+> Joint Conflict Resolver
+> collision & capacity
+> LEO Satellite
+> A2S Links
+> LEO Satellite
+> A2S Links
+> CKM CKM
+> GBS/ABS
+> A2G Links
+> GBS/ABS
+> A2G Links
+> Satellite Ephemeris Satellite Ephemeris
+> LEO Satellite
+> A2S Links
+> CKM
+> GBS/ABS
+> A2G Links
+> Satellite Ephemeris
+> Environment
+> Local Obs.
+
+Decentralized execution 
+
+> Globe State
+> Reward
+> SEE
+> (Individual)
+> Team Average
+> (Cooperation)
+> Trajectory
+> Head
+> Trajectory
+> Head
+> Trajectory Contral
+> Link Selection
+> MA Rigid Shift
+> Policy
+> Gradient
+
+Centralized Training       
+
+> Advantage
+> Centralized Critic Shared Actor
+> Three Action Heads
+> Clipped Policy Objective Value Function Loss Entropy Bonus
+> Total Objective Total Objective
+> Early
+> Stopping
+> (KL>k)
+> Experience
+> Buffer GAE Mini -batch
+> Shuffle & Sample Updata for Epochs
+> Hybrid Discrete
+> Action
+> （per UAV ）dir
+> ualink
+> uaMA
+> uasec
+> u
+> 
+
+[ ] ns[ ] u no[ ] [ 1] n n→ +s sˆ [ ] uA n( )uo
+
+> 
+
+    
+
+> CLIP VF 12,
+
+( , ) ( ) ( ) [ ] u n uL L c L c n
+
+  = − +VF 2,clip 2                                                
+
+> ( ) [max(( ( [ ]) [ ]) , ([ ]) )].
+> ˆˆ
+> u n uu
+> LVs n VnVVn
+> =−−CLIP ,( ) [min( [ ] [ ], ([ ],1 ,1 )[ ])].
+> ˆˆ
+> u n uuuu
+> Ln A nclip nAn
+> =−+( ) Vs
+> 10
+> [ ] ()[]ˆNnluul
+> Annl
+>  
+> −−=
+> =+[1] n+s1{ , ,}Urr
+
+Fig. 2. Proposed CKM-assisted MAPPO framework under centralized training with decentralized execution. 
+
+evaluation of the secrecy rate rsec 
+
+u,b [n] relies on instantaneous CSI, whereas CSI acquisition incurs substantial signaling over-head. Moreover, the tight coupling among discrete link selec-tion, continuous trajectory optimization, and MA position ad-justment substantially enlarges the hybrid action space, which may impair sample efficiency and destabilize the training process. In particular, independently selecting the position of each antenna incurs considerable computational overhead and, when jointly optimized with other hybrid actions, can cause the cardinality of the joint action space to grow exponentially, thereby further increasing the solution complexity. The hard constraints on operational boundaries, safety separation, MA positions, and maximum association capacity, imposed by (6), (7), (8), (1), and (11), must be strictly enforced throughout the mission; otherwise, the learned policy may generate infeasible or safety-critical trajectories. To address these challenges, we develop three dedicated mechanisms: (i) exploiting the quasi-static nature of wireless channels in static-scatterer environments and their dependence on the UAV location and MA configuration, we construct a CKM, where the UAV location and candidate MA configura-tion jointly serve as the query key for CSI retrieval, thereby eliminating the need for real-time CSI acquisition; (ii) we jointly model trajectory control, MA configuration, and link selection within a hybrid discrete action space, while modeling the MA array as a rigid body and controlling only its overall translation to reduce the action-space dimensionality; and (iii) we introduce an action-masking mechanism that excludes constraint-violating actions at each decision epoch, restricting policy optimization to the feasible action set. The detailed algorithmic framework is presented in the next section. IV. P ROPOSED CKM-A SSISTED MARL F RAMEWORK 
+
+In this section, we propose a CKM-assisted MARL frame-work to solve the considered problem. As illustrated in Fig. 2, the framework employs an offline-constructed CKM and satellite ephemerides to characterize the training envi-ronment, enabling the agents to acquire CSI through data-driven interactions without requiring online interactions with the physical environment during training. To capture the strong coupling among link selection, UAV trajectory planning, and MA positioning, we formulate the three decisions as a unified hybrid discrete action space and employ action masking to ensure feasibility under hard constraints. To avoid the high computational cost of independent per-antenna position selec-tion and the growth in action dimensionality caused by joint optimization, the MA array is parameterized using rigid-body kinematics, substantially reducing the action space. Finally, an individual-team hybrid reward is designed to improve the SEE of each UAV while promoting swarm cooperation. 
+
+A. CKM Construction for MARL Algorithm 
+
+Before presenting the proposed CKM construction method, we briefly revisit the characteristics of wireless communication channels. In the considered SAGIN system, since the locations of the GBSs and ABSs are fixed, the variation in the MA-enabled MIMO channel H[t] is mainly determined by three factors: the UAV location q[t], the actual propagation environ-ment E[t] [41], and the MA configuration ˜R[t]. Accordingly, a generic channel representation can be expressed as [42] 
+
+H[t] = f  q[t], E [t], ˜R[t], (20) where f (·, ·, ·) is an arbitrary function that maps from the UAV location, the propagation environment, and the MA positions to channel knowledge, and ˜R[t] denotes the stacked MA position matrix defined earlier. However, obtaining an accurate characterization of f (·, ·, ·) in complex environments remains extremely challenging, primarily due to the diffi-culty of mathematically modeling the environment E[t] and capturing the intricate interactions between radio waves and their surroundings. Fortunately, this issue can be effectively alleviated by leveraging the CKM concept in [31]. Under the 7
+
+viewpoint widely adopted in the CKM literature [30] [31], the slowly varying geometry and large-scale statistical characteris-tics dominated by static structures such as buildings and walls can be approximated as piecewise quasi-static within a CKM validity interval, whereas blockage or reflection variations and the resulting channel transitions induced by mobile objects such as vehicles, trucks, and pedestrians are inevitable. Building on this, we construct a Kriging-based CKM using a data-driven method [43]. For the b-th BS, its CKM is denoted by Gb and consists of joint position–MA-configuration query keys and their corresponding channel-feature samples, i.e., Gb = {(ξi, ˜zb(ξi)) }NCKM  
+
+> i=1
+
+. To account for the impact of the MA configuration on the channel, the query key is extended from a two-dimensional location to the joint position–configuration vector ξi = [ xT 
+
+> i
+
+, vec( ˜Ri)T]T, where 
+
+xi = [ xi, y i]T ∈ D ⊆ R2 denotes the i-th sampling loca-tion, ˜Ri is the MA configuration used for measurement, and 
+
+˜zb(ξi) ∈ RDZ denotes the corresponding measured channel-feature vector. For any unsampled joint query point ξ, ordinary Kriging is employed to predict its channel feature from Gb.Let {w∗ 
+
+> i
+
+}NCKM  
+
+> i=1
+
+denote the interpolation weights determined under the minimum-variance unbiased criterion. The resulting prediction is given by [43] [42] 
+
+zCKM  
+
+> b
+
+(ξ) = 
+
+> NCKM
+
+X
+
+> i=1
+
+w∗ 
+
+> i
+
+˜zb(ξi). (21) With the above method, once the CKM zCKM (ξ) is ob-tained, the CSI accumulated and stored over a long term by the ABS or GBS can be readily retrieved by inputting both the current two-dimensional UAV location and the MA configuration. Furthermore, by incorporating the SN link ge-ometric information obtained from satellite ephemerides, the constructed CKM can efficiently provide CSI for the heteroge-neous network at arbitrary UAV locations, MA configurations, and time instants. It is worth noting that offline estimation may introduce uncertainties due to CKM reconstruction er-rors caused by sparse sampling, ephemeris prediction errors, and the mismatch between propagation models and practical wireless environments [31]. 
+
+B. MAPPO Algorithm for Joint UAV Link Selection, MA Position Optimization and Trajectory Optimization 
+
+To address the coupling among the decision variables, we propose a CKM-assisted multi-agent proximal policy opti-mization with rigid-body shift design and hybrid rewards al-gorithm (MAPPO-RBHR-CKM). Specifically, the considered problem is formulated as a cooperative multi-agent partially observable Markov decision process (POMDP), as illustrated in Fig. 2, and is characterized by {S , A, O, R, P} . Here, S, A,
+
+O, R, and P denote the global state space, joint action space, joint observation space, reward function, and state-transition probability, respectively. The POMDP elements are specified in the following. 
+
+1) State Space: The global state consists of the local state of each UAV and globally observable information. At time slot 
+
+n, it is defined as 
+
+s[n] = {xu[n]}u∈U , c [n − 1] , (22) where xu[n] ≜ [qu[n], qu, f , a u,b [n − 1] , zCKM  
+
+> u
+
+[n], ˜Ru[n − 1]] 
+
+denotes the local state of the u-th UAV, and cu[n − 1] denotes the locally observable network load. 
+
+2) Observation Space: During decentralized execution, UAV u makes decisions based only on its local observation, defined at time slot n as 
+
+ou[n] = xu[n], Nu[n], c u[n−1] , ∀u ∈ U , ∀n ∈ N , (23) where Nu[n] represents the information of neighboring UAVs within its communication range. Following the centralized training and decentralized execution (CTDE) paradigm of MAPPO, the centralized critic takes the global state s[n] as input, whereas each decentralized actor relies only on ou[n].
+
+3) Low-Dimensional Action-Masked Hybrid Action Space: 
+
+To reduce the action-space complexity, UAV trajectory control, link selection, and MA configuration optimization are jointly formulated as a hybrid discrete action. The action of UAV u
+
+at time slot n is defined as 
+
+au[n] = adir  
+
+> u
+
+[n], a link  
+
+> u
+
+[n], a MA  
+
+> u
+
+[n], (24) where adir  
+
+> u
+
+[n] ∈ { θ1, . . . , θ Kdir } is the discrete heading action, and alink  
+
+> u
+
+[n] ∈ B is the serving link selection action. The conventional per-antenna independent selection scheme assigns each of the M MAs independently to one of NMA 
+
+candidate locations, resulting in an MA action space with 
+
+N M 
+
+> MA
+
+possible joint configurations. Consequently, the per-antenna formulation causes the action-space cardinality to grow exponentially with M ; when jointly optimized with other hybrid actions, such as trajectory control and link selection, the resulting action space can become computationally prohibitive. To address this issue, we model the entire MA array mounted on each UAV as a rigid body [44], such that all MAs share a common translation vector. Let ¯rm denote the nominal position of the m-th MA element. Specifically, the MA action is selected from Nsh candidate rigid-body translations, i.e., 
+
+aMA  
+
+> u
+
+[n] ∈ { 1, . . . , N sh }, ru,m [n] = ¯ rm + ∆ raMA  
+
+> u[n]
+
+. (25) Accordingly, the MA action-space cardinality is reduced from 
+
+N M 
+
+> MA
+
+under conventional per-antenna independent selection to 
+
+Nsh . Under the parameter setting considered in this work, the action-search complexity of the per-antenna formulation is O(49 4), whereas that of the proposed rigid-body transla-tion formulation is reduced to O(9) . This design effectively prevents the exponential growth of the MA action dimen-sion, substantially reducing both the policy-network output dimension and the complexity of joint action exploration. The corresponding performance comparisons and ablation studies are further presented in Section V-D to quantitatively validate the effectiveness of the proposed rigid-body translation formu-lation in reducing the action-space complexity and improving joint optimization efficiency. Furthermore, action masks are constructed for trajectory control, link selection, and MA configuration based on con-straints (6), (7), (8), (1), (11), respectively. The resulting feasible sub-action spaces of UAV u at time slot n are given by Adir  
+
+> u,n
+
+= adir  
+
+> u
+
+[n] ∈ A dir q+ 
+
+> u
+
+[n] ∈ Q , , (26) 8
+
+Algorithm 1 MAPPO-RBHR-CKM  
+
+> 1:
+
+Input: CKM, ephemerides, γ, λ, ϵ, ξ, κ 
+
+> 2:
+
+Initialize: πθ , Vϕ, D ← ∅ 
+
+> 3:
+
+for episode = 1 to E do  
+
+> 4:
+
+Reset environment and obtain s[0]  
+
+> 5:
+
+for n = 0 to N − 1 do  
+
+> 6:
+
+for each u ∈ U in parallel do  
+
+> 7:
+
+Query CKM and form ou[n] 
+
+> 8:
+
+Mask Adir 
+
+> u,n
+
+, Alink  
+
+> u,n
+
+, AMA  
+
+> u,n
+> 9:
+
+Sample ˜au[n] ∼ πθ (· | ou[n])  
+
+> 10:
+
+end for  
+
+> 11:
+
+Resolve conflicts and obtain a[n] 
+
+> 12:
+
+Execute a[n]; obtain s[n + 1] and ru,n  
+
+> 13:
+
+Store {ou[n], s[n], a u[n], r u,n } in D 
+
+> 14:
+
+end for  
+
+> 15:
+
+Compute ˆAu[n] and ˆVu[n] by (34)  
+
+> 16:
+
+θold ← θ, ϕold ← ϕ 
+
+> 17:
+
+for epoch = 1 to Eppo do  
+
+> 18:
+
+for each mini-batch from D do  
+
+> 19:
+
+Update θ by (35), (37)  
+
+> 20:
+
+Update ϕ by minimizing (36)  
+
+> 21:
+
+end for  
+
+> 22:
+
+if KL( πθold ∥ πθ ) > κ then break  
+
+> 23:
+
+end for  
+
+> 24:
+
+D ← ∅ 
+
+> 25:
+
+end for  
+
+> 26:
+
+Output: πθ
+
+Alink  
+
+> u,n
+
+= {b ∈ B | cb[n − 1] < C max  
+
+> b
+
+} , (27) 
+
+AMA  
+
+> u,n
+
+= {i ∈ { 1, . . . , N sh } | ¯rm + ∆ ri ∈ C r , ∀m} . (28) Accordingly, the masked feasible hybrid action space is 
+
+Au,n = Adir  
+
+> u,n
+
+× A link  
+
+> u,n
+
+× A MA  
+
+> u,n
+
+. (29) 
+
+4) Individual-Team Collaborative Reward Function: Dif-ferent from conventional designs that rely solely on either individual or team rewards, this paper proposes an individual-team collaborative reward function to simultaneously balance local performance optimization and system-level cooperation for UAVs. Specifically, the individual reward of UAV u at the 
+
+n-th time slot is defined as 
+
+ru,n = βr ind  
+
+> u,n
+
++ (1 − β)rteam  
+
+> n
+
+, (30) where rteam  
+
+> n
+
+is defined as rteam  
+
+> n
+
+= 1
+
+> U
+
+PUu=1 rind 
+
+> u,n
+
+. Unlike conventional reward mechanisms that mainly rely on instan-taneous communication performance and a fixed per-step penalty, we take the SEE as the core component of the reward to guide UAV trajectory optimization during flight. Specifically, the SEE term of the reward at time slot n is defined as 
+
+rind  
+
+> u,n
+
+= ηsec  
+
+> u,n
+
+= Rsec  
+
+> u
+
+[n]δD
+
+P tot  
+
+> u
+
+[n]δD
+
+=
+
+P 
+
+> b∈B
+
+au,b [n]rsec 
+
+> u,b
+
+[n]
+
+P tot  
+
+> u
+
+[n] , (31) 
+
+5) MAPPO Algorithm: Based on the above POMDP for-mulation, MAPPO is adopted under the CTDE paradigm to solve the joint optimization problem. Since all UAVs are homogeneous agents, their actors share the policy parameters 
+
+πθ , thereby improving scalability and preserving permutation invariance. During training, the centralized critic Vϕ performs value estimation based on the global state s[n] to facilitate policy learning. During execution, the critic is removed, and each UAV independently makes decisions based only on its lo-cal observation ou[n]. Therefore, the decision-making process remains partially observable during decentralized execution, whereas global information is used exclusively for policy learning during centralized training, as shown in Fig. 2. The hybrid action au[n] = [ adir  
+
+> u
+
+[n], a link  
+
+> u
+
+[n], a MA  
+
+> u
+
+[n]] con-sists of three conditionally independent sub-actions. Hence, given the observation, the policy factorizes as 
+
+πθ (au[n] | ou[n]) = Y
+
+> x∈{ dir ,link ,MA }
+
+πx 
+
+> θ
+
+(axu[n] | ou[n]) , (32) where each sub-policy head is realized by a masked categorical distribution [45]. Specifically, let zxu[n] denote the logits pro-duced by head x. Local infeasible actions receive logits of −∞ 
+
+before softmax; the joint resolver then handles simultaneous collision and residual-capacity conflicts. Taking the trajectory head as an example, the masked distribution is 
+
+πdir  
+
+> θ
+
+(a | ou[n]) = exp  zdir 
+
+> u,a
+
+[n] 1a ∈ A dir 
+
+> u,n
+
+P 
+
+> a′∈A dir
+> u,n
+
+exp  zdir  
+
+> u,a ′
+
+[n] , (33) The link and MA heads adopt the same masked form over 
+
+Alink  
+
+> u,n
+
+and AMA  
+
+> u,n
+
+, respectively. Owing to the factorization in (32), the joint log-probability and entropy of the hybrid action are simply the sums over the three heads. With the centralized critic Vϕ(s[n]) , the temporal-difference (TD) error is δu[n] = ru,n + γV ϕ(s[n+1]) − Vϕ(s[n]) . The advantage is then estimated by the generalized advantage estimator (GAE) to trade off bias and variance: 
+
+ˆAu[n] =  
+
+> N−n−1
+
+X
+
+> l=0
+
+(γλ )l δu[n+l], (34) where λ ∈ [0 , 1] is the GAE decay factor and N is the number of slots per episode. The corresponding value target is ˆVu[n] = ˆAu[n] + Vϕold (s[n]) . Let ρu[n]( θ) = πθ (au[n] | ou[n]) 
+
+πθold (au[n] | ou[n]) 
+
+denote the probability ratio between the new and old policies. Proximal policy optimization (PPO) maximizes the clipped surrogate objective to prevent excessively large policy updates: 
+
+LCLIP (θ) = Eu,n 
+
+h
+
+min  ρu[n] ˆAu[n],
+
+clip( ρu[n], 1−ϵ, 1+ ϵ) ˆAu[n]i
+
+,
+
+(35) where ϵ is the clipping threshold and the advantages are normalized within each mini-batch to stabilize learning. The critic is updated by minimizing a clipped value loss to suppress drastic fluctuations of the value estimate: 
+
+LVF (ϕ) = Eu,n 
+
+h
+
+max  (Vϕ(s[n]) − ˆVu[n]) 2, (V clip  
+
+> ϕ
+
+− ˆVu[n]) 2i
+
+,
+
+(36) where V clip  
+
+> ϕ
+
+= Vϕold (s[n])+clip  Vϕ(s[n]) −Vϕold (s[n]) , −ξ, ξ 
+
+and ξ is the value-clipping threshold. To encourage exploration and avoid premature convergence, the entropy of the hybrid policy, given by the sum over the three heads Hu[n] =9TABLE I SYSTEM SIMULATION PARAMETERS                                                                                            
+
+> System Parameter GBS [22] ABS [34] LEO [46] Carrier frequency 6.7GHz 4.7GHz 2.185 GHz Transmit power 46 dBm 46 dBm 34 dBW Antenna array 4×4UPA 4×4UPA 8×8UPA Element spacing λ/ 2λ/ 2λ/ 2
+> Beam direction Downtilted Uptilted Vertical Height 25 m25 m550 km Connectivity capacity 888
+> TABLE II UAV S IMULATION PARAMETERS
+> UAV Parameter Value
+> Number of UAVs 20
+> Flight altitude H= 100 mMaximum flight speed ¯vu= 20 m/s Bandwidth per UAV 1MHz Minimum UAV spacing dmin = 3 mMA array 4movable antennas Minimum MA spacing edmin =λ/ 2
+> MA movable region [25] [−D, D ]×[−D, D ],D= 4 λ
+> Blade profile power P0= 79 .86 WInduced power [40] P1= 88 .63 WRotor-blade tip speed [40] Utip = 120 m/s Mean rotor-induced velocity v0= 4 .03 m/s Fuselage drag ratio rdrag = 0 .6
+> Atmospheric density ρ= 1 .225 kg/m 3
+> Rotor solidity [40] S= 0 .05
+> Rotor disk area [40] Arot = 0 .503 m2
+
+P 
+
+> x
+
+Hπx 
+
+> θ
+
+(· | ou[n]) , is incorporated as a regularizer. Com-bining (35), (36) and the entropy term, the overall objective is 
+
+L(θ, ϕ) = LCLIP (θ) − c1LVF (ϕ) + c2 Eu,n [Hu[n]] , (37) where c1 and c2 are the weighting coefficients of the value loss and the entropy regularizer, respectively, and both networks are optimized by the Adam optimizer. V. N UMERICAL RESULTS 
+
+This section first presents the simulation setup and parame-ter configurations in Section V-A, followed by the benchmark schemes in Section V-B. Section V-C evaluates the secrecy energy efficiency performance of the proposed algorithm, while Section V-D presents ablation studies to validate the effectiveness of the two proposed mechanisms and the con-sidered scenario design. Finally, Section V-E analyzes the computational complexity and signaling overhead. 
+
+A. Simulation Setup 1) Communication Parameter Settings: We consider a UAV swarm comprising 20 UAVs, where each UAV departs from a predefined initial location and flies at a fixed altitude H
+
+toward its designated destination while performing secure communication within a 500 m × 500 m low-altitude area. The considered heterogeneous network consists of one GBS, one ABS, and 2 LEO satellites, with the corresponding system parameters listed in Table I. Full frequency reuse is adopted, such that each UAV is allocated 1 MHz bandwidth for its serving link, while concurrent transmissions over the same spectrum result in co-channel interference. The UAV-related parameters are provided in Table II. For the A2G channel model, the urban-environment parameters are set as a = 9 .61 ,
+
+b = 0 .16 , ηLoS = 1 dB, and ηNLoS = 20 dB, with L = 3 
+
+geometric propagation paths [23].                               
+
+> TABLE III NETWORK PARAMETERS
+> Parameter Value
+> Actor hidden layers 128 ,128
+> Critic hidden layers 256 ,256 ,256
+> Activation function Tanh Optimizer Adam Actor/critic learning rate 1×10 −4
+> Discount factor 0.99
+> GAE parameter 0.95
+> PPO clipping parameter 0.2
+> PPO epochs per update Eppo = 10
+> Mini-batch size 256
+> Hybrid-reward weight β= 0 .5
+> Value/entropy weights c1= 0 .5, c 2= 0 .01
+> Value clip / target KL ξ= 0 .2, κ = 0 .015
+> No. of rigid-body shifts 9
+> Max. time slots per episode 40
+> No. of training episodes 10000
+> No. of independent seeds 10
+
+2) Neural Network and Training Parameter Settings: For the proposed MAPPO-RBHR-CKM algorithm, all UAVs share an actor network with two fully connected hidden layers of 
+
+128 neurons each. Separate output heads are used for flight direction, link selection, and MA position selection. For MA control, the entire 2 × 2 array selects one of 9 candidate rigid-body shifts. A permutation-invariant centralized critic uses three fully connected layers of 256 neurons and mean pooling to aggregate agent features. Both networks use Adam with a learning rate of 1 × 10 −4. Each episode contains 40 slots and training lasts 10000 episodes. The detailed parameters are summarized in Table III. 
+
+B. Benchmarks 
+
+To evaluate the proposed algorithms, we compare it with established learning baselines and corresponding convex-optimization-based alternating optimization (AO) methods. These AO methods follow the alternating-optimization prin-ciples in [24] [12] and are adapted to the joint optimization problem considered in this work, rather than being directly adopted from those references:  
+
+> •
+
+AO-Joint-CSI : An AO variant that jointly updates UAV trajectories, link selections, and MA positions.  
+
+> •
+
+AO-FPA-CSI : An AO variant with FPAs, jointly opti-mizing trajectories and link selections.  
+
+> •
+
+AO-GN-CSI : An AO variant with a fixed GN link selec-tion, jointly optimizing trajectories and MA positions.  
+
+> •
+
+AO-Straight-CSI : An AO variant with predefined straight-line trajectories, jointly optimizing link selections and MA positions.  
+
+> •
+
+IPPO-CSI : An independent proximal policy optimization (IPPO) baseline [47] using perfect instantaneous CSI, where each UAV independently optimizes its trajectory, link selection, and MA positions.  
+
+> •
+
+MADDPG-CSI : A multi-agent deep deterministic policy gradient (MADDPG) baseline [48] using perfect instan-taneous CSI to jointly optimize UAV trajectories, link selections, and MA positions.  
+
+> •
+
+Proposed MAPPO-RBHR-CKM/CSI : The proposed MAPPO-RBHR framework takes either CKM informa-tion or perfect instantaneous CSI as input to jointly opti-mize UAV trajectories, link selections, and MA positions. 10 11223344556677889910 10 11 11 12 12 13 13 14 14 15 15 16 16 17 17 18 18 19 19 20 20       
+
+> E1 E2 E3 E4 E5
+> GBS | 6.7 GHz ABS | 4.7 GHz LEO nadir | 2.185 GHz
+> 0100 200 300 400 500
+> x (m)
+> 0100 200 300 400 500
+> y (m)
+> GBS ABS LEO nadir Eavesdropper UAV start UAV end
+
+(a) Illustration of the SAGIN simulation scenario. 11223344556677889910 10 11 11 12 12 13 13 14 14 15 15 16 16 17 17 18 18 19 19 20 20         
+
+> 0100 200 300 400 500
+> x (m)
+> 0100 200 300 400 500
+> y (m)
+> UAV trajectory (1 s slots) Start Goal
+
+(b) Illustration of the trajectories of a swarm of UAVs. 1234                         
+
+> t = 1 s | = 0.00
+> -4 -2 024
+> x ( )
+> -4 -2 024
+> y (  )
+> 1234
+> t = 10 s | = 12.00
+> -4 -2 024
+> x ( )
+> -4 -2 024
+> y (  )
+> 1234
+> t = 20 s | = 16.97
+> -4 -2 024
+> x ( )
+> -4 -2 024
+> y (  )
+> 1234
+> t = 40 s | = 12.00
+> -4 -2 024
+> x ( )
+> -4 -2 024
+> y (  )
+> Reference array Before optimization After optimization
+
+(c) Illustration of MA positions before and after opti-mization. 
+
+Fig. 3. Visualization of proposed algorithm. 
+
+Fig. 4. Illustration of the training performance of the proposed algorithm. 
+
+To provide a comprehensive performance evaluation, the proposed algorithm is compared with the aforementioned benchmark schemes. SEE is adopted as the primary perfor-mance metric, while both transmit beamforming and receive combining are implemented using the minimum mean-square error (MMSE) criterion [49]. 
+
+C. Performance Comparison 
+
+Fig. 3a illustrates the simulated scenario, where the ABS and LEO satellites extend communication coverage over the low-altitude area beyond that provided by the GBS alone. Fig. 3b depicts the UAV-swarm trajectories generated by the proposed algorithm, while Fig. 3c illustrates the optimized MA positions of UAV 1 at four representative time slots. Fig. 4 illustrates the training process of the proposed algo-rithm. As the number of training episodes increases, both the cumulative return and SEE improve rapidly and subsequently stabilize at relatively high levels despite moderate fluctuations. Meanwhile, the critic loss remains low throughout training. Overall, these metrics exhibit favorable convergence behavior, indicating that the system SEE steadily improves and eventu-ally stabilizes as the policy converges, thereby validating the effectiveness of the proposed algorithm. 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 
+
+Episodes 
+
+20 30 40 50 60 70 80 90 100 
+
+> Secrecy Energy Efficiency (kbit/J)
+
+RBHR-MAPPO-C KM (Proposed) 
+
+RBHR-MAPPO-CSI (Proposed) 
+
+IPPO-CSI MADDPG-CSI AO-Joint-CSI 
+
+AO-FPA-CSI AO-GN-CSI AO-Straight-CSI 
+
+Fig. 5. SEE comparison of the proposed algorithms and baseline schemes during training. 
+
+Fig. 5 compares the SEE performance of the proposed algorithms and several baseline schemes during training. As the number of training episodes increases, MAPPO-RBHR-CSI rapidly improves and ultimately achieves the highest SEE. Meanwhile, MAPPO-RBHR-CKM outperforms most baseline schemes, validating the effectiveness of the pro-posed framework. Under the same CSI setting, MAPPO-RBHR-CSI outperforms IPPO-CSI by approximately 4.5% 
+
+after convergence, indicating that cooperative multi-agent decision-making can coordinate the constituent subtasks more effectively. It also achieves an SEE gain of approxi-mately 43% over MADDPG-CSI, demonstrating the stronger policy-learning and cooperative-optimization capabilities of the adopted MAPPO mechanism for the considered hybrid discrete joint optimization problem. Furthermore, MAPPO-RBHR-CSI achieves an SEE improvement of approximately 
+
+12% over AO-Joint-CSI. This is because alternating opti-mization typically optimizes one subset of variables while fixing the others, making it difficult to fully capture the long-term coupling among UAV trajectories, link selection, and MA configurations, and potentially leading to locally optimal 11           
+
+> (a) Impact of learning rate on algorithm performance. (b) Impact of fast-fading realizations on algorithm perfor-mance.
+> (c) Impact of the number of rigid-body shifts Nsh .
+> Fig. 6. Performance comparison of the proposed algorithm under different hyperparameter settings. 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000
+
+Training Episodes 
+
+> 20 30 40 50 60 70 80 90 100
+> Secrecy Energy Efficiency (kbit/J)
+> MAPPO-RBHR-CSI MAPPO-HR-CSI MAPPO-RB-CSI MAPPO-RBHR-CSI-NoTra MAPPO-RBHR-CSI-NoMA MAPPO-RBHR-CSI-NoLink
+> Fig. 7. Comparison of SEE in Ablation Studies.
+
+solutions. Moreover, AO-Joint-CSI outperforms AO-FPA-CSI, AO-Straight-CSI, and AO-GN-CSI, confirming that jointly optimizing UAV trajectories, link selection, and MA positions yields substantial performance gains. Fig. 6 compares the performance of the proposed algorithm across different hyperparameter settings. Fig. 6a shows that a learning rate of 1 × 10 −4 attains the highest final SEE while remaining stable; this value is used in the remaining experiments. Fig. 6b investigates the number of fast-fading realizations, where 100 realizations yield the best convergence and SEE; further increasing this number sharpens channel-statistics estimation but incurs higher computational cost, with only marginal additional gains. Fig. 6c assesses the MA search-space size through Nsh . The best result at Nsh = 9 
+
+indicates that too few shifts limit MA flexibility, whereas too many complicate exploration. 
+
+D. Ablation Experiment 
+
+To further evaluate the proposed algorithm, we conduct two groups of ablation studies. The first group investigates the effectiveness of the proposed rigid-body shift design and hybrid reward design. The second group examines the contributions of the three optimization variables, namely UAV trajectory, link selection, and MA position selection. For clarity, Shift9 denotes the proposed rigid-body MA controller with Nsh = 9 candidate shifts, while the suffixes NoTra, NoMA, and NoLink denote no trajectory optimization, no MA-position optimization, and no link-selection optimization, respectively. The resulting ablation variants are summarized as follows:  
+
+> •
+
+MAPPO-HR-CSI : This variant removes the proposed rigid-body shift design and directly optimizes the MA positions in the original high-dimensional action space.  
+
+> •
+
+MAPPO-RB-CSI : This variant removes the hybrid individual–team reward design and adopts only individual rewards.  
+
+> •
+
+MAPPO-RBHR-CSI-NoTra : This variant fixes the UAV trajectories as straight-line paths and optimizes only link selections and MA positions.  
+
+> •
+
+MAPPO-RBHR-CSI-NoMA : This variant fixes the MA positions and optimizes only UAV trajectories and link selections.  
+
+> •
+
+MAPPO-RBHR-CSI-NoLink : This variant fixes all UAVs to the GN and optimizes only UAV trajectories and MA positions. Fig. 7 presents the simulation results of the ablation study. First, the effectiveness of the two proposed mechanisms is verified. As shown, removing either the Shift9 rigid-body shift mechanism or the individual–team hybrid reward mech-anism leads to a noticeable SEE degradation. Specifically, the proposed algorithm achieves approximately 16 .7% and 5.8% 
+
+higher converged SEE than MAPPO-RB-CSI and MAPPO-HR-CSI, respectively. This result indicates that directly em-bedding per-antenna MA optimization into a hybrid action space increases the difficulty of policy learning because of the enlarged action dimension and diverse variable types, thereby validating the effectiveness of the rigid-body architecture in (25). Second, scenario-level ablations are conducted. The proposed algorithm jointly optimizes the MA configuration, link selection, and UAV trajectory, whereas each of the other three variants optimizes only two of these degrees of freedom and consequently achieves lower performance. For example, disabling trajectory optimization reduces SEE by approxi-mately 13 .8% , while disabling link selection results in an SEE reduction of approximately 72 .5% . These results confirm the importance of jointly optimizing all three decision variables. 
+
+E. Computational Complexity and Signal Overhead 1) Computational Complexity: The computational com-plexities of the considered algorithms are analyzed from the 12                                         
+
+> TABLE IV COMPARISON OF THE ONLINE INFERENCE COMPLEXITY .
+> Algorithm Inference cost per slot Mult. count
+> MAPPO-RBHR-CKM O U C shift actor
+> ∼7.9×10 5
+> IPPO-CSI O U C full actor
+> ∼1.4×10 6
+> MADDPG-CSI O U C full actor
+> ∼1.4×10 6
+> AO-Joint-CSI O Iao U n dir nlink M2Kgrid
+> ∼1.9×10 7
+> AO-Straight-CSI O Iao U n link M2Kgrid
+> ∼2.4×10 6
+> AO-GN-CSI O Iao U n dir M2Kgrid
+> ∼6.3×10 6
+> AO-FPA-CSI O(Iao U n dir nlink )∼2.4×10 4
+
+perspectives of offline training and online inference [50]. All schemes share the same simulation-environment kernel, whose per-slot complexity is denoted by Cenv = O U M 2N +
+
+nlink ( ¯K2N + ¯K3) + U M K grid 
+
+. This cost is primarily in-curred by effective-channel computation based on singular value decomposition (SVD), regularized zero-forcing (RZF) precoding, and candidate channel-gain feature evaluation. The offline complexity analysis considers only the dominant network-update costs of the DRL methods, while the common environment-interaction cost Cenv is excluded. For MAPPO-RBHR-CKM and IPPO-CSI, each training episode contains T
+
+slots and each update performs Eppo Actor–Critic optimization epochs. Accordingly, their one-time offline network-update complexities are O Eepisode Eppo T U (Cshift actor + Ccen critic ) and 
+
+O Eepisode Eppo T U (Cfull actor + Cind critic ), respectively. Owing to the rigid-body shift design, the proposed method reduces the MA action-output dimension from M K grid to Nsh , thereby reducing the actor computational load. MADDPG-CSI in-stead performs mini-batch updates using a replay buffer, resulting in a one-time offline network-update complexity of 
+
+O Eepisode Bbatch U (Cfull actor + CQ
+
+> critic
+
+). These network-update costs are incurred only once offline. During online deployment, each DRL scheme requires only one actor forward pass per UAV together with lightweight feasibility resolution; moreover, the CKM-assisted scheme does not require real-time CSI acquisition. In contrast, al-though AO methods require no offline training, they rely on real-time CSI and perform Iao outer iterations at every time slot. Therefore, the proposed method trades a one-time offline training cost for substantially lower online inference complexity, making it suitable for real-time decision-making in secure UAV communications. Here, Eepisode , Eppo , and 
+
+Iao denote the number of training episodes, PPO epochs per update, and AO outer iterations, respectively; U , T , and M
+
+denote the number of UAVs, slots per episode, and MAs per UAV, respectively; and ndir , nlink , Kgrid , and Nsh denote the numbers of direction actions, link actions, full MA candidates, and rigid-body shift candidates, respectively. The results are summarized in Table IV. 
+
+2) CSI Acquisition Overhead: Table V compares the total real CSI acquisition required to obtain the deployed policy, where one acquisition denotes a single agent obtaining in-stantaneous CSI via one interaction. The proposed MAPPO-RBHR-CKM replaces real channel probing with offline CKM and ephemeris data during both training and deployment, thereby requiring no real-time CSI acquisition overhead. By contrast, MAPPO-RBHR-CSI, IPPO-CSI, and MADDPG-CSI are all trained on perfect instantaneous CSI and must acquire                                       
+
+> TABLE V COMPARISON OF THE CSI ACQUISITION OVERHEAD .
+> Algorithm CSI acquisition overhead Count
+> MAPPO-RBHR-CKM --MAPPO-RBHR-CSI O Eepisode T U 4.00 ×10 6
+> AO-Joint-CSI O(RU T n dir )5.28 ×10 5
+> AO-FPA-CSI O(RU T n dir )5.28 ×10 5
+> AO-GN-CSI O(RU T n dir )5.28 ×10 5
+> AO-Straight-CSI O(U T )8.00 ×10 2
+> IPPO-CSI O Eepisode T U 4.00 ×10 6
+> MADDPG-CSI O Eepisode T U 4.00 ×10 6
+
+CSI for all U agents at every step of every training episode, giving O(Eepisode T U ), where Eepisode and T denote the num-ber of training episodes and steps per episode, respectively. The trajectory-optimizing AO methods (AO-Joint/FPA/GN-CSI) evaluate candidate positions with real CSI over R restarts, 
+
+T slots, and ndir directions, yielding O(RU T n dir ), whereas AO-Straight-CSI flies a fixed straight path and needs only 
+
+O(U T ). Therefore, the proposed CKM-based algorithm relies solely on the CKM and ephemeris data, fundamentally elim-inating the signaling overhead of online CSI acquisition and exchange. Although the proposed method avoids the overhead of instantaneous CSI acquisition, the CKM requires UAV loca-tion information as its query input. This overhead is generally lower than that associated with acquiring high-dimensional instantaneous CSI [31]. Existing CKM studies commonly use user location as a low-dimensional, coarse-grained, and readily available query index for channel knowledge [31]. VI. C ONCLUSION 
+
+In this paper, we investigated SAGIN-enabled secret com-munications for UAVs equipped with MA arrays. We maxi-mized SEE by jointly optimizing MA translations, trajectories, and link selections. The proposed CKM-assisted MAPPO framework uses sparse offline measurements and satellite ephemerides instead of online instantaneous CSI, a low-dimensional rigid-body translation action, an individual–team reward, and a joint feasibility resolver. The resulting policy improves SEE with lower online inference and CSI-acquisition overhead than the considered baselines. Future work will study time-varying CKMs and robust optimization in dynamic-scatterer environments. REFERENCES [1] F. Wang, S. Zhang, J. Shi, Z. Li et al. , “Sustainable UAV mobility support in integrated terrestrial and non-terrestrial networks,” IEEE Trans. Wireless Commun. , vol. 23, no. 11, pp. 17 115–17 128, Nov. 2024. [2] Y. Wang, H. Hou, X. Yi, W. Wang et al. , “Toward unified AI models for MU-MIMO communications: A tensor equivariance framework,” IEEE Trans. Wireless Commun. , vol. 24, no. 12, pp. 10 517–10 533, 2025. [3] J. Wan, K. He, Y. Wang, F. Liu et al. , “QoS-aware hierarchical reinforcement learning for joint link selection and trajectory optimization in SAGIN-supported UAV mobility management,” arXiv preprint arXiv:2512.15119 , Dec. 2025. [Online]. Available: https://arxiv.org/abs/ 2512.15119 [4] W. Wang, Y. Zhu, Y. Wang, R. Ding et al. , “Toward mobile satellite in-ternet: The fundamental limitation of wireless transmission and enabling technologies,” Engineering , vol. 54, pp. 42–51, 2025. [5] L. Qiao, J. Zhang, Z. Gao, D. Zheng et al. , “Joint activity and blind information detection for UAV-assisted massive IoT access,” IEEE J. Sel. Areas Commun. , vol. 40, no. 5, pp. 1489–1508, May 2022. [6] Y. Wang, V. N. Ha, K. Ntontin, H. Yan et al. , “Statistical CSI-based distributed precoding design for OFDM-cooperative multi-satellite systems,” IEEE J. Sel. Areas Commun. , 2026. 13 
+
+[7] R. Amer, W. Saad, and N. Marchetti, “Mobility in the sky: Performance and mobility analysis for cellular-connected uavs,” IEEE Transactions on Communications , vol. 68, no. 5, pp. 3229–3246, 2020. [8] L. Zhu, W. Ma, and R. Zhang, “Modeling and performance analysis for movable antenna enabled wireless communications,” IEEE Trans. Wireless Commun. , vol. 23, no. 6, pp. 6234–6250, Jun. 2024. [9] S. Cao, L. Zhu, Z. Xiao, and B. Ning, “Channel estimation for mov-able antenna aided wideband communication systems,” in Proc. IEEE Wireless Commun. Netw. Conf. (WCNC) , Milan, Italy, Mar. 2025, pp. 1–6. [10] L. Zhu and K.-K. Wong, “Historical review of fluid antenna and movable antenna,” arXiv preprint arXiv:2401.02362 , Jan. 2024. [Online]. Available: https://arxiv.org/abs/2401.02362 [11] J. Zheng, J. Zhang, H. Du, D. Niyato et al. , “Flexible-position MIMO for wireless communications: Fundamentals, challenges, and future directions,” IEEE Wireless Commun. , vol. 31, no. 5, pp. 18–26, Oct. 2024. [12] X. Shao, R. Zhang, Q. Jiang, and R. Schober, “6D movable antenna enhanced wireless network via discrete position and rotation optimiza-tion,” IEEE J. Sel. Areas Commun. , vol. 43, no. 3, pp. 674–687, Mar. 2025. [13] H. Lei, D. Meng, H. Ran, K.-H. Park et al. , “Multi-uav trajectory design for fair and secure communication,” IEEE Transactions on Cognitive Communications and Networking , vol. 11, no. 3, pp. 1966–1980, 2025. [14] X. Jiang, X. Chen, J. Tang, N. Zhao et al. , “Covert communication in UAV-assisted air-ground networks,” IEEE Wireless Commun. , vol. 28, no. 4, pp. 190–197, Aug. 2021. [15] T. Zhang, Y. Xu, J. Zhao, J. Xue et al. , “Toward handover-free mobility management in FD-RAN: Architecture, challenges, and solutions,” IEEE Netw. , vol. 38, no. 6, pp. 433–442, Nov. 2024. [16] J. Yang, Z. Xiao, H. Cui, J. Zhao et al. , “DQN-ALrM-based intelligent handover method for satellite-ground integrated network,” IEEE Trans. Cogn. Commun. Netw. , vol. 9, no. 4, pp. 977–990, Aug. 2023. [17] X. Xu, Z. Sun, X. Dai, T. Svensson et al. , “Modeling and analyzing the cross-tier handover in heterogeneous networks,” IEEE Trans. Wireless Commun. , vol. 16, no. 12, pp. 7859–7869, Dec. 2017. [18] Q. Liu, X. Li, H. Ji, and H. Zhang, “User grouping-based beam handover scheme with load-balancing for LEO satellite networks,” in Proc. IEEE Glob. Commun. Conf. (GLOBECOM) , Kuala Lumpur, Malaysia, Dec. 2023, pp. 3965–3970. [19] S. Zhang, Y. Zeng, and R. Zhang, “Cellular-enabled UAV communi-cation: A connectivity-constrained trajectory optimization perspective,” 
+
+IEEE Trans. Commun. , vol. 67, no. 3, pp. 2580–2604, Mar. 2019. [20] E. Bulut and I. Guevenc, “Trajectory optimization for cellular-connected UAVs with disconnectivity constraint,” in Proc. IEEE Int. Conf. Com-mun. Workshops (ICC Workshops) , Kansas City, MO, USA, May 2018, pp. 1–6. [21] S. Zhang and R. Zhang, “Trajectory design for cellular-connected UAV under outage duration constraint,” in Proc. IEEE Int. Conf. Commun. (ICC) , Shanghai, China, May 2019, pp. 1–6. [22] Y. Zeng, X. Xu, S. Jin, and R. Zhang, “Simultaneous navigation and radio mapping for cellular-connected UAV with deep reinforcement learning,” IEEE Trans. Wireless Commun. , vol. 20, no. 7, pp. 4205– 4220, Jul. 2021. [23] C. Zhan and Y. Zeng, “Energy minimization for cellular-connected UAV: From optimization to deep reinforcement learning,” IEEE Trans. Wireless Commun. , vol. 21, no. 7, pp. 5541–5555, Jul. 2022. [24] L. Zhu, W. Ma, and R. Zhang, “Movable antennas for wireless commu-nication: Opportunities and challenges,” IEEE Commun. Mag. , vol. 62, no. 6, pp. 114–120, Jun. 2024. [25] ——, “Movable-antenna array enhanced beamforming: Achieving full array gain with null steering,” IEEE Commun. Lett. , vol. 27, no. 12, pp. 3340–3344, Dec. 2023. [26] Y. Bai, B. Xie, R. Zhu, Z. Chang et al. , “Movable antenna-equipped UAV for data collection in backscatter sensor networks: A deep reinforcement learning approach,” in Proc. IEEE Int. Conf. Commun. (ICC) , Montreal, QC, Canada, Jun. 2025, pp. 6560–6565. [27] W. Liu, X. Zhang, H. Xing, J. Ren et al. , “UAV-enabled wireless net-works with movable-antenna array: Flexible beamforming and trajectory design,” IEEE Wireless Commun. Lett. , vol. 14, no. 3, pp. 566–570, Mar. 2025. [28] Z. Wen, M. Liu, W. X. Zheng, and J. Zhang, “Flexible position antenna enabled resource optimization for UAV covert communication,” IEEE Transactions on Network Science and Engineering , vol. 13, pp. 4455– 4471, 2026. [29] S. Kim, J. Gong, and J. Kang, “Energy-efficient secure communications via joint optimization of UAV trajectory and movable-antenna array beamforming,” IEEE Wireless Commun. Lett. , vol. 15, pp. 1210–1214, 2026. [30] J. Wan, H. Hou, J. Zhuang, W. Wang et al. , “A channel knowledge map-driven two-stage coordinated user scheduling in multi-cell massive MIMO systems,” IEEE Trans. Commun. , 2026. [31] Y. Zeng and X. Xu, “Toward environment-aware 6G communications via channel knowledge map,” IEEE Wireless Commun. , vol. 28, no. 3, pp. 84–91, Jun. 2021. [32] J. Hu, H. Zhang, L. Song, R. Schober et al. , “Cooperative internet of UAVs: Distributed trajectory design by multi-agent deep reinforcement learning,” IEEE Transactions on Communications , vol. 68, no. 11, pp. 6807–6821, 2020. [33] F. Wu, H. Zhang, J. Wu, and L. Song, “Cellular UAV-to-device communications: Trajectory design and mode selection by multi-agent deep reinforcement learning,” IEEE Transactions on Communications ,vol. 68, no. 7, pp. 4175–4189, 2020. [34] S. Kim, M. Kim, J. Y. Ryu, J. Lee et al. , “Non-terrestrial networks for UAVs: Base station service provisioning schemes with antenna tilt,” 
+
+IEEE Access , vol. 10, pp. 41 537–41 550, 2022. [35] T. Røste, O. Gutteberg, and H. C. Haugli, “User terminals with mul-tipaneled phased arrays and omnidirectional antennas applied in an elliptical medium earth orbit satellite communication system for the arctic,” Frontiers in Antennas and Propagation , vol. 4, p. 1764792, 2026. [36] A. A. Khuwaja, Y. Chen, N. Zhao, M.-S. Alouini et al. , “A survey of channel modeling for UAV communications,” IEEE Commun. Surv. Tutor. , vol. 20, no. 4, pp. 2804–2821, 2018. [37] W. Ma, L. Zhu, and R. Zhang, “MIMO capacity characterization for movable antenna systems,” IEEE Trans. Wireless Commun. , vol. 23, no. 4, pp. 3392–3407, Apr. 2024. [38] Z. Xiao, Z. Han, A. Nallanathan, O. A. Dobre et al. , “Antenna array enabled space/air/ground communications and networking for 6G,” IEEE J. Sel. Areas Commun. , vol. 40, no. 10, pp. 2773–2804, Oct. 2022. [39] G. Zhang, Q. Wu, M. Cui, and R. Zhang, “Securing UAV communi-cations via joint trajectory and power control,” IEEE Trans. Wireless Commun. , vol. 18, no. 2, pp. 1376–1389, Feb. 2019. [40] Y. Zeng, J. Xu, and R. Zhang, “Energy minimization for wireless communication with rotary-wing UAV,” IEEE Trans. Wireless Commun. ,vol. 18, no. 4, pp. 2329–2345, Apr. 2019. [41] D. Wu, Y. Zeng, S. Jin, and R. Zhang, “Environment-aware hybrid beamforming by leveraging channel knowledge map,” IEEE Trans. Wireless Commun. , vol. 23, no. 5, pp. 4990–5005, May 2024. [42] N. Cheng, S. Yang, R. Sun, Z. Yin et al. , “Channel knowledge map-enabled 6D movable antenna systems with kinematic constraints: A man-ifold optimization approach,” IEEE Trans. Wireless Commun. , vol. 25, pp. 8968–8981, 2026. [43] H. Li, P. Li, G. Cheng, J. Xu et al. , “Channel knowledge map (CKM)-assisted multi-UAV wireless network: CKM construction and UAV placement,” J. Commun. Inf. Netw. , vol. 8, no. 3, pp. 256–270, Sept. 2023. [44] W. Mei, X. Wei, B. Ning, Z. Chen et al. , “Movable-antenna position optimization: A graph-based approach,” IEEE Wireless Commun. Lett. ,vol. 13, no. 7, pp. 1853–1857, Jul. 2024. [45] S. Huang and S. Onta˜ n´ on, “A closer look at invalid action masking in policy gradient algorithms,” in Proc. Int. Florida Artif. Intell. Res. Soc. Conf. (FLAIRS) , vol. 35, 2022. [46] Y. Wang, Y. Zhu, V. N. Ha, W. Wang et al. , “Multi-satellite multi-stream beamspace massive MIMO transmission,” arXiv preprint arXiv:2512.21998 , 2025. [47] C. S. de Witt, T. Gupta, D. Makoviichuk, V. Makoviychuk et al. ,“Is independent learning all you need in the StarCraft multi-agent challenge?” arXiv preprint arXiv:2011.09533 , Nov. 2020. [Online]. Available: https://arxiv.org/abs/2011.09533 [48] R. Lowe, Y. Wu, A. Tamar, J. Harb et al. , “Multi-agent actor-critic for mixed cooperative-competitive environments,” in Proc. Adv. Neural Inf. Process. Syst. (NeurIPS) , 2017, pp. 6379–6390. [49] R. Price and P. E. Green, “A communication technique for multipath channels,” Proc. IRE , vol. 46, no. 3, pp. 555–570, Mar. 1958. [50] L. Huang, S. Bi, and Y.-J. A. Zhang, “Deep reinforcement learning for online computation offloading in wireless powered mobile-edge computing networks,” IEEE Trans. Mobile Comput. , vol. 19, no. 11, pp. 2581–2593, Nov. 2020.

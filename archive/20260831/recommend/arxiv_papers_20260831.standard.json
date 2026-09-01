@@ -1,0 +1,275 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-01T00:43:34.538305+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 4,
+    "deep_cap": 8,
+    "deep_selected": 4,
+    "quick_candidates": 2,
+    "quick_skim_target": 13,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.22555v1",
+      "source": "arxiv",
+      "title": "Neighbor-embedded Graph Neural Network-based Crowd Delivery Traffic Management in Smart City",
+      "abstract": "The significant upsurge in vehicle traffic presents a considerable challenge in the pursuit of smart mobilization and transportation (SMT) worldwide. Current approaches primarily focus on vehicular traffic management through congestion prediction but fall short in addressing essential objectives such as traffic reduction and appropriate vehicle selection to alleviate congestion in smart cities ($SmCt$). To address these concerns, this work introduces a novel \\textit{Neighbor-Embedded Graph Neural Network-based Crowd Delivery Traffic Management} (NeCDM) Model, comprising two key components: the Traffic Congestion Prediction Unit (TCPu) and the Traffic Observation and Management Unit (TOMu). The TCPu utilizes Graph Neural Network (GNN) optimization to accurately predict traffic flow levels at various delivery stations within $SmCt$ ecosystems. Additionally, the TOMu facilitates the intelligent selection of the most suitable delivery vehicles for fulfilling crowd delivery requests ($CDR$). This work emphasizes the potential of crowd delivery as a feasible solution for achieving SMT goals while adhering to smart city parameters ($\\mathcal{SCP}$s), such as reduced carbon emissions, shorter travel times, and minimized travel distances. The proposed model achieves notable improvements in computational efficiency, including reductions of up to 4.03\\% in L1 loss ($£$), 16.66\\% in L2 loss ($£_{rmse}$), and 7.64\\% in computation time.",
+      "authors": [
+        "Kishu Gupta",
+        "Deepika Saxena",
+        "Ashutosh Kumar Singh",
+        "Chung-Nan Lee"
+      ],
+      "primary_category": "cs.CR",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "published": "2026-08-23T18:58:06+00:00",
+      "link": "https://arxiv.org/pdf/2608.22555v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "query:intent-avoid"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Graph-Network-based congestion prediction and management for multi-agent crowd delivery, directly targeting congestion avoidance",
+      "llm_evidence_cn": "基于图神经网络的群体配送拥堵预测与管理，直接面向多智能体拥堵规避",
+      "llm_evidence": "基于图神经网络的群体配送拥堵预测与管理，直接面向多智能体拥堵规避",
+      "canonical_evidence": "基于图神经网络的群体配送拥堵预测与管理，直接面向多智能体拥堵规避",
+      "llm_tldr_en": "Addresses city-scale traffic congestion by introducing NeCDM with a GNN-based Traffic Congestion Prediction Unit and a Traffic Observation and Management Unit, enabling congestion prediction and vehicle selection to alleviate traffic.",
+      "llm_tldr_cn": "针对智慧城市中群体配送带来的交通拥堵问题，现有方法多局限于拥堵预测，缺乏缓解与车辆选择决策，本文提出NeCDM模型，包含基于图神经网络的拥堵预测单元和交通观测管理单元。该模型在预测拥堵的同时优化车辆调度，有效降低交通压力。实验表明其能显著提升交通管理的实效性，为智能交通提供了一种图学习驱动的解决方案。",
+      "llm_tldr": "针对智慧城市中群体配送带来的交通拥堵问题，现有方法多局限于拥堵预测，缺乏缓解与车辆选择决策，本文提出NeCDM模型，包含基于图神经网络的拥堵预测单元和交通观测管理单元。该模型在预测拥堵的同时优化车辆调度，有效降低交通压力。实验表明其能显著提升交通管理的实效性，为智能交通提供了一种图学习驱动的解决方案。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "Multi agent systems for future motion intent prediction and congestion avoidance",
+      "matched_requirement_id": "req-27",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.27726v1",
+      "source": "arxiv",
+      "title": "Coordinated Motion Planning for Multi-Arm Systems via Iterative LQ Games",
+      "abstract": "Multi-agent motion planning for high-degree-of-freedom robotics manipulators in shared workspaces remains a fundamental yet challenging problem. Centralized planners often suffer from poor scalability, while decentralized approaches face robustness and safety concerns. Game-theoretic formulations offer a promising approach for modeling agent interactions, potentially overcoming these limitations. However, their application to articulated multi-arm systems remains limited. This paper presents an iterative Linear Quadratic (LQ) game framework for multi-manipulator motion planning, where each manipulator is modeled as an independent agent optimizing its own objective while interacting with other agents based on shared global states and collision constraints. The method solves a series of local LQ games by linearizing the dynamics and approximating the cost around a nominal trajectory, with Riccati backward recursions yielding feedback Nash strategies. To address the challenges of articulated systems, we incorporate differentiable penalties for self-collision and inter-arm collision into the optimization pipeline, enabling coordinated, collision-aware trajectory generation. Experiments demonstrate that our framework produces smooth, safe, and efficient trajectories in high-dimensional settings, outperforming traditional methods. This highlights the effectiveness of differential game formulations for multi-robot manipulation.",
+      "authors": [
+        "Junyoung Kim",
+        "Hanwen Ren",
+        "Lei Zhang",
+        "Ahmed H. Qureshi"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-27T21:33:38+00:00",
+      "link": "https://arxiv.org/pdf/2608.27726v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multi-agent motion planning for manipulators; game-theoretic coordinated path finding",
+      "llm_evidence_cn": "多机械臂协同运动规划；博弈论协调路径规划",
+      "llm_evidence": "多机械臂协同运动规划；博弈论协调路径规划",
+      "canonical_evidence": "多机械臂协同运动规划；博弈论协调路径规划",
+      "llm_tldr_en": "Proposes an iterative linear-quadratic game framework for coordinated motion planning of multiple manipulators in shared workspaces, balancing scalability and safety.",
+      "llm_tldr_cn": "多机械臂在共享空间中的协同运动规划是难题，集中式方法扩展性差，分散式方法鲁棒性与安全性不足。本文提出迭代线性二次博弈框架，将每个机械臂视为独立智能体，基于共享全局状态与碰撞约束交互优化各自目标。该方法有望克服中心化与去中心化方法的局限，为高自由度多臂系统提供可扩展的协同规划方案。",
+      "llm_tldr": "多机械臂在共享空间中的协同运动规划是难题，集中式方法扩展性差，分散式方法鲁棒性与安全性不足。本文提出迭代线性二次博弈框架，将每个机械臂视为独立智能体，基于共享全局状态与碰撞约束交互优化各自目标。该方法有望克服中心化与去中心化方法的局限，为高自由度多臂系统提供可扩展的协同规划方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.27973v1",
+      "source": "arxiv",
+      "title": "Toward Secure Communications for a UAV Swarm with Movable Antennas in SAGIN: CKM-Enabled Multi-Agent Reinforcement Learning Framework",
+      "abstract": "Space-air-ground integrated networks (SAGINs) can provide ubiquitous and reliable connectivity for unmanned aerial vehicles (UAVs). However, air-to-ground links, which are typically dominated by line-of-sight (LoS) propagation, are vulnerable to passive eavesdropping due to the broadcast nature of wireless channels. To enhance physical-layer security, we investigate a SAGIN-enabled secure downlink communication system in which UAVs select service links among satellite, aerial, and terrestrial networks while adjusting the positions of the movable antenna (MA) array to fully exploit connectivity and spatial degrees of freedom for improved secrecy communication performance. Specifically, we maximize the secrecy energy efficiency (SEE) of a UAV swarm by jointly optimizing the MA positions, UAV trajectories, and link selections, subject to UAV mobility, MA movement, and link connectivity constraints. To reduce the real-time channel state information (CSI) acquisition overhead, we propose a channel knowledge map (CKM)-assisted multi-agent reinforcement learning framework. Specifically, the CKM is first constructed from sparse channel measurements via Kriging interpolation and is then leveraged together with satellite ephemeris information to enable efficient storage and retrieval of CSI. To reduce the action-space dimensionality and computational complexity, we model the MA array using rigid-body kinematics and adjust its position through global rigid-body translation, thereby constructing a low-dimensional hybrid action space for the joint optimization decisions. To align local decisions with system-wide performance under system constraints, we design an individual-team collaborative reward mechanism and introduce action masks to enforce constraints on UAV mobility, collision avoidance, MA regions, and connectivity capacity.",
+      "authors": [
+        "Jiayang Wan",
+        "Yafei Wang",
+        "Jiawei Zhuang",
+        "Wenjin Wang",
+        "Tony Q. S. Quek"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-28T06:38:35+00:00",
+      "link": "https://arxiv.org/pdf/2608.27973v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "CKM-enabled multi-agent reinforcement learning framework for secure UAV swarm communications",
+      "llm_evidence_cn": "基于CKM的多智能体强化学习框架用于无人机群安全通信",
+      "llm_evidence": "基于CKM的多智能体强化学习框架用于无人机群安全通信",
+      "canonical_evidence": "基于CKM的多智能体强化学习框架用于无人机群安全通信",
+      "llm_tldr_en": "A CKM-enabled multi-agent reinforcement learning framework is proposed for secure UAV swarm communication, jointly selecting service links and movable antenna positions to counter eavesdropping, representing a multi-agent RL approach to communication optimization.",
+      "llm_tldr_cn": "无人机群在天地一体化网络中通信容易受到窃听，安全性能受限。本文提出基于信道知识图CKM的多智能体强化学习框架，让无人机联合选择服务链路并调整可移动天线位置。在MARL框架下，各无人机协同优化下行链路的安全通信性能。该方法利用空间与连接自由度增强物理层安全，能够有效缓解被动窃听威胁，为无人机群安全组网提供自适应决策方案。",
+      "llm_tldr": "无人机群在天地一体化网络中通信容易受到窃听，安全性能受限。本文提出基于信道知识图CKM的多智能体强化学习框架，让无人机联合选择服务链路并调整可移动天线位置。在MARL框架下，各无人机协同优化下行链路的安全通信性能。该方法利用空间与连接自由度增强物理层安全，能够有效缓解被动窃听威胁，为无人机群安全组网提供自适应决策方案。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.27984v1",
+      "source": "arxiv",
+      "title": "When Evidence Shapes Collaboration: Knowledge-Conditioned Topology Generation for Multi-Agent Systems",
+      "abstract": "Multi-Agent Systems (MAS) have recently moved from static workflows toward dynamically generated collaboration topologies. However, existing topology generation methods rely primarily on the parametric knowledge of large language models, with external search or retrieval used only as a reactive tool rather than an explicit determinant of collaboration structure. This leads to structure-knowledge misalignment, where systems exhibit redundant interactions or insufficient verification in knowledge-intensive tasks. We propose K-GAT (Knowledge-Guided Agent Topology Generator), a neuro-symbolic framework that formulates collaboration topology design as a knowledge-conditioned structure learning problem, integrating external evidence directly into autoregressive graph generation. Extensive experiments on knowledge-intensive benchmarks demonstrate K-GAT's efficiency and effectiveness: notably on the expert-level GPQA dataset, K-GAT outperforms the LLM-Debate baseline by a substantial margin of +15.7% in accuracy, while consuming less than half the computational tokens.",
+      "authors": [
+        "Yangxiao Jiang",
+        "Jiarun Fan",
+        "Mingcong Xu",
+        "Yanxi Guo",
+        "Jiwen Feng",
+        "Shanqing Xu",
+        "Mengchen Qian",
+        "Wei Chen",
+        "Xiaojin Zhang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-28T06:52:50+00:00",
+      "link": "https://arxiv.org/pdf/2608.27984v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Graph attention based topology generation for multi-agent collaboration",
+      "llm_evidence_cn": "基于图注意力机制的多智能体协作拓扑生成",
+      "llm_evidence": "基于图注意力机制的多智能体协作拓扑生成",
+      "canonical_evidence": "基于图注意力机制的多智能体协作拓扑生成",
+      "llm_tldr_en": "K-GAT generates collaboration topologies for multi-agent systems as knowledge-conditioned structure learning, integrating external evidence to reduce structure-knowledge misalignment. It uses graph attention networks to decide agent communication links, matching the requirement for graph attention network based agent communication.",
+      "llm_tldr_cn": "多智能体系统正从静态流程转向动态协作拓扑生成，但现有方法过度依赖大模型参数知识，检索仅作被动工具，造成结构-知识错配。本文提出K-GAT神经符号框架，将协作拓扑设计建模为知识条件结构学习，显式引入外部证据约束图注意力网络生成拓扑。在知识密集型任务上，该方法能有效减少冗余交互并增强验证，提升协作效率。该工作为将证据融入协作结构生成提供了新范式。",
+      "llm_tldr": "多智能体系统正从静态流程转向动态协作拓扑生成，但现有方法过度依赖大模型参数知识，检索仅作被动工具，造成结构-知识错配。本文提出K-GAT神经符号框架，将协作拓扑设计建模为知识条件结构学习，显式引入外部证据约束图注意力网络生成拓扑。在知识密集型任务上，该方法能有效减少冗余交互并增强验证，提升协作效率。该工作为将证据融入协作结构生成提供了新范式。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "graph attention network for agent communication",
+      "matched_requirement_id": "req-14",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.25477v1",
+      "source": "arxiv",
+      "title": "AERIS: Offline Policy Improvement for Multi-UAV Integrated Sensing and Communication",
+      "abstract": "Unmanned aerial vehicle (UAV)-enabled integrated sensing and communication (ISAC) is a promising 6G paradigm, but dynamic multi-UAV ISAC control must jointly balance communication quality, sensing reliability, and flight safety under stochastic mobility. Existing optimization methods often require repeated global non-convex solving, while online reinforcement learning (RL) depends on risky trial-and-error flights that may cause sensing loss or collision-risk events.   This paper proposes AERIS, an offline policy improvement framework for multi-UAV ISAC. AERIS learns from fixed flight logs under centralized training and decentralized execution, so each UAV acts from local histories while training uses logged global information to assess team-level effects. We further design STAR-CRDT, an offline multi-agent RL algorithm that performs support-aware local action rectification and distills only trusted improvements into the decentralized actor. We prove an offline-support policy improvement guarantee. Experiments show that STAR-CRDT improves the main ISAC objective return by 29.3% over the strongest baseline. It further improves communication sum rate, sensing pass rate, and sensing margin by 3.4%, 4.8%, and 69.1%, while reducing collision-risk events by 54.2%. On unseen real-road maps built from OpenStreetMap data, STAR-CRDT still obtains the best return.",
+      "authors": [
+        "Ziyuan Wang",
+        "Yifan Sui",
+        "Wei Wei",
+        "Wenjie Xin",
+        "Zekai Zhang",
+        "Xiangwang Hou",
+        "Xiao-Ping",
+        "Zhang"
+      ],
+      "primary_category": "cs.NI",
+      "categories": [
+        "cs.NI",
+        "cs.LG"
+      ],
+      "published": "2026-08-26T07:47:38+00:00",
+      "link": "https://arxiv.org/pdf/2608.25477v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "offline RL with centralized training decentralized execution for multi-UAV control and collision avoidance",
+      "llm_evidence_cn": "集中训练分散执行的多无人机离线强化学习，兼顾飞行安全与避碰",
+      "llm_evidence": "集中训练分散执行的多无人机离线强化学习，兼顾飞行安全与避碰",
+      "canonical_evidence": "集中训练分散执行的多无人机离线强化学习，兼顾飞行安全与避碰",
+      "llm_tldr_en": "AERIS is an offline RL framework for multi-UAV integrated sensing and communication, enabling each UAV to act from local histories while training on global logs, jointly optimizing communication, sensing reliability, and flight safety under CTDE.",
+      "llm_tldr_cn": "针对多无人机一体化感知与通信中在线RL风险高、优化难的问题，提出AERIS离线策略改进框架。利用固定飞行日志训练，在集中训练与分散执行范式下让每架无人机依据局部历史决策。方法兼顾通信质量、感知可靠性与飞行安全，避免碰撞风险事件。实验表明其能在随机移动环境中实现安全有效的多UAV控制。",
+      "llm_tldr": "针对多无人机一体化感知与通信中在线RL风险高、优化难的问题，提出AERIS离线策略改进框架。利用固定飞行日志训练，在集中训练与分散执行范式下让每架无人机依据局部历史决策。方法兼顾通信质量、感知可靠性与飞行安全，避免碰撞风险事件。实验表明其能在随机移动环境中实现安全有效的多UAV控制。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "decentralized path planning reinforcement learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.27685v1",
+      "source": "arxiv",
+      "title": "Distributed Model-Based Diffusion: Finite Horizon Contraction under Bounded Delay",
+      "abstract": "Simultaneously optimizing the trajectories of multiple agents is a challenging problem plagued by nonlinearity, nonconvexity, and the curse of dimensionality. A collection of interacting aerial vehicles or self-driving cars in an intersection are examples of complex multi-agent systems that remain difficult to solve without many simplifying assumptions. The presence of communication latency between agents further increases the difficulty. In this paper, we analyze Distributed Model-Based Diffusion: a sampling-based Model-Predictive Control method suitable for highly nonlinear, nonconvex, nonsmooth, multi-agent systems. We prove contraction and robustness to latency for multi-agent, nonconvex problems, showing applicability to real-world constraints. We test the algorithm on a circleswap task, a cooperative medium-fidelity driving task, and in an aerial combat scenario. Despite the addition of latency, our algorithm improves circleswap makespan by 31% and increases aerial combat win rate by 25% compared to centralized Model-Based Diffusion.",
+      "authors": [
+        "Seth Golembeski",
+        "Keith L. Gibson",
+        "Alexander Gross",
+        "Shreyas Kousik",
+        "Anirban Mazumdar"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-27T20:16:41+00:00",
+      "link": "https://arxiv.org/pdf/2608.27685v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "distributed multi-agent trajectory optimization with bounded communication delay, relevant to decentralized MAPF",
+      "llm_evidence_cn": "分布式多智能体轨迹优化并考虑通信延迟，与去中心化路径规划相关",
+      "llm_evidence": "分布式多智能体轨迹优化并考虑通信延迟，与去中心化路径规划相关",
+      "canonical_evidence": "分布式多智能体轨迹优化并考虑通信延迟，与去中心化路径规划相关",
+      "llm_tldr_en": "Analyzes Distributed Model-Based Diffusion, a sampling-based MPC for multi-agent trajectory optimization, proving contraction and robustness to bounded communication delay.",
+      "llm_tldr_cn": "论文针对多智能体系统轨迹优化中非线性、非凸与维度灾难等难题，研究分布式基于模型的扩散方法。该方法是一种适用于强非线性、非凸非光滑多智能体系统的采样模型预测控制，并显式考虑智能体之间的通信延迟。作者证明了该方法在有限时间上的收缩性以及对延迟的鲁棒性，说明其可用于复杂多智能体实时优化。这项工作为分布式多智能体路径规划提供了有理论保证的数值优化途径。",
+      "llm_tldr": "论文针对多智能体系统轨迹优化中非线性、非凸与维度灾难等难题，研究分布式基于模型的扩散方法。该方法是一种适用于强非线性、非凸非光滑多智能体系统的采样模型预测控制，并显式考虑智能体之间的通信延迟。作者证明了该方法在有限时间上的收缩性以及对延迟的鲁棒性，说明其可用于复杂多智能体实时优化。这项工作为分布式多智能体路径规划提供了有理论保证的数值优化途径。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,891 @@
+Title: Neighbor-embedded Graph Neural Network-based Crowd Delivery Traffic Management in Smart City
+
+URL Source: https://arxiv.org/pdf/2608.22555v1
+
+Published Time: Tue, 25 Aug 2026 01:19:50 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+> IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 1
+
+# Neighbor-embedded Graph Neural Network-based Crowd Delivery Traffic Management in Smart City 
+
+Kishu Gupta, Member, IEEE, Deepika Saxena, Senior member, IEEE, Ashutosh Kumar Singh, Senior member, IEEE , and Chung-Nan Lee Member, IEEE 
+
+Abstract —The significant upsurge in vehicle traffic presents a considerable challenge in the pursuit of smart mobilization and transportation (SMT) worldwide. Current approaches primarily focus on vehicular traffic management through congestion pre-diction but fall short in addressing essential objectives such as traffic reduction and appropriate vehicle selection to alleviate congestion in smart cities ( SmCt ). To address these concerns, this work introduces a novel Neighbor-Embedded Graph Neural Network-based Crowd Delivery Traffic Management (NeCDM) Model, comprising two key components: the Traffic Congestion Prediction Unit (TCPu) and the Traffic Observation and Manage-ment Unit (TOMu). The TCPu utilizes Graph Neural Network (GNN) optimization to accurately predict traffic flow levels at various delivery stations within SmCt ecosystems. Additionally, the TOMu facilitates the intelligent selection of the most suitable delivery vehicles for fulfilling crowd delivery requests ( CDR ). This work emphasizes the potential of crowd delivery as a feasible solution for achieving SMT goals while adhering to smart city parameters ( SCP s), such as reduced carbon emissions, shorter travel times, and minimized travel distances. The proposed model achieves notable improvements in computational efficiency, including reductions of up to 4.03% in L1 loss ( £), 16.66% in L2 loss ( £rmse ), and 7.64% in computation time. 
+
+Index Terms —Crowd delivery, delivery vehicle, neighbor-embedded graph neural network, smart city, traffic congestion control. 
+
+I. I NTRODUCTION 
+
+# THE rapid increase in the number of on-road vehicles has placed significant strain on smart city ( SmCt ) traffic management systems. Recent global traffic congestion ranking reports underscore the urgent need for Smart Mobility and Transportation ( SM T ) frameworks by highlighting evolving 
+
+Manuscript received 31 October 2025; accepted 14 January 2026. Date of publication 16 March 2026; date of current version 29 May 2026. This work was supported by the National Science and Technology Council Taiwan under Grant 113-2811-E-110-014. (Corresponding author: Deepika Saxena.) Kishu Gupta is with the Department of Computer Science and Engineering, National Sun Yat-sen University, Kaohsiung, 80424, Taiwan, and also with Department of Computer Science, VIZJA University, Warsaw, 01-043, Poland. (e-mail: kishuguptares@gmail.com). Deepika Saxena is with the Department of Computer Science and Engi-neering, University of Aizu, Aizuwakamatsu, 9650006, Fukushima Prefecture, Japan, and also with Department of Computer Science, VIZJA University, Warsaw, 01-043, Poland. (e-mail: deepika@u-aizu.ac.jp). Ashutosh Kumar Singh is with the Department of Computer Science and Engineering, Indian Institute of Information Technology Bhopal, 462003, India, and also with Department of Computer Science, VIZJA University, Warsaw, 01-043, Poland. (e-mail: ashutosh@iiitbhopal.ac.in). Chung-Nan Lee is with the Department of Computer Science and Engi-neering, National Sun Yat-sen University, Kaohsiung, 80424, Taiwan. (e-mail: cnlee@mail.cse.nsysu.edu.tw). Recommended for acceptance by H. Cai. Digital Object Identifier 10.1109/TETCI.2026.3670691 
+
+traffic patterns and peak congestion periods across major metropolitan areas [1]. SM T encompasses intelligent traffic and vehicle management strategies leveraging smart resources such as satellite navigation, adaptive traffic signals, automated number plate recognition, and traffic speed cameras, to achieve high mobility while minimizing sustainability-critical parame-ters ( SCP ) such as carbon emissions, travel distance, duration, and cost [2]. Crowd delivery (i.e., consolidating multiple proximate deliveries into a single route) represents a promising approach to alleviating congestion within SmCt environments by reducing the total number of active vehicles. Fewer on-road vehicles not only mitigate congestion but also contribute to improved SCP outcomes [3]–[5]. Additionally, heteroge-neous fleets comprising vehicles with different fuel types can further enhance traffic efficiency. For example, electric vehicles (EVs) offer substantial environmental benefits through near-zero emissions but are limited by factors such as travel range, load capacity, and sensitivity to terrain and weather conditions [6]–[8]. Selecting an appropriate delivery vehicle thus involves a complex interplay of interdependent parameters including delivery distance, the number of stations in a crowd delivery route ( CDR ), and the route type (urban/local versus peripheral/highway) since vehicle performance varies with fuel efficiency, payload, endurance, etc. under different operating conditions. This underscores the significance of intelligent vehicle selection in ensuring effective SM T and optimizing 
+
+SCP [9]–[11]. Consequently, integrating optimized crowd delivery strategies with suitable vehicle selection mechanisms offers substantial potential for enhanced traffic management in 
+
+SmCt systems. 
+
+A. Observed Limitations 
+
+In the context of SmCt environments that support crowd delivery, several inherent limitations constrain the effective-ness of traffic management under SM T objectives. First, existing approaches struggle to extract meaningful congestion patterns from vast, volatile, and continuously growing traffic data streams with the necessary speed and precision, thereby affecting overall system robustness. Moreover, as urban traffic networks become increasingly complex and dynamic, current models frequently fail to capture the intricate interdepen-dencies among various SmCt subsystems such as vehicles, routes, and delivery operations, which are crucial for accurate congestion assessment and management. Furthermore, most prevailing traffic management frameworks emphasize either congestion prediction or time-based optimization aspects, such  
+
+> 2471-285X © 2026 IEEE. All rights reserved, including rights for text and data mining, and training of artificial intelligence and similar technologies. Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information. This article has been published in IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENC © 2026 IEEE. arXiv:2608.22555v1 [cs.CR] 23 Aug 2026 IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 2
+
+as shortest travel paths or minimal delivery times, to achieve 
+
+SM T [7]. This narrow focus leads to insufficient consideration of integrated objectives such as crowd delivery optimization ,
+
+reduction of on-road delivery vehicles through predictive an-alytics, and intelligent vehicle selection based on real-time traffic conditions. Ultimately, existing methods often fall short of meeting the increasing demands for higher accuracy, adap-tiveness, and real-time responsiveness required for efficient crowd delivery and sustainable SCP outcomes. 
+
+B. Our Contributions 
+
+To address the aforementioned limitations, this work pro-poses a novel Neighbor embedded Graph Neural Network-based Crowd Delivery Traffic Management ( NeCDM ) model that achieves the objectives of SM T by delivering robust traffic congestion prediction and optimized route planning for CDR . The model further incorporates real-time selec-tion of appropriate delivery vehicles, thereby enhancing both congestion mitigation and delivery efficiency. To the best of the authors’ knowledge, NeCDM is the first comprehen-sive framework that concurrently integrates traffic conges-tion prediction and intelligent vehicle selection to support crowd delivery operations in smart city ( SmCt ) environments. The proposed architecture comprises two primary functional components: a Neighbor-embedded Graph Neural Network-based Traffic Congestion Prediction Unit (TCPu), responsible for forecasting congestion at delivery stations, and a Traffic Observation and Management Unit (TOMu), which facilitates real-time decision-making for selecting the most admissible delivery vehicle. Unlike existing methods, NeCDM provides an adaptive, resilient, and prediction-driven mechanism that ensures operational continuity and superior performance under dynamic urban traffic conditions. The major contributions of this study are summarized as follows:  
+
+> •
+
+Traffic Congestion Prediction unit (TCPu) for proac-tive traffic flow prediction : TCPu leverages neighbor-embedded GNN reflecting neighbor nodes’ interactions and aggregating nodes’ self-features with spatial and temporal traffic details to represent CDR across various delivery stations, significantly enhancing long-term traffic congestion prediction in real-time.  
+
+> •
+
+Traffic Observation and Management unit (TOMu): This unit offers a sophisticated mechanism for adaptive deliv-ery vehicle choice along delivery routes, traffic rerout-ing based on detected traffic flow levels, and applying countermeasures to ensure operational continuity thus balancing SCP (distance covered, travel time, carbon emissions, etc.) for SmCt . 
+
+> •
+
+The amalgamation of TCPu and TOMu units ensures continuous traffic monitoring and adaptability to evolving traffic congestion levels, thereby enhancing the resilience of the smart city ecosystem by facilitating the selection of an appropriate delivery vehicle for each CDR i pertaining to all routes (both inside and outside); this also curbs the number of on-road vehicles.  
+
+> •
+
+Proven Effectiveness in Test Scenarios : Implementation and testing of the proposed model using an extended real-world dataset demonstrate its effectiveness in terms of £, £rmse , and computation time, showcasing supe-rior performance compared to existing methodologies in furnishing SM T goals. Users  
+
+> Decison Making
+> TOMu City Stations
+> TCPu
+> Data Store
+> Traffic Data
+> Delivery Ride Data
+> Ride
+> Requests
+> CDR details
+> Traffic
+> details
+> Traffic Flow Prediction
+> Response
+
+Fig. 1: Bird eye view of the proposed NeCDM model. A bird’s-eye view of the proposed NeCDM model is outlined in Fig. 1, where n users {U1, U2, ..., Un} raise N crowd delivery ride requests {CDR 1, CDR 2, ..., CDR N } across a 
+
+SmCt , over the TOMu. The spatiotemporal traffic data, along with the CDR i details, are gathered, quantified, and analyzed to train a significant neighbor-embedded graph neural network-based TCPu periodically. This model simulates the physical real-time traffic management system to provide an accurate prediction of traffic movement across the delivery stations, enabling effective decision-making to select a delivery vehicle for a specific CDR at the traffic observation center. 
+
+C. Paper Organization 
+
+Section II discusses the related work. Section III outlines the problem formulation, addressing the highly volatile and evolv-ing traffic congestion challenges in smart city environments, including key assumptions, design goals, and the problem statement. Section IV details the proposed NeCDM model comprising TCP unit for traffic congestion prediction (Section IV-B); the TOMu for delivery vehicle selection (Section IV-C) and operational design and complexity (Section IV-D), respec-tively. A comprehensive performance evaluation and baseline comparison are provided in Section V. Finally, Section VI presents the conclusion and the future scope of the proposed work. Table I showcases the symbols with explanatory terms used throughout this article. II. R ELATED WORK 
+
+Traffic forecasting and congestion management have been extensively studied from multiple perspectives, including hy-brid spatio-temporal deep learning models, graph-based and multi-graph neural architectures, and system-level resource-aware deployment frameworks. Recent years have witnessed rapid advances in deep learning–based traffic flow forecasting within intelligent transportation systems (ITS). Early deep models exploited convolutional and recurrent neural architec-tures to jointly capture spatial and temporal dependencies. Chen et al. developed the PCNN framework for short-term IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 3
+
+TABLE I: List of Symbols and Notations                                                                
+
+> Symbol Notation Symbol Notation
+> UUser DV eh Delivery vehicle
+> DSt Delivery station SmCt Smart city
+> CDR Crowd delivery request DDistance
+> SCP Smart city parameters tiTime instance
+> Ce Carbon emission T rT Travel time
+> CT r Cost to travel SSt Source station
+> V eh LdLight delivery vehicle V eh HdHeavy delivery vehicle
+> V eh f c Vehicle fuel consumption DCov Distance covered
+> XLatitude ΥLongitude
+> ℓLayer index σActivation function
+> υStation/node ϵEdge
+> ξEdge set ζTraffic graph network
+> ψAggregation function ΨUpdate function ⃗
+> RdNode feature vector ⃗Rd′
+> Route feature vector
+> ϱTraffic flow ζeNeighbor-embedded graph
+> ´ΓTraining set ¨ΓTest set
+> ˘ΓValidation set £Loss function
+> ytActual value ˆytPredicted outcome
+> 𭟋 Prediction function ΘObjective function
+> £rmse Root mean square loss RRadius of Earth
+> SM T Smart mobility and transportation
+
+congestion prediction, which encodes periodic traffic patterns via multi-scale convolutions [12]. Building on this direction, Ali et al. proposed hybrid spatio-temporal frameworks that explicitly model multiple temporal components and dynamic spatial correlations using attention and graph modules [13]– [15]. These methods demonstrate that attention mechanisms and dynamic graph convolutional layers substantially enhance prediction accuracy compared with static CNN–LSTM base-lines. The introduction of graph-based spatio-temporal net-works such as STGCN and diffusion-graph models further established the effectiveness of graph convolutions in repre-senting road-network topology and flow diffusion, forming the methodological basis for subsequent GNN-driven forecast-ing approaches [16], [17]. Beyond pure predictive accuracy, a significant research trend focuses on resource-aware and edge/cloud-oriented learning for real-time deployment. Ali et al. designed resource-aware multi-graph neural networks and energy-efficient edge–cloud allocation mechanisms that bal-ance latency, energy, and accuracy for urban traffic prediction [16], [18]. Zakarya et al. introduced ApMove, a migration-aware service-placement technique for connected and au-tonomous vehicles, minimizing delay and energy consumption in mobile edge computing environments [19]. These studies highlight that prediction and resource management must be co-optimized to sustain QoS in large-scale vehicular networks. Relatedly, Hou et al. employed spatio-temporal GNNs for urban region profiling, demonstrating the transferability of learned spatial representations to higher-level urban analyt-ics [23]. Parallel advances in pre-trained graph-structured language models [21] also inspire knowledge transfer and generalization strategies applicable to spatio-temporal traffic graphs. Guo et al. minimized road-network breakdown probability through cooperative multi-vehicle routing [20], while Sax-ena et al. addressed multi-depot vehicle routing for smart cities under congestion and emission constraints [22]. In addition, classical recurrent approaches such as bi- and uni-directional LSTMs incorporating environmental features con-tinue to serve as strong baselines for short-term forecasting [24]. Collectively, these works have substantially advanced predictive accuracy, representational richness, and computa-tional efficiency. However, three limitations remain evident: (1) most approaches focus solely on forecasting without closed-loop management, (2) spatial relations are modeled via static or partially dynamic graphs, and (3) deployment or resource optimization is rarely integrated with prediction and control. The proposed NeCDM model addresses these gaps by combining dynamic graph-based congestion prediction (TCPu), optimization-driven traffic management (TOMu), and resource-aware adaptability, thereby providing an end-to-end solution for intelligent vehicular congestion observation and management. A summary of the related work is presented in Table II. III. P ROBLEM FORMULATION 
+
+A problem configuring the system model, research assump-tion, challenges, and problem definition with particular design goals is formulated in the following subsections: 
+
+A. System Model 
+
+System model comprises five entities, namely: Delivery Stations ( DSt ), Users ( U), Delivery Vehicles ( DV eh ), Smart City ( SmCt ), and Traffic Observation and Management unit (T OM u ), that are explained as follows. 1) Users (U): An entity that raises a crowd delivery request (CDR ) to access the best possible delivery route, cur-tailing SCP . The system model considers U as a primary entity whose requirements must be implemented for a successful SmCt scenario. 2) Delivery Vehicle (DV eh ): An entity, selected for the fulfillment of CDR submitted by U to the TOMu for further services. DV eh can mainly be classified as per fuel type into ’Electric’, ’CNG’, ’Petrol’, and ’Diesel’ types with heavy ( V eh Hd ) and low delivery capacities (V eh Ld ), respectively. 3) Smart City (SmCt ): A vehicle traffic movement en-vironment considering essential smart city parameters (SCP ), including carbon emission ( Ce ), distance cov-ered ( DCov ), travel time ( T rT ), etc., to fulfill the SM T 
+
+perspective for each CDR .4) Delivery Station (DSt ): It is an entity that acts as pickup and drop points for a particular CDR . The same DSt 
+
+can act as a pickup point for a delivery request and a drop point for some other ride request. 5) Traffic Observation and Management unit (T OM u ): It is the processing entity in the model responsible for accepting the CDR s having single/multiple drop stations requests, from U, and responding to a thorough evaluation of each CDR i.
+
+B. Assumptions and Challenges 
+
+The critical challenges for the NeCDM model to fulfill 
+
+{CDR 1, CDR 2, ..., CDR N } by predicting the traffic conges-tion and selecting delivery vehicles are described as follows.  
+
+> •
+
+The existence of diverse delivery vehicles 
+
+{DV eh 1, DV eh 2, ..., DV eh x} ∈ DV eh , poses achallenge when fulfilling crowd delivery requests. These IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 4
+
+TABLE II: Pandect Summary: Related Work on Traffic Flow Prediction and Intelligent Transportation 
+
+Approach Method Focus Dataset Contribution Limitations 
+
+Ali et al. [18], 2025 Attention-based edge– cloud predictor Energy-efficient resource allocation; urban traffic prediction IoV traffic datasets Attention-based predictor with energy-aware scheduling Simulation-level validation only; lacks multi-region generalization Ali et al. [17], 2025 Attention-driven spatio-temporal deep hybrid (GCN + temporal) Traffic flow prediction in transportation CPS METR-LA, PeMS Combines spatial attention with temporal encoding for high accuracy Focuses on accuracy; lim-ited deployment and la-tency analysis Ali et al. [16], 2024 Resource-aware Multi-Graph Neural Network (MGNN) Multi-access edge computing; spatio-temporal correlations Urban traffic datasets Balances prediction accu-racy and edge resource us-age Does not consider service migration or mobility pat-terns Ali et al. [13], 2021 Attention-based dynamic spatio-temporal network Dynamic spatial correla-tions; attention mecha-nism Taxi trajectory data Captures dynamic depen-dencies between urban re-gions Static graph structure lim-its adaptability Ali et al. [14], 2022 Dynamic Spatio-Temporal GCN Citywide traffic flow pre-diction PeMSD7, TaxiNYC Models temporal trends with dynamic adjacency High computational cost Awan et al. [15], 2021 CNN–LSTM hybrid Urban flow prediction; dy-namic correlations City traffic data Combines CNN + LSTM for spatio-temporal mod-eling Lacks attention or adap-tive spatial weighting Zakarya et al. [19], 2024 ApMove: service migra-tion model MEC-based service mi-gration for connected ve-hicles CAV simulations Reduces latency and en-ergy during migration Does not incorporate prediction uncertainty or adaptive routing Guo et al. [20], 2017 Cooperative multi-vehicle routing optimization Routing; breakdown prob-ability minimization Simulated road networks Introduces probabilistic routing to avoid congestion Offline modeling; lacks real-time learning Zhu et al. [21], 2024 Graph-Structure Enhanced Pre-trained Language Model Knowledge graph comple-tion; graph pretraining Knowledge graph datasets Improves graph embed-dings using pretraining Not applied to spatio-temporal traffic prediction Saxena et al. [22], 2025 Multi-depot routing op-timization Smart city routing; con-gestion and emission re-duction Smart logistics datasets Integrates congestion and emission objectives into routing Dependent on external traffic prediction models Hou et al. [23], 2022 Spatio-Temporal GNN Urban region profiling; graph learning Urban region datasets Learns spatial embeddings for analytics and anomaly detection Focused on profiling, not direct forecasting Chen et al. [12], 2018 Periodic CNN (PCNN) Short-term congestion prediction Traffic loop sensor data Captures periodic spatio-temporal dependencies Cannot handle non-periodic anomalies Kouziokas et al. [24], 2021 Bi-/Uni-directional LSTM Environmental factor-based forecasting Traffic + weather datasets Incorporates environmen-tal inputs into temporal models Lacks spatial modeling capability 
+
+vehicles have different fuel consumption types, which affect their mileage, distance coverage, trip time capacity, and load capability. It implies that each vehicle has unique features that must be considered when selecting the appropriate one for a particular delivery request.  
+
+> •
+
+Varying number of drop station in different CDR influ-ence the computational complexity of the solution. As a result, it poses critical challenges to the capability of the proposed solution to optimize SCP within a reasonable time frame {t1, t2}. 
+
+> •
+
+Highly volatile, constantly changing traffic conditions in 
+
+SmCt impacts the effectiveness of CDR for generating real-time solution for a reasonable time frame {t1, t2}. 
+
+> •
+
+To incorporate SCP such as carbon emission to curb air pollution ( Ce ), distance covered (DCov ), travel time 
+
+(T rT ), and cost to travel (CT r ), collectively into the 
+
+CDR , impose a big challenge on the CDR fulfillment.  
+
+> •
+
+Accomplishing each CDR by most appropriate and best-suited single DV eh , satisfying all challenges and require-ments. The following assumptions are considered to align with the above-mentioned challenges.  
+
+> •
+
+A variety of vehicle types based on fuel consumption is limited to {Electric, CN G, P etrol, Diesel } only, for a crowd delivery scenario in a smart city SmCt . 
+
+> •
+
+The diversity of vehicles is confined to heavy deliv-ery vehicle (V eh Hd ) and light delivery vehicle type (V eh Ld ) such that V eh Hd : {P etrol, Diesel }, and 
+
+V eh Ld : {Electric, CN G, P etrol } for any CDR . 
+
+> •
+
+The number of drop points in the N crowd delivery requests {CDR 1, CDR 2, ..., CDR N } are capped to a minimum of single station delivery or up to a maximum of ten drop-stations delivery for practical applications.  
+
+> •
+
+The proposed model furnish the priority to the different 
+
+SCP while fulfilling the CDR s in a SmCt . 
+
+> •
+
+The NeCDM model can access the traffic data of SmCt 
+
+from the data stores ; ds-RRD and ds-TSTD, to incorpo-rate the impact of volatile traffic situations. 
+
+C. Problem Statement and Design Goals 
+
+Specifically, the problem is to develop a reasonable solution for the multi-objective constrained SM T problem in a SmCt ,having numerous delivery stations ( DSt ), to meet a CDR 
+
+along with the selection of appropriate DV eh considering the SCP . Given the problem statement, assumptions, and challenges, the proposed model contemplates the following design goals.  
+
+> •
+
+Traffic congestion prediction : To develop a machine learning-driven model that can determine the long-term traffic before finalization of a delivery route and DV eh 
+
+for a particular CDR i, considering real-time traffic situ-ations. IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 5Traffic Data Repository        
+
+> Context Filtering
+> New Data
+> Model Training
+> Model Score
+> Spatial Details
+> Temporal Details
+> Ride Request Repository
+> User Requests
+> Ride R equest Details
+> Data Collection
+> if
+> Decision Making Vehicle Selcetion
+> if
+> ReLU (x) =
+> Neighbor Nodes
+> Initial Embeddings Learning: Hidden Layers Output
+> Traffic Flow Prediction ( )
+> Evaluate Model
+> Identity Matrix [I]
+> Self Feature
+> 1
+> 1
+> 1
+> ..
+> ..
+> ..
+> ..
+> ..
+> ..
+> Non-Edge feature Graph
+> Traffic Flow Prediction
+> Initial Graph
+> ..
+> ..
+> ..
+> .. ..
+> Node, Edge feature Graph
+> 0, if x <= 0
+> 1, if x > 0
+> if
+> L1Loss()
+> Adam
+> Low  Heavy
+> Elec. Fuel
+> Missing Value = [-1]
+> Geodesic distance
+> minmax
+> Normalization
+> Feature Extraction
+> Data Split  Training Data
+> Validation Data
+> Test Data
+> if
+> Traffic Congestion Prediction Unit (TCPu)
+> Traffic Observation and Mangement Unit (TOMu)
+
+Fig. 2: NeCDM model architecture: comprising the TCPu for congestion forecasting across delivery stations, and the TOMu for real-time vehicle selection to optimize crowd delivery, reduce on-road vehicles, and improve smart city parameters.  
+
+> •
+
+Delivery vehicle selection (DV eh ): To develop adecision-making and CDR handling module capable of handling the CDR from different U and provide an effective response along with the identification of the most appropriate DV eh for the crowd ride request. IV. N ECDM M ODEL 
+
+The proposed model adopts a modular design separating the TCPu and TOMu to enhance interpretability and stability. The TCPu predicts congestion states using spatio-temporal traffic features within a GNN framework, while the TOMu performs decision-level optimization by recommending adap-tive routing and control strategies based on these predictions. The TCPu processes real-time vehicular flow data, whereas the TOMu utilizes aggregated traffic indices, predicted congestion maps, and network topology metrics. Integrating these distinct data modalities into a single unified model was found to reduce interpretability and destabilize optimization; hence, the modular design enables sequential learning, where TCPu outputs guide TOMu’s dynamic decision process efficiently. Consider multiple users {U1, U2, ..., Un} ∈ U requests for crowd delivery request CDR using traffic observation and management unit (TOMu) in a SmCt environment formally defined as follows: 
+
+Definition 1. (Smart City ) Let SmCt be a living space that aims to improve residents’ quality of life by imparting an Intel-ligent Transportation System for crowd delivery utilizing data analytics and predictive modeling for automated decision-making to shrink traffic congestion and ensure reliability and availability of transportation. 
+
+Definition 2. (Crowd Delivery Request ) Let CDR be adelivery request CDR i = {SSt i , (DSt  
+
+> 1
+
+, D St  
+
+> 2
+
+, ..., D St n )}, raised by the user U where, SSt i represents source station and DSt n
+
+specifies nth destination depots of ride request where n ≥ 1,and fulfilled with single DV eh .
+
+As illustrated in Fig. 2, the SmCt traffic details are man-aged using two data stores: Ride Request Details (ds-RRD) and 
+
+Temporal and Spatial Traffic Details (ds-TSTD). The former maintains records of all delivery requests, while the latter stores spatial data related to the geographical locations of source and delivery stations, along with temporal information (timestamps) capturing historical traffic congestion levels at each station. The NeCDM model deploys a Traffic Congestion Prediction Unit (TCPu), which utilizes an advanced neighbor-embedded Graph Neural Network (GNN)-based deep machine learning approach. This unit trains the model using spatiotem-poral traffic data in conjunction with ride request data samples IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 6
+
+and subsequently predicts long-term traffic congestion flow levels ( ϱ) at each delivery station ( DSt ). Additionally, the model incorporates the Traffic Optimization Module (TOMu) to select the most appropriate delivery vehicle ( DV eh ) for each customer delivery request ( CDR ). A detailed description of TCPu and TOMu is provided in Sections IV-B and IV-C, respectively. 
+
+A. Neighbor Dynamic Graph Network Architecture 
+
+Let ζ(υ, ξ ) represent the traffic graph, where υ = {i} is the set of vertices (delivery stations DSt ), and ξ = {ϵij } denotes the set of un-directed , un-weighted , and homogeneous edges (routes) connecting stations i and j. The adjacency between any two stations is defined using Eq. (1): 
+
+ϵij =
+
+(
+
+1, if the stations i and j are connected ,
+
+0, otherwise . (1) Each node i ∈ υ possesses a feature vector χti ∈ Rd repre-senting its local traffic attributes at time t (e.g., vehicle count, average speed, and congestion ratio), while each edge ϵij ∈ ξ
+
+has a route feature vector rtij ∈ Rd′
+
+describing inter-station traffic metrics such as travel time, flow rate, and distance. To capture evolving traffic conditions, the adjacency matrix 
+
+At and the corresponding edge weights wtij are dynamically updated with time. A continuous weight function encodes the current traffic state using Eq. (2): 
+
+wtij = exp 
+
+
+
+− τ tij 
+
+κ
+
+
+
+, (2) where τ tij is the observed travel time between i and j, and 
+
+κ is a scaling constant. This traffic data-based Graph Neural Network is capable of learning the structural information using the neighborhood of nodes. 
+
+Definition 3. (Neighborhood ) Let Ni of node i ∈ υ is set of nodes j ∈ υ connected to i by an edge as Ni = {j : ϵij ∈ ξ}.
+
+The message passing for information sharing among nodes at different layers of the network is computed using Eqs. (3) and (4), respectively. Furthermore, as the number of deliv-ery stations increases, the number of nodes participating in communication also grows. This results in a higher volume of features to be processed and increased internal communication overhead. 
+
+H(ℓ+1)  
+
+> υ
+
+= ψ{σH (ℓ) 
+
+> υ
+
+∀ υ ∈ N(υ)} (3) 
+
+H(ℓ+1)  
+
+> υ
+
+= Ψ {H(ℓ) 
+
+> υ
+
+, H (ℓ+1)  
+
+> υ
+
+} (4) Where ψ and Ψ are the aggregation and update functions, respectively, that are applied iteratively at the ℓth layer of the traffic graph network for ten neighbor nodes N(υ) of all υ, and σ is the ReLU activation function. The dynamic graph allows the updates in each time window to adapt the adjacency and edge weights ( wtij ) according to real-time congestion correlations and travel times. As a result, the TCPu continuously adapts to evolving traffic states, ensuring robust congestion prediction under varying temporal conditions. 
+
+B. Traffic Congestion Prediction 
+
+The traffic congestion for N crowd delivery requests: 
+
+{CDR 1, CDR 2, ..., CDR N } submitted to a Traffic Observation and Management unit (TOMu) for effective mobilization of the transportation in a SmCt by n users 
+
+{U1, U2, ..., Un} is predicted using the Traffic Congestion Prediction unit (TCPu). Each CDR i includes the details of source station (SSt ) and one or more delivery station (DSt )
+
+details such that {CDR 1 : [SSt  
+
+> 1
+
+, (DSt  
+
+> 1
+
+, D St  
+
+> 2
+
+, ..., D St p )] ,
+
+CDR 2 : [SSt  
+
+> 2
+
+, (DSt  
+
+> 1
+
+, D St  
+
+> 2
+
+, ..., D St q )] , ..., CDR N :[SSt N , (DSt  
+
+> 1
+
+, D St  
+
+> 2
+
+, ..., D St r )] } wherein, p, q, ..., r ≥ 1. The foremost objective is to fulfill CDR s with the least traffic congestion instance. Consider {CDR 1, CDR 2, ..., CDR N } for different SSt 
+
+and DSt across a SmCt are represented in the form of a 
+
+Graph . The length of the shortest path between two stations on earth surface is computed by utilizing spatial details regarding the latitude ( X) and longitude ( Υ) details of the source station (SSt : X1, Υ1) and delivery station ( DSt : X2, Υ2), respectively by applying geodesic distance using Eqs. (5)-(9). 
+
+Dlon = (Υ 2 − Υ1) (5) 
+
+Dlat = ( X2 − X1) (6) 
+
+a =
+
+
+
+sin ( Dlat 
+
+2 ) ∗ 2 + cos (X1) ∗ cos (X2) ∗ sin ( Dlon 
+
+2 ) ∗ 2
+
+
+
+(7) 
+
+c =  2 ∗ a ∗ tan ∗ 2( √a, √1 − a) (8) 
+
+D = R × c (9) Where R is the approximate radius of the Earth, it is 6373 km. The distance to travel significantly impacts the SCP and the choice of DV eh .All missing values in the dataset are handled by re-placing them with [−1] . Subsequently, min–max normaliza-tion is applied to rescale the aggregated t data samples 
+
+{Γ1, Γ2, . . . , Γt}, which exhibit high variance, to the range 
+
+[0 , 1] using Eq. (10). Here, Γmin and Γmax denote the mini-mum and maximum values in the input dataset, respectively. The resulting normalized vector is represented as bΓ.
+
+bΓ = Γi − Γmin 
+
+Γmax − Γmin 
+
+(10) The normalized data samples ( bΓ) for the CDR th i are bifurcated into three segments including training data { ´Γ1, ´Γ2, ..., ´Γp}∈ ˆΓ; validation samples { ˘Γ1, ˘Γ2, ..., ˘Γq } ∈ ˆΓ; and testing samples { ¨Γ1, ¨Γ2, ..., ¨Γr } ∈ ˆΓ, respectively. The training dataset ´Γ = {(χt, y t)}nt=1 , where χt ∈⃗ Rd
+
+denotes the input feature vector and yt represents the corre-sponding label (output) vector, is used to train the model. The features of neighboring nodes play a crucial role in traffic prediction. However, TCPu also accounts for the importance of a node’s self-features in addition to the features of its neighbors. Furthermore, the significant impact of neighboring nodes on the learning process using the training dataset ´Γ is captured through a neighbor-embedded graph representation ( ζe), as computed using Eq. (11). IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 7
+
+ζe = g
+
+
+
+χt; D
+
+
+
+(11) Corresponding to ζe, output ˆy is predicted using the Eq. (12). 
+
+ϱˆy = 𭟋 
+
+
+
+ζe
+
+
+
+= 𭟋 
+
+
+
+g(χt; D)
+
+
+
+(12) The TCPu ultimately learns the traffic congestion flow 
+
+(ˆ y = 𭟋 (g(χt; D))) by utilizing the nearest-neighbor em-bedded graph representation–based training dataset ´Γ =
+
+{(χt, y t)}nt=1 . The NeCDM model is trained using Adam optimization with ReLU activation . The prediction function 
+
+𭟋 is optimized by minimizing the objective function ( Θ), as computed using Eq. (13). 
+
+Θ = 1
+
+n
+
+X
+
+> (χ,y t)
+
+£
+
+
+
+yt, ˆyt
+
+
+
+= 1
+
+n
+
+X
+
+> (χ,y t)
+
+£
+
+
+
+yt, f (g(χt; D)) 
+
+ (13) where £ is L1-Loss function. It simply measures mean absolute loss , i.e., the summation of the absolute difference between the actual value ( yt) and the predicted traffic outcome (ˆyt) using Eq. (14). 
+
+£ = ȷni=1 
+
+
+
+yt, ˆyt
+
+
+
+= {ȷ1, ȷ 2, ..., ȷ n}†
+
+where ȷn = |ˆyt − yt|
+
+= 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+ˆyt − yt
+
+(14) The root mean square error (£rmse ) (L2-error) to evaluate the loss function more clearly is computed using Eq. (15). 
+
+£rmse =
+
+vuuutPni=1 
+
+
+
+ˆyt − yt
+
+2
+
+n (15) Once the TCPu is trained using the prediction function ( 𭟋 ), it provides the estimated traffic flow level ( ϱ) for a given CDR i.This value of ϱ is subsequently passed to the TOMu to support effective decision-making for selecting the most appropriate delivery vehicle ( DV eh ), as described in the following section. 
+
+C. Delivery Vehicle Selection 
+
+The TOMu receives the predicted traffic flow ( ϱ) corre-sponding to a CDR i. The TOMu ensures the identification of an appropriate delivery vehicle ( DV eh ) for a particular CDR ,based on a few delivery parameters like flow limit , distance limit , the number of drop points , and course of travel , etc. The mathematical formulation and computation of vehicle selection parameters are described as follows:  
+
+> •
+
+Flow limit (f l v ): The flow limit represents the operational running capacity of a DV eh based on its available fuel or energy. For instance, an electric vehicle with a limited distance coverage ( DCov ) may be suitable only for short-distance deliveries. The flow limit is computed using Eq. (16), which evaluates whether the vehicle’s speed and operational conditions satisfy admissibility criteria. 
+
+f vl = 1{ϱ≥x} =
+
+(
+
+1( Admissible ), if ϱ ≥ x (km/h )0, otherwise (16)  
+
+> •
+
+Distance limit (Dl v ): The maximum distance required to be traveled to fulfill a particular CDR is coverable by the selected DV eh or not. Every delivery vehicle has a maximum limit on the distance it can travel without requiring any additional service, which is computed using Eq. (17). 
+
+Dl v =
+
+(
+
+1( Reachable ), Dϱ ≥ DCov veh  
+
+> Dϱ
+> DCov veh
+
+, Dϱl,v < DCov veh 
+
+(17)  
+
+> •
+
+Number of drops (dp v ): A CDR with a large number of drop points requires a DV eh with higher power and payload capacity. For instance, V eh Hd is more suitable in such scenarios. The suitability of a DV eh , considering the number of drop stations for a given CDR i, is computed using Eq. (18). 
+
+dp v =
+
+(
+
+Heavy load vehicle (1) , if ( dp ϱ ≥ x)Low load vehicle (0) , Otherwise (18)  
+
+> •
+
+Course of travel (ct v ): The type of travel route, whether primarily within the SmCt premises or outside it, sig-nificantly influences vehicle selection. Travel outside the 
+
+SmCt typically occurs on highways, which generally require less energy. Conversely, within the SmCt , travel involves local roads with higher traffic congestion, ne-cessitating delivery vehicles with greater energy capacity and longer delivery times. The vehicle suitability with respect to the ct v is computed using Eq. (19). 
+
+ct v =
+
+(
+
+Low energy (1) , if (outside )
+
+High energy (0) , Otherwise (19) Finally, all parameters that significantly influence the selection of the most suitable DV eh for a given CDR i are aggregated into a single feasibility score, as aggregated by Eq. (20). 
+
+DV eh CDR i = α1f vl + α2Dvl + α3dp v + α4ct v (20) where weights αj are defined as αj ∈ [0 , 1] with the constraint 4X
+
+> j=1
+
+αj = 1 ,
+
+allowing flexible prioritization of metrics based on vehicle type, delivery distance, or traffic conditions. The proposed NeCDM model performs vehicle traffic congestion prediction and selects the most admissible delivery vehicle with higher efficiency, lower prediction error, and reduced computational time. Furthermore, it accounts for the influence of neighboring nodes in conjunction with a node’s self-features during traffic flow prediction learning, thereby enabling intelligent mobiliza-tion and transportation in a SmCt environment. IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 8
+
+D. Operational Design and Complexity 
+
+The operational summary for the proposed NeCDM model is described with the help of Algorithm 1. As outlined in the 
+
+Algorithm 1: NeCDM Model: Operational Summary 
+
+Input: Two information data stores including Ride Request Details (ds-RDD), Temporal and Spatial Traffic Details (ds-TSTD) 
+
+Output: Most appropriate DV eh CDR i
+
+/* CDR-Ride Request: */  
+
+> 1
+
+Users ( U) request N Crowd Delivery Requests (CDR : [ SSt  
+
+> 1
+
+, (DSt  
+
+> 1
+
+, D St  
+
+> 2
+
+, ..., D St n )] )
+
+/* TGN Generation: */  
+
+> 2
+
+for each CDR i {CDR 1, CDR 2, ..., CDR N } do  
+
+> 3
+
+Generate traffic graph networks (TGN)s ζi
+
+comprising SSt and all intended DSt as nodes  
+
+> 4
+
+for each travel station {DSt  
+
+> 1
+
+, D St  
+
+> 2
+
+, ..., D St n } ∈ ζi do 
+
+/* Congestion Prediction: */  
+
+> 5
+
+Start predicting congestion by NeCDM model using Eqs. (11)-(13) 
+
+/* Performance Evaluation: */  
+
+> 6
+
+Evaluate the performance of NeCDM model using Eq. (14)  
+
+> 7
+
+if desired performance is achieved then  
+
+> 8
+
+Deploy the NeCDM model and estimate traffic flow ( ϱ) using Eq. (13)  
+
+> 9
+
+end  
+
+> 10
+
+else  
+
+> 11
+
+Re-train NeCDM Model until desired accuracy is achieved  
+
+> 12
+
+end  
+
+> 13
+
+end 
+
+/* Delivery Vehicle Selection: */  
+
+> 14
+
+Accordingly, using Eqs. (16)-(20) identify the most appropriate DV eh CDR i as suitable response for 
+
+{CDR 1, CDR 2, ..., CDR N } from various 
+
+{U1, U2, ..., Un} 
+
+> 15
+
+end  
+
+> 16
+
+return DV eh CDR i
+
+input step, the NeCDM model utilizes two data stores: Ride Request Details (ds-RDD) and Temporal and Spatial Traffic Details (ds-TSTD). In Step 1, the model assumes that users employ the NeCDM system to submit crowd delivery requests (CDR s), which include source and multiple delivery station details as follows: ( CDR : [ SSt  
+
+> 1
+
+, (DSt  
+
+> 1
+
+, D St  
+
+> 2
+
+, ..., D St n )] . Each 
+
+n user generates N crowd delivery requests, {CDR 1, CDR 2,..., CDR N } where the type of vehicle, such as a heavy-duty vehicle, light-duty vehicle, or specific fuel type, is determined based on the requirements of each particular request. In Step 2, traffic graph networks are created using the source and destination details. In Step 3, for each ith request ( CDR i), Steps 4 to 14 are executed. In Step 5, a graph neural network-based algorithm is applied to predict the traffic levels for a specific request. Based on this prediction, the appropriate delivery vehicle is identified for all possible requests. 
+
+Time complexity : Step 2 iterates the Steps 3-14 for N crowd delivery request raised by n users producing a complexity of O(N ). Step 3 generates traffic graphs for crowd delivery requests with a time complexity of O(V + E). Step 4 repeats Steps 5-14 for each delivery station n and shows the complex-ity of O(n). Further, the intervening Steps 4-13 iterate for n
+
+travel stations ( Dst ), wherein Step 5 computes objectives cost consumes time-complexity of O(n) using neighbor embedded graph neural network algorithm having the complexity of 
+
+O(k ∗ L ∗ η2 ∗⃗ Rd ∗⃗ Rd′
+
+), where k is neighbors, L is number of layers, η is number of nodes, ⃗ Rd and ⃗ Rd′
+
+are the length of node and edge features, respectively. The rest of the steps execute with a time complexity of O(1) . Therefore, the total time complexity of the NeCDM model is O(nkN L (η2 +E)⃗ Rd⃗ Rd′
+
+).V. P ERFORMANCE EVALUATION 
+
+A. Experimental Setup 
+
+The experimental work is executed on a server machine assembled with two Intel ® Xeon ® Silver 4114 CPU with a 40-core processor and having 2.20 GHz clock speed in a 
+
+SmCt environment. The simulation machine is deployed with Ubuntu 16.04, a 64-bit LTS operating system comprising 128 GB of main memory RAM. Enactment of the proposed work is carried out using Anaconda Environment, Jupyter Notebook with implementation in Python 3.9 using PyTorch to construct a neighbor-embedded graph network with the configuration. Missing values are handled by inducing with -1; thereafter, 
+
+minmax normalization is applied to bring the dataset values in a range [0,1]. Additionally, in the current simulation scenario for experimental purposes, a CDR is considered to have a maximum of 10 drop-stations, for real-time traffic analysis purposes. All networks are trained using Adam optimization, 
+
+ReLU activation, and the parameters as described in Table III are considered based on extensive evaluation. TABLE III: Hyper-parameters configuration                             
+
+> Pre-processing Parameters Model Training Parameters Parameter Value Parameter Value
+> Minimum observation 1000 Batch size 128 Train set size 80% Learning rate 0.001 Dropout rate 0.03 weight decay 1×10 4
+> Test set size 10% Epochs 100 Validation set size 10% Value per epochs 4Normalization Minmax Number workers 8Optimization Adam Early stop limit 20 Activation ReLU Max Neighbor 10
+
+B. Dataset Details 
+
+The performance of the proposed model is evaluated using the extended trajectory dataset of Beijing City, comprising a total of 70124 samples [25]. For each run, the dataset is split randomly into three sub-parts with a ratio 80:10:10 indicating 80% of the data (56100 samples) is utilized for training (´Γ), remaining 20% data is bifurcated equally in two parts comprising 10% (7012 samples) for validation ( ˘Γ), and 10% (7012 samples) for testing ( ¨Γ). The spatial data set comprises IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 9
+
+the location details in the form of GPS coordinates (latitude (X) and longitude ( Υ) for the 113 delivery stations across the SmCt , along with the unique station number, etc. The temporal data set encompasses time-stamped traffic observa-tions collected hourly for a duration of 02-02-2021 23:00 to 23-03-2023 21:00, across different traffic stations. Further, in three different training: testing: validation scenarios, the validation subset was used exclusively for hyper-parameter tuning and early stopping, while the testing subset was used only once after model selection to assess final performance. This approach ensures that the system is not optimized on the same data used for evaluation, thereby avoiding overfitting. 
+
+C. Results Model Optimization : To predict traffic flow across various delivery stations, the prediction function is trained by minimiz-ing the objective function Θ, resulting in a minimal loss value (£). The experimental results illustrating the loss values during the training and validation phases of model development are shown in Fig. 3. The horizontal axis represents the training steps [0, 200], while the vertical axis denotes the computed loss value (£) on a logarithmic scale (10 2). Green line highlights the loss plot during training phase and blue line is for loss plot for validation. It is observed that the loss for the NeCDM model decreases sharply during the initial steps up to 20, followed by a gradual reduction, and finally converges to a minimal value around 200 steps. 
+
+> Steps Mean Loss Value ( £)
+
+Fig. 3: Training and validation L1-loss performance of the proposed NeCDM model across varying iterations. Table IV presents the effectiveness of the optimization tech-nique leveraging a neighbor-embedded graph neural network in predicting traffic flow for a crowd delivery request. The results provide insights into the loss points observed during epochs [0, 100]. The loss falls within the range of [280.9755, 29.5213], indicating that the results obtained are not mere chance happenings. Instead, they present a statistically mean-ingful association within the experimental data. 
+
+Traffic Flow Prediction : The traffic flow ( ϱ) across delivery stations is illustrated in Fig. 4. The timestamp information and traffic flow values are plotted along the X-axis and Y-axis, respectively. The green line represents the actual traffic flow, while the blue line denotes the predicted values. It can be observed that traffic data is unavailable at DSt for a certain duration, possibly due to construction work or an accident. Despite this, the proposed model accurately predicts TABLE IV: Traffic prediction loss and execution time perfor-mance optimization for a CDR                                                                                                               
+
+> Epoch Loss ( £)Early Execution Time
+> £´Γ£˘Γstop Overall (sec) It/s
+> 1/100 280.9755 287.1836 00/20 02:00 3.19 10/100 60.7781 53.7435 00/20 01:59 3.21 11/100 56.2907 52.6622 00/20 01:59 3.22 20/100 41.6476 47.3816 01/20 02:00 3.19 21/100 42.0842 47.0381 03/20 01:59 3.21 30/100 36.9800 46.5837 02/20 01:59 3.21 31/100 37.0872 45.1727 05/20 01:59 3.20 40/100 35.0571 43.7102 08/20 01:55 3.22 41/100 34.3449 43.6629 10/20 01:58 3.25 50/100 33.6158 43.3445 00/20 01:59 3.22 51/100 33.3891 44.7694 01/20 01:59 3.23 60/100 32.4498 42.5025 08/20 02:00 3.19 61/100 32.7173 42.5025 16/20 01:59 3.21 70/100 32.4312 41.3285 00/20 02:00 3.20 71/100 31.9725 40.5023 01/20 01:58 3.19 80/100 31.5839 39.9537 00/20 02:00 3.20 81/100 31.2319 38.8502 00/20 01:59 3.19 90/100 30.5238 37.2940 03/20 02:00 3.23 91/100 30.2459 36.9472 07/20 01:58 3.21 100/100 29.5213 36.3237 19/20 01:45 18.26
+> £´Γ: Training loss; £˘Γ: Validation loss; sec : Second; It/s : iteration/second
+
+the traffic flow with high precision. This analysis highlights the robustness and effectiveness of the proposed approach in predicting traffic flow across different delivery stations. 
+
+Crowd Delivery Route : In Fig. 5a and Fig. 5b, the achieved travel routes of delivery rides across various DSt s are shown in both zoomed-out and zoomed-in perspectives, respectively. These are the result of an exhaustive optimization process that implicates the incorporation of neighbor-embedded GNN for traffic flow prediction. 
+
+Efficiency Analysis : A detailed efficiency analysis of the proposed NeCDM model under different training scenarios is presented in Table V. In each case, the remaining data are equally divided into validation and testing sets. It is observed that both the L1 ( £) and L2 ( £rmse ) loss values decrease as the size of the training set increases. This improvement in prediction accuracy can be attributed to the incremental learning capability of the NeCDM model when trained with larger datasets. TABLE V: Model efficiency analysis with varying traffic data depicting key performance metrics.                       
+
+> ´Γ : ˘ Γ : ¨ ΓN ei Ex N ei Em
+> ££rmse ££rmse
+> 80:10:10 32.71 43.22 29.52 36.32 70:15:15 32.87 43.96 29.64 37.21 50:25:25 33.53 44.23 29.70 37.35
+> ´Γ: Training data; ˘Γ: Validation data; ¨Γ: Test data; £: Mean absolute error;
+> £rmse : Root mean square error; N ei Ex : Neighbor excluded; N ei Em :Neighbor embedded
+
+D. Comparison 
+
+The proposed model is compared with two baseline variants: the Graph Neural Network (GNN) model and the Graph Neural Network without Edge Features (GNN-N ei Ex ). The GNN model incorporates node features, edge features, and IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 10 
+
+> Timeline Traffic flow ( ϱ)
+
+(a) Traffic flow ( ϱ) for Dst  
+
+> 1
+
+.
+
+> Timeline Traffic flow ( ϱ)
+
+(b) Traffic flow ( ϱ) for Dst  
+
+> 2
+
+.
+
+> Timeline Traffic flow ( ϱ)
+
+(c) Traffic flow ( ϱ) for Dst  
+
+> 3
+
+.
+
+Fig. 4: Traffic flow ( ϱ) prediction performance across delivery stations over varying timeline. the overall graph structure, whereas the GNN-N ei Ex model follows a similar architecture but excludes edge information. However, neither model explicitly captures the influence of neighboring nodes on the learning process. This limitation is addressed by the NeCDM model, in which the graph is constructed by connecting each node to its nearest neighbors, thereby effectively modeling neighborhood interactions. 
+
+1) Loss Comparison: Figs. 6a and 6b show the loss values for traffic flow prediction using the two baseline models, GNN and GNN-N ei Ex , respectively. It can be observed that the training and validation losses decrease progressively with increasing training steps in all models. However, the proposed NeCDM model outperforms both baseline models, achieving greater loss reduction in fewer steps and providing more accurate traffic congestion predictions across DSt .
+
+2) Traffic Flow Comparison: Fig. 7a and Fig. 7b illustrate the traffic flow at a delivery station ( DSt ) computed by the GNN-N ei Ex and GNN baseline models, respectively. It is no-ticeable that the predicted traffic flow values ( ϱ) possess some disparities from the actual traffic flow values. The proposed 
+
+(a) Zoom-out view. 
+
+(b) Zoom-in view. 
+
+Fig. 5: Extended route map depicitng Delivery Station ( DSt )travel route. 
+
+> Steps Mean Loss Value ( £)
+
+(a) Considering edge features. 
+
+> Steps Mean Loss Value ( £)
+
+(b) Excluding edge features. 
+
+Fig. 6: Traffic prediction model loss analysis for a CDR over varying iteration depicting edge features importance. IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 11 
+
+TABLE VI: Pandect Comparison: NeCDM model v/s state-of-the-art approaches                                                     
+
+> Approach Method Dataset Loss Time It/s Complexity ££rmse (sec)
+> PCNN [12] Deep convolution network Vehicle Passage Records 30.71 45.75 53.93 -O(∆ tdCN (η2 +E)( nn))
+> LSTM [24] Long short term memory Traffic data from Caltrans PeMS in Oakland 46.73 60.41 58.36 -O(∆ ntd (2 h)( η2 +E))
+> GNN [26] Graph with node and edge features Traffic data form Beijing and Hangzhou city 32.71 43.22 52.72 1.63 O(n2N L (η2 +E)⃗Rd⃗ Rd′)
+> Graph without edge features Traffic data form Beijing and Hangzhou city 31.05 42.37 49.55 1.79 O(n2N L (η2 +E)⃗Rd)
+> NeCDM Neighbor embedded graph T-Drive trajectory dataset of Beijing city [25] 29.52 36.32 46.03 3.21 O(nkN L (η2 +E)⃗Rd⃗ Rd′)
+
+£: loss/Mean absolute error; £rmse : Root mean square error; It/s : Iteration/second; sec :second; PCNN: Deep Convolutional Networks for short-term traffic congestion Prediction; LSTM: Long Short Term Memory; GNN: Graph Neural Network; NeCDM: Proposed Model 
+
+NeCDM model demonstrates better performance by providing more accurate traffic flow predictions, particularly in situations where traffic data is not readily available. The possible reason for this improved performance is that the NeCDM model evaluates the importance of neighbors when learning the traffic patterns, leading to more efficient predictions. 
+
+Timeline Traffic Flow ( ϱ)
+
+(a) Excluding edge feature. 
+
+Timeline Traffic Flow ( ϱ)
+
+(b) Considering all features. 
+
+Fig. 7: Traffic flow ( ϱ) prediction performance across DSt 
+
+over varying timeline considering edge features importance. 
+
+3) Comprehensive Analysis: Table VI presents the com-prehensive analysis comparison of the NeCDM model, by deploying it with comparable existing schemes, including PCNN [12], LSTM [24], GNN [26], and GNN-N ei Ex in terms of computational metrics. It compares the loss and time values of approaches. It can be observed that up to [4.03 to 15.82]%, [16.66 to 66.63]%, and [7.64 to 26.78]% improvement in the proposed approach over the mean absolute loss (£), root mean square error ( £rmse ), and overall computation time, respectively. The NeCDM model’s capability to consider neighbors’ features and their impact on the learning process to predict more realistic traffic flow is the most prominent reason for this outstanding process. Table VII highlights key advancements in traffic flow pre-diction for intelligent transportation systems. Dynamic spatio-temporal graph neural networks [14], [16], [17], [23] excel in predictive accuracy and scalability by capturing complex spatial and temporal traffic patterns. Attention mechanisms [13], [18] enhance the understanding of non-uniform traffic correlations, while edge- and IoT-aware approaches [18], [19] support real-time applications in resource-constrained environ-ments. Though CNN-LSTM and LSTM-based methods [15], [24] are simpler to deploy, they lack adaptability to dynamic traffic. Optimization-based routing methods [20], [22] are crucial for effective multi-vehicle routing and congestion man-agement, but depend on accurate traffic forecasts. Adopting these advanced methodologies is vital for creating a smarter, more efficient transportation system that meets modern urban mobility needs. VI. C ONCLUSION 
+
+This paper presents a novel NeCDM model that addresses the increasing demand for efficient SM T solutions in SmCt 
+
+environments. The proposed model is designed to accurately predict traffic congestion across delivery stations and to intel-ligently select the most suitable delivery vehicle for specific crowd delivery requests. By leveraging neighbor-embedded Graph Neural Networks, the NeCDM model captures dynamic spatial and temporal dependencies to forecast congestion levels, while an integrated decision-making unit facilitates optimal vehicle selection for crowd delivery operations. By effectively reducing the number of active delivery vehicles, the proposed approach helps minimize sustainability-critical parameters ( SCP ) such as carbon emissions, travel distance, and energy consumption. Extensive performance evaluations demonstrate that NeCDM significantly enhances real-time traffic management, predictive analytics, and system resilience under varying congestion conditions. Future work will focus on integrating quantum computing techniques and scaling the framework to more complex, large-scale urban traffic networks to further enhance its robustness, adaptability, and applicability in next-generation SM T systems. REFERENCES [1] T. Bas ¸tea, “Traffic congestion ranking - annual report 2024,” 2024. [Online]. Available: https://trafficindex.org/reports/annual-report-2024/ [2] Y. Yoo, G. Yang, C. Shin, J. Lee, and C. Yoo, “Machine learning-based prediction models for control traffic in sdn systems,” IEEE Transactions on Services Computing , vol. 16, no. 6, pp. 4389–4403, 2023. [3] A. Boukerche, D. Zhong, and P. Sun, “A novel reinforcement learning-based cooperative traffic signal system through max-pressure control,” 
+
+IEEE Transactions on Vehicular Technology , vol. 71, no. 2, pp. 1187– 1198, 2022. [4] K. Sharma, B. Butler, and B. Jennings, “Scaling and placing distributed services on vehicle clusters in urban environments,” IEEE Transactions on Services Computing , vol. 16, no. 2, pp. 1402–1416, 2023. IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 12 
+
+TABLE VII: Comprehensive Comparison: NeCDM v/s SoTA approaches depicting model metrics and computational features                                                                                                                           
+
+> Approach Spatial Modeling Temporal Modeling Training Loss Testing Loss Time / Epoch (s) Edge/Cloud Awareness Predictive Accuracy Computational Complex-ity
+> [18] Region-level atten-tion; edge nodes LSTM / temporal fu-sion Medium Medium Medium Yes Medium-High
+> O(N2+N T d )(attention + LSTM) [17] Road-network GCN LSTM / temporal en-coding Low Low High No High O(EF +N T d )(GCN + LSTM) [16] Multi-graph convo-lution Temporal CNN /GRU Low Low High Yes High O(M·EF +N T d )
+> (multi-graph + temporal) [13] Dynamic adjacency matrices LSTM Low Low Medium No High O(N2+N T d )(attention + LSTM) [14] GCN layers + adja-cency update LSTM /temporal CNN Low Low High No High O(EF +N T d )(dynamic GCN + LSTM) [15] Grid-based CNN LSTM Medium Medium Medium No Medium O(W2D+N T d )(CNN + LSTM) [21] Knowledge graph embeddings ---Medium No Medium O(EF +N2)(graph pre-training) [23] GCN LSTM / temporal lay-ers Low Low Medium No High O(EF +N T d )(GCN + LSTM) [12] Grid-based convo-lution Temporal CNN Medium Medium Medium No Medium O(W2D+T)(CNN + temporal encoding) [24] -LSTM Medium Medium Low No Medium O(N T d )(LSTM only)
+> NeCDM Neighbor embedding GNN Low Low Low Yes High O(nkN L (η2+
+> E)⃗Rd⃗Rd′
+> )
+
+N = number of nodes/regions, E = number of edges, F = feature dimension, T = temporal sequence length, d = hidden units in LSTM/GRU, M = number of graphs in multi-graph models, W, D = CNN window size and depth, V = number of vehicles, S = number of services. [5] S. Chavhan and P. Venkataram, “Transport management for evacuation of victims,” IEEE Transactions on Emerging Topics in Computational Intelligence , vol. 5, no. 3, pp. 426–441, 2021. [6] C. Sun, S. Li, D. Cao, F.-Y. Wang, and A. Khajepour, “Tabular learning-based traffic event prediction for intelligent social transportation system,” 
+
+IEEE Transactions on Computational Social Systems , vol. 10, no. 3, pp. 1199–1210, 2023. [7] Y.-T. Tseng and H.-W. Ferng, “An improved traffic rerouting strategy using real-time traffic information and decisive weights,” IEEE Trans-actions on Vehicular Technology , vol. 70, no. 10, pp. 9741–9751, 2021. [8] Y. Liu, P. Zhou, L. Yang, Y. Wu, Z. Xu, K. Liu, and X. Wang, “Privacy-preserving context-based electric vehicle dispatching for energy schedul-ing in microgrids: An online learning approach,” IEEE Transactions on Emerging Topics in Computational Intelligence , vol. 6, no. 3, pp. 462– 478, 2022. [9] H. Wu, H. Zhou, J. Zhao, Y. Xu, B. Qian, and X. Shen, “Deep learning enabled fine-grained path planning for connected vehicular networks,” 
+
+IEEE Transactions on Vehicular Technology , vol. 71, no. 10, pp. 10 303– 10 315, 2022. [10] K. Gupta, D. Saxena, P. Rani, J. Kumar, A. Makkar, A. K. Singh, and C.-N. Lee, “An intelligent quantum cyber-security framework for healthcare data management,” IEEE Transactions on Automation Science and Engineering , pp. 1–12, 2024. [11] M. Li, L. Zhu, and X. Lin, “Privacy-preserving traffic monitoring with false report filtering via fog-assisted vehicular crowdsensing,” IEEE Transactions on Services Computing , vol. 14, no. 6, pp. 1902–1913, 2021. [12] M. Chen, X. Yu, and Y. Liu, “Pcnn: Deep convolutional networks for short-term traffic congestion prediction,” IEEE Transactions on Intelligent Transportation Systems , vol. 19, no. 11, pp. 3550–3559, 2018. [13] A. Ali, Y. Zhu, and M. Zakarya, “Exploiting dynamic spatio-temporal correlations for citywide traffic flow prediction using attention based neural networks,” Information Sciences , vol. 577, pp. 852–870, 2021. [Online]. Available: https://www.sciencedirect.com/science/article/pii/ S0020025521008483 [14] ——, “Exploiting dynamic spatio-temporal graph convolutional neural networks for citywide traffic flows prediction,” Neural Networks , vol. 145, pp. 233–247, 2022. [Online]. Available: https://www.sciencedirect. com/science/article/pii/S0893608021004123 [15] N. Awan, A. Ali, F. Khan, M. Zakarya, R. Alturki, M. Kundi, M. D. Alshehri, and M. Haleem, “Modeling dynamic spatio-temporal correla-tions for urban traffic flows prediction,” IEEE Access , vol. 9, pp. 26 502– 26 511, 2021. [16] A. Ali, I. Ullah, M. Shabaz, A. Sharafian, M. Attique Khan, X. Bai, and L. Qiu, “A resource-aware multi-graph neural network for urban traffic flow prediction in multi-access edge computing systems,” IEEE Transactions on Consumer Electronics , vol. 70, no. 4, pp. 7252–7265, 2024. [17] A. Ali, I. Ullah, S. Ahmad, Z. Wu, J. Li, and X. Bai, “An attention-driven spatio-temporal deep hybrid neural networks for traffic flow prediction in transportation systems,” IEEE Transactions on Intelligent Transportation Systems , vol. 26, no. 9, pp. 14 154–14 168, 2025. [18] A. Ali, I. Ullah, S. K. Singh, A. Sharafian, W. Jiang, H. I. Sherazi, and X. Bai, “Energy-efficient resource allocation for urban traffic flow prediction in edge-cloud computing,” International Journal of Intelligent Systems , vol. 2025, no. 1, p. 1863025, 2025. [Online]. Available: https://onlinelibrary.wiley.com/doi/abs/10.1155/int/1863025 [19] M. Zakarya, L. Gillam, A. Ali Khan, O. Rana, and R. Buyya, “Apmove: A service migration technique for connected and autonomous vehicles,” 
+
+IEEE Internet of Things Journal , vol. 11, no. 17, pp. 28 721–28 733, 2024. [20] H. Guo, Z. Cao, M. Seshadri, J. Zhang, D. Niyato, and U. Fastenrath, “Routing multiple vehicles cooperatively: Minimizing road network breakdown probability,” IEEE Transactions on Emerging Topics in Computational Intelligence , vol. 1, no. 2, pp. 112–124, 2017. [21] H. Zhu, D. Xu, Y. Huang, Z. Jin, W. Ding, J. Tong, and G. Chong, “Graph structure enhanced pre-training language model for knowledge graph completion,” IEEE Transactions on Emerging Topics in Compu-tational Intelligence , vol. 8, no. 4, pp. 2697–2708, 2024. [22] D. Saxena, N. Singh, K. Gupta, A. Verma, V. Mishra, J. Kumar, I. Gupta, S. Patni, R. Gupta, J. Kumar, and A. K. Singh, “An intelligent multi-depot vehicle routing and management model for smart cities,” IEEE Transactions on Intelligent Transportation Systems , vol. 26, no. 6, pp. 7740–7754, 2025. [23] M. Hou, F. Xia, H. Gao, X. Chen, and H. Chen, “Urban region profiling with spatio-temporal graph neural networks,” IEEE Transactions on Computational Social Systems , vol. 9, no. 6, pp. 1736–1747, 2022. [24] G. N. Kouziokas, “Deep bidirectional and unidirectional lstm neural networks in traffic flow forecasting from environmental factors,” in 
+
+Advances in Mobility-as-a-Service Systems , E. G. Nathanail, G. Adamos, and I. Karakikes, Eds. Cham: Springer International Publishing, 2021, pp. 171–180. [25] Y. Zheng, “T-drive trajectory data sample,” August 2011, t-Drive sample dataset. [Online]. Available: https://www.microsoft.com/en-us/ research/publication/t-drive-trajectory-data-sample/ [26] M. Hou, F. Xia, H. Gao, X. Chen, and H. Chen, “Urban region profiling with spatio-temporal graph neural networks,” IEEE Transactions on Computational Social Systems , vol. 9, no. 6, pp. 1736–1747, 2022. IEEE TRANSACTIONS ON EMERGING TOPICS IN COMPUTATIONAL INTELLIGENCE, VOL. 10, NO. 3, JUNE 2026 13 
+
+Kishu Gupta (Member, IEEE) received the Ph.D. degree in computer science from India, a prestigious INSPIRE Fellowship sponsored by the DST, India. She is currently a Postdoctoral Researcher with the National Sun Yat-sen University (NSYSU), Kaohsi-ung, Taiwan, and associated with VIZJA University, Warsaw, Poland. She has research findings published with top-notch venues, including IEEE TRANSAC-TIONS ON NEURAL NETWORKS AND LEARN-ING SYSTEMS, IEEE TRANSACTIONS ON CIR-CUITS AND SYSTEMS FOR VIDEO TECHNOL-OGY, IEEE TRANSACTIONS ON SYSTEMS, MAN, AND CYBERNET-ICS, IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGI-NEERING, IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTA-TION SYSTEMS, IEEE JOURNAL OF BIOMEDICAL AND HEALTH IN-FORMATICS, IEEE TRANSACTIONS ON CONSUMER ELECTRONICS, Journal of Network and Computer Applications, Applied Soft Computing, Scientific Reports, Cluster Computing, and Procedia-Computer Science. She was honored with a Gold Medal for her Academic Excellence (Ist Rank in MSc), shortlisted for the Taiwan Comprehensive University System-Young Scholar (TCUS-YS) Award, and was the recipient of the Best Paper Award in RTIP2R-2024 Conference. Her major research interests include data security and privacy, evolutionary optimization, cloud computing, traffic management, federated learning, machine learning, neural networks, and quantum ML 
+
+Deepika Saxena (Senior Member, IEEE) received the Ph.D. degree in computer science from the National Institute of Technology, Kurukshetra, India. She was a Postdoctoral Research Fellow with the Department of Computer Science, Goethe Univer-sity, Frankfurt, Germany. She is currently an As-sociate Professor with the Division of Information Systems, The University of Aizu, Japan. She is an Online Lecturer with the VIZJA University, Warsaw, Poland, Europe. Her research interests include neural networks, evolutionary algorithms, resource manage-ment and security in cloud computing, internet traffic management, quantum machine learning, data lakes, and dynamic caching management. She was the recipient of the prestigious IEEE TCSC 2023 Outstanding Ph.D. Dissertation Award and EUROSIM 2023 Best Ph.D. Thesis Award, 2022 Best Paper Award for her research article published in IEEE TRANSACTIONS ON CLOUD COMPUTING, and prestigious Japan Society for the Promotion of Science (JSPS) KAKENHI Early Career Young Scientist Research Grant FY2024. 
+
+Ashutosh Kumar Singh (Senior Member, IEEE) received the Ph.D. degree in electronics engineer-ing from the Indian Institute of Technology (BHU) Varanasi, India. He was a Postdoctoral Researcher with the Department of Computer Science, Univer-sity of Bristol, U.K. He is currently a Professor and the Director of Indian Institute of Information Tech-nology Bhopal, India. Also, he is an Adjunct Pro-fessor with the VIZJA University, Warsaw, Poland. He has research and teaching experience in various universities in India, the U.K., and Malaysia. He has authored or coauthored more than 400 research papers in different journals and conferences of high repute. Some of his research findings are published in top cited journals, such as IEEE TRANSACTIONS ON SERVICES COMPUTING, IEEE TRANS- ACTIONS ON COMPUTERS, IEEE TRANSACTIONS ON SYSTEMS, MAN, AND CYBERNETICS, IEEE TRANSACTIONS ON PARALLEL AND DISTRIBUTED SYSTEMS, IEEE TRANSACTIONS ON INDUSTRIAL INFORMATICS, IEEE TRANS-ACTIONS ON CLOUD COMPUTING, IEEE COMMUNICATIONS LET-TERS, IEEE NETWORKING LETTERS, IEEE DESIGN AND TEST, IEEE SYSTEMS JOURNAL, IEEE WIRELESS COMMUNICATIONS LETTERS, IEEE TRANSACTIONS ON NETWORK AND SERVICE MANAGEMENT, IEEE TRANSACTIONS ON GREEN COMMUNICATIONS AND NET-WORKING, IET Electronics Letters, Future Generation Computer Systems, Neurocomputing, Information Sciences, and Information Processing Letters. His research interests include the design and testing of digital circuits, data science, cloud computing, machine learning, and security. His research paper, published in IEEE TRANSACTIONS ON CLOUD COMPUTING JOURNAL was honored with the 2022 Best Paper Award by the IEEE Computer Society Publications Board. 
+
+Chung-Nan Lee (Member, IEEE)received the B.S. and the M.S. degrees in electrical engineering from the National Cheng Kung University, Tainan, Tai-wan, in 1980 and 1982, respectively, and the Ph.D. degree in electrical engineering from the University of Washington, Seattle, WA, USA, in 1992. Since 1992, he has been with the National Sun Yat-Sen University, Kaohsiung, Taiwan. He was Head of the Department of Computer Science and Engineering, from 1999 to 2001. He was the President of the Taiwan Association of Cloud Computing, from 2015 to 2017, and the VP for TA of Asia-Pacific Signal and Information Processing Association, from 2019 to 2020. His research interests include multimedia over wireless networks, cloud computing, and IoT. In 2016, he was the recipient of an outstanding engineering Professor Award from the Chinese Institute of Engineers, Taiwan.

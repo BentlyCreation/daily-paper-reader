@@ -6,62 +6,38 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-30
-- 运行时间：2026-08-30 23:16:39 UTC
+- 最新运行日期：2026-08-31
+- 运行时间：2026-09-01 00:47:32 UTC
 - 运行状态：成功
-- 本次总论文数：14
-- 精读区：8
-- 速读区：6
+- 本次总论文数：6
+- 精读区：4
+- 速读区：2
 
 ### 今日简报（AI）
-今日共处理14篇论文，其中精读8篇、速读6篇，重点关注多智能体路径规划与机器人导航。最值得关注的是多智能体路径找到的可解性与算法（9.0分）及基于变分迭代学习的导航方法（9.0分），两者均偏向高效协同与动态决策。建议普通读者从速读中的异构机器人负载均衡或多无人机资源分配入手，更具直观应用场景。
-- 详情：[/202608/30/README](/202608/30/README)
+今日精读4篇、速读2篇，重点聚焦智能城市与多机器人协同控制。最值得看的是图神经网络驱动的众包配送交通管理（8.0分）和迭代LQ博弈实现多臂系统协调运动（8.0分），二者均为高潜力的落地方向。建议先从多智能体协同控制入手，再延伸至城市级任务调度。
+- 详情：[/202608/31/README](/202608/31/README)
 
 ### 精读区论文标签
-1. [Pivot-and-Station Multi-Agent Path Finding: Solvability, Complexity, and Algorithms](/202608/30/2608.24585v1-pivot-and-station-multi-agent-path-finding-solvability-complexity-and-algorithms)  
-   标签：评分：9.0/10、query:lbm
-   evidence：直接提出一种新的MAPF变体（枢轴-站点MAPF），并给出可解性、复杂度与算法
-2. [VIP: Variation-based Iterative-learning Planning for Robotic Navigation](/202608/30/2608.24618v1-vip-variation-based-iterative-learning-planning-for-robotic-navigation)  
-   标签：评分：9.0/10、query:lbm
-   evidence：面向多机器人运动规划的学习式方法，提升导航效率
-3. [Fixed-Haven Reservation for Online Multi-Agent Pickup and Delivery in Dense Warehouses](/202608/30/2608.26759v1-fixed-haven-reservation-for-online-multi-agent-pickup-and-delivery-in-dense-warehouses)  
-   标签：评分：9.0/10、query:lbm
-   evidence：直接研究多智能体取送货，属于多智能体路径规划（MAPF）变体。
-4. [Multi-Person Human Motion Forecasting in Complex Scenes](/202608/30/2608.27039v1-multi-person-human-motion-forecasting-in-complex-scenes)  
-   标签：评分：9.0/10、query:intent-avoid
-   evidence：多人运动预测，结合人与物体交互及社会交互建模
-5. [Diffusion Policies for Short-Horizon Planning in Robot Crowd Navigation](/202608/30/2608.27158v1-diffusion-policies-for-short-horizon-planning-in-robot-crowd-navigation)  
-   标签：评分：9.0/10、query:intent-avoid
-   evidence：扩散策略短视界规划用于机器人人群导航
-6. [Advantage-Driven Explicit Memory for Social Navigation](/202608/30/2608.25610v1-advantage-driven-explicit-memory-for-social-navigation)  
+1. [Neighbor-embedded Graph Neural Network-based Crowd Delivery Traffic Management in Smart City](/202608/31/2608.22555v1-neighbor-embedded-graph-neural-network-based-crowd-delivery-traffic-management-in-smart-city)  
    标签：评分：8.0/10、query:intent-avoid
-   evidence：社交导航，用强化学习与显式记忆优化人群环境中的导航能力
-7. [SIGMA: Structured Noise-Effect-Aware Grouped Multi-Agent Aggregation](/202608/30/2608.26683v1-sigma-structured-noise-effect-aware-grouped-multi-agent-aggregation)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：面向结构化噪声鲁棒协调的分组多智能体聚合方法
-8. [Dynamic Haven Selection for Multi-Agent Pickup and Delivery in Constrained Warehouses](/202608/30/2608.26939v1-dynamic-haven-selection-for-multi-agent-pickup-and-delivery-in-constrained-warehouses)  
+   evidence：基于图神经网络的群体配送拥堵预测与管理，直接面向多智能体拥堵规避
+2. [Coordinated Motion Planning for Multi-Arm Systems via Iterative LQ Games](/202608/31/2608.27726v1-coordinated-motion-planning-for-multi-arm-systems-via-iterative-lq-games)  
    标签：评分：8.0/10、query:lbm
-   evidence：受限仓库多智能体取送与路径协调，属于MAPF问题家族
+   evidence：多机械臂协同运动规划；博弈论协调路径规划
+3. [Toward Secure Communications for a UAV Swarm with Movable Antennas in SAGIN: CKM-Enabled Multi-Agent Reinforcement Learning Framework](/202608/31/2608.27973v1-toward-secure-communications-for-a-uav-swarm-with-movable-antennas-in-sagin-ckm-enabled-multi-agent-reinforcement-learning-framework)  
+   标签：评分：8.0/10、query:marl-comm
+   evidence：基于CKM的多智能体强化学习框架用于无人机群安全通信
+4. [When Evidence Shapes Collaboration: Knowledge-Conditioned Topology Generation for Multi-Agent Systems](/202608/31/2608.27984v1-when-evidence-shapes-collaboration-knowledge-conditioned-topology-generation-for-multi-agent-systems)  
+   标签：评分：8.0/10、query:marl-comm
+   evidence：基于图注意力机制的多智能体协作拓扑生成
 
 ### 速读区论文标签
-1. [Pass the Bucket: Efficient, Robust, Local Load Balancing for Teams of Heterogeneous Robots](/202608/30/2608.27085v1-pass-the-bucket-efficient-robust-local-load-balancing-for-teams-of-heterogeneous-robots)  
+1. [AERIS: Offline Policy Improvement for Multi-UAV Integrated Sensing and Communication](/202608/31/2608.25477v1-aeris-offline-policy-improvement-for-multi-uav-integrated-sensing-and-communication)  
    标签：评分：7.0/10、query:lbm
-   evidence：面向机器人团队的分散式自组织运动规划与负载均衡，与分散式MAPF目标一致。
-2. [CED-EF: Compressed Exact Diffusion with Error Feedback for Multi-Agent Learning](/202608/30/2608.23013v1-ced-ef-compressed-exact-diffusion-with-error-feedback-for-multi-agent-learning)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：面向多智能体学习的压缩通信与误差反馈方法，与稀疏通信主题相关
-3. [Distributed Trajectory Planning and Resource Allocation for Dynamic Multi-UAV Collaborative Computing](/202608/30/2608.23123v1-distributed-trajectory-planning-and-resource-allocation-for-dynamic-multi-uav-collaborative-computing)  
+   evidence：集中训练分散执行的多无人机离线强化学习，兼顾飞行安全与避碰
+2. [Distributed Model-Based Diffusion: Finite Horizon Contraction under Bounded Delay](/202608/31/2608.27685v1-distributed-model-based-diffusion-finite-horizon-contraction-under-bounded-delay)  
    标签：评分：6.0/10、query:lbm
-   evidence：分布式多无人机轨迹规划与资源分配
-4. [A Control-Theoretic Approach for Resource-Aware Consensus in Multi-Agent AI](/202608/30/2608.25099v1-a-control-theoretic-approach-for-resource-aware-consensus-in-multi-agent-ai)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：基于token代价的通信拓扑建模，实现资源感知的稀疏通信与共识
-5. [Simulating Cognitive Smart Freight Corridors with Agent-Based Models and Reinforcement Learning](/202608/30/2608.25193v1-simulating-cognitive-smart-freight-corridors-with-agent-based-models-and-reinforcement-learning)  
-   标签：评分：6.0/10、query:lbm
-   evidence：使用MARL进行货运走廊多智能体协调，与路径规划和拥塞相关。
-6. [Trust-Aware Sequential Decision Making and Rollout Planning for Resilient Multi-Robot Systems](/202608/30/2608.25690v1-trust-aware-sequential-decision-making-and-rollout-planning-for-resilient-multi-robot-systems)  
-   标签：评分：6.0/10、query:lbm
-   evidence：定位欺骗下在线多机器人路径规划与信任感知决策
+   evidence：分布式多智能体轨迹优化并考虑通信延迟，与去中心化路径规划相关
 
 
 <div class="dpr-home-promo-card">
