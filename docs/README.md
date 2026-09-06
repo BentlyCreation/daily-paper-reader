@@ -6,38 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-31
-- 运行时间：2026-09-01 00:47:32 UTC
+- 最新运行日期：2026-09-06
+- 运行时间：2026-09-06 22:24:23 UTC
 - 运行状态：成功
-- 本次总论文数：6
-- 精读区：4
+- 本次总论文数：5
+- 精读区：3
 - 速读区：2
 
 ### 今日简报（AI）
-今日精读4篇、速读2篇，重点聚焦智能城市与多机器人协同控制。最值得看的是图神经网络驱动的众包配送交通管理（8.0分）和迭代LQ博弈实现多臂系统协调运动（8.0分），二者均为高潜力的落地方向。建议先从多智能体协同控制入手，再延伸至城市级任务调度。
-- 详情：[/202608/31/README](/202608/31/README)
+今日精读与速读共5篇论文，聚焦多智能体规划与大规模调度优化。最值得关注的是基于信号时序逻辑的扩散模型多智能体规划，以及面向大规模起重机运输系统的轨迹初始化双Q路由方法。建议优先精读这两篇高分工作，后续可关注离线多智能体强化学习中的分布外泛化与几何引导的组合优化思路。
+- 详情：[/202609/06/README](/202609/06/README)
 
 ### 精读区论文标签
-1. [Neighbor-embedded Graph Neural Network-based Crowd Delivery Traffic Management in Smart City](/202608/31/2608.22555v1-neighbor-embedded-graph-neural-network-based-crowd-delivery-traffic-management-in-smart-city)  
-   标签：评分：8.0/10、query:intent-avoid
-   evidence：基于图神经网络的群体配送拥堵预测与管理，直接面向多智能体拥堵规避
-2. [Coordinated Motion Planning for Multi-Arm Systems via Iterative LQ Games](/202608/31/2608.27726v1-coordinated-motion-planning-for-multi-arm-systems-via-iterative-lq-games)  
+1. [Generalizable Multi-Agent Planning from Signal Temporal Logic Specifications via Diffusion](/202609/06/2608.29490v1-generalizable-multi-agent-planning-from-signal-temporal-logic-specifications-via-diffusion)  
    标签：评分：8.0/10、query:lbm
-   evidence：多机械臂协同运动规划；博弈论协调路径规划
-3. [Toward Secure Communications for a UAV Swarm with Movable Antennas in SAGIN: CKM-Enabled Multi-Agent Reinforcement Learning Framework](/202608/31/2608.27973v1-toward-secure-communications-for-a-uav-swarm-with-movable-antennas-in-sagin-ckm-enabled-multi-agent-reinforcement-learning-framework)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：基于CKM的多智能体强化学习框架用于无人机群安全通信
-4. [When Evidence Shapes Collaboration: Knowledge-Conditioned Topology Generation for Multi-Agent Systems](/202608/31/2608.27984v1-when-evidence-shapes-collaboration-knowledge-conditioned-topology-generation-for-multi-agent-systems)  
-   标签：评分：8.0/10、query:marl-comm
-   evidence：基于图注意力机制的多智能体协作拓扑生成
+   evidence：基于学习的多智能体路径规划与避碰
+2. [Trajectory-Initialized Neural Double Q-Routing for Large-Scale Overhead Hoist Transport Systems](/202609/06/2608.30512v1-trajectory-initialized-neural-double-q-routing-for-large-scale-overhead-hoist-transport-systems)  
+   标签：评分：8.0/10、query:lbm
+   evidence：神经双Q路由将多智能体强化学习用于受限基础设施中的机器人车队路径规划，接近学习型多智能体路径规划
+3. [Provably Safe Decentralized Contingency MPC under State-Only Information and Limited Sensing for Nonlinear Multi-agent Systems](/202609/06/2608.30874v1-provably-safe-decentralized-contingency-mpc-under-state-only-information-and-limited-sensing-for-nonlinear-multi-agent-systems)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：仅状态信息与有限传感下的去中心化多智能体安全控制，符合去中心化避碰协调需求
 
 ### 速读区论文标签
-1. [AERIS: Offline Policy Improvement for Multi-UAV Integrated Sensing and Communication](/202608/31/2608.25477v1-aeris-offline-policy-improvement-for-multi-uav-integrated-sensing-and-communication)  
+1. [Out-of-Distribution Generalisation with Sequence Models in Offline Multi-Agent Reinforcement Learning](/202609/06/2609.03667v1-out-of-distribution-generalisation-with-sequence-models-in-offline-multi-agent-reinforcement-learning)  
    标签：评分：7.0/10、query:lbm
-   evidence：集中训练分散执行的多无人机离线强化学习，兼顾飞行安全与避碰
-2. [Distributed Model-Based Diffusion: Finite Horizon Contraction under Bounded Delay](/202608/31/2608.27685v1-distributed-model-based-diffusion-finite-horizon-contraction-under-bounded-delay)  
+   evidence：离线多智能体强化学习序列建模泛化工作，可迁移至基于强化学习的多智能体路径规划
+2. [GeoPAR: Large-Scale Multi-Agent Combinatorial Optimization with Geometry-Guided Parallel Autoregressive Learning](/202609/06/2609.00577v1-geopar-large-scale-multi-agent-combinatorial-optimization-with-geometry-guided-parallel-autoregressive-learning)  
    标签：评分：6.0/10、query:lbm
-   evidence：分布式多智能体轨迹优化并考虑通信延迟，与去中心化路径规划相关
+   evidence：面向大规模多智能体组合优化的几何引导并行自回归强化学习方法，可用于学习型多智能体路径规划借鉴
 
 
 <div class="dpr-home-promo-card">

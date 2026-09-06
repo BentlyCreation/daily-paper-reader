@@ -1,0 +1,247 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-06T22:21:00.620796+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 3,
+    "deep_cap": 8,
+    "deep_selected": 3,
+    "quick_candidates": 2,
+    "quick_skim_target": 13,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.30874v1",
+      "source": "arxiv",
+      "title": "Provably Safe Decentralized Contingency MPC under State-Only Information and Limited Sensing for Nonlinear Multi-agent Systems",
+      "abstract": "This paper considers decentralized contingency MPC for multi-agent control under a state-only information pattern, with particular focus on limited sensing and plug-and-play operation. The objective is to retain recursive feasibility, safety, and Lyapunov-type convergence while reducing conservatism in local interaction handling. The framework relies on agent-wise fallback regions (safe sets) in which a feasible contingency maneuver to a safe equilibrium is always available. A novel safe-set update mechanism is introduced that supports less conservative decentralized interaction while preserving the underlying guarantees. This, in turn, enables memory-free local interaction and finite sensing ranges without requiring agents to reconstruct the exact neighbor geometry. The resulting scheme remains fully decentralized and preserves the shared-first-input contingency MPC structure. Theoretical guarantees and simulation results illustrate the effectiveness of the approach in dense multi-agent scenarios.",
+      "authors": [
+        "Max Studt",
+        "Georg Schildbach"
+      ],
+      "primary_category": "math.OC",
+      "categories": [
+        "math.OC",
+        "cs.MA",
+        "cs.RO",
+        "eess.SY"
+      ],
+      "published": "2026-08-31T14:33:59+00:00",
+      "link": "https://arxiv.org/pdf/2608.30874v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "decentralized multi-agent safe control under state-only information and limited sensing, aligns with decentralized collision avoidance coordination",
+      "llm_evidence_cn": "仅状态信息与有限传感下的去中心化多智能体安全控制，符合去中心化避碰协调需求",
+      "llm_evidence": "仅状态信息与有限传感下的去中心化多智能体安全控制，符合去中心化避碰协调需求",
+      "canonical_evidence": "仅状态信息与有限传感下的去中心化多智能体安全控制，符合去中心化避碰协调需求",
+      "llm_tldr_en": "Decentralized contingency MPC with safe-set updates preserves recursive feasibility and safety for nonlinear multi-agent systems under state-only, limited-sensing plug-and-play operation while lessening conservatism.",
+      "llm_tldr_cn": "论文针对仅状态信息、有限感知及即插即用运行下非线性多智能体系统难以同时保证安全与低保守性的问题，提出去中心化应急模型预测控制框架。框架为每个智能体维护可行回退区域，并利用新型安全集更新机制减少局部交互的保守性，同时维持递推可行性与安全性。理论证明该方法还保持Lyapunov型收敛，并支持无需记忆历史的局部交互和有限传感范围，为分散式多智能体安全避碰与协调控制提供了可证明的实用方案。",
+      "llm_tldr": "论文针对仅状态信息、有限感知及即插即用运行下非线性多智能体系统难以同时保证安全与低保守性的问题，提出去中心化应急模型预测控制框架。框架为每个智能体维护可行回退区域，并利用新型安全集更新机制减少局部交互的保守性，同时维持递推可行性与安全性。理论证明该方法还保持Lyapunov型收敛，并支持无需记忆历史的局部交互和有限传感范围，为分散式多智能体安全避碰与协调控制提供了可证明的实用方案。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.29490v1",
+      "source": "arxiv",
+      "title": "Generalizable Multi-Agent Planning from Signal Temporal Logic Specifications via Diffusion",
+      "abstract": "Multi-agent systems in the real-world (e.g., drone swarms, autonomous cars, warehouse robots) must satisfy rich, temporal tasks while avoiding collisions. Signal Temporal Logic (STL) elegantly encodes such objectives, but current STL planning methods face critical limitations. State-of-the-art optimization-based approaches can handle arbitrary STL specifications but struggle with scalability, becoming computationally impractical as the number of agents grows. Learning-based methods efficiently handle a large number of agents with rapid planning times but fare poorly when deployment-time objectives differ from those used during training, and do not support planning tasks that require different specifications to be ascribed to different agents (i.e., heterogeneity) or team-level specifications requiring coordination of multiple agents. This fundamental trade-off between generalizability and scalability presents a challenge for realizing multi-agent STL planning algorithms in practice. To overcome this challenge, we introduce a new diffusion method for multi-agent planning with STL specifications. Using a differentiable approximation of STL, we integrate the STL gradient in the denoising process, making our approach generalizable to novel formulas whose predicates are placed anywhere within the goal region covered during training, while achieving the same scalability as existing learning-based methods. Our method supports heterogeneous specifications, and by using diffusion models, naturally enhances plan diversity, thereby significantly reducing safety-related violations (e.g., collisions) among agents. A detailed evaluation study justifies the utility of STL-guided diffusion-based multi-agent planners for constructing generalizable, scalable, and diverse plans. Videos and code are available at https://www.jeappen.com/diff-ma-stl/ and https://github.com/jeappen/diff-ma-stl .",
+      "authors": [
+        "Joe Eappen",
+        "Zikang Xiong",
+        "Shreyash S. Iyengar",
+        "Suresh Jagannathan"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-08-30T00:38:31+00:00",
+      "link": "https://arxiv.org/pdf/2608.29490v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "learning-based multi-agent path planning with collision avoidance",
+      "llm_evidence_cn": "基于学习的多智能体路径规划与避碰",
+      "llm_evidence": "基于学习的多智能体路径规划与避碰",
+      "canonical_evidence": "基于学习的多智能体路径规划与避碰",
+      "llm_tldr_en": "Proposes a diffusion-based multi-agent planner that satisfies rich temporal logic objectives while avoiding collisions, scales to many agents, and generalizes to unseen specifications and heterogeneous agents.",
+      "llm_tldr_cn": "论文针对信号时序逻辑约束下的多智能体规划问题，指出现有优化方法扩展性差而学习型方法泛化弱且难以处理异构规范。作者提出一种基于扩散模型的多智能体规划器，在避免碰撞的同时满足不同类型智能体的时序任务约束。该方法兼顾学习规划的高效性与复杂逻辑规格的表达能力，为仓储机器人、自动驾驶等大规模多智能体路径规划提供了一种可扩展且可迁移的新范式。",
+      "llm_tldr": "论文针对信号时序逻辑约束下的多智能体规划问题，指出现有优化方法扩展性差而学习型方法泛化弱且难以处理异构规范。作者提出一种基于扩散模型的多智能体规划器，在避免碰撞的同时满足不同类型智能体的时序任务约束。该方法兼顾学习规划的高效性与复杂逻辑规格的表达能力，为仓储机器人、自动驾驶等大规模多智能体路径规划提供了一种可扩展且可迁移的新范式。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent path finding learning-based approach",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.30512v1",
+      "source": "arxiv",
+      "title": "Trajectory-Initialized Neural Double Q-Routing for Large-Scale Overhead Hoist Transport Systems",
+      "abstract": "Large-scale industrial robot fleets share constrained physical infrastructure, making vehicle travel times dependent on safety separation, intersection access, downstream blocking, and station contention. We study this problem in overhead hoist transport (OHT) systems, a representative ceiling-mounted material-handling system used in semiconductor fabs. Static shortest-path routing cannot account for these time-varying traffic costs, whereas tabular Q-routing adapts online but learns each destination--node--action value independently, limiting information sharing across sparsely visited routing contexts and making startup behavior sensitive to inaccurate value estimates. We propose Neural Double Q-routing, which replaces destination-indexed tables with a shared state--action value network. The network is warm-started through return-to-go regression on mixed simulator-generated routing trajectories and then refined online using Double-Q updates, local congestion correction, and event-stratified structured replay. Across nine matched fleet-size--arrival-rate settings with 100, 150, and 200 OHTs, the proposed framework reduces mean completion time relative to tabular Double Q-routing by $0.8\\%$--$8.8\\%$. It achieves the lowest mean completion time among all compared methods in the six 150- and 200-OHT settings, whereas Dijkstra remains best in the three 100-OHT settings. Completed-task counts remain within $1\\%$ of tabular Double Q-routing in eight of nine settings, and 95th-percentile completion time decreases in eight settings. In two matched startup scenarios, offline initialization increases the number of completed tasks by up to $23\\%$ and reduces tail completion time by up to $15\\%$.",
+      "authors": [
+        "Cheng Gu",
+        "Qiusheng Zhao",
+        "Anbang Liu",
+        "Shaochong Lin",
+        "Max Z. J. Shen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "math.OC"
+      ],
+      "published": "2026-08-31T09:47:23+00:00",
+      "link": "https://arxiv.org/pdf/2608.30512v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Neural Double Q-routing applies multi-agent reinforcement learning to routing robot fleets in constrained transport systems, equivalent to learning-based multi-agent path planning",
+      "llm_evidence_cn": "神经双Q路由将多智能体强化学习用于受限基础设施中的机器人车队路径规划，接近学习型多智能体路径规划",
+      "llm_evidence": "神经双Q路由将多智能体强化学习用于受限基础设施中的机器人车队路径规划，接近学习型多智能体路径规划",
+      "canonical_evidence": "神经双Q路由将多智能体强化学习用于受限基础设施中的机器人车队路径规划，接近学习型多智能体路径规划",
+      "llm_tldr_en": "Neural Double Q-routing with trajectory initialization applies reinforcement learning to large-scale overhead hoist robot fleet routing under time-varying congestion, improving on static shortest path and tabular Q-routing.",
+      "llm_tldr_cn": "在天车搬运等大规模工业场景中，机器人车队共享轨道与路口，通行时间随安全间距和站点竞争动态变化，静态最短路无法应对时变拥堵。论文提出轨迹初始化的神经双Q路由，用神经网络对目标-节点-动作值函数作泛化，使稀疏访问的路径情境可以共享经验并降低初始估值偏差。该方法能够在线适应交通变化，优于静态最短路与表格Q路由。该工作为受限基础设施下的学习型多智能体路径规划提供有力示范。",
+      "llm_tldr": "在天车搬运等大规模工业场景中，机器人车队共享轨道与路口，通行时间随安全间距和站点竞争动态变化，静态最短路无法应对时变拥堵。论文提出轨迹初始化的神经双Q路由，用神经网络对目标-节点-动作值函数作泛化，使稀疏访问的路径情境可以共享经验并降低初始估值偏差。该方法能够在线适应交通变化，优于静态最短路与表格Q路由。该工作为受限基础设施下的学习型多智能体路径规划提供有力示范。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.03667v1",
+      "source": "arxiv",
+      "title": "Out-of-Distribution Generalisation with Sequence Models in Offline Multi-Agent Reinforcement Learning",
+      "abstract": "Generalising to unseen tasks remains a fundamental challenge in offline multi-agent reinforcement learning (MARL). In this work, we present a principled analysis of zero-shot task generalisation in the offline setting and conduct an extensive empirical investigation into the scaling behaviour governing task diversity, dataset size, and network capacity. To facilitate this study, we extend offline sequence modelling architectures to handle multi-task observation and action spaces alongside variable agent counts across tasks. Our primary finding is that scaling task diversity---rather than sheer dataset size is the dominant factor in achieving robust zero-shot transfer. Through large-scale experiments across four challenging environments (Connector, RWARE, SMAX, and LBF), we demonstrate that our multi-task approach achieves a mean improvement of 3.2x on held-out test tasks compared to single-task models and consistently outperforms strong behaviour cloning baselines. These results suggest that the development of generalisable MARL agents should prioritise the diversity of the training distribution with varying numbers of agents, providing a roadmap for scaling offline MARL effectively.",
+      "authors": [
+        "Oussama Hidaoui",
+        "Omer Ebead",
+        "Ulrich Armel Mbou Sob",
+        "Siddarth Singh",
+        "Juan Claude Formanek",
+        "Felix Chalumeau",
+        "Omayma Mahjoub",
+        "Sasha Abramowitz",
+        "Ruan John de Kock",
+        "Wiem Khlifi",
+        "Louay Ben Nessir",
+        "Simon Verster Du Toit",
+        "Daniel Rajaonarivonivelomanantsoa",
+        "Asim Awad Osman",
+        "Arnol Manuel Fokam",
+        "Refiloe Shabe",
+        "Arnu Pretorius"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-09-03T11:04:23+00:00",
+      "link": "https://arxiv.org/pdf/2609.03667v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "offline multi-agent reinforcement learning with sequence models, no explicit path-planning tasks but transferable to learning-based MAPF",
+      "llm_evidence_cn": "离线多智能体强化学习序列建模泛化工作，可迁移至基于强化学习的多智能体路径规划",
+      "llm_evidence": "离线多智能体强化学习序列建模泛化工作，可迁移至基于强化学习的多智能体路径规划",
+      "canonical_evidence": "离线多智能体强化学习序列建模泛化工作，可迁移至基于强化学习的多智能体路径规划",
+      "llm_tldr_en": "Studies zero-shot task generalization in offline multi-agent reinforcement learning by extending sequence models to variable agent counts and multi-task spaces; large-scale experiments show scaling task diversity, not dataset size, dominates robust zero-shot transfer.",
+      "llm_tldr_cn": "离线多智能体强化学习要在未见任务上可靠泛化仍很困难。作者将离线序列建模架构扩展到多任务观测/动作空间以及可变智能体数量，系统研究了任务多样性、数据集规模与网络容量对零样本泛化的影响。大规模实验表明任务多样性的扩增远比单纯增加数据量更能决定鲁棒迁移效果。该发现为离线多智能体强化学习在多智能体路径规划等任务上的训练数据构建与架构选择提供了关键指导。",
+      "llm_tldr": "离线多智能体强化学习要在未见任务上可靠泛化仍很困难。作者将离线序列建模架构扩展到多任务观测/动作空间以及可变智能体数量，系统研究了任务多样性、数据集规模与网络容量对零样本泛化的影响。大规模实验表明任务多样性的扩增远比单纯增加数据量更能决定鲁棒迁移效果。该发现为离线多智能体强化学习在多智能体路径规划等任务上的训练数据构建与架构选择提供了关键指导。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.00577v1",
+      "source": "arxiv",
+      "title": "GeoPAR: Large-Scale Multi-Agent Combinatorial Optimization with Geometry-Guided Parallel Autoregressive Learning",
+      "abstract": "Multi-agent combinatorial optimization problems are notoriously challenging due to their NP-hard nature. Recent parallel autoregressive neural solvers improve inference efficiency by allowing agents to make decisions simultaneously, but their performance often degrades on large-scale instances. This is largely attributable to weak modeling of local geometric structures and the fact that conflicting task selections are handled only after action generation. To address these limitations, we propose GeoPAR, a geometry-guided parallel autoregressive reinforcement learning framework for scalable multi-agent combinatorial optimization. GeoPAR integrates three key components: (1) a projection-window sparse geometry mechanism that builds lightweight local candidate neighborhoods through multi-directional projections, (2) sparse edge-biased attention that injects these geometric relations into node representations, and (3) cache-guided conflict-aware assignment that reuses the geometric cache during decoding to suppress duplicate selections of exclusive tasks. Experiments on heterogeneous vehicle routing and open multi-depot pickup-and-delivery problems show that GeoPAR improves large-scale zero-shot generalization while substantially reducing rollout steps and maintaining efficient inference.",
+      "authors": [
+        "Wenjian Wu",
+        "Zesheng Jia",
+        "Jiaying Tang",
+        "Benyuan Yang",
+        "Jin Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.NE"
+      ],
+      "published": "2026-09-01T02:14:05+00:00",
+      "link": "https://arxiv.org/pdf/2609.00577v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "geometry-guided parallel autoregressive reinforcement learning for large-scale multi-agent combinatorial optimization; method is transferable to learning-based multi-agent pathfinding",
+      "llm_evidence_cn": "面向大规模多智能体组合优化的几何引导并行自回归强化学习方法，可用于学习型多智能体路径规划借鉴",
+      "llm_evidence": "面向大规模多智能体组合优化的几何引导并行自回归强化学习方法，可用于学习型多智能体路径规划借鉴",
+      "canonical_evidence": "面向大规模多智能体组合优化的几何引导并行自回归强化学习方法，可用于学习型多智能体路径规划借鉴",
+      "llm_tldr_en": "GeoPAR enhances large-scale multi-agent combinatorial optimization with geometry-guided parallel autoregressive RL; sparse geometry and conflict handling improve quality and scalability, transferable to multi-agent pathfinding.",
+      "llm_tldr_cn": "大规模多智能体组合优化虽然可用并行自回归神经网络加速求解，但常因缺乏局部几何建模与冲突后置处理而在大规模实例上退化。本文提出GeoPAR，把投影窗口稀疏几何机制与冲突感知结合进强化学习训练的自回归解码流程，让多个智能体在生成动作时更好地考虑几何结构与任务冲突。实验显示GeoPAR在多种大规模组合优化问题上提升了解的质量与扩展性。该框架为学习型多智能体路径规划等空间组合任务提供了可迁移的建模思路。",
+      "llm_tldr": "大规模多智能体组合优化虽然可用并行自回归神经网络加速求解，但常因缺乏局部几何建模与冲突后置处理而在大规模实例上退化。本文提出GeoPAR，把投影窗口稀疏几何机制与冲突感知结合进强化学习训练的自回归解码流程，让多个智能体在生成动作时更好地考虑几何结构与任务冲突。实验显示GeoPAR在多种大规模组合优化问题上提升了解的质量与扩展性。该框架为学习型多智能体路径规划等空间组合任务提供了可迁移的建模思路。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
