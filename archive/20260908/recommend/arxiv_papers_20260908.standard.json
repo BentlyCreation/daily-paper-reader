@@ -1,0 +1,190 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-08T23:05:25.210909+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 0,
+    "deep_cap": 8,
+    "deep_selected": 0,
+    "quick_candidates": 4,
+    "quick_skim_target": 13,
+    "quick_selected": 4
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.00193v1",
+      "source": "arxiv",
+      "title": "Provably Efficient Federated Reinforcement Learning with Linear Function Approximation and Logarithmic Communication Cost",
+      "abstract": "We study federated online reinforcement learning with linear function approximation. While recent multi-agent reinforcement learning algorithms achieve strong regret guarantees, they typically require sharing raw trajectories. This reliance incurs a communication cost that scales linearly with the number of episodes and violates the privacy constraints of federated settings. To address these limitations, we propose Fed-LSVI, the first provably efficient federated algorithm for online reinforcement learning with linear function approximation in episodic Markov decision processes. By integrating a determinant-based event-triggered synchronization with a stepwise backward update mechanism, Fed-LSVI enables agents to collaboratively learn an optimal policy by exchanging only compressed sufficient statistics. We prove that Fed-LSVI achieves a regret bound of $\\widetilde{\\mathcal O}(\\sqrt{Md^3H^4T})$, where $d$ is the feature dimension, $H$ is the horizon length, $M$ is the number of agents, and $T$ is the number of episodes per agent, matching the best-known regret for multi-agent online reinforcement learning with linear function approximation. Moreover, by following the stringent communication and privacy constraints of the federated setting, Fed-LSVI reduces the communication cost to only logarithmic dependence on $T$, representing a significant improvement over prior methods.",
+      "authors": [
+        "Zihang Liang",
+        "Haochen Zhang",
+        "Lingzhou Xue"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-08-31T18:11:54+00:00",
+      "link": "https://arxiv.org/pdf/2609.00193v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "federated MARL-style algorithm with event-triggered synchronization; sparse logarithmic communication",
+      "llm_evidence_cn": "联邦强化学习中基于事件触发的同步机制，将通信成本降至对数级别，属稀疏通信",
+      "llm_evidence": "联邦强化学习中基于事件触发的同步机制，将通信成本降至对数级别，属稀疏通信",
+      "canonical_evidence": "联邦强化学习中基于事件触发的同步机制，将通信成本降至对数级别，属稀疏通信",
+      "llm_tldr_en": "Fed-LSVI gives the first provably efficient federated RL algorithm with logarithmic communication cost in episodic MDPs with linear approximation, using determinant-based event-triggered synchronization and stepwise backward updates to avoid sharing raw trajectories.",
+      "llm_tldr_cn": "在联邦在线强化学习中，很多MARL算法需要共享原始轨迹，通信成本随回合数线性增长且违背隐私要求。作者提出Fed-LSVI算法，通过基于行列式的事件触发同步和逐步反向更新机制，在带线性函数近似的episodic MDP上实现可证明高效的联邦学习，并将通信开销降为对数级。该工作为多智能体或联邦强化学习中的稀疏通信提供了理论保障。",
+      "llm_tldr": "在联邦在线强化学习中，很多MARL算法需要共享原始轨迹，通信成本随回合数线性增长且违背隐私要求。作者提出Fed-LSVI算法，通过基于行列式的事件触发同步和逐步反向更新机制，在带线性函数近似的episodic MDP上实现可证明高效的联邦学习，并将通信开销降为对数级。该工作为多智能体或联邦强化学习中的稀疏通信提供了理论保障。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.00804v1",
+      "source": "arxiv",
+      "title": "Connectivity-Aware Graph Extension for Decentralized Multi-Robot Exploration",
+      "abstract": "Exploring unknown environments with multiple UAVs requires coordination under intermittent communication, making decentralized operation a baseline assumption. We propose, within a decentralized framework, a novel exploration graph extension strategy based on frontier connectivity to extend exploration plans and maintain area partitioning among agents stable and robust to disconnections and changes in spatial layout. The proposed extension method is applied to two state-of-the-art area partitioning methods and evaluated in simulation. Experiments show improved performance over existing graph extension approaches with higher exploration efficiency under low communication rate.",
+      "authors": [
+        "Béatrice Garcia Cegarra",
+        "Elena Vanneaux",
+        "Quentin Picard",
+        "David Filliat"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-01T07:00:40+00:00",
+      "link": "https://arxiv.org/pdf/2609.00804v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "connectivity-aware graph extension for decentralized multi-robot exploration under intermittent communication; sparse communication topology constraints in multi-agent planning",
+      "llm_evidence_cn": "面向间歇通信下多机器人去中心化探索的连通性图扩展，涉及稀疏通信与拓扑约束但非强化学习",
+      "llm_evidence": "面向间歇通信下多机器人去中心化探索的连通性图扩展，涉及稀疏通信与拓扑约束但非强化学习",
+      "canonical_evidence": "面向间歇通信下多机器人去中心化探索的连通性图扩展，涉及稀疏通信与拓扑约束但非强化学习",
+      "llm_tldr_en": "Proposes a frontier-connectivity-based graph extension strategy for decentralized multi-UAV exploration that keeps area partitions robust to disconnections and is evaluated with two partitioning methods; it improves efficiency under low communication rates and offers topology-constrained planning insights.",
+      "llm_tldr_cn": "多无人机在未知环境探索需在间歇通信下进行，现有图扩展方法难以保持区域划分的稳定。论文提出基于前沿连通性的探索图扩展策略，在去中心化框架中扩展探索图并维护划分稳定性，并将该策略接入两种区域划分方法进行仿真。结果显示在低通信率下探索效率优于已有图扩展方法。该工作为通信受限的多机器人路径与探索规划提供了连通性或拓扑约束处理策略，但未采用强化学习或深度学习方法。",
+      "llm_tldr": "多无人机在未知环境探索需在间歇通信下进行，现有图扩展方法难以保持区域划分的稳定。论文提出基于前沿连通性的探索图扩展策略，在去中心化框架中扩展探索图并维护划分稳定性，并将该策略接入两种区域划分方法进行仿真。结果显示在低通信率下探索效率优于已有图扩展方法。该工作为通信受限的多机器人路径与探索规划提供了连通性或拓扑约束处理策略，但未采用强化学习或深度学习方法。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication with topology constraints for multi agent path planning",
+      "matched_requirement_id": "req-18",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.01567v2",
+      "source": "arxiv",
+      "title": "Selective Agent Guidance via Entropy: Learning Autonomous Policies from Imperfect VLM Teachers",
+      "abstract": "Vision-Language Models (VLMs) provide useful priors for interactive decision-making, but using them directly as policies is expensive and brittle: they must be queried at every step, do not improve from environment interaction, and can repeat systematic errors. We study how to learn a cheap autonomous policy from an online, expensive, and imperfect but informative VLM teacher. We propose SAGE (Selective Agent Guidance via Entropy), a framework that queries a VLM only when the learner is uncertain, executes the suggested action during training, and distills guidance into a lightweight Reinforcement Learning (RL) policy. Because VLM advice is not always reliable, SAGE can weight teacher-action distillation using environment-derived advantages rather than treating all suggestions as equally useful. Across sparse-reward visual reasoning and navigation tasks, SAGE learns policies that act without VLM guidance at evaluation time and improves over unguided RL in several environments, including settings where the learned policy exceeds its VLM teacher. The results show that selective guidance is most beneficial when the VLM can help the agent discover high-reward trajectories, and less useful when unguided exploration already succeeds or teacher actions do not lead to informative experience. SAGE also reduces VLM usage by prompting the teacher only on a fraction of training steps and requiring no VLM calls at deployment. Overall, our results suggest that VLMs don't need to be used as fixed policies to be useful; they can instead act as temporary, imperfect sources of guidance whose value is tested and internalized through interaction.",
+      "authors": [
+        "Giovanni Bonetta",
+        "Matteo Merler",
+        "Davide Zago",
+        "Rossella Cancelliere",
+        "Bernardo Magnini"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-09-01T17:33:41+00:00",
+      "link": "https://arxiv.org/pdf/2609.01567v2",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Uses selective entropy-based guidance and distillation from an imperfect teacher into an RL policy, directly applicable to imitation learning for MAPF.",
+      "llm_evidence_cn": "基于熵的选择性教师查询与蒸馏强化策略，可迁移至多智能体路径规划中的模仿学习。",
+      "llm_evidence": "基于熵的选择性教师查询与蒸馏强化策略，可迁移至多智能体路径规划中的模仿学习。",
+      "canonical_evidence": "基于熵的选择性教师查询与蒸馏强化策略，可迁移至多智能体路径规划中的模仿学习。",
+      "llm_tldr_en": "SAGE queries an imperfect VLM teacher only when learner is uncertain and distills the guidance into a lightweight RL policy.",
+      "llm_tldr_cn": "直接用VLM作为策略既昂贵又脆弱且无法交互改进。本文提出SAGE，仅在学生学习器不确定时查询不完美的VLM教师，并在训练中执行教师建议，将引导蒸馏为轻量强化学习策略；同时利用环境反馈对教师动作降权，避免错误示范被盲目模仿。实验显示SAGE能以较少查询学会可靠自主策略。该框架为主管示范不可靠或代价高昂的路径规划模仿学习提供了通用方法，也可服务多智能体路径规划中的示范学习。",
+      "llm_tldr": "直接用VLM作为策略既昂贵又脆弱且无法交互改进。本文提出SAGE，仅在学生学习器不确定时查询不完美的VLM教师，并在训练中执行教师建议，将引导蒸馏为轻量强化学习策略；同时利用环境反馈对教师动作降权，避免错误示范被盲目模仿。实验显示SAGE能以较少查询学会可靠自主策略。该框架为主管示范不可靠或代价高昂的路径规划模仿学习提供了通用方法，也可服务多智能体路径规划中的示范学习。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert demonstrations for multi-agent path finding",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.02462v1",
+      "source": "arxiv",
+      "title": "VIPS: Vehicle-Infrastructure Cooperative Planning Benchmark via Pseudo-Simulation",
+      "abstract": "End-to-end autonomous driving in urban environments requires robust decision-making under partial observability and complex multi-agent interactions. Severe occlusions and dense traffic at intersections limit the perception capability of single-agent systems, motivating recent efforts on Vehicle-to-Infrastructure (V2I) cooperation for perception and planning. However, existing evaluation protocols face a fundamental trade-off: open-loop evaluation fails to capture error accumulation and recovery from deviations, while closed-loop evaluation is costly, difficult to scale, and often relies on simulated environments that may suffer from domain gaps. To bridge this gap, we propose VIPS, a benchmark for cooperative autonomous driving in V2I settings based on pseudo-simulation. VIPS extends pseudo-simulation by integrating vehicle and infrastructure observations. This enables scalable yet realistic evaluation of robustness and error propagation without full simulation. We further present CoS-V2X, a cooperative planning framework based on sparse representations. CoS-V2X models vehicle-infrastructure interactions using compact features for efficient communication and robust decision-making under heterogeneous observations. Code and dataset are available at https://vips2026.github.io.",
+      "authors": [
+        "Hoonhee Cho",
+        "Jae-Young Kang",
+        "Giwon Lee",
+        "Hyemin Yang",
+        "Heejun Park",
+        "Kuk-Jin Yoon"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-02T11:32:52+00:00",
+      "link": "https://arxiv.org/pdf/2609.02462v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Benchmark for cooperative vehicle-infrastructure planning under partial observability and multi-agent interactions; methodological bridge to multi-agent path planning theme.",
+      "llm_evidence_cn": "提出了部分可观测及多智能体交互下车辆-基础设施协同规划基准，与多智能体路径规划主题具有方法桥梁价值。",
+      "llm_evidence": "提出了部分可观测及多智能体交互下车辆-基础设施协同规划基准，与多智能体路径规划主题具有方法桥梁价值。",
+      "canonical_evidence": "提出了部分可观测及多智能体交互下车辆-基础设施协同规划基准，与多智能体路径规划主题具有方法桥梁价值。",
+      "llm_tldr_en": "VIPS is a pseudo-simulation benchmark for V2I cooperative planning under partial observability and multi-agent interactions. It balances open-loop vs closed-loop evaluation to expose error accumulation and recovery. Useful evaluation method for multi-agent path planning; with no MAPF algorithm proposed.",
+      "llm_tldr_cn": "针对自动驾驶在严重遮挡与复杂多智能体交互下的部分可观测问题，论文提出VIPS：一个基于伪仿真的车辆-基础设施(V2I)协同规划基准。该基准通过可扩展的伪仿真环境兼顾开环评估的成本优势与闭环评估的误差累积检测能力，可用于评测协同感知规划系统的稳定性与恢复能力。VIPS为城市交互场景下的多智能体路径规划提供了新的评测基础设施，但本身不提出基于学习或强化学习的路径规划算法。",
+      "llm_tldr": "针对自动驾驶在严重遮挡与复杂多智能体交互下的部分可观测问题，论文提出VIPS：一个基于伪仿真的车辆-基础设施(V2I)协同规划基准。该基准通过可扩展的伪仿真环境兼顾开环评估的成本优势与闭环评估的误差累积检测能力，可用于评测协同感知规划系统的稳定性与恢复能力。VIPS为城市交互场景下的多智能体路径规划提供了新的评测基础设施，但本身不提出基于学习或强化学习的路径规划算法。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -6,35 +6,33 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-07
-- 运行时间：2026-09-07 23:37:34 UTC
+- 最新运行日期：2026-09-08
+- 运行时间：2026-09-08 23:09:29 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：3
-- 速读区：2
+- 本次总论文数：4
+- 精读区：0
+- 速读区：4
 
 ### 今日简报（AI）
-今日精读两篇8分论文，覆盖网联自动驾驶边缘协同预测与机器人策略稳定学习，另速读扩散模型仿真及联邦图学习两篇。最值得关注的是自动驾驶边缘辅助融合路径预测的高分方案，以及通过受限语言建模避免机器人本地学习失稳的新思路。建议普通读者优先精读两篇8分论文，可跳过速读中的隐私安全主题文章。
-- 详情：[/202609/07/README](/202609/07/README)
+今日完成4篇论文速读，无精读。最值得关注的是7.0分的联邦强化学习论文，提出线性函数近似下对数通信成本的算法；另有6.0分的多机器人探索图扩展方法。建议优先精读最高分论文，重点把握其通信压缩策略。
+- 详情：[/202609/08/README](/202609/08/README)
 
 ### 精读区论文标签
-1. [Scalable Edge-assisted Fusion and Path Prediction for Connected Autonomous Vehicles](/202609/07/2609.04364v1-scalable-edge-assisted-fusion-and-path-prediction-for-connected-autonomous-vehicles)  
-   标签：评分：8.0/10、query:intent-avoid
-   evidence：面向网联自动驾驶汽车的未来轨迹预测与统一世界模型融合，支持路径规划、交通流与碰撞预防
-2. [A Schema Bounded Language Model for Refining Robot Policies Without Destabilizing Local Learning](/202609/07/2609.05133v1-a-schema-bounded-language-model-for-refining-robot-policies-without-destabilizing-local-learning)  
-   标签：评分：8.0/10、query:lbm
-   evidence：去中心化机器人导航采用每机器人Double DQN控制且无中央大模型统一决策
-3. [Human-Human & Human-Robot Interaction Transformer (H2INT) for Robot Navigation in Dense and Uncertain Crowds](/202609/07/2609.05300v1-human-human--human-robot-interaction-transformer-h2int-for-robot-navigation-in-dense-and-uncertain-crowds)  
-   标签：评分：8.0/10、query:intent-avoid
-   evidence：面向密集不确定人群的机器人强化学习导航，直接匹配多智能体人群拥堵规避导航需求
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [One Diffusion Model, Two Roles: Guided Trajectory Planning and Safety-Critical Scenario Generation in Closed-Loop Simulation](/202609/07/2609.04921v1-one-diffusion-model-two-roles-guided-trajectory-planning-and-safety-critical-scenario-generation-in-closed-loop-simulation)  
-   标签：评分：7.0/10、query:intent-avoid
-   evidence：扩散模型刻画多智能体联合未来轨迹，服务于轨迹规划与安全关键场景生成
-2. [Privacy-Preserving Topology-Guided Safety for LLM-Based Multi-Agent Systems via Federated Graph Learning](/202609/07/2609.02967v1-privacy-preserving-topology-guided-safety-for-llm-based-multi-agent-systems-via-federated-graph-learning)  
+1. [Provably Efficient Federated Reinforcement Learning with Linear Function Approximation and Logarithmic Communication Cost](/202609/08/2609.00193v1-provably-efficient-federated-reinforcement-learning-with-linear-function-approximation-and-logarithmic-communication-cost)  
+   标签：评分：7.0/10、query:marl-comm
+   evidence：联邦强化学习中基于事件触发的同步机制，将通信成本降至对数级别，属稀疏通信
+2. [Connectivity-Aware Graph Extension for Decentralized Multi-Robot Exploration](/202609/08/2609.00804v1-connectivity-aware-graph-extension-for-decentralized-multi-robot-exploration)  
    标签：评分：6.0/10、query:marl-comm
-   evidence：在多智能体通信图上使用带边特征的图注意力网络，可迁移到基于图注意力的通信建模与信息聚合。
+   evidence：面向间歇通信下多机器人去中心化探索的连通性图扩展，涉及稀疏通信与拓扑约束但非强化学习
+3. [Selective Agent Guidance via Entropy: Learning Autonomous Policies from Imperfect VLM Teachers](/202609/08/2609.01567v2-selective-agent-guidance-via-entropy-learning-autonomous-policies-from-imperfect-vlm-teachers)  
+   标签：评分：6.0/10、query:lbm
+   evidence：基于熵的选择性教师查询与蒸馏强化策略，可迁移至多智能体路径规划中的模仿学习。
+4. [VIPS: Vehicle-Infrastructure Cooperative Planning Benchmark via Pseudo-Simulation](/202609/08/2609.02462v1-vips-vehicle-infrastructure-cooperative-planning-benchmark-via-pseudo-simulation)  
+   标签：评分：6.0/10、query:lbm
+   evidence：提出了部分可观测及多智能体交互下车辆-基础设施协同规划基准，与多智能体路径规划主题具有方法桥梁价值。
 
 
 <div class="dpr-home-promo-card">

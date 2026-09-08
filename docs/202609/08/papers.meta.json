@@ -1,0 +1,69 @@
+{
+  "label": "2026-09-08",
+  "date": "2026-09-08",
+  "generated_at": "2026-09-08T23:09:34",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202609/08/2609.00193v1-provably-efficient-federated-reinforcement-learning-with-linear-function-approximation-and-logarithmic-communication-cost",
+      "section": "quick",
+      "title_en": "Provably Efficient Federated Reinforcement Learning with Linear Function Approximation and Logarithmic Communication Cost",
+      "authors": "Zihang Liang, Haochen Zhang, Lingzhou Xue",
+      "date": "2026-08-31",
+      "pdf": "https://arxiv.org/pdf/2609.00193v1",
+      "score": "7.0",
+      "evidence": "联邦强化学习中基于事件触发的同步机制，将通信成本降至对数级别，属稀疏通信",
+      "tldr": "联邦在线强化学习受通信与隐私制约，现有方法需共享原始轨迹，通信成本随回合数线性上升。本文提出Fed-LSVI，首个针对线性函数近似的联邦可证明高效算法，借助行列式事件触发同步与逐步反向更新，仅交换压缩充分统计量。其遗憾界为~O(sqrt(Md^3H^4T))，与已知最优多智能体算法相当，同时通信成本仅为T的对数量级。这为联邦RL的隐私保护与通信效率首次提供了统一的理论保证。",
+      "tags": "query:marl-comm",
+      "abstract_en": "We study federated online reinforcement learning with linear function approximation. While recent multi-agent reinforcement learning algorithms achieve strong regret guarantees, they typically require sharing raw trajectories. This reliance incurs a communication cost that scales linearly with the number of episodes and violates the privacy constraints of federated settings. To address these limitations, we propose Fed-LSVI, the first provably efficient federated algorithm for online reinforcement learning with linear function approximation in episodic Markov decision processes. By integrating a determinant-based event-triggered synchronization with a stepwise backward update mechanism, Fed-LSVI enables agents to collaboratively learn an optimal policy by exchanging only compressed sufficient statistics. We prove that Fed-LSVI achieves a regret bound of $\\widetilde{\\mathcal O}(\\sqrt{Md^3H^4T})$, where $d$ is the feature dimension, $H$ is the horizon length, $M$ is the number of agents, and $T$ is the number of episodes per agent, matching the best-known regret for multi-agent online reinforcement learning with linear function approximation. Moreover, by following the stringent communication and privacy constraints of the federated setting, Fed-LSVI reduces the communication cost to only logarithmic dependence on $T$, representing a significant improvement over prior methods.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/08/2609.00804v1-connectivity-aware-graph-extension-for-decentralized-multi-robot-exploration",
+      "section": "quick",
+      "title_en": "Connectivity-Aware Graph Extension for Decentralized Multi-Robot Exploration",
+      "authors": "Béatrice Garcia Cegarra, Elena Vanneaux, Quentin Picard, David Filliat",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.00804v1",
+      "score": "6.0",
+      "evidence": "面向间歇通信下多机器人去中心化探索的连通性图扩展，涉及稀疏通信与拓扑约束但非强化学习",
+      "tldr": "在复杂未知区域中，多无人机协同探索需依赖共享地图，但通信间歇性使分散式成为主流假设。本文面向分散式框架提出基于前沿连通性的探索图扩展策略，能延长探索计划并保持区域划分的稳定，对断连和空间布局变化都具备鲁棒性。将该方法应用于两种先进区域划分方法，仿真显示在低通信率下优于既有图扩展手段，显著提升探索效率，为受限通信场景中的多机器人探索贡献了实用方案。",
+      "tags": "query:marl-comm",
+      "abstract_en": "Exploring unknown environments with multiple UAVs requires coordination under intermittent communication, making decentralized operation a baseline assumption. We propose, within a decentralized framework, a novel exploration graph extension strategy based on frontier connectivity to extend exploration plans and maintain area partitioning among agents stable and robust to disconnections and changes in spatial layout. The proposed extension method is applied to two state-of-the-art area partitioning methods and evaluated in simulation. Experiments show improved performance over existing graph extension approaches with higher exploration efficiency under low communication rate.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/08/2609.01567v2-selective-agent-guidance-via-entropy-learning-autonomous-policies-from-imperfect-vlm-teachers",
+      "section": "quick",
+      "title_en": "Selective Agent Guidance via Entropy: Learning Autonomous Policies from Imperfect VLM Teachers",
+      "authors": "Giovanni Bonetta, Matteo Merler, Davide Zago, Rossella Cancelliere, Bernardo Magnini",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.01567v2",
+      "score": "6.0",
+      "evidence": "基于熵的选择性教师查询与蒸馏强化策略，可迁移至多智能体路径规划中的模仿学习。",
+      "tldr": "直接使用VLM作为策略成本高且脆弱，SAGE提出仅在智能体不确定时向VLM教师查询，将建议动作通过环境优势加权后蒸馏进轻量RL策略。在稀疏奖励视觉推理和导航任务中，学到的策略测试时不依赖VLM，性能优于无指导RL，甚至有时超过教师。整体表明VLM无需作为固定策略，而是可作为临时指导源，其价值经交互检验并内化。",
+      "tags": "query:lbm",
+      "abstract_en": "Vision-Language Models (VLMs) provide useful priors for interactive decision-making, but using them directly as policies is expensive and brittle: they must be queried at every step, do not improve from environment interaction, and can repeat systematic errors. We study how to learn a cheap autonomous policy from an online, expensive, and imperfect but informative VLM teacher. We propose SAGE (Selective Agent Guidance via Entropy), a framework that queries a VLM only when the learner is uncertain, executes the suggested action during training, and distills guidance into a lightweight Reinforcement Learning (RL) policy. Because VLM advice is not always reliable, SAGE can weight teacher-action distillation using environment-derived advantages rather than treating all suggestions as equally useful. Across sparse-reward visual reasoning and navigation tasks, SAGE learns policies that act without VLM guidance at evaluation time and improves over unguided RL in several environments, including settings where the learned policy exceeds its VLM teacher. The results show that selective guidance is most beneficial when the VLM can help the agent discover high-reward trajectories, and less useful when unguided exploration already succeeds or teacher actions do not lead to informative experience. SAGE also reduces VLM usage by prompting the teacher only on a fraction of training steps and requiring no VLM calls at deployment. Overall, our results suggest that VLMs don't need to be used as fixed policies to be useful; they can instead act as temporary, imperfect sources of guidance whose value is tested and internalized through interaction.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/08/2609.02462v1-vips-vehicle-infrastructure-cooperative-planning-benchmark-via-pseudo-simulation",
+      "section": "quick",
+      "title_en": "VIPS: Vehicle-Infrastructure Cooperative Planning Benchmark via Pseudo-Simulation",
+      "authors": "Hoonhee Cho, Jae-Young Kang, Giwon Lee, Hyemin Yang, Heejun Park, Kuk-Jin Yoon",
+      "date": "2026-09-02",
+      "pdf": "https://arxiv.org/pdf/2609.02462v1",
+      "score": "6.0",
+      "evidence": "提出了部分可观测及多智能体交互下车辆-基础设施协同规划基准，与多智能体路径规划主题具有方法桥梁价值。",
+      "tldr": "城市路口严重遮挡与密集车流使单车自动驾驶决策困难，车路协同成为必要方向。现有评估要么采用开放回路，无法反映误差累积和恢复；要么依赖闭环仿真，成本高且与真实场景存在差距。VIPS基于伪模拟同时利用车端与路端观测，无需完整仿真即可进行可扩展评测，有效反映协同规划的误差累积和恢复能力，弥合两类评估协议的鸿沟。同时提出稀疏表示框架CoS-V2X，以紧凑特征建模车路交互，降低通信开销并提升异构观测下决策的鲁棒性；代码与数据集已开源。",
+      "tags": "query:lbm",
+      "abstract_en": "End-to-end autonomous driving in urban environments requires robust decision-making under partial observability and complex multi-agent interactions. Severe occlusions and dense traffic at intersections limit the perception capability of single-agent systems, motivating recent efforts on Vehicle-to-Infrastructure (V2I) cooperation for perception and planning. However, existing evaluation protocols face a fundamental trade-off: open-loop evaluation fails to capture error accumulation and recovery from deviations, while closed-loop evaluation is costly, difficult to scale, and often relies on simulated environments that may suffer from domain gaps. To bridge this gap, we propose VIPS, a benchmark for cooperative autonomous driving in V2I settings based on pseudo-simulation. VIPS extends pseudo-simulation by integrating vehicle and infrastructure observations. This enables scalable yet realistic evaluation of robustness and error propagation without full simulation. We further present CoS-V2X, a cooperative planning framework based on sparse representations. CoS-V2X models vehicle-infrastructure interactions using compact features for efficient communication and robust decision-making under heterogeneous observations. Code and dataset are available at https://vips2026.github.io.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
