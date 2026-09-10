@@ -1,0 +1,536 @@
+Title: OcclusionCBF: Backup Control Barrier Functions for Safe Navigation Among Hidden Dynamic Obstacles
+
+URL Source: https://arxiv.org/pdf/2609.06342v1
+
+Published Time: Wed, 09 Sep 2026 01:03:08 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# OcclusionCBF: Backup Control Barrier Functions for Safe Navigation Among Hidden Dynamic Obstacles 
+
+Taekyung Kim 1,∗, Hun Kuk Park 1,∗, Renya Wada 2, Nikolay Atanasov 3, Shumon Koga 2, Dimitra Panagou 1,4
+
+Abstract — Robots navigating under occlusion may enter states from which no admissible input can avoid a dynamic obstacle once it becomes visible. We present OcclusionCBF, a safety filter that extends backup control barrier functions to reachable-occupancy predictions for potentially hidden dy-namic obstacles in occluded regions. The method certifies a pre-scribed backup rollout against collision-inflated occupancy and a verified terminal set, yielding affine constraints for minimally invasive quadratic-program filtering. We establish recursive feasibility of the resulting safety filter, and collision avoidance for every hidden-obstacle motion covered by the occupancy prediction. Randomized benchmarks, MetaUrban simulations, and hardware experiments demonstrate improved task success over reactive and occlusion-aware predictive baselines with millisecond-scale computation. [Project Page] 1 [Code] [Video] [Web Demo] 
+
+I. I NTRODUCTION 
+
+Autonomous robots frequently operate with incomplete information about their surroundings. Buildings, parked ve-hicles, shelving, and other objects create blind regions in which pedestrians or vehicles may move without being observed. A controller that avoids only currently detected obstacles may therefore steer the robot into a state from which no admissible input can prevent a collision once a hidden obstacle becomes visible. As illustrated in Figure 1, this failure is not merely a consequence of sensing latency. It arises from the interaction among uncertain hidden-obstacle occupancy, robot dynamics, and finite control authority. A safety-critical controller must therefore reason about where a hidden obstacle may be and how it may move before detection. Existing approaches propagate hidden-obstacle positions under bounded motion and incorporate the resulting reachable occupancy into safety verification or receding-horizon planning [1]–[3]. Although effective, embedding this prediction within the planner couples safety to a particular planning architecture and can require solving a trajectory optimization at every control update. Our objective is instead to construct a modular safety filter that can be interposed between an arbitrary nominal controller and the system dynamics while explicitly accounting for the robot dynamics and input constraints. 
+
+> ∗
+
+These authors contributed equally to this work 
+
+> 1
+
+Department of Robotics, 4Department of Aerospace Engineering, University of Michigan, Ann Arbor, MI 48109, USA {taekyung, parkcart, dpanagou }@umich.edu 
+
+> 2
+
+Department of Computer Science and Systems Engineering, Kobe University, Hyogo, Japan 267x093x@stu.kobe-u.ac.jp, koga@harbor.kobeu.ac.jp 
+
+> 3
+
+Department of Electrical and Computer Engineering, University of California, San Diego, CA 92093, USA natanasov@ucsd.edu 
+
+> 1
+
+Project page: https://www.taekyung.me/occlusion-cbf 
+
+Fig. 1: Illustrative comparison of safety filtering with and without occlusion awareness for a double-integrator robot at a blind crossing. (a) A conven-tional CBF-QP considers only detected vehicles and follows the nominal command while the approaching vehicle remains occluded, reaching a state with insufficient control authority to avoid collision after detection. (b) OcclusionCBF propagates the admissible motion of potentially hidden vehicles, certifies a backup rollout against the resulting reachable occupancy, and minimally modifies the nominal input to slow down and increase clearance before entering the crossing. 
+
+We address this problem with OcclusionCBF , an exten-sion of the Backup Control Barrier Function (CBF) formu-lation [4] to time-varying reachable-occupancy predictions for potentially hidden dynamic obstacles. At each prediction update, possible obstacle locations are propagated over the backup horizon and inflated for collision avoidance. A pre-scribed backup policy is rolled out against every reachable-occupancy set and required to terminate in a verified time-varying terminal set. By differentiating the occupancy and terminal margins through the backup flow, including their dependence on current time and look-ahead time, we obtain constraints affine in the current control input. The resulting Quadratic Program (QP) safety filter minimally modifies the nominal input while retaining the recursive-feasibility mechanism of Backup CBFs. Under the stated occupancy-prediction, terminal-set, and update conditions, the backup input certifies pointwise QP feasibility, while the resulting safety filter preserves the recoverable set and avoids every arXiv:2609.06342v1 [cs.RO] 6 Sep 2026 hidden-obstacle motion covered by the occupancy prediction. 
+
+A. Related Work 
+
+Visibility-aware planning constrains motion to observed free space or actively seeks trajectories that reveal relevant regions before traversal [5], [6]. These methods address unknown geometry and limited sensing, but generally do not model the worst-case future motion of an unseen dynamic obstacle. Set-based verification identifies critical field-of-view boundaries, represents possible hidden obstacles by interval-valued states, propagates their occupancy, and veri-fies whether a given trajectory retains a collision-free fail-safe maneuver [7]. Sequential reachability models hidden obstacles as point-mass state sets and refines them using reachability and previous observations [1]. Game-theoretic active perception instead formulates planning as a hybrid pursuit-evasion game that accounts for future detection and feedback avoidance after detection [8]. Occlusion-aware predictive planners embed hidden-agent reachability and contingency reasoning within trajectory optimization. OA-MPC combines forward reachable sets with a terminal stopping condition to establish recursive feasibility [2]. Control-Tree optimization and OACP repre-sent contingencies through branched controls over discrete hypotheses and jointly optimized exploration and fallback trajectories, respectively [3], [9]. APRO represents occlusion reachability using unions of AH-polytopes and reduces ex-act trajectory-safety checks to linear programs [10]. These methods perform occlusion-aware safety reasoning at the trajectory level. OcclusionCBF instead converts a compatible conservative reachable-occupancy prediction into an input-affine safety filter for an arbitrary nominal controller. CBFs enforce forward invariance through an affine con-straint on the immediate input [11]. High-order CBFs address constraints with high relative degree [12], but do not by themselves ensure feasibility under input constraints. Backup CBFs use the recoverable set induced by a backup pol-icy as an implicit safe set [4], [13], while robust Backup CBFs address uncertainty in the ego-system dynamics [14]. OcclusionCBF instead propagates uncertainty in exogenous hidden-obstacle occupancy and evaluates the backup trajec-tory against the resulting occupancy predictions. 
+
+B. Contributions 
+
+Our contributions are summarized as follows.  
+
+> •
+
+We extend Backup CBFs to conservative reachable-occupancy predictions, yielding a planner-agnostic filter that certifies a backup maneuver for potentially hidden dynamic obstacles without embedding safety in a specific trajectory optimizer.  
+
+> •
+
+We derive input-affine rollout and terminal constraints for the moving prediction horizon and prove that the backup policy certifies recursive feasibility of the QP and collision avoidance for every obstacle motion covered by the occupancy prediction.  
+
+> •
+
+We give a smooth polyhedral realization for multiple occluded regions. Across five baselines, randomized tests attain the highest hard-constrained success rate at ev-ery tested density with millisecond-scale computation; MetaUrban and hardware results show intervention before detection and safe goal completion. II. PRELIMINARIES 
+
+A. Robot Dynamics and Time-Varying Safety 
+
+Consider a robot with control-affine dynamics 
+
+˙x = f (x) + g(x)u, x ∈ X , u ∈ U , (1) where X ⊆ Rn and U ⊂ Rm are compact and convex, and f and g are continuously differentiable and locally Lipschitz. Let W ⊆ Rd be the workspace. The continuously differentiable function P : X → W extracts the workspace position p = P (x) of a fixed robot reference point from the robot state. The robot is commanded toward its objective by a possibly time-varying nominal controller unom : X × R≥0 →U. A safety filter modifies unom to satisfy safety constraints; it is minimally invasive when it selects, among the feasible inputs, one closest to unom in a prescribed norm. We use time-varying barrier functions to enforce safety constraints induced by moving occupancy sets. Let h : X × 
+
+R≥0 → R be continuously differentiable and define C(t) = 
+
+{x ∈ X | h(x, t ) ≥ 0}. Suppose there exists an extended class-K function α : R → R for which, for all (x, t ) ∈X × R≥0,
+
+sup 
+
+> u∈U
+
+"
+
+∂h ∂t (x, t ) + ∇xh(x, t )⊤ f (x) + g(x)u#
+
+≥ − α h(x, t ).
+
+(2) A minimally invasive safety filter can be implemented as the CBF-QP 
+
+u⋆(x, t ) = arg min 
+
+> u∈U
+
+∥u − unom (x, t )∥22
+
+s.t. ∂h ∂t (x, t ) + ∇xh(x, t )⊤ f (x) + g(x)u ≥ − α h(x, t ).
+
+Any locally Lipschitz controller satisfying this CBF con-straint renders C(t) forward invariant, provided x(t0) ∈C(t0) [15]. Importantly, h(x, t ) ≥ 0 alone does not guarantee feasibility of this constraint under input limits [16]. 
+
+B. Backup Control Barrier Functions 
+
+For the standard Backup CBF construction [4], [13], consider the time-invariant special case C(t) ≡ C . Let S0 ⊆ C 
+
+be a terminal set forward invariant under a continuously differentiable state-feedback law πb : X → U, and let 
+
+T > 0 be a finite backup horizon. The states whose πb-rollouts remain in C over [0 , T ] and reach S0 at T form the recoverable set induced by πb. Such a policy is referred to as a backup policy , and its choice affects the size of the induced recoverable set. Practical designs include saturated lane-keeping feedback [4] and PD feedback toward a designated recovery region [13]. The closed-loop backup dynamics are fb(x) = f (x) + 
+
+g(x)πb(x). Their flow map is denoted by φb(x, s ), where 
+
+s ≥ 0 is the backup-rollout time and 
+
+dd s φb(x, s ) = fb
+
+ φb(x, s ), φb(x, 0) = x. (3) The sensitivity Jacobian Φb(x, s ) := ∂φ b(x, s )/∂ x satisfies 
+
+dd s Φb(x, s ) = ∂f b
+
+∂x
+
+ φb(x, s )Φb(x, s ), Φb(x, 0) = I. 
+
+(4) For a fixed choice of πb, fb is autonomous. Hence, 
+
+φb
+
+ φb(x, r ), s  = φb(x, r + s) for r, s ≥ 0. Differentiating this flow property with respect to r at r = 0 yields 
+
+Φb(x, s )fb(x) = fb
+
+ φb(x, s ). (5) III. PROBLEM FORMULATION Consider a robot with dynamics in (1), commanded by a nominal controller unom and equipped with a sensor with limited and potentially occluded field of view. We seek to modify the nominal controller to ensure collision avoidance against dynamic obstacles that may remain unobserved until they enter the sensor’s visible region. Assume every dynamic obstacle has a known speed bound ¯vo > 0, so its displace-ment over any interval of length s ∈ [0 , T ] is contained in 
+
+B(¯ vos), where B(r) ⊆ Rd is the closed Euclidean ball of radius r.At time t, let O(P (x(t)) , t ) ⊆ W denote the set of workspace positions at which an undetected obstacle may be located, consistently with the current sensing geometry and observations. An occupancy predictor represents this set as a finite union of occluded regions: 
+
+O P (x(t)) , t  = 
+
+> M(t)
+
+[
+
+> j=1
+
+O(j) P (x(t)) , t , (6) where M (t) is the number of occluded regions returned by the predictor. Hereafter, we write M when its dependence on t is clear. For each j = 1 , . . . , M , the predictor returns a collision-inflated reachable-occupancy set bH(j)(t, s ) satisfy-ing 
+
+O(j) P (x(t)) , t  ⊕ B (¯ vos + rcol ) ⊆ bH(j)(t, s ). (7) Here, ⊕ denotes the Minkowski sum, and rcol ≥ 0 is the collision-inflation radius accounting for the robot and obstacle footprints, localization and perception uncertainty, and any prescribed clearance. Let {tk}k≥0 be the times at which new observations are incorporated and the occupancy prediction is recomputed. On each interval [tk, t k+1 ), M and the set indexing are fixed. 
+
+Assumption 1 (Occupancy coverage and temporal consis-tency) . For every t ≥ 0, s ∈ [0 , T ], and j = 1 , . . . , M , (7) holds. Moreover, on each interval [tk, t k+1 ), for every δ ≥ 0
+
+such that t, t + δ ∈ [tk, t k+1 ) and s, s + δ ∈ [0 , T ],
+
+bH(j)(t + δ, s ) ⊆ bH(j)(t, s + δ). (8) Condition (8) compares predictions for the same absolute future time because (t + δ) + s = t + ( s + δ), i.e., it                  
+
+> Fig. 2: Geometric interpretation for one occluded region. (a) The occluded region is enclosed by bO(j)(t)and inflated by rcol to bH(j)(t, 0) ;hCj(y, t, 0)
+> is constructed from its facet margins. (b) The occupancy expands with the look-ahead time swhile the backup rollout remains outside it and reaches
+> S0(t+T)with terminal clearance ρT.
+
+prevents a previously certified occupancy set from enlarging as the horizon shifts. Any discontinuous recomputation at tk
+
+requires post-update recertification of the current state. 
+
+Problem 1. Given the robot dynamics in (1), the nomi-nal controller unom , and an occupancy predictor satisfying Assumption 1, construct a minimally invasive safety filter that remains feasible at all subsequent times on its certified recoverable set under u ∈ U and guarantees collision avoidance for every hidden-obstacle motion covered by the occupancy prediction. IV. OCCLUSION CBF Physical separation from the predicted occupancy at the current time does not by itself ensure recoverability, which depends jointly on the robot dynamics, input limits, and the future evolution of the hidden-obstacle occupancy. We therefore develop OcclusionCBF to certify a finite-horizon backup maneuver that remains outside the time-varying reachable occupancy and terminates in a verified terminal set. Preserving this certificate ensures recoverability and collision avoidance for all hidden-obstacle motions covered by the prediction. 
+
+A. Polyhedral Reachable-Occupancy Margin 
+
+Let y ∈ X denote a dummy state variable along the backup rollout, so that y = φb(x, s ). For each reachable-occupancy set, let hCj : X × R≥0 × [0 , T ] → R be a differentiable conservative separation margin satisfying 
+
+hCj (y, t, s ) ≥ 0 =⇒ P (y) /∈ int 
+
+ bH(j)(t, s )
+
+
+
+. (9) To ensure temporal consistency of the occupancy margin hCj
+
+under the advancing prediction horizon (as t increases and the corresponding look-ahead time s decreases; cf. Assump-tion 1), we require, on each interval [tk, t k+1 ),
+
+∂h Cj
+
+∂t (y, t, s ) − ∂h Cj
+
+∂s (y, t, s ) ≥ 0. (10) The occluded regions O(j) are supplied by a sensing or geometric-processing module and need not be polyhedral, as illustrated in Figure 2. We construct conservative poly-hedral outer approximations and derive hCj from their facet margins. For polygonal regions, such an approximation can be obtained by applying a standard convex-hull algorithm to their vertices. At an update time tk, enclose the j-th occluded region by the convex polytope 
+
+O(j) P (x(tk)) , t k
+
+ ⊆ bO(j)(tk)=
+
+n
+
+q ∈ Rd ajℓ (tk)⊤q ≤ bjℓ (tk), ℓ = 1 , . . . , K j
+
+o
+
+, (11) where ∥ajℓ (tk)∥2 = 1 . For t ∈ [tk, t k+1 ), retain Kj and set ajℓ (t) = ajℓ (tk) and bjℓ (t) = bjℓ (tk) + ¯ vo(t − tk).The same half-space form then defines bO(j)(t) as the tk
+
+occupancy estimate propagated by the elapsed-time motion bound. Adding the look-ahead expansion and collision radius gives 
+
+bH(j)(t, s ) = 
+
+n
+
+q ∈ Rd ajℓ (t)⊤q ≤ bjℓ (t) + rcol + ¯ vos, ℓ = 1 , . . . , K j
+
+o
+
+. (12) The elapsed-time expansion in bjℓ (t) covers motion since tk,while ¯vos+rcol covers future motion and collision clearance; hence (12) satisfies (7). In general, it is a polyhedral outer ap-proximation of the corresponding Minkowski sum. Because 
+
+bjℓ (t + δ) = bjℓ (t) + ¯ voδ between updates, bH(j)(t + δ, s ) = 
+
+bH(j)(t, s + δ), so (8) holds with equality. For a robot state y, define the facet margins 
+
+ψjℓ (y, t, s ) = ajℓ (t)⊤P (y) − bjℓ (t) − rcol − ¯vos. (13) The robot position lies outside the interior of bH(j)(t, s ) if and only if 
+
+max 
+
+> ℓ=1 ,...,K j
+
+ψjℓ (y, t, s ) ≥ 0.
+
+To obtain a differentiable sufficient condition, define the shifted log-sum-exp margin [17] 
+
+hCj (y, t, s ) = 1
+
+κ log 
+
+
+
+> Kj
+
+X
+
+> ℓ=1
+
+exp  κψ jℓ (y, t, s ) − log Kj
+
+κ ,
+
+(14) where κ > 0. This function satisfies 
+
+max  
+
+> ℓ
+
+ψjℓ − log Kj
+
+κ ≤ hCj ≤ max  
+
+> ℓ
+
+ψjℓ .
+
+The bound quantifies the smoothing conservatism as 0 ≤
+
+max ℓ ψjℓ − hCj ≤ log Kj /κ ; hence, hCj satisfies (9). Sepa-ration is imposed for every j = 1 , . . . , M .For notational compactness, define the softmax weights 
+
+λjℓ (y, t, s ) = exp  κψ jℓ (y, t, s )PKj 
+
+> r=1
+
+exp  κψ jr (y, t, s ) ,
+
+> Kj
+
+X
+
+> ℓ=1
+
+λjℓ = 1 .
+
+Between updates, the derivatives used below are 
+
+∇y hCj =
+
+ ∂P (y)
+
+∂y
+
+⊤ Kj
+
+X
+
+> ℓ=1
+
+λjℓ ajℓ , (15a) 
+
+∂h Cj
+
+∂s = ∂h Cj
+
+∂t = −¯vo. (15b) The last equality follows from ˙ajℓ = 0 and ˙bjℓ = ¯vo.Consequently, (10) also holds with equality. Changes in facet number or geometry at tk are handled by recertifying the current state after the update. 
+
+B. Backup Rollout and Terminal Set 
+
+Having constructed differentiable occupancy margins, we next adapt the Backup CBF formulation in Sec. II-B to the moving-horizon setting of Problem 1. The backup rollout must remain outside every time-varying reachable-occupancy set and terminate in a time-varying set that is forward invariant under the backup policy. On each update interval [tk, t k+1 ), the backup policy πb is held fixed, with corresponding closed-loop flow φb, although it may change at the next update. We suppress this interval dependence in the notation and use the same policy for all simultaneously enforced occupancy sets. For each set index 
+
+j, let hSj : X × [T, ∞) → R be a continuously differentiable terminal barrier satisfying, for all y ∈ X , q ≥ T and j =1, . . . , M ,
+
+hSj (y, q ) ≥ 0 =⇒ hCj (y, q − T, T ) ≥ ρT , (16) where ρT ≥ 0 is an additional terminal clearance (see Sec. V for a model-specific selection). The corresponding time-varying terminal set is S0(q) = {y ∈ X | hSj (y, q ) ≥
+
+0, j = 1 , . . . , M }.
+
+Assumption 2 (Verified terminal set) . There exists an ex-tended class-K function αS such that, for every q ≥ T , every 
+
+y ∈ S 0(q), and every j = 1 , . . . , M ,
+
+∂h Sj
+
+∂q (y, q )+  ∇y hSj (y, q )⊤fb(y) ≥ − αS
+
+ hSj (y, q ). (17) Assumption 2 renders S0(q) forward invariant under the backup policy between discontinuous prediction updates. To express the terminal condition in terms of the current state, define the endpoint margins 
+
+ηj (x, t ) := hSj
+
+ φb(x, T ), t + T , j = 1 , . . . , M. (18) Thus, φb(x, T ) ∈ S 0(t + T ) if and only if ηj (x, t ) ≥ 0 for all j = 1 , . . . , M . Moreover, by (16), 
+
+ηj (x, t ) ≥ 0 = ⇒ hCj
+
+ φb(x, T ), t, T  ≥ ρT ≥ 0. (19) Thus, the terminal condition implies the corresponding oc-cupancy constraint at the end of the backup horizon and, when ρT > 0, retains additional clearance from the horizon occupancy. The occupancy and terminal constructions are illustrated in Figure 2. C. Occlusion-Aware Recoverable Set and OCBF-QP 
+
+We now define the time-varying recoverable set induced by the backup policy and enforce its occupancy and terminal conditions through a QP. For M ≥ 1, define the occlusion-aware recoverable set 
+
+S(t) = x ∈ X hCj
+
+ φb(x, s ), t, s  ≥ 0, ∀s ∈ [0 , T ], ∀j, ηj (x, t ) ≥ 0, ∀j . (20) We impose separate CBF inequalities on the occupancy and terminal conditions defining S(t). For an absolute future time τ ∈ [t, t + T ], define 
+
+s = τ − t, y = φb(x, s ),ξCj (x, t ; τ ) = hCj (y, t, s ). (21) Because d s/ d t = −1 when τ is fixed, 
+
+˙ξCj =  ∇y hCj
+
+⊤ Φb(x, s ) f (x) + g(x)u − fb(y)
+
++ ∂h Cj
+
+∂t − ∂h Cj
+
+∂s .
+
+(22) For the polyhedral occupancy model, (15) gives ∂h Cj /∂t =
+
+∂h Cj /∂s , so the final two terms in (22) cancel. The terminal margins defined in (18) satisfy 
+
+˙ηj =  ∇y hSj
+
+⊤Φb(x, T ) f (x) + g(x)u + ∂h Sj
+
+∂q , (23) where hSj and its derivatives are evaluated at  φb(x, T ), t +
+
+T .For notational compactness, define 
+
+ACj =  ∇y hCj
+
+⊤Φb(x, s )g(x),cCj =  ∇y hCj
+
+⊤ [Φ b(x, s )f (x) − fb(y)] + ∂h Cj
+
+∂t − ∂h Cj
+
+∂s ,ASj =  ∇y hSj
+
+⊤Φb(x, T )g(x),cSj =  ∇y hSj
+
+⊤Φb(x, T )f (x) + ∂h Sj
+
+∂q . (24) In (24), the occupancy quantities are evaluated at (y, t, s )
+
+with s = τ − t, while the terminal quantities are evaluated at  φb(x, T ), t + T . Their dependence on (x, t ; τ ) and (x, t )
+
+is suppressed, respectively. Let αC be a locally Lipschitz extended class-K function. The proposed Occlusion CBF QP (OCBF-QP) is 
+
+u⋆(x, t ) = arg min 
+
+> u∈U
+
+12 ∥u − unom (x, t )∥2
+
+> W
+
+s.t. cCj + ACj u ≥ − αC
+
+ ξCj
+
+, ∀j, ∀τ ∈ [t, t + T ],cSj + ASj u ≥ − αS
+
+ ηj
+
+, ∀j, 
+
+(25) where W ≻ 0. All constraints are affine in u.
+
+D. Recursive Feasibility and Safety Guarantees 
+
+At an update time tk, the occupancy prediction and backup-policy parameters may change discontinuously, and hence so may the recoverable set. We therefore require the continuous physical state to satisfy 
+
+x(tk) ∈ S (t+ 
+
+> k
+
+). (26) This is a pointwise condition on the realized state and does not require S(t− 
+
+> k
+
+) ⊆ S (t+ 
+
+> k
+
+).The following lemma establishes pointwise feasibility of the OCBF-QP on the recoverable set. The subsequent theo-rem shows that the QP constraints preserve this set, yielding recursive feasibility and safety. 
+
+Lemma 1 (Pointwise feasibility of the OCBF-QP) . Suppose Assumptions 1 and 2 hold, and the occupancy margins satisfy 
+
+(10) . Assume that f , g, P , πb, hCj , and hSj are continuously differentiable between discontinuous updates, that πb(x) ∈U, and that the backup flow exists over [0 , T ]. Then, for every time t between updates and every x ∈ S (t), the backup input 
+
+u = πb(x) satisfies all constraints of (25) . Consequently, the OCBF-QP is feasible at every state in S(t).Proof. Fix x ∈ S (t) and choose u = πb(x). For every τ ∈
+
+[t, t + T ], the flow identity (5) cancels the state-dependent terms in (22), giving 
+
+˙ξCj u=πb(x)
+
+= ∂h Cj
+
+∂t − ∂h Cj
+
+∂s ≥ 0
+
+by (10). Since ξCj ≥ 0 for x ∈ S (t), this satisfies every occupancy constraint in (25). Similarly, ηj (x, t ) ≥ 0 for every j implies φb(x, T ) ∈ S 0(t + T ) by the definition of 
+
+S0 in Section IV-B. Applying (5) to (23) and invoking (17) yields 
+
+˙ηj |u=πb(x) ≥ − αS (ηj ), j = 1 , . . . , M. 
+
+Thus, the backup input also satisfies every terminal con-straint, proving the claim of Lemma 1. 
+
+Theorem 1 (Recursive feasibility of the OCBF-QP) . Sup-pose the conditions of Lemma 1 hold. If x(t0) ∈ S (t0)
+
+and (26) holds at every discontinuous update, then every piecewise locally Lipschitz control satisfying the OCBF-QP constraints and yielding a forward-complete solution satisfies, for all t ≥ t0 and j = 1 , . . . , M (t),
+
+x(t) ∈ S (t), hCj (x(t), t, 0) ≥ 0. (27) 
+
+Consequently, the OCBF-QP is recursively feasible, and the robot avoids all hidden-obstacle motions covered by the occupancy prediction. Proof. Consider an update-free interval beginning at ¯t, where 
+
+¯t = t0 or ¯t = t+ 
+
+> k
+
+. By the initial-condition assumption when 
+
+¯t = t0, and by (26) when ¯t = t+ 
+
+> k
+
+, we have x(¯ t) ∈ S (¯ t).Hence, by the definition of S(¯ t),
+
+ξCj (x(¯ t), ¯t; τ ) ≥ 0, ∀τ ∈ [¯ t, ¯t + T ],
+
+and ηj (x(¯ t), ¯t) ≥ 0 for every j.For each fixed absolute future time τ , while τ ∈ [t, t + T ],the OCBF-QP enforces 
+
+˙ξCj ≥ − αC (ξCj ), ˙ηj ≥ − αS (ηj ).
+
+The scalar comparison argument therefore preserves every occupancy and terminal margin that is initialized nonnega-tive. Fig. 3: Representative successful OCBF-QP trial for the double integrator with Nobs = 50 . The global view shows the completed waypoint route, while the local views show representative occlusion interactions and backup rollouts. 
+
+It remains to initialize the occupancy constraints that enter through the advancing end of the horizon. A future time τ
+
+enters at t = τ − T , where s = T . Since ηj (x(t), t ) ≥ 0,(19) gives 
+
+ξCj (x(t), t ; t + T ) = hCj
+
+ φb(x(t), T ), t, T 
+
+≥ ρT ≥ 0.
+
+Thus, every occupancy margin is nonnegative when it enters the horizon and remains nonnegative while it is enforced, and every terminal margin also remains nonnegative. Hence, all conditions defining S(t) are preserved between updates. Condition (26) reinitializes the same argument after each discontinuous update. Therefore, x(t) ∈ S (t) for all t ≥ t0. By Lemma 1, the OCBF-QP remains feasible along the resulting trajectory, es-tablishing recursive feasibility. Finally, setting s = 0 in (20) and using φb(x, 0) = x gives hCj (x(t), t, 0) ≥ 0 for every 
+
+j. Together with (9) and Assumption 1, this ensures that 
+
+P (x(t)) remains outside every collision-inflated occupancy covering the admissible hidden-obstacle motions. 
+
+E. Practical Implementation 
+
+In implementation, the look-ahead interval is discretized as 0 = s0 < · · · < s N = T , and the trajectory constraints are enforced at τi = t + si, i = 0 , . . . , N . The continuous-time guarantees above apply to the ideal constraint family over all s ∈ [0 , T ]; the implemented QP enforces only the sampled constraints and therefore does not exclude inter-sample violations. Related treatments of semi-infinite safety constraints and time-discretization error are provided in [18]– [20]. V. RESULTS We evaluate OCBF-QP in randomized planar benchmarks, MetaUrban simulation [21], and hardware experiments. Rep-resentative scenarios can also be tested interactively through our web demo. 2
+
+Unless stated otherwise, all constraints in (25) are hard. We also report a relaxed-terminal ablation to assess the conservatism introduced by the terminal condition. Because 
+
+hSj defines an auxiliary recoverability barrier rather than a direct collision-separation constraint, this variant introduces 
+
+> 2Web Demo: https://occlusion-cbf.taekyung.me/
+
+penalized slack only in the terminal inequalities induced by 
+
+hSj ; all trajectory occupancy constraints remain hard. The relaxed variant is empirical and is not covered by Theorem 1. 
+
+A. Randomized Benchmark Setup 
+
+Robot and environment models: The double integrator has state x = [ p⊤, v⊤]⊤ and acceleration input u, with ˙p =
+
+v, ˙v = u, ∥u∥∞ ≤ amax , and ∥v∥2 ≤ vmax , where amax =1.0 m/s 2 and vmax = 1 .0 m/s. The unicycle has state x =[px, p y , θ ]⊤ and input u = [ v, ω ]⊤, with ˙px = v cos θ, ˙py =
+
+v sin θ, ˙θ = ω, 0 ≤ v ≤ vmax , and |ω| ≤ ωmax , where 
+
+vmax = 1 .0 m/s and ωmax = 0 .8 rad/s. Thus, the first model captures finite braking authority, whereas the second captures nonholonomic turning limits. Both robots have radius 0.25 m. All trials use a 30 m × 30 m workspace and the waypoint sequence (2 , 2) → (2 , 28) → (28 , 2) → (28 , 28) m. The robot has a 10 m sensing range, a 360 ◦ field of view, and line-of-sight occlusion. Once an obstacle becomes visible, its position and velocity are provided to every controller. Each trial contains Nobs smaller moving obstacles with radii sampled uniformly from [0 .3, 0.4] m and one larger dynamic occluder with radius sampled from [0 .8, 1.0] m. Ini-tially hidden obstacles are sampled behind another obstacle at t = 0 . We test Nobs ∈ { 10 , 20 , 30 } for the unicycle, and 
+
+Nobs ∈ { 10 , 30 , 50 } for the double integrator. 
+
+Occupancy prediction and backup policy: At each pre-diction update, each occluder-induced unobserved region is enclosed by a convex polygon bO(j)(tk). The corresponding time-indexed occupancy bH(j)(t, s ) is constructed using (12) with ¯vo = 1 .0 m/s. For the backup policy, we select at most Mact occupancy sets with the smallest current margins hCj (x(tk), t k, 0) . Their regularized directions away from the associated occluder centers are combined using softmax weights that prioritize smaller margins, producing a reference velocity with magni-tude at most vmax . If no set is active, the reference is zero. The active index set and backup-policy parameters are held fixed until the next prediction update, so the backup remains a time-independent state-feedback law on each interval. The double-integrator backup tracks this reference through a smoothly saturated acceleration controller, whereas the unicycle maps it to an admissible desired heading and speed. We use T = 0 .25 s for the double integrator and T = 2 .0 sfor the unicycle. For the benchmark implementation, we use the practical terminal-margin construction hSj (y, q ) = 
+
+hCj (y, q − T, T ) − ρT . For the double integrator, ρT =
+
+v2max /(2 amax ) = 0 .5 m; for the unicycle, ρT = 0 m. 
+
+Benchmark protocol and metrics: For each robot model and obstacle density, we generate 100 randomized scenarios and replay the same realizations across all methods. All methods use the same robot, sensing, collision-checking, and simulation models, with ∆t = 0.05 s and a 500 stime limit. Algorithms are implemented in Python and JAX, and the method-specific hyperparameters of all controllers are tuned using Optuna. Complete implementation, tuning, and configuration details are provided in the public code repository. Each trial is classified as success, collision, or controller infeasibility. Success requires completing all waypoints with-out collision or infeasibility; the latter is recorded when the controller returns no admissible input. We report outcome percentages and mean computation time per control update. 
+
+B. Compared Methods 
+
+We compare OCBF-QP with five methods under the common benchmark above. CBF-QP [11] is a reactive safety filter that constrains only currently visible obstacles and does not propagate hidden occupancy; for the double-integrator model, we use a high-order CBF formulation. OA-MPC [2] incorporates hidden-obstacle reachable sets into receding-horizon optimization and uses a terminal stopping condition. Its original formulation assumes static occluding environ-ment geometry, whereas moving obstacles in our benchmark can themselves create and remove occlusions; this model mismatch should therefore be considered when interpreting its results. 
+
+Control-Tree MPC [9] optimizes a branched policy over discrete hidden-obstacle hypotheses generated by the com-mon occlusion module. Single-Hypothesis MPC removes this branch structure and instead optimizes one trajectory against an aggregated risk region [9]. OACP [3] jointly optimizes exploration and fallback trajectories with a shared initial segment and reachable-occupancy constraints. 
+
+C. Benchmark Results 
+
+Qualitative behavior: Figure 3 shows that OCBF-QP completes the waypoint sequence in a dense double-integrator scenario while intervening only when the nominal command would compromise the certified backup maneuver. When the nominal input already satisfies the Occlusion CBF constraints, it is applied without modification. 
+
+Safety and task completion: Figure 4 summarizes the paired randomized trials. OCBF-QP achieves the highest success rate among the hard-constrained variants for both robot models and every tested density. At the highest den-sities, it succeeds in 86% of unicycle trials and 70% of double-integrator trials, while the compared methods increas-ingly terminate through collision or controller infeasibility. The relaxed-terminal ablation improves the denser double-integrator cases but does not inherit the guarantee of Theo-rem 1.                                                  
+
+> Fig. 4: Benchmark results over 100 paired trials for the double integrator (top) and unicycle (bottom) as Nobs increases. OCBF-QP attains the highest hard-constrained success rate at every tested density. TABLE I: Average controller computation time per update (ms). Method Unicycle ( Nobs )Double integrator ( Nobs )10 20 30 10 30 50 Control-Tree MPC [9] 48 .354 .258 .9 106 .7 110 .7117 .0
+> Single-Hypothesis MPC 7.38.18.713 .013 .815 .4
+> OA-MPC [2] 69 .2 101 .5 117 .593 .8 151 .4186 .9
+> OACP [3] 80 .576 .978 .587 .489 .488 .8
+> CBF-QP [11] 0.70.70.80.60.70.8
+> OCBF-QP 4.14.44.51.62.33.9
+> OCBF-QP ( hSjrelaxed) –––1.62.43.3
+
+Online computation: As reported in Table I, OCBF-QP requires 4.1–4.5 ms per update for the unicycle and 1.6–
+
+3.9 ms for the double integrator. The reactive CBF-QP is faster because it performs neither occupancy propagation nor backup certification, but OCBF-QP remains substantially faster than all predictive-planning baselines. This indicates that occlusion-aware backup certification can be executed at control rate without online branched trajectory optimization. 
+
+D. High-Fidelity Simulation and Hardware Experiments 
+
+We further demonstrate closed-loop execution in the MetaUrban simulator using a unicycle and a quadruped modeled as a double integrator, as shown in Figure 5(a). Additional demonstrations and failure cases of the com-pared baselines are provided in the supplementary video and project page. Motivated by a real-world blind-crossing accident in which a bus occluded an approaching vehicle from a pedestrian’s view, we reproduce the scenario illustrated in Figure 1 using wheeled mobile robots and compare OCBF-QP with the occlusion-agnostic CBF-QP. The hardware setup uses ROS 2, with a TurtleBot 4 as the ego robot and a TurtleBot 3 as the dynamic obstacle, and a wall creating the occluded region. As shown in Figure 5(b), the baseline follows the nominal input while the obstacle is hidden and reacts too late to avoid collision, whereas OCBF-QP acts before detection, steers away from the occluded region, and safely reaches the goal. VI. CONCLUSION This paper presented OcclusionCBF, a planner-agnostic safety filter for navigation with potentially hidden dy-namic obstacles. By propagating occluded regions into time-indexed reachable-occupancy sets and certifying a backup Fig. 5: High-fidelity simulation and hardware evaluations. (a) MetaUrban demonstrations for the unicycle (left) and double-integrator quadruped (right), with robot-view snapshots above and trajectories below. (b) Hardware blind crossing: the occlusion-agnostic CBF-QP collides after late detection, whereas OcclusionCBF intervenes before detection and reaches the goal. 
+
+rollout to a verified terminal set, the method yields affine constraints for a minimally invasive QP while accounting for robot dynamics and input limits. Under the stated as-sumptions, we established pointwise QP feasibility, recursive feasibility, and collision avoidance for all hidden-obstacle motions covered by the occupancy prediction. Randomized benchmarks demonstrated the highest success rate among the hard-constrained methods with low-millisecond computation, while MetaUrban and blind-crossing hardware experiments showed proactive intervention before detection and safe goal completion. REFERENCES [1] J. M. G. S´ anchez, T. Nyberg, C. Pek, J. Tumova, and M. T¨ orngren, “Foresee the Unseen: Sequential Reasoning about Hidden Obstacles for Safe Driving,” in IEEE Intelligent Vehicles Symposium (IV) , 2022, pp. 255–264. [2] R. Firoozi, A. Mir, G. S. Camps, and M. Schwager, “OA-MPC: Occlusion-Aware MPC for Guaranteed Safe Robot Navigation With Unseen Dynamic Obstacles,” IEEE Transactions on Control Systems Technology , vol. 33, no. 3, pp. 940–951, 2025. [3] L. Zheng, R. Yang, M. Zheng, Z. Peng, M. Y. Wang, and J. Ma, “Occlusion-Aware Contingency Safety-Critical Planning for Au-tonomous Driving,” IEEE Transactions on Cybernetics , pp. 1–14, 2026. [4] Y. Chen, M. Jankovic, M. Santillo, and A. D. Ames, “Backup Control Barrier Functions: Formulation and Comparative Study,” in IEEE Conference on Decision and Control (CDC) , 2021, pp. 6835–6841. [5] G. Goretkin, L. P. Kaelbling, and T. Lozano-P´ erez, “Look Before You Sweep: Visibility-Aware Motion Planning,” in Algorithmic Founda-tions of Robotics XIII , 2020, pp. 373–388. [6] T. Kim and D. Panagou, “Visibility-Aware RRT* for Safety-Critical Navigation of Perception-Limited Robots in Unknown Environments,” 
+
+IEEE Robotics and Automation Letters , vol. 10, no. 5, pp. 4508–4515, 2025. [7] P. F. Orzechowski, A. Meyer, and M. Lauer, “Tackling Occlusions & Limited Sensor Range with Set-based Safety Verification,” in Interna-tional Conference on Intelligent Transportation Systems (ITSC) , 2018, pp. 1729–1736. [8] Z. Zhang and J. Fisac, “Safe Occlusion-Aware Autonomous Driving via Game-Theoretic Active Perception,” in Robotics: Science and Systems (RSS) , 2021. [9] C. Phiquepal and M. Toussaint, “Control-Tree Optimization: an ap-proach to MPC under discrete Partial Observability,” in IEEE Inter-national Conference on Robotics and Automation (ICRA) , 2021, pp. 9666–9672. [10] L. K. Chung, D. Isele, T. Mohammadnejad, F. M. Tariq, S. Bae, S. Kousik, and J. D’sa, “Exact, Efficient, and Safe Occlusion-Aware Planning Using AH-Polyhedrons,” in arXiv preprint arXiv:2606.15046 , 2026. [11] A. D. Ames, S. Coogan, M. Egerstedt, G. Notomista, K. Sreenath, and P. Tabuada, “Control Barrier Functions: Theory and Applications,” in 
+
+European Control Conference (ECC) , 2019, pp. 3420–3431. [12] W. Xiao and C. Belta, “Control Barrier Functions for Systems with High Relative Degree,” in IEEE Conference on Decision and Control (CDC) , 2019, pp. 474–479. [13] T. Kim, A. D. Menon, A. Trivedi, and D. Panagou, “Backup-Based Safety Filters: A Comparative Review of Backup CBF, Model Predic-tive Shielding, and gatekeeper,” in IEEE Conference on Decision and Control (CDC) , 2026. [14] D. E. J. van Wijk, S. Coogan, T. G. Molnar, M. Majji, and K. L. Hobbs, “Disturbance-Robust Backup Control Barrier Functions: Safety Under Uncertain Dynamics,” IEEE Control Systems Letters , vol. 8, pp. 2817– 2822, 2024. [15] K. Garg, J. Usevitch, J. Breeden, M. Black, D. Agrawal, H. Parwana, and D. Panagou, “Advances in the Theory of Control Barrier Func-tions: Addressing practical challenges in safe control synthesis for autonomous and robotic systems,” Annual Reviews in Control , vol. 57, p. 100945, 2024. [16] T. Kim, R. W. Beard, and D. Panagou, “How to Adapt Control Barrier Functions? A Learning-Based Approach with Applications to a VTOL Quadplane,” in IEEE Conference on Decision and Control (CDC) ,2025, pp. 7050–7057. [17] T. G. Molnar and A. D. Ames, “Composing Control Barrier Functions for Complex Safety Specifications,” IEEE Control Systems Letters ,vol. 7, pp. 3615–3620, 2023. [18] M. H. Cohen, P. Ong, P. Mestres, and A. D. Ames, “Safety Filtering with an Infinite Number of Constraints,” in IEEE Conference on Decision and Control (CDC) , 2026. [19] L. Knoedler, O. So, J. Yin, M. Black, Z. Serlin, P. Tsiotras, J. Alonso-Mora, and C. Fan, “Safety on the Fly: Constructing Robust Safety Fil-ters via Policy Control Barrier Functions at Runtime,” IEEE Robotics and Automation Letters , vol. 10, no. 10, pp. 10 058–10 065, 2025. [20] T. Kim, H. Okamoto, B. Hoxha, G. Fainekos, and D. Panagou, “Policy Library CBF: Finite-Horizon Safety at Runtime via Parallel Rollouts,” May 2026, arXiv:2605.16588 [cs.RO]. [Online]. Available: http://arxiv.org/abs/2605.16588 [21] W. Wu, H. He, J. He, Y. Wang, C. Duan, Z. Liu, Q. Li, and B. Zhou, “MetaUrban: An Embodied AI Simulation Platform for Urban Micro-mobility,” in International Conference on Learning Representations (ICLR) , 2025.

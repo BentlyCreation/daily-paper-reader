@@ -1,0 +1,1003 @@
+Title: Eventually Optimal and Scalable Multi-Agent Planning for Block Cave Mining
+
+URL Source: https://arxiv.org/pdf/2609.07109v1
+
+Published Time: Wed, 09 Sep 2026 01:55:25 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Eventually Optimal and Scalable Multi-Agent Planning for Block Cave Mining 
+
+Christopher Leet 1, Paolo Forte 2, Uwe K¨ ockemann 2, Henrik Andreasson 2, Sven Koenig 1,2
+
+Abstract — Automation in underground mining has the po-tential to significantly enhance safety, operational efficiency, and sustainability. However, effectively coordinating fleets of autonomous vehicles in dynamic mine environments introduces substantial challenges in both optimization and motion plan-ning. To address these challenges, we introduce and formalize the Block Cave Mining (BCM) problem, which focuses on computing a transport plan that maximizes ore throughput while satisfying draw ratio constraints. To solve this problem, we propose SAMM, an eventually optimal anytime solver that jointly integrates task assignment, scheduling, and path planning via a mixed-integer linear programming formulation. To improve scalability, we also introduce SAMMS, a variant of SAMM that trades optimality guarantees for efficiency by decomposing the problem into shorter planning subcycles. Ex-perimental evaluations using realistic industrial mine scenarios demonstrate that SAMMS achieves near-optimal throughput and scales effectively to larger fleets and mine layouts. 
+
+I. I NTRODUCTION 
+
+Autonomous material transport systems are becoming in-creasingly important to mining [1], as they can improve efficiency, safety, and reduce costs [2]. Among the mining methods that benefit from automation is block cave mining (see Fig. 1), a mining technique used to extract large volumes of ore from underground mines [3]. It begins with the excavation of an undercut layer 1⃝ and extraction tunnels 2⃝ beneath an ore body. Vertical drawbells 3⃝ connect the undercut layer to the extraction tunnels. The undercut layer is then blasted 4 ⃝ causing the base of the ore body to fracture and collapse. The ore is transported from the drawbells to crushers which pulverize it and deposit it into containers for removal. As ore is extracted, a hollow 5⃝ forms at the base of the ore body. This loss of support causes the remainder of the ore body to slowly crumble under its own weight and fall into the drawbells for collection. To automate the ore collection process, a block cave mine operator must generate a plan that specifies how autonomous agents transport ore to crushers. This production plan is to alleviate stress level build up in the mine as well as                
+
+> This work was partially supported by the European Union’s Horizon Europe Framework Programme under grant agreement No 101070596 (euROBIN). (Corresponding author: Christopher Leet)
+> © 2026 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any current or future media, including reprinting/republishing this material for advertising or promotional purposes, creating new collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other works.
+> 1University of Southern California Los Angeles, California, USA
+
+{cjleet,skoenig }@usc.edu   
+
+> 2Centre for Applied Autonomous Sensor Systems, ¨Orebro University, ¨Orebro, Sweden
+
+<name>.<surname>@oru.se  
+
+> Fig. 1. A side view of the block cave mining process. Top: building the infrastructure. Bottom: extracting ore.
+
+fragmentation of the ore, the amount of material drawn from each drawbell is important to keep within bounds and changes slowly over time [4]. In this work we assume the rate at which ore is extracted is a fixed percentage of the total extraction rate (if the rates are updated we treat it as a new problem). These percentages vary between drawbells, for example, one drawbell might contribute 7% of the extracted ore while another might only contribute 1%. We define the task of finding a transport plan which maximizes the overall extraction rate as the Block Cave Mining (BCM) problem. The BCM problem presents three challenges. First, since agents must haul ore for an indefinite amount of time, a solver must construct an arbitrarily long plan. Second, the BCM problem is composed of three, tightly coupled, components: task assignment (which drawbell to visit), scheduling (when to visit) and path planning (how to get there). Finally, BCM agents have heavy restrictions on their movement. Most prior work on Multi-Agent Path Finding (MAPF) models the environment as a 2D grid graph with holes and assumes that agents can move in any cardinal direction in constant time. BCM agents, however, are bulky, center articulated vehicles only slightly narrower than the mine’s tunnels. Even basic actions such as turning around require a complex series of maneuvers at a junction, complicating path planning. To the best of our knowledge, no optimal solution to the BCM problem exists. Current solutions use heuristics such as statically assigning agents to fixed subsets of drawbells, which limits optimality. To bridge this gap, we introduce SAMM (Simple Anytime Mine MAPF), an eventually opti-mal method designed to meet the challenges above. SAMM achieves continuous operation by producing cyclic plans, plans that can be looped because they start and end with the team of agents in the same configuration. It avoids the pitfalls of decomposition by casting task assignment, scheduling and path planning into a single Mixed Integer Lin-ear Program (MILP) which captures their inter-dependencies and decides the optimal number of agents for a given cycle arXiv:2609.07109v1 [cs.RO] 7 Sep 2026 length. Finally, to model maneuvering in confined tunnels, SAMM constructs a state graph over discrete poses (po-sition–orientation pairs), where transitions encode feasible motion primitives executable in constant time. The industrial applicability of MILP approaches, such as SAMM, to MAPF is limited since they typically do not scale well. Therefore, we propose an additional, scalable solver, SAMMS (SAMM with Subcycles). The difficulty of gener-ating a cyclic plan using a ILP grows exponentially with the plan’s length. Instead of generating one long cycle which services every drawbell, SAMMS generates a sequence of subcycles, each of which services a subset of drawbells. Each subcycle starts and ends in the same state, allowing them to be seamlessly concatenated. SAMMS constructs a transport plan online by concatenating these subcycles. Whenever a subcycle completes, SAMMS selects a new subcycle to execute. We prove that SAMMS is always asymptotically feasible and converges rapidly. The longer it runs, the closer it approximates each drawbell’s targeted draw rate. We evaluate SAMM and SAMMS on benchmark scenarios derived from real-world mine layouts and demonstrate their ability to solve industrial scale BCM instances. II. R ELATED WORK 
+
+Multi-Agent Path Finding (MAPF) [5] is the problem of computing collision-free paths for multiple agents in a shared environment. MAPF has been solved in differ-ent industrial domains, including warehouse logistics [6], transportation systems [7], and construction [8]. Classi-cal MAPF solutions mainly rely on two main paradigms: search-based and compilation-based approaches. Search-based methods emphasize solution optimality by employing graph search, heuristics, and specialized techniques to mini-mize collisions and search overhead. Examples include prior-itized planning [9], conflict-based search [10], and priority-based search [11]. Compilation-based approaches reformu-late MAPF as an optimization problem, such as Boolean satisfiability [12], mixed-integer linear programming [13], or answer set programming [14]. While these methods can yield high-quality or even provably optimal solutions, they often face scalability issues on larger instances. More recently, the field has witnessed an increasing interest in learning-based methods, including reinforcement learning [8] and foundation model driven approaches [6]. However, most existing MAPF algorithms make simplifying assumptions that do not hold in block cave mining. They generally assume grid-based navigation, a fixed number of agents, and that task assignment and scheduling are precomputed, focusing solely on path planning. Our approach jointly optimizes the number of agents, task assignment, scheduling, and path planning, and produces plans that can be executed continuously. Various approaches have been explored for underground mine planning and scheduling [15]. Production scheduling methods can be broadly categorized into heuristic methods and exact optimization techniques. Heuristic approaches aim to generate near-optimal solutions within a reasonable time, particularly when identifying the optimal solution under complex constraints is computationally infeasible. Examples include block aggregation heuristics [16] and optimization-based decomposition heuristics [17]. While computation-ally efficient, these methods cannot guarantee globally op-timal schedules. Conversely, exact mathematical program-ming methods have been widely applied to block-caving production scheduling, as they allow systematic exploration of feasible solutions while accounting for operational con-straints and providing bounds on optimality. Techniques such as linear programming [4], and quadratic programming [18] have been proposed to optimize production plans. However, these approaches neither generate optimal transport plans nor scale. III. P ROBLEM FORMULATION 
+
+We now formally present the block cave mining problem. 
+
+A. Mine 
+
+A block cave mine is a collection of drawbells and ore crushers connected by a network of narrow tunnels. 
+
+Drawbells . A drawbell is a shaft filled with crushed ore. Let 
+
+D := {d1, d 2, . . . } be the set of drawbells in a mine. Let draw rate λi be the average rate at which ore is extracted from drawbell di. Each drawbell’s draw rate is coupled to the draw rates of the other drawbells. Let Λ := P 
+
+> di∈D
+
+λi
+
+be the total ore extraction rate. Each drawbell di’s extraction rate must be a fixed fraction ri := λi/Λ of the total. Let ri
+
+be the drawbell di’s draw ratio, and the vector of draw ratios 
+
+R := ⟨r1, r 2, . . . ⟩ be the mine’s draw ratio configuration. 
+
+Crushers. A crusher grinds fractured ore and then deposits it in a container for extraction. Let C := {c1, c 2, . . . } be the set of crushers in the mine. Ore can be transported from any drawbell to any crusher. 
+
+Constant Time Roadmap. We model the routes that agents in the mine can follow using a Constant Time Roadmap (CTR), i.e., a directed graph G := ( Q, E ) where each vertex qi ∈ Q
+
+represents a pose (a position and orientation pair). There is an edge (qi, q j ) ∈ E iff an agent can move from pose qi to pose qj within τ seconds and without passing through any other pose. Time in a block cave mine is discretized. One timestep lasts τ . Thus an agent can always move from any pose to any adjacent pose in exactly 1 timestep. A drawbell and a crusher is accessible from a pose qi
+
+if an agent at qi can load ore into it and unload ore from it. Let ¯D(qi) ⊆ D and ¯C(qi) ⊆ C denote the drawbells and crushers serviceable from qi. A valid CTR has the following properties: (1) The roadmap is strongly connected. If the roadmap is disconnected, it may be impossible to carry ore from some drawbell to a crusher; and (2) each drawbell/crusher must be accessible from at least one pose, that is: C = S 
+
+> qi∈Q
+
+¯C(qi) and D = S 
+
+> qi∈Q
+
+¯D(qi).
+
+B. Agents 
+
+A team of agents A := {a1, a 2, . . . } transports ore be-tween drawbells and crushers. Each agent is an autonomous vehicle. An agent can perform four types of actions: 
+
+Wait. The agent idles in its current pose for one timestep. Move. The agent moves to an adjacent pose in the roadmap. 
+
+Pick Up . The agent picks up ore from a drawbell dj ∈ ¯D(qi)
+
+accessible from its current pose qi.
+
+Deposit. The agent deposits ore into a crusher cj ∈ ¯C(qi)
+
+accessible from its current pose qi.Each agent is equipped with a shovel that has a capacity of exactly one ore unit. Shovels cannot be partially filled, and each pickup or deposit action transfers precisely one unit between a drawbell and the agent, or the agent and a crusher. Picking up ore from drawbell dj takes Tpk timesteps, and depositing it into crusher cj takes Tdp timesteps. If an agent at pose qi begins a pickup or deposit action, it occupies pose qi until that action is completed. The state of an agent 
+
+ai at timestep t is a pair (πit , σ it ) where πit ∈ Q denotes the agent’s pose and σit denotes the state of its shovel (0 for empty, and 1 for full). 
+
+C. Collision 
+
+Two poses qi, q j ∈ Q conflict iff two agents cannot occupy them simultaneously without colliding. We represent pose conflicts with a pose conflict family CQ ⊆ 2Q. Each element of CQ is a pose conflict set S, a set of pairwise conflicting poses. Any set of pairwise conflicting poses S′ ⊆ Q is a subset of some pose conflict set S ∈ C Q. A pose conflicts with itself. If a pose qi does not conflict with any other pose, the singleton set {qi} is contained in CQ to represent 
+
+qi’s self-conflict. Consequently, every pose appears in a set in CQ at least once. Similarly, two edges (qh, q i), (qj , q k) ∈ E conflict iff two agents cannot traverse them simultaneously without colliding. We represent edge conflicts with an edge conflict family CE ⊆ 2E . Each element of CE is an edge conflict set of pairwise conflicting edges. Any set S of pairwise conflicting edges in E is a subset of some edge conflict set in 
+
+CE . To prevent collisions, no two agents may occupy poses in the same pose conflict set in CQ at the same timestep or move along edges in the same edge conflict set in CE from the same timestep to the next one. 
+
+D. Transport Plan 
+
+A transport plan (π, σ) describes how agents move ore from drawbells to crushers. It defines the state (πit , σ it ) of each agent ai ∈ A at every timestep t. As ore must be transported continuously, we generate a cyclic transport plan that can be repeated indefinitely. A cyclic transport plan is associated with a cycle time T ∈ N and an agent permutation 
+
+Ω : A → A. The transport plan runs from t = 0 to t = T .The state of each agent ai ∈ A at t = 0 must be the same as the state of agent Ω( ai) at t = T , that is, 
+
+∀ ai ∈ A, (πi0, σ i0) = ( πjT , σ jT ) for aj = Ω( ai).
+
+A cyclic transport plan is repeated indefinitely by executing it from t = 0 to t = T , relabeling its agents according to 
+
+Ω, and then repeating the process. A cyclic transport plan is valid iff: (1) it can be realized by assigning each agent a sequence of wait, move, pickup and deposit actions, and (2) no two agents occupy conflicting poses or move along conflicting edges at any time t.
+
+E. The Block Cave Mining (BCM) Problem 
+
+A BCM problem can be formalized as a 5-tuple I := (Q, E, D, C, R ), where (Q, E ) is a constant time roadmap, 
+
+D and C are its drawbells and crushers, and R is a draw ratio configuration. The throughput of a cyclic transport plan (π, σ) with cycle length T is the average units of ore deposited per timestep. If DEPOSITS (π, σ) is the number of deposit actions in the plan (π, σ), the plan’s throughput is 
+
+> DEPOSITS
+
+(π, σ)/T . In the Block Cave Mining problem, we are given an BCM instance I and asked to find a valid cyclic transport plan that maximizes throughput. Let Ξ( I, T ) be the set of valid transport plans for instance I with cycle length 
+
+T . The BCM is formulated as: 
+
+max     
+
+> T∈N,(π,σ)∈Ξ( I,T )
+> DEPOSITS
+
+(π, σ)
+
+T .
+
+IV. B LOCK CAVE MINE BENCHMARKS 
+
+In this section, we describe a family of benchmark block cave mine layouts [19]. This family illustrates the layout of real-world block cave mines, composed of three components: drawbell tunnels, crusher tunnels, and a main tunnel. 
+
+Drawbell Tunnels. Drawbell tunnels are linear, dead-end tunnels with drawbells positioned at regular intervals along both sides. These tunnels are narrow, preventing agents from turning around and restricting the drawbells that they can access. In our mine layout, the drawbells on one side of a tunnel can only be accessed by agents facing its entrance, while the drawbells on the opposite side can only be accessed by agents facing its dead end. Consequently, an agent must reverse into a tunnel to access half of its drawbells. There is a bijection between the poses and the drawbells in a drawbell tunnel. Each pose lies directly outside its associated drawbell. Each drawbell is only accessible from its associated pose. The transitions between these poses form two simple paths: one for poses oriented toward the entrance and the other for poses oriented toward the dead end. Because drawbell tunnels are narrow, an agent following one path cannot pass an agent following the other. Similarly, an agent picking up ore from a drawbell blocks traffic from moving past it. Fig. 2 depicts a small mine which has two drawbell tunnels and eight drawbells. The paths of poses oriented towards the entrance and dead end of each drawbell tunnel are shown in red and yellow. 
+
+Main Tunnel. In a block cave mine, the drawbell tunnels run parallel to one another. Each drawbell tunnel connects to a main tunnel which runs perpendicular to them. Two paths of poses oriented in opposite directions run the length of the main tunnel. An agent on one of these paths cannot pass an agent on the other. Each path of poses in a drawbell tunnel connects to both paths of poses in the main tunnel. Fig. 2 depicts the poses in the mine’s main tunnel in orange. 
+
+Crusher Tunnels. Crusher tunnels are short passages that terminate at a crusher. Each crusher tunnel contains a single pose that provides access to its crusher. The three-way junction at the mouth of each drawbell and crusher tunnel allows agents to reorient. The mine in Fig. 2 has a single crusher tunnel, whose pose is shown in blue. Fig. 2. An example mine. Drawbell tunnels are circled in green; the main tunnel and crusher tunnel are circled in blue. Vehicles cannot turn around without complicated maneuvers, facilitated by the poses circled in orange. 
+
+We present a benchmark generatorfor block cave mines based on the layout described above. It allows for systematic variation of the number and density of drawbell tunnels, drawbells per tunnel, and crusher tunnels. V. T HE SIMPLE ANYTIME MINE MAPF S OLVER 
+
+In this section, we introduce SAMM (the Simple Anytime Mine MAPF), an anytime BCM solver, and prove that it is eventually optimal. We propose a way to accelerate SAMM, and prove that it remains eventually optimal. We construct SAMM as follows. Let the fixed cycle length (F-BCM) BCM problem be the problem of finding the best solution to a BCM instance I which has cycle length T . We introduce FLIMM (Fixed Length ILP-based Mine MAPF),a solver designed to find the optimal solution to the F-BCM. SAMM solves the BCM by running FLIMM with progressively higher values of T until time runs out. 
+
+A. The Fixed Length ILP-based Mine MAPF Solver 
+
+FLIMM solves the F-BCM problem by formulating it as an Integer Linear Program (ILP) as follows. 
+
+Variables. FLIMM’s ILP introduces the following variables. Let Φ ∈ { 0, 1} be set of possible shovel states and ϕ ∈ Φ
+
+be an arbitrary shovel state. 
+
+Occupancy Tensor. The tensor at is a |Q| × | Φ| × T tensor. The field at (qi, ϕ, t ) ∈ { 0, 1} indicates if an agent with shovel state ϕ is at pose qi at timestep t.
+
+Movement Tensor. The tensor mv is a |E| × | Φ| × T tensor. The field mv (qi, q j , ϕ, t ) ∈ { 0, 1} indicates if an agent with shovel state ϕ moves from pose qi to pose qj on timestep t.
+
+Pickup and Deposit Tensors. The tensors pk and dp are 
+
+|Q|×| D|× T and |Q|×| C|× T tensors. The fields pk (qi, d j , t )
+
+and dp (qi, c j , t ) indicate if an agent at pose qi picks up ore from drawbell dj and deposits it in crusher cj on timestep t.
+
+Objective Function. The objective is to maximize the rate at which ore is removed from the mine. Since the ratio between each draw rate λi ∈ { di}|D| 
+
+> i=2
+
+and λ1 is fixed, this is equivalent to maximizing the rate at which ore is picked up from drawbell d1. Let ¯Qi be the set of poses from which a drawbell di ∈ D can be accessed. 
+
+max X   
+
+> qj∈¯Q1
+> T−1
+
+X
+
+> t=0
+
+pk (qj , d 1, t )
+
+Action Selection Constraints. These constraints limit the actions that an agent may take in a given state. Let ADJ (qi)
+
+denote the set of poses adjacent to pose qi in the CTR. 
+
+Constraint 1. An agent at pose qi on timestep t with an empty shovel must move to an adjacent pose qj ∈ ADJ (qi), wait at 
+
+qi, or pick up ore from a drawbell dj ∈ ¯D(qi) accessible from pose qi. Every pose in the CTR has a self-loop edge since an agent at pose qi can always reach qi in τ time. The set of variables {mv (qi, q j , 0, t )}qj ∈ADJ (qi)} thus represents both move actions and wait actions. 
+
+∀ qi ∈ Q, ∀ t ∈ [0 ..T − 1] ,at (qi, 0, t ) = X 
+
+> qj∈ADJ (qi)
+
+mv (qi, q j , 0, t ) + X  
+
+> dj∈¯D(qi)
+
+pk (qi, d j , t ).
+
+Constraint 2. An agent at pose qi on timestep t with a full shovel must move to an adjacent pose, wait at pose qi, or deposit ore into a crusher accessible from qi.
+
+∀ qi ∈ Q, ∀ t ∈ [0 ..T − 1] ,at (qi, 1, t ) = X 
+
+> qj∈ADJ (qi)
+
+mv (qi, q j , 1, t ) + X  
+
+> cj∈¯C(qi)
+
+dp (qi, c j , t ).
+
+Constraint 3. FLIMM models a Tpk timestep pickup action as a one timestep pickup action followed by Tpk − 1 one timestep wait actions. An agent picking up ore from a drawbell dj ∈ ¯D(qi) at pose qi on timestep t must therefore wait at qi for the next Tpk − 1 timesteps. 
+
+∀ qi ∈ Q, ∀ dj ∈ ¯D(qi), ∀ s ∈ [1 ..T pk − 1] ,
+
+∀ t ∈ [0 ..T − 1] , mv (qi, q i, 0, (t + s)% T ) ≥ pk (qi, d j , t ).
+
+Constraint 4. Similarly, FLIMM models a Tdp deposit action as a one timestep deposit action followed by Tdp − 1 one timestep wait actions. An agent depositing ore into a crusher 
+
+cj ∈ ¯C(qi) at pose qi on timestep t must thus have waited in pose qi for the preceding Tdp − 1 timesteps. 
+
+∀ qi ∈ Q, ∀ cj ∈ ¯C(qi), ∀ s ∈ [1 ..T dp − 1] ,
+
+∀ t ∈ [0 ..T − 1] , mv (qi, q i, 0, (t − s)% T ) ≥ dp (qi, c j , t ).
+
+Since picks up and depositing ore is usually quick, Tpk and 
+
+Tdp is usually 1 (as in our evaluations). When Tpk = 1 and 
+
+Tdp = 1 , the range of values [1 .. 0] = {} that s takes in Constraints 3 and 4 is empty and the constraint vanishes. 
+
+Next State Constraints. These constraints determine the lo-cations of the team of agents on timestep t + 1% T based on the actions that were taken on timestep t.
+
+Constraint 5. There is an agent at pose qi with an empty shovel on timestep t+1% T if an agent with an empty shovel moved to qi or an agent at qi deposited ore on timestep t.
+
+∀ qi ∈ Q, ∀ t ∈ [0 ..T − 1] , at (qi, 0, t + 1% T )= X 
+
+> qj∈ADJ (qi)
+
+mv (qj , q i, 0, t ) + X  
+
+> cj∈¯C(qi)
+
+dp (qi, c j , t ).Algorithm 1 CONV FLIMM( at , mv , pk , dp ) 
+
+> 1:
+
+n ← P
+
+> qi∈Q
+
+P 
+
+> ϕ∈Φ
+
+at (qi, ϕ, t ) 
+
+> 2:
+
+(π, σ) ← two empty n × | T | matrices  
+
+> 3:
+
+j ← 0 
+
+> 4:
+
+for (qi, ϕ ) ∈ Q × Φ do  
+
+> 5:
+
+if at (qi, ϕ, 0) = 1 then  
+
+> 6:
+
+(πj0, σ j0) ← (qi, ϕ ) 
+
+> 7:
+
+j ← j + 1  
+
+> 8:
+
+for (j, t ) ∈ [0 ..n − 1] × [0 ..T − 1] do  
+
+> 9:
+
+(πj(t+1) , σ j(t+1) ) ← NXT STATE (πjt , σ jt , t, mv , pk , dp ) 
+
+> 10:
+
+Ω ← an empty length n vector  
+
+> 11:
+
+for j, k ∈ [0 ..n − 1] × [0 ..n − 1] do  
+
+> 12:
+
+if (πjT , σ jT ) = ( πk0, σ k0) then  
+
+> 13:
+
+Ω( aj ) ← ak 
+
+> 14:
+
+return (π, σ, Ω)  
+
+> 15:
+
+function NXT STATE (qi, ϕ, t, mv , pk , dp ) 
+
+> 16:
+
+for qj ∈ ADJ (qi) do  
+
+> 17:
+
+if mv (qi, q j , ϕ, t ) = 1 then  
+
+> 18:
+
+return (qj , ϕ ) 
+
+> 19:
+
+for dj ∈ ¯D(qi) do  
+
+> 20:
+
+if ϕ = 0 ∧ pk (qi, d j , t ) = 1 then  
+
+> 21:
+
+return (qi, 1)  
+
+> 22:
+
+for cj ∈ ¯C(qi) do  
+
+> 23:
+
+if ϕ = 1 ∧ dp (qi, d j , t ) = 1 then  
+
+> 24:
+
+return (qi, 0) 
+
+Constraint 6. There is an agent at pose qi with a full shovel on timestep t + 1% T if an agent with a full shovel moved to qi or an agent at qi picked up ore on timestep t.
+
+∀ qi ∈ Q, ∀ t ∈ [0 ..T − 1] , at (qi, 1, t + 1% T )= X 
+
+> qj∈ADJ (qi)
+
+mv (qj , q i, 1, t ) + X  
+
+> dj∈¯D(qi)
+
+pk (qi, d j , t ).
+
+Collision Constraints. These constraints prevent collisions. 
+
+Constraint 7. At most one agent may occupy a pose in any pose conflict set S ∈ C Q on any timestep t.
+
+∀ S ∈ C Q, ∀ t ∈ [0 ..T − 1] , X
+
+> qi∈S
+
+X
+
+> ϕ∈Φ
+
+at (qi, ϕ, t ) ≤ 1.
+
+Constraint 8. At most one agent may transition across an edge in any edge conflict set S ∈ C E on any timestep t.
+
+∀ S ∈ C E , ∀ t ∈ [0 ..T − 1] ,
+
+X 
+
+> (qi,q j)∈S
+
+X
+
+> ϕ∈Φ
+
+mv (qi, q j , ϕ, t ) ≤ 1.
+
+Draw Ratio Constraint. This constraint enforces the relative rates at which ore is removed from each drawbell. 
+
+Constraint 9. The ratio between the draw rate from each drawbell di and the reference drawbell d1 must be ri. Recall that ¯Qi be the set of poses from which di can be accessed. 
+
+∀di ∈ D, X   
+
+> qj∈¯Qi
+> T−1
+
+X
+
+> t=0
+
+pk (qj , d i, t ) = ri
+
+X   
+
+> qj∈¯Qi
+> T−1
+
+X
+
+> t=0
+
+pk (qj , d 1, t ).
+
+From Decision Variables to a Plan. Once FLIMM’s ILP is solved, the values assigned to its decision variables encode an optimal solution to the F-BCM. We translate these de-cision variable values into a formal plan using the function 
+
+> CONV
+
+FLIMM, shown in Algorithm 1. 
+
+Algorithm 2 SAMM( I, timer ) 
+
+> 1:
+
+(π∗, σ∗, Ω∗, T ) ← (NULL , NULL , NULL , 1)  
+
+> 2:
+
+while timer has not expired do  
+
+> 3:
+
+(at , mv , pk , dp ) ← FLIMM (I, T , timer ) 
+
+> 4:
+
+(π, σ, Ω) ← CONV FLIMM (at , mv , pk , dp ) 
+
+> 5:
+
+if π = NULL ∨ THRU (π, σ, T ) > THRU (π∗, σ∗, T ) then  
+
+> 6:
+
+(π∗, σ∗, Ω∗) ← (π, σ, Ω)  
+
+> 7:
+
+T ← T + 1  
+
+> 8:
+
+return (π∗, σ∗, Ω∗) 
+
+> 9:
+
+function THRU (π, σ, T ) 
+
+> 10:
+
+return DEPOSITS (π, σ)/T 
+
+> CONV
+
+FLIMM iterates over the variables {at (qi, ϕ, 0) : 
+
+qi ∈ Q, ϕ ∈ ϕ} (Lines 4-5). Whenever it encounters a variable with the value 1, it instantiates a new agent aj .Agent aj ’s initial pose and shovel state are set to πj0 = qi
+
+and σj0 = ϕ (Line 6). Next, CONV FLIMM determines the action assigned to agent aj on timestep t = 0 . If:  
+
+> •
+
+mv (qi, q i, ϕ, 0) is true, agent aj waits at pose qi. Thus 
+
+πj1 = qi and σj1 = ϕ. Since each pose has a self-loop, this check occurs in Lines 16-18.  
+
+> •
+
+mv (qi, q j , ϕ, 0) is true for some pose qj ∈ ADJ (qi),agent aj moves from qi to qj . Thus πj1 = qj and σj1 =
+
+ϕ (Lines 16-18).  
+
+> •
+
+agent aj ’s shovel is empty σj0 = 0 and pk (qi, d k, 0) = 1 for some dk ∈ ¯D(qi), agent aj picks up ore from drawbell dk. Thus πj1 = qi and σj1 = 1 (Lines 19-21).  
+
+> •
+
+agent aj ’s shovel is full σj0 = 1 and dp (qi, c k, 0) is true for some ck ∈ ¯C(qi), then aj deposits ore at crusher 
+
+ck. Thus πj1 = qi and σj1 = 0 (Lines 22-24). Constraint 5 ensures that exactly one of these conditions holds. ConvFLIMM repeats this procedure to determine the state of agent aj on timesteps t = 2 to T . After extract-ing FLIMM’s transport plan from its decision variables, ConvFLIMM determines its agent permutation Ω. An agent 
+
+aj ∈ A is mapped to the agent ak if its terminal state 
+
+(πjT , σ jT ) matches its initial state (πk0, σ k0) (Line 10-13). 
+
+B. The Simple Anytime Mine MAPF (SAMM) solver 
+
+We construct SAMM using our fixed-cycle-length BCM solver, as outlined in Algorithm 2. SAMM iteratively runs FLIMM with progressively increasing cycle lengths until the time limit timer is reached, then returns the best plan found. If timer expires while FLIMM is running, it returns NULL .
+
+Theorem 1: SAMM is eventually optimal. 
+
+Proof. Let (π∗, σ∗) be the optimal transport plan for the BCM instance I. Let T ∗ be the cycle length associated with this plan. Since SAMM enumerates cycle lengths in increasing order, it will eventually call FLIMM on cycle length T ∗. FLIMM will return (π∗, σ∗) since it is guaranteed to find the optimal plan for any fixed cycle length. □
+
+It is usually unnecessary to initialize SAMM with a cycle length of T = 1 since very short cycle lengths are typically impractical. Our evaluations initialize SAMM with T = 6 .
+
+C. Accelerating SAMM 
+
+FLIMM constrains each drawbell’s draw rate di to ri times the reference drawbell’s draw rate d1. If each ratio ri is Algorithm 3 SAMMS( I := ( Q, E, D, C, R ), timer ) 
+
+> 1:
+
+D ← PARTITION DRAWBELLS (D) 
+
+> 2:
+
+{D′
+
+> 1
+
+, D ′
+
+> 2
+
+, . . . } ← D  
+
+> 3:
+
+ξ1 ← GEN REF SUBCYCLE (I, D ′
+
+> 1
+
+, , timer ) 
+
+> 4:
+
+(π(1) , σ(1) , Ω(1) ) ← ξ1 
+
+> 5:
+
+¯π ← { π(1)  
+
+> j0
+
+: j ∈ [0 ..n − 1] } 
+
+> 6:
+
+¯σ = {σ(1)  
+
+> j0
+
+: j ∈ [0 ..n − 1] } 
+
+> 7:
+
+for D′ 
+
+> i
+
+∈ D s.t. i ̸ = 1 do  
+
+> 8:
+
+ξi ← GEN SUBCYCLE (I, D ′
+
+> i
+
+, ¯π, ¯σ, timer ) 
+
+> 9:
+
+return COMPOSE SUBCYCLES ({ξi}D′ 
+
+> i∈D
+
+) 
+
+> 10:
+
+function GEN REF SUBCYCLE (I, D ′
+
+> 1
+
+, timer ) 
+
+> 11:
+
+I′ 
+
+> 1
+
+← REDUCE BCM (I, D ′
+
+> 1
+
+) 
+
+> 12:
+
+return SAMM (I′
+
+> 1
+
+, timer ) 
+
+> 13:
+
+function GEN SUBCYCLE (I, D ′
+
+> i
+
+, ¯π, ¯σ, timer ) 
+
+> 14:
+
+I′ 
+
+> 1
+
+← REDUCE BCM (I, D ′
+
+> i
+
+) 
+
+> 15:
+
+return FS-SAMM (I′ 
+
+> i
+
+, ¯π, ¯σ, timer )
+
+simple (e.g., 3/2), these rates can often be achieved using a plan with a short cycle length. However, complex ratios (e.g., 97/100) may require a long cycle length. FLIMM’s worst case runtime grows exponentially with cycle length. To address this issue, we introduce Flexible Draw Rate FLIMM (FDR-FLIMM), a variant of FLIMM that allows each drawbell’s draw rate di to be higher than the target rate 
+
+rid1, relaxing Constraint 9 to read: 
+
+∀di ∈ D, X   
+
+> qj∈¯Qi
+> T−1
+
+X
+
+> t=0
+
+pk (qj , d i, t ) ≥ ri
+
+X   
+
+> qj∈¯Qi
+> T−1
+
+X
+
+> t=0
+
+pk (qj , d 1, t ).
+
+We enforce the target draw rate for each drawbell at execution time by occasionally skipping pickup actions. Let 
+
+zi(t) be the average rate at which ore has been extracted from drawbell di from timestep 0 to timestep t. On any timestep 
+
+t, if executing a pickup action would cause zi(t) to exceed the target rate rid1, we replace it with Tpk wait actions. 
+
+Theorem 2: The throughput of FDR-FLIMM’s solution to any fixed cycle length BCM instance (I, T ) is no worse than the throughput of FLIMM’s solution. 
+
+Proof. FDR-FLIMM is obtained by relaxing one of FLIMM’s constraints. Relaxing a constraint cannot eliminate any fea-sible solutions. Thus any feasible solution to FLIMM is a feasible solution to FDR-FLIMM. Both FLIMM and FDR-FLIMM maximize the reference draw rate d1. It follows that the draw rate d1 achieved by FDR-FLIMM is no lower than the draw rate achieved by FLIMM. The throughput of the solutions produced by both solvers is a multiple of d1. FLIMM enforces this relationship through its constraints, while FDR-FLIMM enforces it by selectively skipping pickup actions at execution time. Therefore, the throughput of FDR-FLIMM’s solution is no lower than the throughput of FLIMM’s solution. □
+
+Let FDR-SAMM be the variant of SAMM in which FLIMM is replaced by FDR-FLIMM. Theorem 2 implies that FDR-SAMM is also eventually optimal. VI. SAMM WITH SUBCYCLES 
+
+In this section, we introduce SAMMS (SAMM with Sub-cycles), a scalable solution to the block cave mining problem. We then establish that SAMMS is complete. 
+
+Algorithm 4 REDUCE BCM( I := ( Q, E, D, C, R ), D ′
+
+> i
+
+) 
+
+> 1:
+
+for qi ∈ Q do  
+
+> 2:
+
+¯D′
+
+> i
+
+(qi) ← ¯D(qi) \ D′ 
+
+> i
+> 3:
+
+ψi ← arg max {ri : di ∈ D}. 
+
+> 4:
+
+ρi ← max {ri : di ∈ D}. 
+
+> 5:
+
+R′ 
+
+> i
+
+← { rj /ρ i : dj ∈ D′
+
+> i
+
+} 
+
+> 6:
+
+return (Q, E, D ′
+
+> i
+
+, C, R ′
+
+> i
+
+)
+
+The computational complexity of constructing a cyclic plan with an ILP grows exponentially with its cycle length T .Instead of producing a single cyclic plan that services every drawbell, SAMMS constructs a sequence of subcycles Ξ := 
+
+{ξ1, ξ 2, . . . }, each of which services a subset of drawbells. SAMMS constructs a transport plan online by concatenating subcycles from Ξ. Whenever a subcycle completes, SAMMS selects a new subcycle to execute. SAMMS is shown in Alg. 3. It has four main steps: 
+
+Step 1.) SAMMS partitions the set of drawbells D into families using the function PARTITION DRAWBELLS (Line 1). Let the set of drawbell families be D := {D′
+
+> 1
+
+, D ′
+
+> 2
+
+, . . . }
+
+(Line 2). Each drawbell dj belongs to exactly one family. 
+
+Step 2.) Let the reference family D′ 
+
+> 1
+
+be the family that contains the reference drawbell d1. SAMMS constructs a subcycle ξ1 := ( π(1) , σ(1) , Ω(1) ) that services the reference family using the function GEN REF SUBCYCLE (Line 3). This subcycle is termed the reference subcycle. 
+
+Step 3.) SAMMS constructs subcycles {ξi}i̸=1 for the re-maining families {D′
+
+> i
+
+}i̸=1 . Let n be the number of agents used by the reference subcycle. Let ( ¯ π, ¯σ) be the state of these agents at t = 0 (Lines 5-6): 
+
+¯π = {π(1)  
+
+> j0
+
+: j ∈ [0 ..n − 1] }, ¯σ = {σ(1)  
+
+> j0
+
+: j ∈ [0 ..n − 1] }
+
+To ensure that the subcycles that SAMMS constructs can be seamlessly composed into a single global plan, each of these subcycles must: (a) use the same number of agents as the reference subcycle and (b) start and end with their team of agents in the state ( ¯ π, ¯σ). SAMMS constructs these subcycles using the function GEN SUBCYCLE (Lines 7-8). 
+
+Step 4.) Finally, SAMMS generates a transport plan online by selecting subcycles to run in real time using the func-tion COMPOSE SUBCYCLES (Line 9). SAMMS ensures each drawbell’s draw rate conforms to the draw ratio ri by running each subcycle at the appropriate frequency. We now describe the functions associated with each of SAMMS’s four steps. 
+
+> PARTITION
+
+DRAWBELLS . SAMMS assigns each subcycle g
+
+drawbells chosen at random from each drawbell tunnel, where g is a tunable hyperparameter. In block cave mining, overall throughput is typically limited by crusher access. Because drawbells are selected randomly, subcycles typically include drawbells both near and farther away from the main tunnel. This variation in travel distances helps stagger agent arrivals at the crushers, improving their utilization. 
+
+> REDUCE
+
+BCM . Step 2.) and 3.) rely on the function 
+
+> REDUCE
+
+BCM, shown in Alg. 4. REDUCE BCM removes every drawbell in an BCM instance I not in a family D′
+
+> i
+
+.The resulting reduced BCM instance is denoted I′
+
+> i
+
+.First, REDUCE BCM computes the set of drawbells ¯D′
+
+> i
+
+(qi)
+
+accessible from each pose qj ∈ Q in I′ 
+
+> i
+
+by removing every drawbell that is not in D′ 
+
+> i
+
+from the set ¯D(qi) (Line 1-2). Second, it selects a reference drawbell for I′ 
+
+> i
+
+. The drawbell in D′ 
+
+> i
+
+with the highest draw rate is chosen as D′
+
+> i
+
+’s reference drawbell. This drawbell is denoted ψi (Line 3). Since the reference drawbell d1 has the highest draw rate of any drawbell in I, d1 is the reference drawbell in I′
+
+> 1
+
+.Third, it re-expresses the draw ratios of the drawbells in D′ 
+
+> i
+
+relative to the new reference drawbell ψi. The draw ratio between a drawbell dj ∈ D and the original reference drawbell d1 is rj := λj /λ 1. Thus, the draw ratio between two arbitrary drawbells dj , d k ∈ D is λj /λ k = λj /λ 1 · λ1/λ k =
+
+rj /r k. Let ρi be the draw ratio between D′
+
+> i
+
+’s reference drawbell ψi and the original reference drawbell d1 in I
+
+(Line 4). The draw ratio between a drawbell dj ∈ D′ 
+
+> i
+
+and 
+
+ψi is thus rj /ρ i. The set of rescaled draw ratios R′ 
+
+> i
+
+in I′ 
+
+> i
+
+is thus R′ 
+
+> i
+
+:= {rj /ρ i : dj ∈ D′
+
+> i
+
+} (Line 5). 
+
+> GEN
+
+REF SUBCYCLE . This function is shown in Alg. 3(Lines 10-12). Recall that D′ 
+
+> 1
+
+is the family containing the original reference drawbell d1. GEN REF SUBCYCLE uses 
+
+> REDUCE
+
+BCM to obtain the reduced BCM instance I′
+
+> 1
+
+(Line 11). It then uses SAMM to solve I′ 
+
+> 1
+
+(Line 12). 
+
+> GEN
+
+SUBCYCLE . This function also generates a reduced BCM instance I′ 
+
+> i
+
+by applying REDUCE BCM to I (Line 14). However, it solves I′ 
+
+> 1
+
+using a modified version of SAMM called Fixed Start SAMM (FS-SAMM) (Line 15). FS-SAMM is constructed by replacing SAMM’s call to FLIMM with a call to a variant of FLIMM, Fixed Start FLIMM (FS-FLIMM). FS-FLIMM considers only solutions to the F-BCM problem that start and end with its agents in the state ( ¯ π, ¯σ). FS-FLIMM is obtained by augmenting FLIMM with the following constraints. 
+
+Constraint 12. There is an agent in pose qi ∈ Q with shovel state ϕ ∈ Φ on timestep t = 0 iff there is an agent in that state in ( ¯ π, ¯σ).
+
+∀ qi ∈ Q, ∀ ϕ ∈ Φ, at (qi, ϕ, 0) 
+
+⇔ ∃ j ∈ [0 ..n − 1] s.t. (¯ πj , ¯σj ) = ( qi, ϕ ).
+
+> COMPOSE
+
+SUBCYCLES . This function constructs a transport plan online by concatenating subcycles from Ξ. Whenever a subcycle completes, the function selects the next subcycle to execute. Because all subcycles share the same start and end state, they can be seamlessly composed in any order. 
+
+> COMPOSE
+
+SUBCYCLES ensures that the draw rates of all drawbells conform to the draw ratios in R by adjusting how frequently each subcycle is executed. Let fi be subcycle ξi’s execution frequency. Let PICKUP (ψi) be the amount of ore that each execution of ξi removes from its reference drawbell 
+
+ψi. The draw rate from ψi is thus fi · PICKUP (ψi).The required draw ratio between ψi and subcycle ξ1’s reference drawbell ψ1 = d1 is ρi. To produce this draw ratio, COMPOSE SUBCYCLES must ensure that: 
+
+fi · PICKUP (ψi) = f1 · PICKUP (ψ1) · ρi
+
+Thus, ξi must be executed ηi times for every execution of 
+
+ξ1 where: 
+
+ηi := fi
+
+f1
+
+= PICKUP (ψ1) · ρi
+
+> PICKUP
+
+(ψi)
+
+Algorithm 5 COMPOSE SUBCYCLES (Ξ, η)                           
+
+> 1: for ξi∈Ξdo
+> 2: fi←0
+> 3: while true do
+> 4: for ξi∈Ξdo
+> 5: if (fi+ 1) /f 1≤ηithen
+> 6: RUN (ξi)
+> 7: fi←fi+ 1
+
+We term ηi subcycle ξi’s execution ratio. Let the set of all execution ratios be η := {ηi : ξi ∈ Ξ}.In practice, achieving the exact execution ratio ηi that each subcycle {ξi}i̸=1 requires is difficult when these ra-tios are not simple. Consequently, COMPOSE SUBCYCLES 
+
+is designed to achieve asymptotic feasibility. As the plan length increases, COMPOSE SUBCYCLES ’s draw ratio con-straint violations converge to zero at the rate O(1 /n ), where 
+
+n is the number of subcycles that have been executed. 
+
+> COMPOSE
+
+SUBCYCLES is shown in Alg. 5. 
+
+> COMPOSE
+
+SUBCYCLES continously loops over the subcy-cles in Ξ. When it reaches each subcycle ξi ∈ Ξ, it runs ξi
+
+unless doing so would cause ξi’s realized execution ratio to exceed its target execution ratio (Lines 4-7). 
+
+A. Analysis 
+
+Let L be the number of times that COMPOSE SUBCYCLES ’s inner loop (Lines 4-7) has been run. 
+
+Theorem 3: SAMMS can generate an asymptotically fea-sible solution for any BCM instance I. After COMPOSE SUB - 
+
+> CYCLES
+
+loops L times, each drawbell’s draw rate within 
+
+O(1 /L ) of the target draw rate. 
+
+Proof. The realized draw ratio between a drawbell dj ∈ D′
+
+> i
+
+and the reference drawbell d1 is directly proportional to the realized execution ratio between D′ 
+
+> i
+
+and D′
+
+> 1
+
+. Thus, if the realized execution ratio of D′ 
+
+> i
+
+converges to ηi at rate O(1 /L ),the realized draw ratio of drawbell dj converges to rj at the same asymptotic rate. After L loops, each subcycle ξk ∈ Ξ
+
+has been executed exactly ⌊ηk · L⌋ times. Since η1 = 1 ,the realized execution ratio of ξi is ⌊ηi · L⌋/L . The error 
+
+ηi − ⌊ ηi · L⌋/L converges to 0 at rate O(1 /L ). □
+
+VII. E XPERIMENTAL RESULTS 
+
+We evaluate SAMM and SAMMS from two points of view: (a) the computational time, and (b) solution quality, ex-pressed as throughput, i.e. the total amount of ore deposited. 
+
+Setup. SAMM and SAMMS are evaluated on five block cave mine scenarios. These scenarios were chosen to have a good mix of drawbells and crushers, maximizing the potential ef-fects of optimization. SAMM and SAMMS were given a time limit of 60 seconds in each experiment. This time limit is re-alistic since embeddings are computed offline. Both SAMM and SAMMs were set to terminate after two runs of FLIMM without any improvement. Pickup and deposit times were both set to one timestep. The scenarios [20] are produced by a benchmark generator whose parameters are calibrated from layout statistics reported in [19]. We implement[21] Alg. 2 and 3 in Python 3.11 [22]. We represent the layout graph with the NetworkX [23] library, and solve FLIMM as an ILP TABLE I SAMM VS . SAMMS THROUGHPUT AND RUNTIME ACROSS SCENARIOS .
+
+Scenario Drawbells Crushers SAMM Throughput SAMM Runtime (s) SAMMS Throughput SAMMS Runtime (s) 
+
+1 8 4 0.89 11.0 0.56 0.96 2 14 7 1.56 49.1 0.92 1.69 3 16 8 1.78 57.8 1.10 2.92 4 18 4 N/A 60 0.40 11.28 5 24 4 N/A 60 0.34 55.8 6 36 6 N/A 60 0.59 13.9 7 48 8 N/A 60 0.73 34.0 
+
+using Gurobi [24]. Our implementation and the code to run our evaluations is publicly available at [21]. Each evaluation was performed on a Intel Core Ultra 9 275HX × 24 CPU, a NVIDIA GeForce RTX 5080 Laptop GPU and 32 GiB of RAM running Ubuntu 24.04.3 LTS. 
+
+A. Results. 
+
+The goal of our evaluation is to determine whether SAMM and SAMMS can scale to scenarios representative of indus-trial use cases. We ran SAMM and SAMMS 5 times on 7 scenarios of increasing complexity. Table VI-A shows each solvers: (i) mean throughput, measured across the runs where it terminated successfully, and (ii) mean runtime, where a failed run had a mean runtime of 60sec. SAMMS solved 5/5 runs on each scenario except for scenarios 5 and 7, where it solved 4/5 runs. It consistently achieved runtimes an order of magnitude faster than SAMM by decomposing the BCM problem into smaller, independent subproblems. SAMM, however, was not able to scale to the two larger scenarios. Notably, throughput is always relatively low, even in scenarios with a large number of crushers. In the tight mine geometries used in our evaluations, maneuvering agents into and out of a crusher is time-consuming. Consequently, whenever an agent deposits ore into a crusher, the crusher is effectively occupied or an extended period of time, even though a deposit action only takes a single timestep. VIII. C ONCLUSIONS 
+
+In this paper, we formalize the Block Cave Mining (BCM) 
+
+problem, which focuses on coordinating autonomous vehi-cles in underground mines. In order to solve the problem, we propose SAMM, an eventually optimal anytime solver, which jointly solves task assignment, scheduling, and path planning via MILP. To address scalability limitations inherent in MILP approaches, we also present SAMMS, which decomposes the planning into shorter subcycles, trading optimality for computational efficiency. Experimental results on real-world mine scenarios demonstrate that SAMMS can be applied to industrial-scale BCM instances. REFERENCES [1] L. M., S. Schafrik, P. Kolapo, Z. Agioutantis, and J. Sottile, “Equip-ment and Operations Automation in Mining: A Review,” Machines ,vol. 10, no. 12, p. 713, 2024. [2] B. Gold, “Rio Tinto’s Autonomous Haulage Achieves 1 Billion Tons,” 
+
+Eng. and Mining J. , vol. 219, pp. 4—-5, 2018. [3] L. Orellana, R. Castro, A. Hekmat, and E. Arancabia, “Productivity of a Continuous Mining System for Block Caving,” Rock Mechanics and Rock Eng. , vol. 50, pp. 657—-663, 2016. [4] A. R. Guest, G. J. van Hout, A. V. Johannides, and L. Scheepers, “An application of linear programming for block cave draw control,” in 
+
+Int. Mass Mining Conference and Exhibition. , 2006. [5] R. Stern, N. R. Sturtevant, A. Felner, S. Koenig, H. Ma, T. T. Walker, J. Li, D. Atzmon, L. Cohen, T. K. S. Kumar, E. Boyarski, and R. Bart´ ak, “Multi-agent pathfinding: Definitions, variants, and benchmarks,” ArXiv , vol. abs/1906.08291, 2019. [6] A. Agaskar, S. Siva, W. Pickering, K. O’Brien, C. Kekeh, A. Li, B. G. Sarker, A. Chua, M. Nemade, C. Thattai, J. Di, I. Iyengar, R. Dharoor, D. Kirouani, J. Erskine, T. Hegazy, S. Niekum, U. A. Khan, F. Pecora, and J. W. Durham, “Deepfleet: Multi-agent foundation models for mobile robots,” ArXiv , 2025. [7] J. Li, T. A. Hoang, E. Lin, H. L. Vu, and S. Koenig, “Intersection coordination with priority-based search for autonomous vehicles,” in 
+
+AAAI Conf. Artif. Intell. , 2023. [8] G. Sartoretti, Y. Wu, W. Paivine, T. Kumar, S. Koenig, and H. Choset, “Distributed Reinforcement Learning for Multi-Robot Decentralized Collective Construction,” The Int. Symp. on Distributed Auton. Robot. Syst. , pp. 35–49, 2018. [9] M. A. Erdmann and T. Lozano-Perez, “On multiple moving objects,” 
+
+Algorithmica , vol. 2, pp. 477–521, 1986. [10] G. Sharon, R. Stern, A. Felner, and N. R. Sturtevant, “Conflict-Based Search for Optimal Multi-Agent Path Finding,” Artif. Intell. , vol. 219, p. 40–66, 2012. [11] S.-H. Chan, R. Stern, A. Felner, and S. Koenig, “Greedy priority-based search for suboptimal multi-agent path finding,” in Symp. on Combinatorial Search , 2023. [12] J. Yu and S. LaValle, “Multi-agent Path Planning and Network Flow,” 
+
+Algorithmic Foundations of Robot. X , pp. 157–173, 2013. [13] E. Lam, P. L. Bodic, D. D. Harabor, and P. J. Stuckey, “Branch-and-cut-and-price for multi-agent pathfinding,” Comput. Oper. Res. , vol. 144, p. 105809, 2019. [14] V. Nguyen, P. Obermeier, T. C. Son, T. Schaub, and W. Yeoh, “Generalized Target Assignment and Path Finding Using Answer Set Programming.” Int. Joint Conf. Artif. Intell. , pp. 1216–1223, 2017. [15] F. Khodayari and Y. Pourrahimian, “Mathematical programming ap-plications in block-caving scheduling: a review of models and algo-rithms,” Int. J. of Mining and Mineral Eng. , 2015. [16] M. Tabesh and H. Askari-Nasab, “Two-stage clustering algorithm for block aggregation in open pit mines,” Mining Technol. , vol. 120, pp. 158 – 169, 2011. [17] D. O’Sullivan and A. M. Newman, “Optimization-based heuristics for underground mine scheduling,” Eur. J. Oper. Res. , vol. 241, pp. 248– 259, 2015. [18] S. Donaldson, W. Harney, and T. Cox, “Operational and real-time lhd dispatch at rio tinto’s argyle diamond mine,” MassMin 2020: Proc. of the Eighth Int. Conf. & Exhibition on Mass Mining , 2020. [19] R. G´ omez, K. Sa´ ez, N. Pino, E. Labbe, and E. Marambio, “Analysis of extraction level layouts for block caving,” MassMin 2020: Proc. of the Eighth Int. Conf. & Exhibition on Mass Mining , 2020. [20] P. Forte, Atlantis Collection , 2025, https://github.com/PaoloForte95/ atlantis collection. [21] C. Leet, “SAMM-block-cave-mining,” https://github.com/chrisleet/ SAMM-block-cave-mining, 2026, gitHub repository, accessed March 6, 2026. [22] Python Software Foundation, “Python 3.11.10 Documentation,” 2024, accessed: 2024-09-15. [23] A. A. Hagberg, D. A. Schult, and P. Swart, “Exploring Network Structure, Dynamics, and Function using NetworkX,” The 7th Python in Sci. Conf. , pp. 11–15, 2008. [24] Gurobi Optimization, LLC, “Gurobi Optimizer Reference Manual,” 2024, accessed: 2024-09-15.

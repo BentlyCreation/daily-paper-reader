@@ -1,0 +1,190 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-10T21:58:49.487330+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 2,
+    "deep_cap": 8,
+    "deep_selected": 2,
+    "quick_candidates": 2,
+    "quick_skim_target": 13,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2609.09752v1",
+      "source": "arxiv",
+      "title": "HiRAD: A Flexible Large-Scale AGV Routing System",
+      "abstract": "Automatic Guided Vehicles (AGVs) substantially boost warehouse throughput, but routing large-scale AGV fleets remains challenging. Classical Multi-Agent Pathfinding solvers suffer from exploding combinatorial complexity and super-quadratic runtime, while relying on idealized grid or piecewise-linear motion models that mismatch real-world kinematics. Recent Reinforcement Learning (RL) solutions improve flexibility via decentralized agent policies but depend on discretized spatiotemporal representations, require millions of episodes to converge, and incur full-map observation at every step, which leads to large models, slow convergence, and high inference latency that violates real-time industrial control constraints. To address these bottlenecks, we propose HiRAD, a hierarchical RL framework for continuous-space AGV routing with real-time guarantees: (1) a step-level spatiotemporal representation that translates continuous motion into a differentiable RL problem, (2) a hierarchical strategy that splits heading choice from velocity control to reduce the action space, and (3) an asynchronous event-driven decision pipeline that lowers inference complexity from O(n^2) to O(n) and cuts per-step latency by as much as 71 percent. Across random graphs and two warehouse maps, HiRAD reduces makespan by 45 percent to 63 percent and shortens end-to-end runtime.",
+      "authors": [
+        "Yunjie Huang",
+        "Ruizhong Wu",
+        "Mengxuan Zhang",
+        "Frodo Kin Sun Chan",
+        "Yan Nei Law",
+        "Lei Li"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-09-09T05:50:17+00:00",
+      "link": "https://arxiv.org/pdf/2609.09752v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Hierarchical large-scale AGV routing combining MAPF and decentralized RL policies",
+      "llm_evidence_cn": "面向大规模AGV的分层路由系统，结合多智能体路径规划与去中心化强化学习",
+      "llm_evidence": "面向大规模AGV的分层路由系统，结合多智能体路径规划与去中心化强化学习",
+      "canonical_evidence": "面向大规模AGV的分层路由系统，结合多智能体路径规划与去中心化强化学习",
+      "llm_tldr_en": "Classical MAPF solvers explode combinatorially and RL agents need millions of episodes with full-map observations. HiRAD, a hierarchical AGV routing system, combines learning and classical methods for scalable, real-time large-fleet routing.",
+      "llm_tldr_cn": "大规模自动导引车调度面临挑战：经典多智能体路径规划求解器组合复杂度爆炸且依赖理想化运动模型，而现有强化学习方案依赖离散时空表示、需数百万回合收敛且每步使用全图观测，难以满足实时工业控制。本文提出HiRAD分层路由系统，融合学习与经典方法以降低计算与观测开销。实验表明其在大规模车队下具有更好的可扩展性与实时性。该工作推动了学习型多智能体路径规划在仓储场景的实用化。",
+      "llm_tldr": "大规模自动导引车调度面临挑战：经典多智能体路径规划求解器组合复杂度爆炸且依赖理想化运动模型，而现有强化学习方案依赖离散时空表示、需数百万回合收敛且每步使用全图观测，难以满足实时工业控制。本文提出HiRAD分层路由系统，融合学习与经典方法以降低计算与观测开销。实验表明其在大规模车队下具有更好的可扩展性与实时性。该工作推动了学习型多智能体路径规划在仓储场景的实用化。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.10400v1",
+      "source": "arxiv",
+      "title": "A traffic management system for large and heterogeneous vehicles in narrow industrial environments",
+      "abstract": "The coordination of Automated Guided Vehicles (AGVs) in high-density industrial environments represents a critical challenge within Logistics 4.0, as traditional traffic management methods often lead to inefficiencies caused by negotiation-based priority assignment. To overcome the resulting limitations, this paper presents an innovative AGV traffic management system based on a Lifelong Multi-Agent Path Finding (L-MAPF) algorithm operating on roadmaps generated with Non-Uniform Rational B-Splines (NURBS) curves. The approach guarantees locally optimal coordination and ensures safe operation of large and heterogeneous AGVs. Building on this concept, the proposed framework integrates a modified version of the Bounded Horizon Conflict Based Search (CBS) technique within a Rolling Horizon Conflict Resolution strategy, utilizing an extended time horizon for each agent to enable effective conflict resolution in corridors identified by a topological map. In contrast to state-of-the-art methods for AGV fleet traffic management, the proposed solution is designed for real-world, non-standardized (i.e., non-grid-like) industrial settings characterized by narrow bidirectional corridors and high-traffic density, where AGVs of various sizes and capabilities operate simultaneously. Key contributions include an anytime conflict resolution strategy with adaptive time horizon regulation, an execution layer for safe and standard-compliant interaction with real AGVs, and an advanced mechanism for deadlock detection and resolution. Experimental results obtained in realistic industrial environments demonstrate higher throughput, with improvements of up to 11% over a conventional rule-based traffic management system, a state-of-the-art industrial method, and a priority-based L-MAPF variant, while maintaining continuous operation and improved efficiency.",
+      "authors": [
+        "Alessandro Bonetti",
+        "Silvia Proia",
+        "Simone Guidetti",
+        "Lorenzo Sabattini"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.MA"
+      ],
+      "published": "2026-09-09T16:20:51+00:00",
+      "link": "https://arxiv.org/pdf/2609.10400v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Lifelong Multi-Agent Path Finding for AGV traffic management",
+      "llm_evidence_cn": "面向AGV交通管理的终身多智能体路径规划",
+      "llm_evidence": "面向AGV交通管理的终身多智能体路径规划",
+      "canonical_evidence": "面向AGV交通管理的终身多智能体路径规划",
+      "llm_tldr_en": "A traffic management system based on Lifelong Multi-Agent Path Finding on NURBS roadmaps coordinates large heterogeneous AGVs, guaranteeing locally optimal and safe operation in dense industrial environments.",
+      "llm_tldr_cn": "高密度工业环境中大型异构自动导引车的协调是物流4.0的关键难题，传统基于协商优先级的交通管理方法效率低下。本文提出基于终身多智能体路径规划（L-MAPF）的交通管理系统，在NURBS曲线生成的路网上运行，并集成改进的有界时域冲突求解。该框架保证局部最优协调与大型异构AGV的安全运行，将L-MAPF落地于工业物流场景，显著提升通行效率并具备实际部署价值。",
+      "llm_tldr": "高密度工业环境中大型异构自动导引车的协调是物流4.0的关键难题，传统基于协商优先级的交通管理方法效率低下。本文提出基于终身多智能体路径规划（L-MAPF）的交通管理系统，在NURBS曲线生成的路网上运行，并集成改进的有界时域冲突求解。该框架保证局部最优协调与大型异构AGV的安全运行，将L-MAPF落地于工业物流场景，显著提升通行效率并具备实际部署价值。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.06342v1",
+      "source": "arxiv",
+      "title": "OcclusionCBF: Backup Control Barrier Functions for Safe Navigation Among Hidden Dynamic Obstacles",
+      "abstract": "Robots navigating under occlusion may enter states from which no admissible input can avoid a dynamic obstacle once it becomes visible. We present OcclusionCBF, a safety filter that extends backup control barrier functions to reachable-occupancy predictions for potentially hidden dynamic obstacles in occluded regions. The method certifies a prescribed backup rollout against collision-inflated occupancy and a verified terminal set, yielding affine constraints for minimally invasive quadratic-program filtering. We establish recursive feasibility of the resulting safety filter, and collision avoidance for every hidden-obstacle motion covered by the occupancy prediction. Randomized benchmarks, MetaUrban simulations, and hardware experiments demonstrate improved task success over reactive and occlusion-aware predictive baselines with millisecond-scale computation.",
+      "authors": [
+        "Taekyung Kim",
+        "Hun Kuk Park",
+        "Renya Wada",
+        "Nikolay Atanasov",
+        "Shumon Koga",
+        "Dimitra Panagou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "eess.SY"
+      ],
+      "published": "2026-09-06T02:31:47+00:00",
+      "link": "https://arxiv.org/pdf/2609.06342v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "reachable-occupancy prediction for hidden dynamic obstacles with collision avoidance",
+      "llm_evidence_cn": "面向隐藏动态障碍的可达占据预测与避碰",
+      "llm_evidence": "面向隐藏动态障碍的可达占据预测与避碰",
+      "canonical_evidence": "面向隐藏动态障碍的可达占据预测与避碰",
+      "llm_tldr_en": "Proposes OcclusionCBF, a safety filter extending backup control barrier functions to reachable-occupancy predictions for hidden dynamic obstacles, guaranteeing collision avoidance under occlusion with recursive feasibility.",
+      "llm_tldr_cn": "该文针对机器人在遮挡环境下可能进入无法规避动态障碍的危险状态这一问题，提出OcclusionCBF安全滤波器。方法将备用控制障碍函数扩展到对隐藏动态障碍的可达占据预测，并用碰撞膨胀占据与已验证终端集对备用轨迹进行认证，从而导出二次规划形式的仿射约束。作者证明滤波器的递归可行性，并对占据预测覆盖的所有隐藏障碍运动保证避碰。随机基准、MetaUrban仿真与硬件实验验证了其有效性，为动态环境安全导航提供可证明保障。",
+      "llm_tldr": "该文针对机器人在遮挡环境下可能进入无法规避动态障碍的危险状态这一问题，提出OcclusionCBF安全滤波器。方法将备用控制障碍函数扩展到对隐藏动态障碍的可达占据预测，并用碰撞膨胀占据与已验证终端集对备用轨迹进行认证，从而导出二次规划形式的仿射约束。作者证明滤波器的递归可行性，并对占据预测覆盖的所有隐藏障碍运动保证避碰。随机基准、MetaUrban仿真与硬件实验验证了其有效性，为动态环境安全导航提供可证明保障。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "crowd occupancy grid perception dynamic occupancy",
+      "matched_requirement_id": "req-23",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.07109v1",
+      "source": "arxiv",
+      "title": "Eventually Optimal and Scalable Multi-Agent Planning for Block Cave Mining",
+      "abstract": "Automation in underground mining has the potential to significantly enhance safety, operational efficiency, and sustainability. However, effectively coordinating fleets of autonomous vehicles in dynamic mine environments introduces substantial challenges in both optimization and motion planning. To address these challenges, we introduce and formalize the \\emph{Block Cave Mining (BCM)} problem, which focuses on computing a transport plan that maximizes ore throughput while satisfying draw ratio constraints. To solve this problem, we propose SAMM, an eventually optimal anytime solver that jointly integrates task assignment, scheduling, and path planning via a mixed-integer linear programming formulation. To improve scalability, we also introduce SAMMS, a variant of SAMM that trades optimality guarantees for efficiency by decomposing the problem into shorter planning subcycles. Experimental evaluations using realistic industrial mine scenarios demonstrate that SAMMS achieves near-optimal throughput and scales effectively to larger fleets and mine layouts.",
+      "authors": [
+        "Christopher Leet",
+        "Paolo Forte",
+        "Uwe Köckemann",
+        "Henrik Andreasson",
+        "Sven Koenig"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-07T06:49:12+00:00",
+      "link": "https://arxiv.org/pdf/2609.07109v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent planning jointly integrating task assignment and path planning",
+      "llm_evidence_cn": "联合任务分配与路径规划的多智能体规划",
+      "llm_evidence": "联合任务分配与路径规划的多智能体规划",
+      "canonical_evidence": "联合任务分配与路径规划的多智能体规划",
+      "llm_tldr_en": "The paper formalizes the Block Cave Mining problem and proposes SAMM, an eventually optimal anytime solver combining task assignment, scheduling and path planning via MILP for autonomous fleets.",
+      "llm_tldr_cn": "针对地下矿区无人车队在动态环境中协调困难、需同时优化任务分配与运动规划的问题，本文形式化了崩落法采矿（BCM）问题，目标是在满足放矿比约束下最大化矿石吞吐。作者提出SAMM随时求解器，用混合整数线性规划联合任务分配、调度与路径规划，并提升可扩展性。该工作将多智能体路径规划与任务调度统一建模，为工业场景中的车队协调提供了可扩展方案。",
+      "llm_tldr": "针对地下矿区无人车队在动态环境中协调困难、需同时优化任务分配与运动规划的问题，本文形式化了崩落法采矿（BCM）问题，目标是在满足放矿比约束下最大化矿石吞吐。作者提出SAMM随时求解器，用混合整数线性规划联合任务分配、调度与路径规划，并提升可扩展性。该工作将多智能体路径规划与任务调度统一建模，为工业场景中的车队协调提供了可扩展方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
