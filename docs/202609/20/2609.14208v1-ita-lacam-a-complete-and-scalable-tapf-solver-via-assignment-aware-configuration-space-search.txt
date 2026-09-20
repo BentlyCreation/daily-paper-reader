@@ -1,0 +1,305 @@
+Title: ITA-LaCAM: A Complete and Scalable TAPF Solver via Assignment-Aware Configuration-Space Search
+
+URL Source: https://arxiv.org/pdf/2609.14208v1
+
+Published Time: Tue, 15 Sep 2026 01:03:23 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# ITA-LaCAM: A Complete and Scalable TAPF Solver via Assignment-Aware Configuration-Space Search 
+
+# Yimin Tang 1,3 , Han Zhang 3, Shao-Hung Chan 3, Junsoo Kim 1, Erdem Bıyık 1, Sven Koenig 2,Jingkai Chen 3
+
+> 1
+
+Thomas Lord Department of Computer Science, University of Southern California 
+
+> 2
+
+Department of Computer Science, University of California Irvine 
+
+> 3
+
+Symbotic {yimintan,junsooki,biyik}@usc.edu, svenk@uci.edu, {hanzhang,shchan,jichen}@symbotic.com 
+
+Abstract 
+
+Combined Target Assignment and Path Finding (TAPF) re-quires assigning targets for agents while simultaneously plan-ning collision-free paths. We present ITA-LaCAM, a com-plete and scalable TAPF solver inspired by LaCAM and ITA-CBS. In ITA-LaCAM, each joint-configuration node car-ries an agent-to-target matching. When a successor is gener-ated, ITA-LaCAM incrementally repairs the matching for the agents that moved and uses the targets to guide PIBT suc-cessor generation. This design enables adaptive reassignment without explicitly enumerating the combinatorial assignment space, while preserving LaCAM’s completeness and scala-bility. Across 9,760 benchmark instances on eight maps with 5–200 agents, ITA-LaCAM solved 100% of the instances, compared with 95.6% for IR-TAPF configured with DBS-Hungarian. ITA-LaCAM found an initial solution faster in 84.0% of the comparisons and achieved a lower sum of costs in 65.0% of the instances solved by both methods. 
+
+# Introduction 
+
+Multi-Agent Path Finding (MAPF) plans collision-free paths for multiple agents from their starts to distinct goals while optimizing a cost criterion. It models coordination in ware-house automation, transportation, and aerial swarms. Since optimal MAPF is NP-hard (Yu and LaValle 2013; Stern et al. 2019), optimal solvers such as Conflict-Based Search (CBS) (Sharon et al. 2015) and M ∗ (Wagner and Choset 2011) face scalability challenges as agent count and den-sity increase. Faster suboptimal methods include Prioritized Planning (PP) (Erdmann and Lozano-Perez 1987; Silver 2005), PBS (Ma et al. 2019), LaCAM (Okumura 2023b), MAPF-LNS2 (Li et al. 2022), and their variants (Chan et al. 2023; Okumura 2024). These methods find solutions much faster on large or congested instances but generally lack op-timality guarantees. In many applications, targets are not fixed in advance. Warehouse robots, for example, may choose among shelves, storage locations, or workstations (Wurman, D’Andrea, and Mountz 2008). Combined Target-Assignment and Path-Finding (TAPF) (Ma and Koenig 2016) assigns each agent one allowable target while planning collision-free paths to all assigned targets. MAPF is the special case with one al-lowable target per agent. TAPF thus inherits MAPF’s dif-
+
+(a) Random 
+
+32 × 32 
+
+(b) Symbotic 
+
+39 × 37 
+
+(c) den312d 
+
+65 × 81 
+
+(d) Maze 
+
+32 × 32 
+
+(e) Room 
+
+64 × 64 
+
+(f) Boston 
+
+256 × 256 
+
+(g) orz900d 
+
+1491 × 656 
+
+(h) Warehouse 
+
+161 × 63 
+
+Figure 1: The eight benchmark maps used in our experiments. ficulty while adding the tightly coupled assignment deci-sion; a poor assignment can create congestion and greatly complicate path finding. Optimal TAPF algorithms include CBM (Ma and Koenig 2016), CBS-TA (Hönig et al. 2018), and ITA-CBS (Tang et al. 2023). Although they provide strong solution-quality guarantees, like CBS-based MAPF solvers, their conflict-resolution trees become expensive on large, dense instances. Bounded-suboptimal variants such as ECBS-TA (Hönig et al. 2018) and ITA-ECBS (Tang, Koenig, and Li 2024) improve scalability with bounded costs but re-tain much of the CBS-style search overhead. IR-TAPF (Kumagai and Okumura 2026) improves scala-bility over optimal and bounded-suboptimal TAPF solvers through iterative refinement of target assignments and paths. Like CBS-TA, it follows an assignment-then-planning de-arXiv:2609.14208v1 [cs.RO] 13 Sep 2026 composition: it fixes an assignment and solves the induced MAPF instance using LaCAM. Path feedback can update the assignment only after a MAPF solution, so an unfavor-able assignment may delay the first solution and leave fewer refinement iterations within the time limit. To shorten this feedback loop, we propose ITA-LaCAM, inspired by ITA-CBS and built on LaCAM ∗ (Okumura 2023a). LaCAM ∗ is a complete MAPF solver that searches joint configurations and uses Priority Inheritance with Back-tracking (PIBT) (Okumura et al. 2022) to generate succes-sors lazily. ITA-LaCAM augments each high-level node with a minimum-distance matching between agents and allowable targets, without enumerating the combinatorial assignment space. This matching defines temporary PIBT targets, the heuristic, and an assignment-dependent search cost. Each successor incrementally repairs the matching for the agents that moved, updating target assignment online while retain-ing the underlying configuration search. Our contributions are as follows: 
+
+• We introduce ITA-LaCAM, a fast and complete solver for TAPF that integrates target assignment directly into configuration search. 
+
+• We show empirically that ITA-LaCAM finds first solu-tions faster than IR-TAPF in 84.0% of cases and lower SOC in 65.0%, while 90% of its paired solutions are within 10.2% of the ITA-CBS optimum. 
+
+# Problem Definition 
+
+The Combined Target-Assignment and Path-Finding (TAPF) problem is defined on an undirected graph G = ( V, E ). Each vertex represents a possible agent location, and each unit-cost edge permits movement between two locations. Self-loops represent wait actions, so every move or wait takes one timestep. Let I = {1, . . . , N } be the agents, where agent 
+
+i starts at si ∈ V , and let G = {g1, . . . , g M } ⊆ V be the targets, with M ≥ N .Eligibility is encoded by a binary target matrix A ∈{0, 1}N ×M , whose rows correspond to agents and columns to targets. Entry A[i][ j] = 1 iff agent i may be assigned to gj .Agent i’s target set is therefore Gi = {gj ∈ G | A[i][ j] = 1 }.A target assignment is a function τ : I → G . It is feasible if 
+
+τ (i) ∈ G i for every agent and injective, so different agents receive different targets. Such an assignment exists only if the target matrix admits a matching that covers all agents. This injectivity is necessary because agents remain at their targets after arrival. Unlike MAPF, the assignment is part of the solution rather than fixed in the input. Let vit ∈ V be agent i’s location at timestep t, and let 
+
+πi = [ vi
+
+> 0
+
+, . . . , v iT i ] be its path from si to τ (i). Consecutive locations must satisfy (vit, v it+1 ) ∈ E, including self-loops for wait actions. After arrival, the agent remains at its target, i.e., vit = viT i for all t > T i. Thus, T i is the arrival time and the cost of πi; it counts all move and wait actions before arrival but not waiting afterward. For distinct agents i and j,a vertex collision occurs at timestep t if vit = vjt . An edge collision occurs between timesteps t and t + 1 if vit = vjt+1 
+
+and vit+1 = vjt . These conditions apply at every timestep, including after one agent has reached its target. A set of paths is collision-free if neither type occurs. A TAPF solution consists of a feasible assignment τ and paths {πi | i ∈ I} satisfying: 1. vi 
+
+> 0
+
+= si and viT i = τ (i) for every agent i;2. every action is valid, i.e., (vit, v it+1 ) ∈ E for all 0 ≤ t < T i; and 3. the paths are collision-free. We minimize the sum of costs (SOC), also called flowtime: 
+
+SOC = PNi=1 T i.
+
+# Related Work 
+
+Multi-Agent Path Finding 
+
+MAPF asks for collision-free paths from agents’ start loca-tions to pre-assigned targets while minimizing a cost func-tion. Both search- and learning-based methods have been developed (Silver 2005; Luna and Bekris 2011; Wang and Botea 2008; Standley 2010; Standley and Korf 2011; Sharon et al. 2015; Wagner and Choset 2015, 2011; Ma et al. 2019). Learning-based approaches either use trained policies to con-struct solutions directly (Sartoretti et al. 2019; Andreychuk et al. 2024; Jiang et al. 2025; Tang et al. 2025) or use neural models to guide search (Huang et al. 2022; Veerapaneni et al. 2024; Agaskar et al. 2026; Jain et al. 2025). Among search-based methods, Conflict-Based Search (CBS) (Sharon et al. 2015) is a widely used optimal al-gorithm. It plans individual paths and resolves collisions by adding constraints and replanning affected agents. Bounded-suboptimal variants such as ECBS (Barer et al. 2014) and EECBS (Li, Ruml, and Koenig 2021) improve scalability by relaxing optimality. Prioritized Planning (PP) (Erdmann and Lozano-Perez 1987; Silver 2005) instead plans agents sequentially, requiring each agent to avoid earlier paths. This greatly reduces search but sacrifices completeness. More directly related to our work, LaCAM and its vari-ants (Okumura 2023b, 2024) provide a scalable suboptimal alternative. LaCAM searches joint configurations and uses PIBT to generate valid successors lazily, avoiding explicit enumeration of the joint action space. ITA-LaCAM extends this configuration-search framework from MAPF to TAPF. 
+
+Combined Target-Assignment and Path-Finding 
+
+Unlike MAPF, TAPF must determine both an agent-to-target assignment and collision-free paths. A suitable as-signment can substantially reduce the difficulty of the in-duced path-finding problem. Existing TAPF algorithms in-clude CBM (Ma and Koenig 2016), CBS-TA and ECBS-TA (Hönig et al. 2018), ITA-CBS (Tang et al. 2023), and ITA-ECBS (Tang, Koenig, and Li 2024). CBM combines CBS with a flow-based low-level solver to minimize makespan optimally. CBS-TA follows an assignment-then-planning de-composition and solves the MAPF problem induced by each target assignment using CBS. ITA-CBS instead integrates target assignment into a single CBS constraint tree and up-dates the assignment as constraints are added. ECBS-TA and ITA-ECBS are their bounded-suboptimal counterparts. Although these methods provide optimality or bounded-suboptimality guarantees, their CBS-based search limits scalability on large instances. IR-TAPF (Kumagai and Okumura 2026) is a scalable sub-optimal TAPF method based on iterative refinement. It first computes a target assignment and uses LaCAM to solve the induced MAPF instance. It then analyzes the complete path solution, updates the assignment, and repeats this process within the time limit while retaining the best solution found. This design improves scalability, but assignment updates are available only after a complete MAPF solution has been gen-erated. ITA-LaCAM follows the integration idea of ITA-CBS at a finer granularity: it updates the target assignment at each newly generated configuration, shortening the feedback loop between assignment and path finding. 
+
+# Method 
+
+This section presents ITA-LaCAM, which extends LaCAM ∗
+
+from MAPF to TAPF by integrating target assignment into configuration search. We first motivate this design from the configuration-space view, then describe its incremental Hun-garian updates and PIBT-with-swap successor generation. 
+
+Configuration-Space Motivation 
+
+We begin with LaCAM ∗, summarized in Algorithm 1; with-out the bold operations, it is the original MAPF algorithm. 
+
+LaCAM ∗ performs an A*-like search over joint configura-tions Q = ( v1, . . . , v N ), where vi ∈ V is agent i’s location. The initial configuration is S = ( s1, . . . , s N ), and the fixed MAPF goal is Qgoal = ( g1, . . . , g N ).A joint configuration Q is valid if every agent occupies a traversable vertex and no two agents occupy the same vertex, i.e., vi̸ = vj for all i̸ = j. Two valid configurations Q =(v1, . . . , v N ) and Q′ = ( v′
+
+> 1
+
+, . . . , v ′ 
+
+> N
+
+) are connected by a valid transition if every agent either waits in place or moves to an adjacent vertex, i.e., v′ 
+
+> i
+
+= vi or (vi, v ′
+
+> i
+
+) ∈ E, and no pair of agents swaps locations, i.e., there do not exist agents 
+
+i̸ = j such that vi = v′ 
+
+> j
+
+and vj = v′
+
+> i
+
+.These configurations and transitions induce a valid con-figuration graph whose edges represent collision-free simul-taneous actions. Every collision-free MAPF solution corre-sponds to a path from S to Qgoal in this graph, and every such path is a collision-free solution. This configuration-space per-spective supports different planning problems by changing the goal set, transition costs, or task information associated with each state. MAPF has one pre-assigned target per agent, whereas TAPF admits multiple goal configurations because its assignment is not fixed in advance. MAPD and lifelong MAPF can similarly use the same configuration space while successively reaching multiple goals. We next consider how to explore this graph. CBS and 
+
+M ∗ first plan individual paths and resolve interactions after detecting collisions. Their intermediate states may therefore combine paths containing vertex or edge collisions and need not correspond to valid paths in the configuration graph. They reason in a relaxed space containing both the valid graph and additional invalid configurations or transitions. This larger space can be costly in large, congested instances where many conflicts must be detected and resolved. Prioritized Planning and PBS take the opposite approach. They impose priority relations and plan lower-priority agents while treating higher-priority agents as moving obstacles, substantially reducing the search space. However, this restricts search to a subset of the valid graph. A solution may require interactions or precedence relations inconsistent with the selected ordering, so these methods can fail even when the full graph contains a valid path. Applying A* to joint configurations searches exactly the valid graph but suffers from the curse of dimen-sionality. If each of N agents has five actions, including waiting, one configuration may have up to 5N successors. Explicitly generating and evaluating all such joint actions at every node is therefore impractical. 
+
+LaCAM ∗ addresses this problem through lazy successor generation. Each high-level node maintains a low-level con-straint tree that partially specifies agents’ next locations. For each constraint, PIBT constructs one promising collision-free successor that satisfies it, while alternative constraints remain available for later visits. Progressive expansion even-tually generates every valid successor without enumerating them all at once, so LaCAM ∗ searches the full reachable graph while avoiding the upfront branching of direct A*. The key observation is that feasible future transitions de-pend only on the current configuration and problem def-inition, not on how the configuration was reached. Given an appropriate heuristic toward a goal, LaCAM ∗ can re-tain the same high-level search framework. Extending it to TAPF therefore mainly requires replacing MAPF’s fixed-target guidance with assignment-aware guidance that selects temporary targets at each configuration and directs succes-sor generation toward a feasible TAPF goal. This observation leads to ITA-LaCAM. 
+
+Integrating Target Assignment into Configuration Search 
+
+Extending LaCAM ∗ to TAPF does not require changing its configuration-space search; the main challenge is to guide each configuration toward one of several feasible TAPF goals by determining which target each agent should currently pur-sue. A straightforward approach first computes an assignment and then solves the induced MAPF instance. CBS-TA follows this structure, while IR-TAPF updates each fixed assignment only after obtaining a complete MAPF solution. Both create a relatively long feedback loop between assignment and path finding: an unfavorable assignment may consume a complete MAPF call before path feedback becomes available. Inspired by ITA-CBS, ITA-LaCAM computes a feasible minimum-distance matching N .τ at every high-level node 
+
+N . Its temporary targets guide PIBT successor generation and the heuristic. Each new configuration immediately up-dates the matching from the new agent locations, allowing assignment and path finding to exchange feedback at every search node without changing LaCAM ∗’s underlying search. The assignment also defines the internal search cost, but does not permanently prune any valid successor before the first solution. Because every valid successor remains reachable through lazy expansion, ITA-LaCAM preserves LaCAM ∗’s completeness. ITA-LaCAM 
+
+Algorithm 1 presents the high-level search of ITA-LaCAM. The algorithm retains the configuration-search structure of 
+
+LaCAM ∗ while adding a target assignment N .τ to every high-level node. The TAPF-specific operations are high-lighted in bold. In Algorithm 1, a high-level node N represents a con-figuration N .config . The stack OPEN contains nodes with successors left to generate, while EXPLORED maps each discovered configuration to its unique node. Each node also stores a parent for reconstructing the current path, a cost-to-come N .g , and outgoing neighbors N .neigh . The heuristic gives f(N ) = N .g +h(N ). Because assignments can change between configurations, N .g is an assignment-dependent search cost that may differ from final-path SOC; incumbent comparisons use this internal cost. Here, ⊥ denotes no valid value, Cinit is an empty constraint, JxK initializes a container with x, and ♠ indicates that an incumbent goal node N goal 
+
+exists. The low-level constraint tree N .tree generates successors one at a time. A constraint C fixes the next locations of zero or more agents. low _level _expansion does not move the agents; it selects one unspecified agent and adds a child constraint for each move or wait action, retaining these alternatives for later visits. configuration _generator performs the comple-mentary operation: it respects the fixed moves and uses PIBT, guided by N .τ , to move the remaining agents. It returns a collision-free Qnew , or ⊥ if the constraint cannot be com-pleted. For example, consider agents at (1 , 1) and (1 , 3) with temporary targets (2 , 1) and (2 , 3) . The empty constraint may first move both agents downward and generate ((2 , 1) , (2 , 3)) .Meanwhile, the low-level expansion stores an alternative that makes agent 1 wait; when processed later, PIBT may gener-ate ((1 , 1) , (2 , 3)) . LaCAM thus tries a promising joint move without losing alternatives or enumerating every move com-bination. Returning ⊥ rejects only the current constraint; N
+
+remains in OPEN until its constraint tree is exhausted. Every generated transition is recorded as a directed edge in N .neigh . A new configuration creates a node, whereas a known configuration connects to its existing node in 
+
+EXPLORED . Since the new edge may provide a shorter path, Lines 21–29 repeatedly propagate improved g-values and parent pointers with a queue. Each high-level node stores an assignment N .τ com-puted by the Hungarian algorithm. For configuration Q, the cost from agent i to an eligible target j is their collision-agnostic shortest-path distance from Q[i]; ineligible or un-reachable pairs have infinite cost. The minimum-cost one-to-one matching supplies temporary targets to the heuristic and configuration generator. The root computes a full as-signment. For a new configuration, only rows belonging to moved agents change, so we reuse the parent’s matching and Hungarian dual variables and repair those rows. This incre-mental update avoids solving the assignment from scratch at every node. Line 7 accepts a configuration when its agent locations form a one-to-one assignment to eligible targets. Algorithm 1: ITA-LaCAM. Cinit denotes “no constraint.” 
+
+Input: TAPF instance, transition cost cost e, and heuristic h
+
+Output: Solution, NO _SOLUTION , or FAILURE 
+
+Notation: f(N ) := N .g + h(N ); ♠ := ( N goal ̸ = ⊥)
+
+1: Initialize OPEN and EXPLORED ; N goal ← ⊥ 
+
+2: Initialize the root node N init 
+
+N init .config ← S , N init .tree ← JCinit K
+
+N init .τ ← task _assignment (S)
+
+N init .parent ← ⊥ , N init .neigh ← ∅ N init .g ← 0
+
+3: OPEN .push (N init ); EXPLORED [S] ← N init 
+
+4: while OPEN ̸ = ∅ ∧ ¬ interrupt () do 5: N ← OPEN .top () 
+
+6: if is _tapf _goal (N .config ) ∧ (¬♠ ∨ N .g < N goal .g )
+
+then 7: N goal ← N 
+
+8: if ♠ ∧ f(N goal ) ≤ f(N ) then 9: OPEN .pop () 
+
+10: continue 11: if N .tree = ∅ then 12: OPEN .pop () 
+
+13: continue 14: C ← N .tree .pop () 
+
+15: low _level _expansion (N , C)
+
+16: Qnew ← configuration _generator (N , C, N .τ )
+
+17: if Qnew = ⊥ then 18: continue 19: if EXPLORED [Qnew ]̸ = ⊥ then 20: N .neigh .append  EXPLORED [Qnew ]
+
+21: DOPEN ← JN K
+
+22: while DOPEN ̸ = ∅ do 23: N from ← DOPEN .pop () 
+
+24: for N to ∈ N from .neigh do 25: g ← N from .g + cost e(N from , N to )
+
+26: if g < N to .g then 27: N to .g ← g
+
+28: N to .parent ← N from 
+
+29: DOPEN .push (N to )
+
+30: if ♠ ∧ f(N to ) < f(N goal ) then 31: OPEN .push (N to )
+
+32: else 33: Initialize a new node N new 
+
+N new .config ← Q new , N new .tree ← JCinit K
+
+N new .τ ← task _assignment (Qnew )
+
+N new .parent ← N , N new .neigh ← ∅ N new .g ← N .g + cost e(N , N new )
+
+34: OPEN .push (N new )
+
+35: EXPLORED [Qnew ] ← N new 
+
+36: N .neigh .append (N new )
+
+37: if ♠ ∧ OPEN = ∅ then 38: return backtrack (N goal )
+
+39: else if ♠ then 40: return backtrack (N goal )
+
+41: else if OPEN = ∅ then 42: return NO _SOLUTION 
+
+43: else 44: return FAILURE 
+
+PIBT with Swap 
+
+Algorithm 2 details PIBT inside the configuration generator. Given (N , C, N .τ ), the generator sets Qfrom = N .config ,Figure 2: Group Test success rates over 20 instances per point with a 10-second limit. ITA-LaCAM, IR-TAPF, and ITA-CBS solve 100%, 94.9%, and 15.9% of the 3,200 instances, respectively. Algorithm 2: Procedure PIBT with Swap                                                                       
+
+> Input: i,Qfrom , partial Qto , and assignment τ
+> Output: Status VALID or INVALID
+> 1: Vi←neigh (Qfrom [i]) ∪ {Q from [i]}
+> 2: Sort Viin increasing order of dist (v, τ (i))
+> 3: j←swap _required _and _possible (i, Vi[1] ,Qfrom , τ )
+> 4: if j̸=⊥then 5: Reverse Vi
+> 6: for v∈ V ido 7: if vconflicts with an assigned move then 8: continue 9: Qto [i]←v
+> 10: if vis occupied by an unassigned agent kthen 11: if PIBT (k, Qfrom ,Qto , τ ) = INVALID then 12: Qto [i]← ⊥
+> 13: continue 14: if v=Vi[1] ∧j̸=⊥ ∧ Q to [j] = ⊥then 15: Qto [j]← Q from [i]
+> 16: return VALID
+> 17: Qto [i]← Q from [i]
+> 18: return INVALID
+
+copies the moves fixed by C into a partial Qto , and initializes the remaining entries to ⊥. It calls PIBT (i, Qfrom , Qto , N .τ )
+
+for each unassigned agent; the calls share Qto , so each suc-cess adds one move. Here, neigh (v) denotes vertices reach-able from v in one move, not the high-level set N .neigh . Vi
+
+contains agent i’s possible moves and wait action, ordered by shortest-path distance to τ (i). PIBT examines them in this order and skips a candidate if its vertex is already assigned or it creates an edge collision with an assigned move. If v is occupied by an unassigned agent k, k must move before i can take it. PIBT recursively calls 
+
+PIBT (k, Qfrom , Qto , τ ) with the same current and partial next configurations. This is priority inheritance: i’s request to move is passed to the blocker. If the call succeeds, i keeps 
+
+v; otherwise, it tries the next candidate. If all candidates fail, 
+
+i waits and returns INVALID .The function swap _required _and _possible handles narrow-corridor livelocks. It checks whether i and a blocking agent j must pass each other and whether a nearby junction provides enough space. It returns j only when both condi-tions hold. Line 5 then reverses i’s candidate order so it first moves away from its target, and Line 15 assigns j to the va-cated location. This creates a multi-step rearrangement rather than a prohibited one-step exchange. 
+
+# Experiments 
+
+Our main comparison is between ITA-LaCAM and IR-TAPF configured with DBS-Hungarian, two scalable solvers that seek high-quality solutions without an optimality guarantee. We also include ITA-CBS in the success-rate plots and a paired solution-quality comparison as an optimal baseline; it is not the focus of our comparison. ITA-LaCAM and ITA-CBS are implemented in C++, and IR-TAPF is implemented in Rust. Our ITA-LaCAM implementation is based on La-CAM and incorporates optimizations from LaCAM2. Exper-iments were conducted on Ubuntu 22.04.1 with an Intel Core i9-12900K CPU and 128 GiB of RAM. We follow the experimental setting of ITA-CBS be-cause preliminary tests using the IR-TAPF setting showed nearly identical runtimes for ITA-LaCAM and IR-TAPF and therefore provided little discriminative power. We replace 
+
+empty-32-32 in the original ITA-CBS benchmark with 
+
+Symbotic ; the resulting eight maps are shown in Figure 1. Figure 3: Common Target Test success rates over 20 instances per point with a 10-second limit. ITA-LaCAM, IR-TAPF, and ITA-CBS solve 100%, 96.0%, and 67.8% of 6,560 instances; IR-TAPF’s rate drops to 84.6% when all additional targets are shared. 
+
+Test Settings 
+
+We use two settings. In the Group Test , disjoint groups of five agents share five candidate targets, with 10–200 agents in increments of 10. In the Common Target Test , each agent has one private target and 15 additional targets, of which 0, 4, 9 , or 15 are shared, corresponding to common-target ratios of 0% , 30% , 60% , and 100% . We test 15–60 agents in incremen ts of five, except on maze, where we test 5– 60. Starts and targets are sampled from the same connected component, and every insta nce admits a perfect matching. We use deterministic seeds 0–19 to generate 20 instances for each map, setting, and agent count, a nd all solvers receive the same stored instance and corresponding seed. This yields 3,200 Group Test and 6,560 Common Target Test instances. Each solver has a 10-second limit; a run succeeds if it returns a valid collision-free solution. ITA-LaCAM uses DFS node selection with anytime mode enabled: after finding its first feasible solution, it continues searching within the budget and ret ains its best incumbent according to its internal search cost. IR-TAPF likewise continues iterative refinement and retains its bes t solution. Quality comparisons use only jointly solved instances and report the final-path SOC of the returned incumbents rather than ITA-LaCAM’s internal search cost; ITA-CBS reports its proven-optimal solution. 
+
+Success Rates 
+
+Figures 2 and 3 compare the two scalable methods with optimal ITA-CBS. ITA-LaCAM solves all 3,200 Group Test and 6,560 Common Target Test instances. In contrast, ITA-CBS solves only 15.9% of the Group Test, with success falling rapidly as agent counts grow on nearly every map. Its 67.8% rate in the Common Target Test is higher partly 
+
+Figure 4: First-solution times on all 9,760 instances; IR-TAPF failures appear on the right boundary ( x = 10 s). Points below the diagonal favor ITA-LaCAM, which is faster on 84.0% of instances, versus 15.2% for IR-TAPF and 0.8% ties. because this test contains at most 60 agents rather than 200. These results illustrate the scalability cost of maintaining optimality. IR-TAPF remains highly scalable overall, solving 94.9% of the Group Test. Its failures are concentrated on 
+
+maze and room , while it remains near 100% on the more open maps. Because Group Test assignments decompose into independent groups of five agents, this pattern suggests that path congestion, rather than global assignment coupling, is the main difficulty in this setting. The Common Target Test exposes the effect of assign-Figure 5: Paired SOC on 9,335 instances (ITA-LaCAM lower: 65.0%; overall median ratio: 1.020). The curve shows the median ratio among instances with similar IR-TAPF SOC. 
+
+Figure 6: Paired SOC on 4,955 instances (ITA-CBS lower: 67.7%; overall median ratio: 1.016). The curve shows the median ratio among instances with similar ITA-CBS SOC. ment coupling. IR-TAPF solves 96.0% overall but only 84.6% when all additional targets are shared, with the largest drops on maze , Symbotic , and random . ITA-CBS also de-grades with more agents and greater overlap, as optimal con-flict and assignment resolution becomes expensive. IR-TAPF fixes an assignment until a complete MAPF solution pro-vides feedback, so an unfavorable assignment can consume the time limit. ITA-LaCAM instead repairs its matching at each generated configuration; its 100% success rate suggests that this shorter feedback loop is most useful when shared targets couple assignment and congestion. 
+
+Time to the First Solution 
+
+The median first-solution times in Figure 4 are 0.010 s for ITA-LaCAM and 0.014 s for IR-TAPF because both benefit from LaCAM-style path finding. The difference is clearer on harder instances: ITA-LaCAM finds a solution in every case, whereas IR-TAPF misses the limit in 425 cases. This result reflects where the two methods close the feed-back loop between assignment and path finding. IR-TAPF first constructs an assignment and solves the corresponding fixed-target MAPF instance; path feedback can improve the assignment only after that solution is available. ITA-LaCAM uses its current matching directly during successor genera-tion and updates it after every move. It can therefore redirect the configuration search without waiting for a full MAPF solution under a potentially unfavorable assignment. The im-provement is thus not merely a small median speedup: the node-wise feedback also reduces the long tail of difficult first-solution times and leaves more of the common time budget for anytime improvement. 
+
+Solution Quality 
+
+In Figure 5, the binned median remains generally at or above one, indicating that ITA-LaCAM’s advantage over IR-TAPF is not driven by a few outliers. Against ITA-CBS in Figure 6, 90% of ITA-LaCAM’s paired solutions are within 10.2% of optimal, although this comparison covers only instances tractable for ITA-CBS. The two settings reveal the role of assignment coupling. In the Group Test, assignment decomposes into five-agent sub-problems; the median ratio is 0.998, and IR-TAPF more often obtains lower SOC (52.3% versus 42.9%). Its bottleneck-driven updates are effective when reassignment is local. In the Common Target Test, median ratios increase from 1.000 to 1.170 as target overlap grows, and ITA-LaCAM wins over 90% of paired cases at 60% and 100% overlap. IR-TAPF is sensitive to its initial assignment (Kumagai and Okumura 2026) and requires a complete MAPF solve before each update. ITA-LaCAM instead revises targets during config-uration search, consistent with its growing advantage under stronger coupling. The remaining gap to ITA-CBS may arise from PIBT and assignment-induced oscillations, both of which introduce re-dundant motion. Judgelight (Tang, Koenig, and Bıyık 2026) can remove such motion after planning; updating the assign-ment every few configurations may offer a planning-time al-ternative between ITA-LaCAM’s per-configuration updates and IR-TAPF’s per-solution updates. 
+
+# Conclusion 
+
+We presented ITA-LaCAM, which integrates incremental tar-get assignment into LaCAM-style configuration search. More broadly, our contribution is a shift from treating TAPF as a sequence of fixed-assignment MAPF problems to reason-ing over joint configurations and the entire family of MAPF problems induced by feasible assignments within a single search. On 9,760 benchmark instances, ITA-LaCAM solved all within 10 seconds and outperformed IR-TAPF in first-solution time and SOC on 84.0% and 65.0% of comparisons, respectively. In the Future, we can explore deep-learning-based guidance adaptable to diverse problem structures and adaptive target-assignment update frequencies between IR-TAPF’s per-solution and ITA-LaCAM’s per-configuration updates. References 
+
+Agaskar, A.; Siva, S.; Pickering, W.; O’Brien, K.; Kekeh, C.; Barbosa, A. O. G.; Li, A.; Sarker, B. G.; Chua, A.; Nemade, M.; Thattai, C.; Di, J.; Iyengar, I.; Dharoor, R.; Kirouani, D.; Erskine, J.; Hegazy, T.; Niekum, S.; Khan, U. A.; Pecora, F.; and Durham, J. W. 2026. DeepFleet: Multi-Agent Foundation Models for Mobile Robots. arXiv:2508.08574. Andreychuk, A.; Yakovlev, K.; Panov, A.; and Skrynnik, A. 2024. Mapf-gpt: Imitation learning for multi-agent pathfind-ing at scale. arXiv preprint arXiv:2409.00134 .Barer, M.; Sharon, G.; Stern, R.; and Felner, A. 2014. Sub-optimal variants of the conflict-based search algorithm for the multi-agent pathfinding problem. In Proceedings of the International Symposium on Combinatorial Search (SoCS) .Chan, S.-H.; Stern, R.; Felner, A.; and Koenig, S. 2023. Greedy priority-based search for suboptimal multi-agent path finding. In Proceedings of the International Symposium on Combinatorial Search (SoCS) .Erdmann, M.; and Lozano-Perez, T. 1987. On multiple mov-ing objects. Algorithmica .Hönig, W.; Kiesel, S.; Tinka, A.; Durham, J.; and Ayanian, N. 2018. Conflict-based search with optimal task assign-ment. In Proceedings of the International Joint Conference on Artificial Intelligence (IJCAI) .Huang, T.; Li, J.; Koenig, S.; and Dilkina, B. 2022. Anytime multi-agent path finding via machine learning-guided large neighborhood search. In Proceedings of the AAAI Confer-ence on Artificial Intelligence , volume 36, 9368–9376. Jain, R.; Okumura, K.; Amir, M.; and Prorok, A. 2025. Graph Attention-Guided Search for Dense Multi-Agent Pathfinding. arXiv:2510.17382. Jiang, H.; Wang, Y.; Veerapaneni, R.; Duhan, T.; Sartoretti, G.; and Li, J. 2025. Deploying ten thousand robots: Scalable imitation learning for lifelong multi-agent path finding. In 
+
+2025 IEEE International Conference on Robotics and Au-tomation (ICRA) , 1–7. IEEE. Kumagai, Y.; and Okumura, K. 2026. Alternating Target-Path Planning for Scalable Multi-Agent Coordination. arXiv preprint arXiv:2605.07744 .Li, J.; Chen, Z.; Harabor, D.; Stuckey, P. J.; and Koenig, S. 2022. MAPF-LNS2: fast repairing for multi-agent path finding via large neighborhood search. In Proceedings of the AAAI Conference on Artificial Intelligence (AAAI) .Li, J.; Ruml, W.; and Koenig, S. 2021. Eecbs: A bounded-suboptimal search for multi-agent path finding. In Proceed-ings of the AAAI Conference on Artificial Intelligence (AAAI) .Luna, R. J.; and Bekris, K. E. 2011. Push and swap: Fast cooperative path-finding with completeness guarantees. In 
+
+Proceedings of the International Joint Conference on Artifi-cial Intelligence (IJCAI) .Ma, H.; Harabor, D.; Stuckey, P. J.; Li, J.; and Koenig, S. 2019. Searching with consistent prioritization for multi-agent path finding. In Proceedings of the AAAI Conference on Artificial Intelligence (AAAI) .Ma, H.; and Koenig, S. 2016. Optimal Target Assignment and Path Finding for Teams of Agents. In Proceedings of the International Conference on Autonomous Agents and Multi-agent Systems (AAMAS) , 1144–1152. Okumura, K. 2023a. Improving LaCAM for Scalable Even-tually Optimal Multi-Agent Pathfinding. arXiv:2305.03632. Okumura, K. 2023b. Lacam: Search-based algorithm for quick multi-agent pathfinding. In Proceedings of the AAAI Conference on Artificial Intelligence (AAAI) .Okumura, K. 2024. Engineering LaCAM*: Towards Real-Time, Large-Scale, and Near-Optimal Multi-Agent Pathfind-ing. In Proceedings of the International Conference on Autonomous Agents and Multiagent Systems (AAMAS) ,1501–1509. Okumura, K.; Machida, M.; Défago, X.; and Tamura, Y. 2022. Priority inheritance with backtracking for iterative multi-agent path finding. Artificial Intelligence .Sartoretti, G.; Kerr, J.; Shi, Y.; Wagner, G.; Kumar, T. S.; Koenig, S.; and Choset, H. 2019. Primal: Pathfinding via reinforcement and imitation multi-agent learning. IEEE Robotics and Automation Letters .Sharon, G.; Stern, R.; Felner, A.; and Sturtevant, N. R. 2015. Conflict-based search for optimal multi-agent pathfinding. 
+
+Artificial Intelligence .Silver, D. 2005. Cooperative pathfinding. In Proceedings of the AAAI Conference on Artificial Intelligence and Interac-tive Digital Entertainment (AIIDE) .Standley, T. 2010. Finding optimal solutions to cooperative pathfinding problems. In Proceedings of the AAAI Confer-ence on Artificial Intelligence (AAAI) .Standley, T.; and Korf, R. 2011. Complete algorithms for cooperative pathfinding problems. In Proceedings of the International Joint Conference on Artificial Intelligence (IJ-CAI) .Stern, R.; Sturtevant, N.; Felner, A.; Koenig, S.; Ma, H.; Walker, T.; Li, J.; Atzmon, D.; Cohen, L.; Kumar, T.; et al. 2019. Multi-agent pathfinding: Definitions, variants, and benchmarks. In Proceedings of the International Symposium on Combinatorial Search (SoCS) .Tang, Y.; Koenig, S.; and Bıyık, E. 2026. Judgelight: Trajectory-Level Post-Optimization for Multi-Agent Path Finding via Closed-Subwalk Collapsing. In Proceedings of the 17th World Symposium on Algorithmic Foundations of Robotics .Tang, Y.; Koenig, S.; and Li, J. 2024. Ita-ecbs: A bounded-suboptimal algorithm for combined target-assignment and path-finding problem. In Proceedings of the International Symposium on Combinatorial Search , volume 17, 134–142. Tang, Y.; Ren, Z.; Li, J.; and Sycara, K. 2023. Solving multi-agent target assignment and path finding with a single constraint tree. In 2023 International Symposium on Multi-Robot and Multi-Agent Systems (MRS) , 8–14. IEEE. Tang, Y.; Xiong, X.; Xi, J.; Li, J.; Bıyık, E.; and Koenig, S. 2025. RAILGUN: A Unified Convolutional Policy for Multi-Agent Path Finding Across Different Environments and Tasks. In International Conference on Intelligent Robots and Systems (IROS) . IEEE. Veerapaneni, R.; Wang, Q.; Ren, K.; Jakobsson, A.; Li, J.; and Likhachev, M. 2024. Improving Learnt Local MAPF Policies with Heuristic Search. arXiv:2403.20300. Wagner, G.; and Choset, H. 2011. M*: A complete multi-robot path planning algorithm with performance bounds. In 
+
+Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) .Wagner, G.; and Choset, H. 2015. Subdimensional expansion for multirobot path planning. Artificial intelligence .Wang, K.-H. C.; and Botea, A. 2008. Fast and Memory-Efficient Multi-Agent Pathfinding. In Proceedings of the International Conference on Auto- mated Planning and Scheduling (ICAPS) .Wurman, P. R.; D’Andrea, R.; and Mountz, M. 2008. Co-ordinating hundreds of cooperative, autonomous vehicles in warehouses. AI Magazine , 29(1): 9–19. Yu, J.; and LaValle, S. 2013. Structure and intractability of optimal multi-robot path planning on graphs. In Proceedings of the AAAI Conference on Artificial Intelligence (AAAI) .

@@ -1,0 +1,516 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-20T21:38:12.566283+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 7,
+    "deep_cap": 8,
+    "deep_selected": 7,
+    "quick_candidates": 5,
+    "quick_skim_target": 13,
+    "quick_selected": 5
+  },
+  "deep_dive": [
+    {
+      "id": "2609.14268v1",
+      "source": "arxiv",
+      "title": "Learning Communication-Conditioned Generative Policies for Decentralized Multi-Agent Collision Avoidance",
+      "abstract": "In this work, we propose a decentralized communication-conditioned generative framework for multi-agent collision avoidance. Agents generate short-horizon action sequences using a flow-matching policy trained from privileged offline demonstrations with access to global state. The demonstrations do not include explicit communication signals; instead, agents learn to exchange and aggregate latent messages that encode interaction-relevant intent under partial observability. This formulation supports flexible inference at test time, where unconditioned generation corresponds to independent behavior and communication-conditioned generation enables coordinated interaction without centralized planning. The resulting policies operate in a fully decentralized manner at execution time, relying only on local observations and learned messages. Combined with a receding-horizon inference scheme, the proposed approach enables efficient single-step inference of short-horizon action sequences and degrades gracefully under communication dropouts. Extensive simulation results demonstrate near-expert collision avoidance performance and strong generalization to denser, unseen multi-agent scenarios, along with zero-shot transfer to real-robot experiments.",
+      "authors": [
+        "Prajwal Koirala",
+        "Mark Campbell"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-13T04:04:01+00:00",
+      "link": "https://arxiv.org/pdf/2609.14268v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "decentralized communication-conditioned multi-agent collision avoidance",
+      "llm_evidence_cn": "分散式通信条件下的多智能体避碰",
+      "llm_evidence": "分散式通信条件下的多智能体避碰",
+      "canonical_evidence": "分散式通信条件下的多智能体避碰",
+      "llm_tldr_en": "Proposes a decentralized communication-conditioned flow-matching policy trained from privileged offline demonstrations for multi-agent collision avoidance by exchanging latent intent messages.",
+      "llm_tldr_cn": "分散式多智能体避碰在部分可观测下难以协调，且专家示范中通常不含显式通信信号。本文提出通信条件生成框架，用流匹配策略从特权离线示范中学习生成短时动作序列，并通过交换与聚合潜在消息编码交互意图。测试时可条件化生成实现协调交互，无需集中式规划。结果表明该策略能在分散式设定下实现有效避碰与协作，为学习型多智能体协调提供新思路。",
+      "llm_tldr": "分散式多智能体避碰在部分可观测下难以协调，且专家示范中通常不含显式通信信号。本文提出通信条件生成框架，用流匹配策略从特权离线示范中学习生成短时动作序列，并通过交换与聚合潜在消息编码交互意图。测试时可条件化生成实现协调交互，无需集中式规划。结果表明该策略能在分散式设定下实现有效避碰与协作，为学习型多智能体协调提供新思路。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.15361v1",
+      "source": "arxiv",
+      "title": "Robust and Efficient Communication for Multi-Agent Learning",
+      "abstract": "Effective communication is a cornerstone of distributed intelligence in Multi-Agent Reinforcement Learning (MARL), yet ensuring that generated messages are both informative and robust to physical constraints remains a significant challenge. This paper introduces Multi-Agent Regularized Communication (MARC), a novel framework inspired by information-theoretic principles of conditional mutual information. MARC employs an attention-based architecture coupled with a unique message regularization mechanism designed to minimize uncertainty regarding future system states, thereby inducing the learning of highly representative communication protocols. Crucially, we evaluate MARC under stringent communication bottlenecks and lossy channels, simulating the real-world constraints of autonomous robotic networks and decentralized systems. Our results demonstrate that MARC significantly outperforms state-of-the-art methods in complex cooperative domains. Furthermore, we provide a deep analysis of message characteristics, proving that MARC maintains high operational performance even under significant data compression, offering a scalable path for deploying intelligent agents in resource-constrained environments.",
+      "authors": [
+        "Rafael Pina",
+        "Varuna De Silva",
+        "Corentin Artaud"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.MA"
+      ],
+      "published": "2026-09-14T10:44:11+00:00",
+      "link": "https://arxiv.org/pdf/2609.15361v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "attention-based MARL communication with regularization under sparse and lossy channels",
+      "llm_evidence_cn": "基于注意力且带正则化的多智能体强化学习通信，适应稀疏有损信道",
+      "llm_evidence": "基于注意力且带正则化的多智能体强化学习通信，适应稀疏有损信道",
+      "canonical_evidence": "基于注意力且带正则化的多智能体强化学习通信，适应稀疏有损信道",
+      "llm_tldr_en": "MARC addresses informative and robust communication in MARL via an attention-based architecture with message regularization minimizing uncertainty about future states, tested under bottlenecks and lossy channels.",
+      "llm_tldr_cn": "该文针对多智能体强化学习中生成的消息既要信息丰富又要对物理约束鲁棒这一难题，提出多智能体正则化通信 MARC 框架。方法受条件互信息启发，采用基于注意力的架构并引入消息正则化机制，通过最小化对未来系统状态的不确定性来诱导高效通信协议。实验在严格通信瓶颈与有损信道下评估，表明该框架能学习紧凑且鲁棒的通信。其通信效率与注意力机制直接对应稀疏通信与注意力掩码等需求。",
+      "llm_tldr": "该文针对多智能体强化学习中生成的消息既要信息丰富又要对物理约束鲁棒这一难题，提出多智能体正则化通信 MARC 框架。方法受条件互信息启发，采用基于注意力的架构并引入消息正则化机制，通过最小化对未来系统状态的不确定性来诱导高效通信协议。实验在严格通信瓶颈与有损信道下评估，表明该框架能学习紧凑且鲁棒的通信。其通信效率与注意力机制直接对应稀疏通信与注意力掩码等需求。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.18802v1",
+      "source": "arxiv",
+      "title": "Routing Multiple Agents Below the Sum of Distances",
+      "abstract": "We study Transient Multiagent Pathfinding, a variant of the classical Multi-Agent Pathfinding problem in which a set of agents must be routed without collisions from designated start vertices to designated destination vertices in a graph.   We analyze the problem within the above-and-below-guarantee paradigm of parameterized complexity. In particular, we consider the natural upper bound \\(L\\), given by the sum of the shortest-path distances between pairs of agents' terminals (corresponding to sequential routing of the agents). The parameterization is given by the gap \\(ζ= L - λ\\) between this bound and the target makespan \\(λ\\), together with the number \\(k\\) of agents. Our main result establishes fixed-parameter tractability for the combined parameter \\(k + ζ\\).   Matching lower bounds show that parameterization by \\(k\\) alone is W[1]-hard, and that parameterization by \\(ζ\\) alone is W[1]-hard when terminals are not required to be distinct. On the positive side, if all terminals are distinct, the problem becomes fixed-parameter tractable when parameterized solely by \\(ζ\\). Finally, we show that Transient Multiagent Pathfinding is unlikely to admit a polynomial kernel when parameterized by \\(k + ζ\\). Together, our results provide an almost complete characterization of the parameterized complexity landscape of the problem for the considered parameters.",
+      "authors": [
+        "Matthias Bentert",
+        "Eduard Eiben",
+        "Fedor V. Fomin",
+        "Petr A. Golovach"
+      ],
+      "primary_category": "cs.DS",
+      "categories": [
+        "cs.DS",
+        "cs.DM"
+      ],
+      "published": "2026-09-16T15:16:08+00:00",
+      "link": "https://arxiv.org/pdf/2609.18802v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Transient Multiagent Pathfinding, a MAPF variant",
+      "llm_evidence_cn": "瞬态多智能体路径规划，MAPF变体",
+      "llm_evidence": "瞬态多智能体路径规划，MAPF变体",
+      "canonical_evidence": "瞬态多智能体路径规划，MAPF变体",
+      "llm_tldr_en": "Studies Transient Multiagent Pathfinding and proves fixed-parameter tractability for the combined parameter of agent number k and makespan gap zeta, advancing MAPF complexity theory.",
+      "llm_tldr_cn": "多智能体路径规划要求在图上为多个智能体寻找无碰撞路径，但其计算复杂度很高。本文研究瞬态多智能体路径规划这一经典MAPF变体，在参数化复杂度框架下以智能体数量k与最短路径和间隙ζ为参数进行分析。主要结果证明联合参数k+ζ具有固定参数可解性。该结论为MAPF问题刻画了新的可解边界，推进了多智能体路径规划理论。",
+      "llm_tldr": "多智能体路径规划要求在图上为多个智能体寻找无碰撞路径，但其计算复杂度很高。本文研究瞬态多智能体路径规划这一经典MAPF变体，在参数化复杂度框架下以智能体数量k与最短路径和间隙ζ为参数进行分析。主要结果证明联合参数k+ζ具有固定参数可解性。该结论为MAPF问题刻画了新的可解边界，推进了多智能体路径规划理论。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.18125v1",
+      "source": "arxiv",
+      "title": "PRISM: Predictive Representation of Interaction Style and Motion for Social Robot Navigation",
+      "abstract": "Humans often observe others before interacting and adjust their behavior accordingly. Robot navigation in crowds, however, often represents pedestrians mainly by observed geometric states, leaving individual differences in interaction tendencies implicit. We propose PRISM (Predictive Representation of Interaction Style and Motion), a framework that infers interaction traits from passive observations of human-human interactions. PRISM encodes human trajectories into a continuous ordinal latent space with a transformer encoder trained by Rank-N-Contrast loss, and pairs each inferred trait with a temporal-stability score supplied to the navigation policy. In randomized crowd simulations, PRISM reduces collision rates over the geometry-only baseline and yields small improvements in navigation-time and path-length metrics. These results suggest the utility of passive latent-trait inference for social navigation in dynamic crowds.",
+      "authors": [
+        "Bo-Han Chen",
+        "Hiromu Taketsugu",
+        "Norimichi Ukita"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.RO"
+      ],
+      "published": "2026-09-16T05:01:27+00:00",
+      "link": "https://arxiv.org/pdf/2609.18125v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "pedestrian trajectory representation for crowd navigation",
+      "llm_evidence_cn": "面向人群导航的行人轨迹表示",
+      "llm_evidence": "面向人群导航的行人轨迹表示",
+      "canonical_evidence": "面向人群导航的行人轨迹表示",
+      "llm_tldr_en": "PRISM infers pedestrians interaction traits from passive observations, encoding trajectories into a continuous latent space via a transformer encoder and feeding temporal-stability scores to a crowd navigation policy, reducing collisions.",
+      "llm_tldr_cn": "论文指出机器人在人群中导航时多以几何状态表示行人，忽略了个体交互倾向的差异。作者提出PRISM框架，从被动观测的人-人交互中推断交互特质，用Transformer编码器将行人轨迹映射到连续序数隐空间并以Rank-N-Contrast损失训练，再把推断特质与时间稳定性分数提供给导航策略。在随机人群仿真中，PRISM相比几何基线降低了碰撞率。该工作提升了社交人群导航中对行人运动意图的建模与避碰能力。",
+      "llm_tldr": "论文指出机器人在人群中导航时多以几何状态表示行人，忽略了个体交互倾向的差异。作者提出PRISM框架，从被动观测的人-人交互中推断交互特质，用Transformer编码器将行人轨迹映射到连续序数隐空间并以Rank-N-Contrast损失训练，再把推断特质与时间稳定性分数提供给导航策略。在随机人群仿真中，PRISM相比几何基线降低了碰撞率。该工作提升了社交人群导航中对行人运动意图的建模与避碰能力。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "pedestrian trajectory prediction multi-agent system",
+      "matched_requirement_id": "req-22",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.14208v1",
+      "source": "arxiv",
+      "title": "ITA-LaCAM: A Complete and Scalable TAPF Solver via Assignment-Aware Configuration-Space Search",
+      "abstract": "Combined Target Assignment and Path Finding (TAPF) requires assigning targets for agents while simultaneously planning collision-free paths. We present ITA-LaCAM, a complete and scalable TAPF solver inspired by LaCAM and ITA-CBS. In ITA-LaCAM, each joint-configuration node carries an agent-to-target matching. When a successor is generated, ITA-LaCAM incrementally repairs the matching for the agents that moved and uses the targets to guide PIBT successor generation. This design enables adaptive reassignment without explicitly enumerating the combinatorial assignment space, while preserving LaCAM's completeness and scalability. Across 9,760 benchmark instances on eight maps with 5--200 agents, ITA-LaCAM solved 100% of the instances, compared with 95.6% for IR-TAPF configured with DBS-Hungarian. ITA-LaCAM found an initial solution faster in 84.0% of the comparisons and achieved a lower sum of costs in 65.0% of the instances solved by both methods.",
+      "authors": [
+        "Yimin Tang",
+        "Han Zhang",
+        "Shao-Hung Chan",
+        "Junsoo Kim",
+        "Erdem Bıyık",
+        "Sven Koenig",
+        "Jingkai Chen"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-13T00:38:03+00:00",
+      "link": "https://arxiv.org/pdf/2609.14208v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multi-agent target assignment and collision-free path finding (MAPF/TAPF)",
+      "llm_evidence_cn": "多智能体目标分配与无碰撞路径规划（MAPF/TAPF）",
+      "llm_evidence": "多智能体目标分配与无碰撞路径规划（MAPF/TAPF）",
+      "canonical_evidence": "多智能体目标分配与无碰撞路径规划（MAPF/TAPF）",
+      "llm_tldr_en": "ITA-LaCAM is a complete and scalable solver for combined target assignment and path finding, incrementally repairing agent-to-target matchings inside LaCAM's configuration-space search and solving 100 percent of 9,760 benchmark instances with up to 200 agents.",
+      "llm_tldr_cn": "组合目标分配与路径规划（TAPF）需同时为智能体分配目标并规划无碰撞路径，组合分配空间庞大导致求解困难。论文提出ITA-LaCAM，在每个联合构型节点上携带智能体到目标的匹配，并在生成后继时增量修复匹配以引导PIBT，从而在保持完备性的同时避免枚举组合分配空间。在八张地图、5至200个智能体的9760个基准实例上全部求解成功。该工作为多智能体路径与目标分配问题提供了完备且可扩展的求解框架，是MAPF主题的核心工作。",
+      "llm_tldr": "组合目标分配与路径规划（TAPF）需同时为智能体分配目标并规划无碰撞路径，组合分配空间庞大导致求解困难。论文提出ITA-LaCAM，在每个联合构型节点上携带智能体到目标的匹配，并在生成后继时增量修复匹配以引导PIBT，从而在保持完备性的同时避免枚举组合分配空间。在八张地图、5至200个智能体的9760个基准实例上全部求解成功。该工作为多智能体路径与目标分配问题提供了完备且可扩展的求解框架，是MAPF主题的核心工作。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.18776v1",
+      "source": "arxiv",
+      "title": "TRACER: Adaptive Multi-Robot Social Navigation via Joint Human-Response Prediction and Interaction-Aware Replanning",
+      "abstract": "Multi-robot navigation in human-shared spaces is inherently interactive: coordinated robot motions influence how nearby entities respond, while those responses provide valuable information for subsequent robot decisions. However, existing methods typically address action-conditioned prediction, multi-robot planning, or online adaptation separately, and therefore lack a unified mechanism for modeling joint robot-entity interactions and adapting future decisions from executed interaction outcomes. To address this gap, we propose TRACER, a bi-directional receding-horizon framework that closes the loop between prediction and adaptation. TRACER evaluates candidate (i.e., alternative feasible future motion plans for the robot team) trajectories using a per-entity probabilistic response model that separates individual-robot effects from non-additive pairwise interactions; after executing the selected trajectory prefix, it updates persistent identity-bound beliefs over latent response modes using the synchronized observed responses. These updated beliefs then guide subsequent candidate evaluation under probabilistic safety and response-aware cost criteria. Experiments show that (i) TRACER more accurately captures non-additive multi-robot interaction effects than a capacity-matched additive predictor, (ii) persistent identity-consistent evidence improves response prediction and downstream replanning, and (iii) the complete TRACER framework improves collision-free completion over an independent-robot baseline on the SocialGym2 multi-robot social-navigation benchmark.",
+      "authors": [
+        "Lan Hu",
+        "Minghui Liwang",
+        "Wenbo Zhu",
+        "Xinlei Yi",
+        "Wei Gong",
+        "Yiguang Hong",
+        "Seyyedali Hosseinalipour"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-16T14:59:12+00:00",
+      "link": "https://arxiv.org/pdf/2609.18776v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "joint human-response prediction and interaction-aware multi-robot replanning for social navigation",
+      "llm_evidence_cn": "联合人类响应预测与交互感知重规划的多机器人社交导航",
+      "llm_evidence": "联合人类响应预测与交互感知重规划的多机器人社交导航",
+      "canonical_evidence": "联合人类响应预测与交互感知重规划的多机器人社交导航",
+      "llm_tldr_en": "TRACER is a bi-directional receding-horizon framework that closes the loop between joint human-response prediction and interaction-aware multi-robot replanning for adaptive social navigation in human-shared spaces.",
+      "llm_tldr_cn": "针对现有多机器人导航方法将动作条件预测、多机器人规划与在线适应分开处理、缺乏统一交互建模的问题，本文提出TRACER双向滚动时域框架，通过评估候选未来运动方案并联合建模机器人与周边实体的相互作用，形成预测与适应的闭环。该方法能够根据已执行交互结果自适应调整后续决策，在人类共享空间中的多机器人社交导航任务上提升了协调与避让性能，为交互式多机器人规划提供了统一机制。",
+      "llm_tldr": "针对现有多机器人导航方法将动作条件预测、多机器人规划与在线适应分开处理、缺乏统一交互建模的问题，本文提出TRACER双向滚动时域框架，通过评估候选未来运动方案并联合建模机器人与周边实体的相互作用，形成预测与适应的闭环。该方法能够根据已执行交互结果自适应调整后续决策，在人类共享空间中的多机器人社交导航任务上提升了协调与避让性能，为交互式多机器人规划提供了统一机制。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.14567v1",
+      "source": "arxiv",
+      "title": "Learning Multi-Agent Task Assignment and Navigation in the Factory: from Simulation to Real Robots",
+      "abstract": "Reinforcement learning (RL) has shown considerable promise for robotic decision-making, yet deploying multi-agent RL (MARL) on physical multi-robot systems in industrial environments remains challenging. This paper investigates the real-world applicability of decentralized MARL for multi-robot multi-machine tending. We propose Feature-fusion Multi-Agent Proximal Policy Optimization (FMAPPO), which fuses 2D LiDAR measurements with task-specific state information to enable safe decentralized multi-robot task assignment and navigation. A complete simulation-to-reality pipeline was developed using high-fidelity robotic simulation and ROS2 and deployed on physical mobile-manipulator platforms operating under realistic real-world conditions, with the robotic arms disabled during the experiments. We further investigate the sensitivity of the learned policy to command update frequency, an important consideration for real-world deployment. Comparative evaluation in simulation demonstrated that FMAPPO significantly outperformed state-of-the-art baselines with a large effect size, achieving improvements of 106\\% and 21\\% in parts delivery and 48\\% and 11\\% in parts collection over MAPPO and SMAPPO, respectively. FMAPPO also increased machine utilization by 31 and 10 percentage points, respectively, while reducing collisions by 18\\% and 15\\% and increasing the safety score by 14 and 6 percentage points compared with MAPPO and SMAPPO, respectively. Furthermore, real-world experiments demonstrated that the learned decentralized policies can coordinate multiple robots to service multiple machines while maintaining safe operation under real-world sensing and control constraints. Videos of the real-world experiment are available online https://anonymouspapers123.github.io/FMAPPO/.",
+      "authors": [
+        "Abdalwhab Bakheet Mohamed Abdalwhab",
+        "Giovanni Beltrame",
+        "David St-Onge"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "published": "2026-09-13T14:53:42+00:00",
+      "link": "https://arxiv.org/pdf/2609.14567v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "decentralized MARL for multi-robot task assignment and navigation",
+      "llm_evidence_cn": "面向多机器人任务分配与导航的去中心化多智能体强化学习",
+      "llm_evidence": "面向多机器人任务分配与导航的去中心化多智能体强化学习",
+      "canonical_evidence": "面向多机器人任务分配与导航的去中心化多智能体强化学习",
+      "llm_tldr_en": "FMAPPO fuses 2D LiDAR with task state for safe decentralized multi-robot task assignment and navigation, validated from high-fidelity simulation to real ROS2 mobile manipulators.",
+      "llm_tldr_cn": "该文针对多智能体强化学习在真实工业多机器人系统中难以落地的问题，提出特征融合多智能体近端策略优化方法FMAPPO，将二维激光雷达测量与任务状态信息融合，实现安全去中心化的多机器人任务分配与导航。作者基于高保真仿真与ROS2搭建完整的仿真到现实流程，并在真实移动操作平台上部署验证。结果表明该方法在真实工厂环境中具备安全性与可行性，为多机器人系统从仿真迁移到现实提供了可复用的工程范式。",
+      "llm_tldr": "该文针对多智能体强化学习在真实工业多机器人系统中难以落地的问题，提出特征融合多智能体近端策略优化方法FMAPPO，将二维激光雷达测量与任务状态信息融合，实现安全去中心化的多机器人任务分配与导航。作者基于高保真仿真与ROS2搭建完整的仿真到现实流程，并在真实移动操作平台上部署验证。结果表明该方法在真实工厂环境中具备安全性与可行性，为多机器人系统从仿真迁移到现实提供了可复用的工程范式。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "decentralized path planning reinforcement learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.14058v1",
+      "source": "arxiv",
+      "title": "Mobile Multi-Robot Navigation under Runtime Uncertainty via Koopman Operator Learning and Nonlinear Model Predictive Control",
+      "abstract": "In this work, we developed a nonlinear model predictive control (NMPC) framework that employs learned dynamics via the Koopman Operator theory for mobile multi-robot navigation. We formulated and solved NMPC problems using a lifted bilinear Koopman-based model that accurately predicts affine input systems affected by perturbations and uncertainties. Two exemplary multi-robot navigation problems are considered: target reaching and formation control. The output of our method enables closed-loop multi-robot navigation and formation control in environments populated with obstacles, whereby the Koopman operator-based model used in the NMPC formulation addresses runtime uncertainties, namely, various degrees of random wheel slipping. We validated the effectiveness of our method for both problems via extensive numerical simulations in different environments with wheeled robots affected by different amounts of slip and without knowledge of their true dynamic models.",
+      "authors": [
+        "Xiaobin Zhang",
+        "Konstantinos Karydis"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-12T17:16:11+00:00",
+      "link": "https://arxiv.org/pdf/2609.14058v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decentralized multi-robot navigation and formation control with learned dynamics",
+      "llm_evidence_cn": "多机器人去中心化导航与编队控制协调",
+      "llm_evidence": "多机器人去中心化导航与编队控制协调",
+      "canonical_evidence": "多机器人去中心化导航与编队控制协调",
+      "llm_tldr_en": "The paper develops an NMPC framework using learned Koopman dynamics for mobile multi-robot navigation, enabling closed-loop target reaching and formation control under runtime uncertainty and obstacles.",
+      "llm_tldr_cn": "多机器人导航在运行时面临扰动与不确定性，传统模型预测控制难以准确刻画动力学。论文提出基于Koopman算子学习动力学的非线性模型预测控制框架，用提升双线性Koopman模型预测受扰动的仿射输入系统。在目标到达与编队控制两类多机器人导航任务中，该方法实现了存在障碍物环境下的闭环导航与编队控制，并应对不同程度的运行时不确定性，为去中心化多机器人协调提供方法参考。",
+      "llm_tldr": "多机器人导航在运行时面临扰动与不确定性，传统模型预测控制难以准确刻画动力学。论文提出基于Koopman算子学习动力学的非线性模型预测控制框架，用提升双线性Koopman模型预测受扰动的仿射输入系统。在目标到达与编队控制两类多机器人导航任务中，该方法实现了存在障碍物环境下的闭环导航与编队控制，并应对不同程度的运行时不确定性，为去中心化多机器人协调提供方法参考。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.14426v1",
+      "source": "arxiv",
+      "title": "Learning-Based Dynamic Obstacle Avoidance for a UAV Using Only Three Range Sensors",
+      "abstract": "We present a learning-based approach to kinodynamic online motion planning for an Unmanned Aerial Vehicle (UAV) operating at a fixed altitude in unknown dynamic environments, where real-time avoidance of both static and dynamic obstacles must be achieved under conditions of extreme partial observability. The UAV is controlled with a single degree of freedom (yaw only), resulting in constrained, nonholonomic motion similar to fixed-wing platforms.   The proposed framework integrates a behavior grid map representation with Deep Reinforcement Learning (DRL), using Proximal Policy Optimization (PPO) for stable policy learning in continuous control. The key idea is the co-design of a state representation and control policy that enables reliable navigation using only three low-cost directional range sensors, without reliance on dense sensing modalities such as LiDAR or vision-based systems. The behavior grid map dynamically aggregates sparse measurements into a structured local representation that supports real-time decision-making for obstacle avoidance and target reaching. Extensive simulations across environments of varying sizes and obstacle densities demonstrate that the proposed standard and enhanced methods achieve higher success rates than PPO variants and Model Predictive Control (MPC) (94\\% vs. 79--90\\% in small-scale high-congestion scenarios, and 83\\% vs. 62--71\\% in large-scale high-congestion scenarios), while maintaining real-time performance. Real-world experiments across four scenarios further confirm practical feasibility, with consistent target-reaching behaviour and no collisions under the tested conditions.",
+      "authors": [
+        "Mohammad Reza Ranjbar Divkoti",
+        "A. Pedro Aguiar"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "eess.SY"
+      ],
+      "published": "2026-09-13T10:53:43+00:00",
+      "link": "https://arxiv.org/pdf/2609.14426v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "learning-based online motion planning with PPO deep RL for decentralized obstacle avoidance",
+      "llm_evidence_cn": "基于PPO深度强化学习的在线运动规划与自主避障",
+      "llm_evidence": "基于PPO深度强化学习的在线运动规划与自主避障",
+      "canonical_evidence": "基于PPO深度强化学习的在线运动规划与自主避障",
+      "llm_tldr_en": "For UAVs at fixed altitude under extreme partial observability, the paper co-designs a behavior grid map state with PPO-based deep RL to avoid static and dynamic obstacles using yaw-only control.",
+      "llm_tldr_cn": "针对固定高度无人机在未知动态环境中极度部分可观测条件下的实时避障难题，论文提出一种学习型动力学在线运动规划方法。该方法将行为栅格地图状态表示与基于PPO的深度强化学习策略协同设计，仅用三个测距传感器且仅有偏航自由度即可控制非完整运动。实验表明该框架能在受限感知与运动条件下可靠规避静态和动态障碍，为学习驱动的路径规划与避障提供参考。",
+      "llm_tldr": "针对固定高度无人机在未知动态环境中极度部分可观测条件下的实时避障难题，论文提出一种学习型动力学在线运动规划方法。该方法将行为栅格地图状态表示与基于PPO的深度强化学习策略协同设计，仅用三个测距传感器且仅有偏航自由度即可控制非完整运动。实验表明该框架能在受限感知与运动条件下可靠规避静态和动态障碍，为学习驱动的路径规划与避障提供参考。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "decentralized path planning reinforcement learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.15054v1",
+      "source": "arxiv",
+      "title": "BusMA: A Bus Communication Substrate for Multi-Agent Systems",
+      "abstract": "Multi-Agent (MA) systems are effective at solving complex tasks that demand planning, tool use, and the synthesis of evidence from multiple sources. Existing systems typically adopt Hierarchical Manager-Worker (HMW) or Router-based Message Passing (RMP) structures as their communication protocol. However, these designs restrict agent autonomy: Worker agents cannot directly consult specific \"peers\", and misrouted messages can propagate errors. Inspired by bus architectures in computer systems, we propose BusMA, a communication framework that allows any agent to address other agents through a shared channel, i.e., the Bus. It consists of agent registration, message routing, and shared memory management components. Worker agents, each equipped with tools, have their own local memory and can reason, act (tool usage), and communicate by posting shared messages with specific intents. We introduce four intents: discussion, challenge, guidance, and request for explanation, which support fine-grained communication among agents. A Chair agent monitors the shared memory to coordinate interactions and facilitate convergence among Workers. To evaluate the effectiveness of BusMA, we conduct extensive experiments with two frontier LLMs across 13 tasks spanning visual reasoning, mathematical reasoning, and knowledge retrieval demonstrate that BusMA consistently outperforms state-of-the-art HMW and RMP methods.",
+      "authors": [
+        "Yanwen Peng",
+        "Delvin Ce Zhang",
+        "Xi Wang",
+        "Nikolaos Aletras"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-14T05:19:55+00:00",
+      "link": "https://arxiv.org/pdf/2609.15054v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "shared bus communication substrate for multi-agent systems",
+      "llm_evidence_cn": "面向多智能体系统的共享总线通信框架",
+      "llm_evidence": "面向多智能体系统的共享总线通信框架",
+      "canonical_evidence": "面向多智能体系统的共享总线通信框架",
+      "llm_tldr_en": "BusMA introduces a bus-inspired communication substrate letting any agent address peers through a shared channel, improving autonomy and reducing misrouted message errors in multi-agent systems.",
+      "llm_tldr_cn": "针对现有多智能体系统依赖层级管理或路由式消息传递、限制智能体自主性且误路由会传播错误的问题，本文提出BusMA通信框架，借鉴计算机总线架构，让任意智能体通过共享通道直接寻址其他智能体，并包含智能体注册、消息路由与共享内存管理组件。该设计使配备工具的智能体能够更自主地协作，减少消息误投导致的误差累积，为多智能体通信协议提供了更灵活的替代方案。",
+      "llm_tldr": "针对现有多智能体系统依赖层级管理或路由式消息传递、限制智能体自主性且误路由会传播错误的问题，本文提出BusMA通信框架，借鉴计算机总线架构，让任意智能体通过共享通道直接寻址其他智能体，并包含智能体注册、消息路由与共享内存管理组件。该设计使配备工具的智能体能够更自主地协作，减少消息误投导致的误差累积，为多智能体通信协议提供了更灵活的替代方案。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.16724v2",
+      "source": "arxiv",
+      "title": "CorrRisk-WM: Corridor-Conditioned Risk World Modeling for Safety-Critical Trajectory Planning",
+      "abstract": "Safe local planning requires forecasting surrounding-agent motion and evaluating candidate-specific risks, since identical agent motion can pose different risks to different ego trajectories. We present CorrRisk-WM, a planning-oriented partial world model coupling environment evolution with supervised intrusion and near-miss prediction over bounded candidate-trajectory corridors. A latent environment model recursively predicts agent states and updates agent-agent and agent-map interactions. Each candidate queries the evolving environment through footprint- aware geometry and learned agent-corridor representations. A lightweight recurrent risk module uses temporal context to estimate per-slice hazards; survival aggregation yields first-entry and horizon-level event probabilities. On 29,176 scenarios from 100 Waymo validation shards, CorrRisk-WM achieves intrusion average precision (AP) of 0.8567 and 1-m near-miss first-entry AP of 0.8671. In baseline comparisons, it attains the highest near-miss AP at all three distance thresholds and the lowest observed open-loop collision rate (4.88%), with route progress of 15.35 m. Across three seeds, removing dynamic environment modeling or candidate-conditioned geometric interaction reduces mean intrusion AP from 0.8590 to 0.7624 and 0.7252, respectively. These results support coupling environment evolution with candidate-conditioned geometric reasoning for risk prediction and safety-oriented candidate selection.",
+      "authors": [
+        "Tingyu Guo",
+        "Reza Langari"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-15T06:56:08+00:00",
+      "link": "https://arxiv.org/pdf/2609.16724v2",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "forecasting surrounding-agent motion for risk-aware trajectory planning",
+      "llm_evidence_cn": "预测周边智能体运动以进行风险感知轨迹规划",
+      "llm_evidence": "预测周边智能体运动以进行风险感知轨迹规划",
+      "canonical_evidence": "预测周边智能体运动以进行风险感知轨迹规划",
+      "llm_tldr_en": "CorrRisk-WM couples environment evolution with intrusion and near-miss prediction over candidate corridors, forecasting surrounding-agent motion to support safety-critical local trajectory planning.",
+      "llm_tldr_cn": "该文针对安全局部规划需预测周边智能体运动、且同一运动对不同自车轨迹风险各异的问题，提出 CorrRisk-WM。其部分世界模型递归预测智能体状态并更新智能体-智能体与智能体-地图交互，各候选轨迹通过足迹感知几何查询演化环境，再由循环风险模块估计分段危险并做生存聚合。方法实现了面向规划的多智能体运动预测与风险评估，与意图预测辅助运动规划高度相关。",
+      "llm_tldr": "该文针对安全局部规划需预测周边智能体运动、且同一运动对不同自车轨迹风险各异的问题，提出 CorrRisk-WM。其部分世界模型递归预测智能体状态并更新智能体-智能体与智能体-地图交互，各候选轨迹通过足迹感知几何查询演化环境，再由循环风险模块估计分段危险并做生存聚合。方法实现了面向规划的多智能体运动预测与风险评估，与意图预测辅助运动规划高度相关。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.18639v1",
+      "source": "arxiv",
+      "title": "CoRe-MARL: Cooperative Redistribution Under Unknown Dynamics Using Recurrent Multi-Agent Reinforcement Learning",
+      "abstract": "Emergency management assistance programs, such as relief distribution, are essential for delivering necessary supplies to affected communities. However, these programs operate in a decentralized network of local centers that face uncertain local demand and supply dynamics, resulting in inconsistent avail- ability of local services. Redistribution of supplies among these local centers reduces these imbalances, but the centers often make decisions independently, with limited information and disrupted transportation. This study develops CoRe-MARL, a cooperative multi-agent reinforcement learning (MARL) framework, by formulating a decentralized partially observable Markov decision process (Dec-POMDP). We treat each center as an agent that learns a redistribution policy to improve the service in the worst-case region and reduce the service gap across regions while protecting network-wide service. We incorporate a recurrent network that captures evolving supply and demand dynamics without direct observation, while multi-agent proximal policy optimization (MAPPO) enables centralized training and decentralized execution (CTDE). We evaluate the framework in a simulated environment with diverse trajectories, where exact dynamics are not observed by actors and the MAPPO critic. We compare the recurrent MAPPO with the recurrent independent PPO (IPPO) and a local only heuristic, and find that MAPPO reduces the service gap across local centers and enhances service for the worst-served center while maintaining competitive network-wide service. The recurrent MAPPO also shows consistent performance across diverse trajectory patterns, demonstrating its ability to adapt to evolving dynamics. The findings demonstrate the capability of cooperative learning for decentralized redistribution and improving equitable service under uncertain and evolving dynamics.",
+      "authors": [
+        "Naimur Rahman Chowdhury",
+        "Shatabdi Sen Prapti",
+        "Md. Salehin Seyam",
+        "Limon Bin Hossain"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-09-16T13:25:05+00:00",
+      "link": "https://arxiv.org/pdf/2609.18639v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decentralized cooperative multi-agent reinforcement learning under unknown dynamics",
+      "llm_evidence_cn": "未知动态下的去中心化协作多智能体强化学习",
+      "llm_evidence": "未知动态下的去中心化协作多智能体强化学习",
+      "canonical_evidence": "未知动态下的去中心化协作多智能体强化学习",
+      "llm_tldr_en": "CoRe-MARL formulates decentralized supply redistribution as a Dec-POMDP and applies recurrent multi-agent RL so local centers can cooperate under uncertain demand and disrupted transport.",
+      "llm_tldr_cn": "针对应急物资再分配中本地中心独立决策、信息有限且运输中断导致服务可用性不一致的问题，本文将问题建模为去中心化部分可观测马尔可夫决策过程，提出循环多智能体强化学习框架CoRe-MARL，使各中心在未知动态下协作再分配物资。研究表明该框架能缓解本地供需失衡、提升服务一致性，为不确定环境下的去中心化多智能体协作提供了有效方法。",
+      "llm_tldr": "针对应急物资再分配中本地中心独立决策、信息有限且运输中断导致服务可用性不一致的问题，本文将问题建模为去中心化部分可观测马尔可夫决策过程，提出循环多智能体强化学习框架CoRe-MARL，使各中心在未知动态下协作再分配物资。研究表明该框架能缓解本地供需失衡、提升服务一致性，为不确定环境下的去中心化多智能体协作提供了有效方法。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "decentralized path planning reinforcement learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
