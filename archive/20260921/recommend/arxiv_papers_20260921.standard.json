@@ -1,0 +1,225 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-21T22:43:20.848058+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 1,
+    "deep_cap": 8,
+    "deep_selected": 1,
+    "quick_candidates": 4,
+    "quick_skim_target": 13,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2609.15361v1",
+      "source": "arxiv",
+      "title": "Robust and Efficient Communication for Multi-Agent Learning",
+      "abstract": "Effective communication is a cornerstone of distributed intelligence in Multi-Agent Reinforcement Learning (MARL), yet ensuring that generated messages are both informative and robust to physical constraints remains a significant challenge. This paper introduces Multi-Agent Regularized Communication (MARC), a novel framework inspired by information-theoretic principles of conditional mutual information. MARC employs an attention-based architecture coupled with a unique message regularization mechanism designed to minimize uncertainty regarding future system states, thereby inducing the learning of highly representative communication protocols. Crucially, we evaluate MARC under stringent communication bottlenecks and lossy channels, simulating the real-world constraints of autonomous robotic networks and decentralized systems. Our results demonstrate that MARC significantly outperforms state-of-the-art methods in complex cooperative domains. Furthermore, we provide a deep analysis of message characteristics, proving that MARC maintains high operational performance even under significant data compression, offering a scalable path for deploying intelligent agents in resource-constrained environments.",
+      "authors": [
+        "Rafael Pina",
+        "Varuna De Silva",
+        "Corentin Artaud"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.MA"
+      ],
+      "published": "2026-09-14T10:44:11+00:00",
+      "link": "https://arxiv.org/pdf/2609.15361v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "attention-based MARL communication with message regularization",
+      "llm_evidence_cn": "基于注意力的多智能体强化学习通信与消息正则化",
+      "llm_evidence": "基于注意力的多智能体强化学习通信与消息正则化",
+      "canonical_evidence": "基于注意力的多智能体强化学习通信与消息正则化",
+      "llm_tldr_en": "MARC introduces an attention-based MARL communication framework with conditional mutual information message regularization to learn informative and robust protocols under bottlenecks and lossy channels.",
+      "llm_tldr_cn": "针对多智能体强化学习中消息既要信息丰富又需对物理约束鲁棒的问题，本文提出多智能体正则化通信MARC框架。方法受条件互信息启发，采用注意力架构与消息正则化，最小化对未来系统状态的不确定性以诱导代表性通信协议。在严格通信瓶颈与有损信道下评估显示其鲁棒高效。该工作直接推进了MARL通信协议设计。",
+      "llm_tldr": "针对多智能体强化学习中消息既要信息丰富又需对物理约束鲁棒的问题，本文提出多智能体正则化通信MARC框架。方法受条件互信息启发，采用注意力架构与消息正则化，最小化对未来系统状态的不确定性以诱导代表性通信协议。在严格通信瓶颈与有损信道下评估显示其鲁棒高效。该工作直接推进了MARL通信协议设计。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.16947v1",
+      "source": "arxiv",
+      "title": "AeroLat: Channel-Aware Latent Space Semantic Communication for Decentralized UAV Swarms",
+      "abstract": "Communication in latent space offers an intriguing alternative to symbolic messages for decentralized autonomous Unmanned Aerial Vehicle (UAV) swarms operating over bandwidth-constrained, time-varying wireless links. However, when homogeneous frozen models are prompted with discretized perceptual inputs, their broadcast states collapse toward the shared prompt template. In view of this, we propose AeroLat, a channel-aware latent semantic communication framework that uses evidence injection. The resulting latent states are then passed through an explicit communication model that encompasses bandwidth-limited serialization, additive noise and information staleness, which facilitates a joint assessment of communication fidelity and swarm-level coordination. Across multi-seed simulations, AeroLat provably remains resilient to codec choice, faults and increasing swarm size. It consistently reproduces the latent-swarm anomaly, while no-whitening controls recover the collapse. In particular, AeroLat is capable of reducing false similarity by 97.5%.",
+      "authors": [
+        "Rajdeep Ghosh",
+        "Goparaju Venkata Seshachala Sree Vatsava",
+        "Sudip Misra"
+      ],
+      "primary_category": "cs.NI",
+      "categories": [
+        "cs.NI",
+        "cs.AI"
+      ],
+      "published": "2026-09-15T10:26:23+00:00",
+      "link": "https://arxiv.org/pdf/2609.16947v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "latent semantic communication for decentralized UAV swarms",
+      "llm_evidence_cn": "面向去中心化无人机集群的潜在语义通信",
+      "llm_evidence": "面向去中心化无人机集群的潜在语义通信",
+      "canonical_evidence": "面向去中心化无人机集群的潜在语义通信",
+      "llm_tldr_en": "AeroLat targets communication for decentralized UAV swarms over bandwidth-limited links, where broadcast latent states collapse toward shared prompts. It injects evidence and models bandwidth, noise and staleness to jointly assess fidelity and swarm behavior.",
+      "llm_tldr_cn": "在带宽受限、时变的无线链路上，去中心化无人机集群需要在隐空间而非符号层面通信，但同质冻结模型面对离散感知输入时广播状态会坍缩为共享提示模板。本文提出AeroLat，一种通道感知的隐空间语义通信框架，通过证据注入丰富隐状态，并显式建模带宽限制、加性噪声与信息陈旧。该框架可联合评估通信保真度与集群表现。其贡献在于为去中心化多智能体的稀疏通信提供可分析的语义通信方案。",
+      "llm_tldr": "在带宽受限、时变的无线链路上，去中心化无人机集群需要在隐空间而非符号层面通信，但同质冻结模型面对离散感知输入时广播状态会坍缩为共享提示模板。本文提出AeroLat，一种通道感知的隐空间语义通信框架，通过证据注入丰富隐状态，并显式建模带宽限制、加性噪声与信息陈旧。该框架可联合评估通信保真度与集群表现。其贡献在于为去中心化多智能体的稀疏通信提供可分析的语义通信方案。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.20889v1",
+      "source": "arxiv",
+      "title": "Proxifield: Decentralized Multi-Agent Communication through Semantic Proximity",
+      "abstract": "As LLM capabilities have expanded, multi-agent communication has emerged as an increasingly active area of research. Prevailing protocols often adopt rigid structures that introduce coordination bottlenecks and can degrade as the number of agents increases. We introduce Proxifield, a round-adaptive multi-agent protocol with decentralized agent decision-making that constructs sparse communication graphs from the evolving semantic proximity of agents. Without model training or a centralized planner, Proxifield connects agents using four routing signals derived at inference time: direct address, information needs, plan alignment, and information complementarity. We compare Proxifield with two representative coordination baselines, a centralized Star protocol and a decentralized Shared Context protocol, across two domains: Drone Search and Rescue and the collective-reasoning benchmark HiddenBench. We first ablate base-model capability and find that, in both domains, the performance of Proxifield improves with model size (35B -> 397B parameter model) and Proxifield outperforms all baselines at the largest scale. As team size increases, Proxifield's task-reward advantage over Star widens from 5.4% at (N=5) to 53.0% at (N=25) and 59.5% at (N=50), while Shared Context consistently underperforms both protocols. Proxifield is also substantially more robust to permanent agent failure, retaining 73.6% of its no-failure task reward under the most severe condition, compared with 58.3% for Shared Context and 38.8% for Star. These results demonstrate that decentralized, semantically adaptive routing can improve the scalability and fault tolerance of multi-agent systems.",
+      "authors": [
+        "Pradyumna Tambwekar",
+        "Yenchia Feng",
+        "Deep Patel",
+        "Karime Maamari"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA"
+      ],
+      "published": "2026-09-16T23:34:05+00:00",
+      "link": "https://arxiv.org/pdf/2609.20889v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decentralized multi-agent communication with sparse communication graphs",
+      "llm_evidence_cn": "去中心化多智能体通信与稀疏通信图",
+      "llm_evidence": "去中心化多智能体通信与稀疏通信图",
+      "canonical_evidence": "去中心化多智能体通信与稀疏通信图",
+      "llm_tldr_en": "Proxifield tackles rigid multi-agent communication protocols that bottleneck coordination as agents scale, proposing a round-adaptive, decentralized protocol that builds sparse communication graphs from semantic proximity using four inference-time routing signals.",
+      "llm_tldr_cn": "现有多智能体通信协议结构僵化，随智能体数量增加易产生协调瓶颈。本文提出Proxifield，一种轮次自适应协议，通过语义邻近度在推理时构建稀疏通信图，并利用直接寻址、信息需求、计划对齐与信息互补四种路由信号实现去中心化决策。与集中式基线相比，该方法无需训练即可扩展。为去中心化稀疏通信提供了新思路。",
+      "llm_tldr": "现有多智能体通信协议结构僵化，随智能体数量增加易产生协调瓶颈。本文提出Proxifield，一种轮次自适应协议，通过语义邻近度在推理时构建稀疏通信图，并利用直接寻址、信息需求、计划对齐与信息互补四种路由信号实现去中心化决策。与集中式基线相比，该方法无需训练即可扩展。为去中心化稀疏通信提供了新思路。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.21167v1",
+      "source": "arxiv",
+      "title": "MA-LIPP: Cooperative Multi-Agent Load-Aware Informative Path Planning for Heterogeneous Robot Teams",
+      "abstract": "Field robotics missions often require physical samples to be returned to laboratories for analysis, making path planning inherently load-aware and order-dependent as accumulated samples increase payload and traversal energy costs. In single-robot Load-Aware Informative Path Planning (LIPP), this rigidly couples sensing with hauling: a solitary robot must transport every collected sample, forcing frequent depot returns that severely restrict its spatial coverage. Heterogeneous multi-robot teams can overcome this bottleneck by dividing labor---enabling high-precision samplers to collect while high-capacity carriers handle transport. However, this introduces a complex coordination challenge regarding when, where, what, and to whom handoffs should occur on top of the LIPP problem. To address this tightly coupled problem, we introduce Multi-Agent LIPP (MA-LIPP), which enables teams to cooperate through asynchronous \"dead drops,\" allowing one robot to deposit samples for another to retrieve later without requiring synchronous rendezvous. We formulate MA-LIPP as an exact Mixed-Integer Quadratic Program (MIQP) alongside a scalable Pairwise Large-Neighborhood Search (LNS) heuristic for complex real-world applications. The heuristic matches exact optima in $95.5\\%$ of certified cases and reduces weighted posterior variance by $16.1$--$19.8\\%$ relative to a sequential baseline on larger instances of up to 12 robots, providing a robust framework for cooperative physical-sampling missions.",
+      "authors": [
+        "Hojune Kim",
+        "Guangyao Shi",
+        "Gaurav S. Sukhatme"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-18T00:21:05+00:00",
+      "link": "https://arxiv.org/pdf/2609.21167v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "cooperative multi-agent path planning for heterogeneous robot teams",
+      "llm_evidence_cn": "异构机器人团队的协作多智能体路径规划",
+      "llm_evidence": "异构机器人团队的协作多智能体路径规划",
+      "canonical_evidence": "异构机器人团队的协作多智能体路径规划",
+      "llm_tldr_en": "MA-LIPP addresses load-aware informative path planning where accumulated samples increase payload and energy costs. It lets heterogeneous robot teams divide sensing and hauling labor, tackling when, where and what to collect and where to return samples.",
+      "llm_tldr_cn": "在野外机器人采样任务中，样品累积会增加载荷与能耗，使路径规划与载荷、顺序强耦合，单机器人需频繁返仓而严重限制覆盖范围。本文提出MA-LIPP，面向异构机器人团队将高精度采样与高容量运输分工，解决何时、何地、采集什么以及如何返仓的协同规划问题。方法通过协调多机器人路径与任务分配突破单机瓶颈。其贡献在于把载荷感知的信息路径规划扩展到协作多机场景。",
+      "llm_tldr": "在野外机器人采样任务中，样品累积会增加载荷与能耗，使路径规划与载荷、顺序强耦合，单机器人需频繁返仓而严重限制覆盖范围。本文提出MA-LIPP，面向异构机器人团队将高精度采样与高容量运输分工，解决何时、何地、采集什么以及如何返仓的协同规划问题。方法通过协调多机器人路径与任务分配突破单机瓶颈。其贡献在于把载荷感知的信息路径规划扩展到协作多机场景。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.21974v1",
+      "source": "arxiv",
+      "title": "Multi-Agent Event-Triggered LQG Control under Shared Communication Constraints",
+      "abstract": "This letter studies event-triggered linear-quadratic-Gaussian (LQG) control for multi-agent systems sharing a communication network with limited per-step capacity. Although the agent dynamics are decoupled, the communication decisions are coupled through the shared network constraint, leading to a constrained multi-agent scheduling problem. We show that the optimal control law remains certainty-equivalent and decouples across agents through independent finite-horizon Riccati recursions, whereas the transmission schedule remains globally coupled. Based on this structure, we develop a centralized receding-horizon scheduling framework and reformulate the resulting problem as a mixed-integer linear program (MILP) using a closed-form characterization of the estimation-error covariance. To improve scalability, we derive a window-based skip-pruning condition that safely fixes consecutive transmission decisions to zero before solving the MILP, and we propose an auction-inspired scheduler based on one-step transmission-benefit scores. Numerical results show that the proposed model predictive control (MPC) scheduler achieves the best trade-off between control performance and communication cost, while the auction-based scheduler attains performance close to MPC with substantially lower computational complexity.",
+      "authors": [
+        "Zahra Hashemi",
+        "Dipankar Maity"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-09-18T16:36:51+00:00",
+      "link": "https://arxiv.org/pdf/2609.21974v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent coordination under limited shared communication capacity",
+      "llm_evidence_cn": "有限共享通信容量下的多智能体协调",
+      "llm_evidence": "有限共享通信容量下的多智能体协调",
+      "canonical_evidence": "有限共享通信容量下的多智能体协调",
+      "llm_tldr_en": "This paper studies event-triggered LQG control for multi-agent systems sharing a capacity-limited network, showing control decouples across agents while scheduling stays globally coupled and is solved as a MILP.",
+      "llm_tldr_cn": "当多智能体共享有限通信带宽时，传输决策通过共享网络约束彼此耦合，导致受限的多智能体调度问题。论文研究事件触发LQG控制，证明最优控制律保持确定性等价并可按智能体独立分解为有限时域Riccati递推，而传输调度仍全局耦合。据此提出集中式滚动时域调度框架，并用闭式刻画把问题重构为混合整数线性规划。该工作为稀疏、受限通信下的多智能体协调提供了可求解的优化结构，揭示了控制与调度可分离的性质。",
+      "llm_tldr": "当多智能体共享有限通信带宽时，传输决策通过共享网络约束彼此耦合，导致受限的多智能体调度问题。论文研究事件触发LQG控制，证明最优控制律保持确定性等价并可按智能体独立分解为有限时域Riccati递推，而传输调度仍全局耦合。据此提出集中式滚动时域调度框架，并用闭式刻画把问题重构为混合整数线性规划。该工作为稀疏、受限通信下的多智能体协调提供了可求解的优化结构，揭示了控制与调度可分离的性质。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

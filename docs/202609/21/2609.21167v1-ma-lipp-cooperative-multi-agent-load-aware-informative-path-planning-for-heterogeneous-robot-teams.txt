@@ -1,0 +1,711 @@
+Title: MA-LIPP: Cooperative Multi-Agent Load-Aware Informative Path Planning for Heterogeneous Robot Teams
+
+URL Source: https://arxiv.org/pdf/2609.21167v1
+
+Published Time: Mon, 21 Sep 2026 00:25:19 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# MA-LIPP: Cooperative Multi-Agent Load-Aware Informative Path Planning for Heterogeneous Robot Teams 
+
+Hojune Kim 
+
+School of Electrical and Computer Engineering University of Southern California Los Angeles, California Email: hojuneki@usc.edu 
+
+Guangyao Shi 
+
+School of Computer Science University of Southern California Los Angeles, California Email: shig@usc.edu 
+
+Gaurav S. Sukhatme 
+
+School of Computer Science University of Southern California Los Angeles, California Email: gaurav@usc.edu 
+
+Abstract — Field robotics missions often require physical samples to be returned to laboratories for analysis, making path planning inherently load-aware and order-dependent as accumulated samples increase payload and traversal energy costs. In single-robot Load-Aware Informative Path Planning (LIPP), this rigidly couples sensing with hauling: a solitary robot must transport every collected sample, forcing frequent depot returns that severely restrict its spatial coverage. Het-erogeneous multi-robot teams can overcome this bottleneck by dividing labor—enabling high-precision samplers to collect while high-capacity carriers handle transport. However, this introduces a complex coordination challenge regarding when, where, what, and to whom handoffs should occur on top of the LIPP problem. To address this tightly coupled problem, we introduce Multi-Agent LIPP (MA-LIPP), which enables teams to cooperate through asynchronous "dead drops," allowing one robot to deposit samples for another to retrieve later without requiring synchronous rendezvous. We formulate MA-LIPP as an exact Mixed-Integer Quadratic Program (MIQP) alongside a scalable Pairwise Large-Neighborhood Search (LNS) heuristic for complex real-world applications. The heuristic matches exact optima in 95 .5% of certified cases and reduces weighted posterior variance by 16 .1–19 .8% relative to a sequential baseline on larger instances of up to 12 robots, providing a robust framework for cooperative physical-sampling missions. 
+
+I. I NTRODUCTION 
+
+Many robotic missions require robots to gather informa-tion about their environment while operating under limited energy, time, and other onboard resources. Informative path planning (IPP) provides a broad framework for such prob-lems by jointly considering where a robot should travel and which observations it should acquire [1], [2]. Most IPP formulations, however, treat information as effectively massless, as in images or in-situ sensor measurements [3]. In many real-world missions, including planetary explo-ration [4], precision agriculture [5], and other field-robotics applications [6], obtaining information instead requires col-lecting physical samples and transporting them to a depot for subsequent analysis. These settings motivate load-aware informative path planning (LIPP), which explicitly accounts for the payload accumulated through sampling [7]. Unlike massless observations, each physical sample remains on-board until it is unloaded, increasing the energy cost of every subsequent motion. As a result, traversal cost depends on the order in which samples are collected and transported, making 
+
+Fig. 1: Planetary physical sampling with heterogeneous teams (samplers, carriers, and hybrid rovers) requires joint optimization of routing decisions, visitation order, and handoff locations/timing. MA-LIPP coordinates asynchronous sample transfers to decouple sensing from transportation, preventing payload-induced range lim-its and maximizing information gain. 
+
+LIPP fundamentally order-dependent and substantially more complex than conventional IPP. As missions scale to larger environments and more de-manding sampling objectives, the coverage and transport capacity of a single robot become increasingly limiting [8]. Multi-robot systems offer a natural way to overcome these limitations by distributing the workload, covering spatially separated regions [3], [9], and exploiting heterogeneous capabilities in sensing, mobility, and payload handling [10]. This heterogeneity creates opportunities for deeper cooper-ation: the robot best suited to acquire a sample may not be the one best equipped to transport it. Allowing samples to be handed off between robots can therefore separate sensing from transport, enabling the team to assign each responsibility to the most capable platform. Realizing this flexibility, however, transforms the already complex LIPP framework into a tightly coupled problem of routing, sampling, and allocation. The planner must deter-mine not only which samples to collect in what order, but also whether, when, and to which robot each sample should be transferred. These decisions depend on the evolving state of the team, including each robot’s sampling capability, sensitivity to payload, current load, and remaining route. A straightforward way to simplify the problem is to preassign sampler and carrier roles, but doing so prevents the planner arXiv:2609.21167v1 [cs.RO] 18 Sep 2026 from adapting as conditions change. A robot carrying sam-ples from a teammate, for example, may later benefit from handing them off to another robot and switching back to sampling when the latter becomes better suited for trans-port. Effective cooperation therefore requires that sample allocation, order-dependent routing, and handoff decisions be planned jointly. To address this challenge, we propose the Multi-Agent Load-aware Informative Path Planning (MA-LIPP) frame-work to coordinate heterogeneous teams with diverse sens-ing, mobility, and payload capabilities. To realize physical cooperation within this framework, our formulation mod-els inter-robot sample transfers through asynchronous dead drops. Because sensing, transport, and routing are planned jointly, we do not prescribe fixed sampler or carrier roles; instead, the optimal division of labor emerges endogenously. The main contributions of this paper are as follows:  
+
+> •
+
+We formulate the MA-LIPP framework as an exact mixed-integer quadratic program. The formulation ac-commodates heterogeneity in sampling capability, mo-bility, payload capacity, and energy budgets; allows robot roles to change endogenously; and incorporates physically feasible inter-robot sample transfers.  
+
+> •
+
+We develop a scalable large-neighborhood search heuristic for larger MA-LIPP instances. Across in-stances with certified optima, the heuristic achieves a sub-1% optimality gap in 98 .2% of cases, while outper-forming a sequential LIPP baseline in both computation time and information gain.  
+
+> •
+
+We validate MA-LIPP through extensive experiments across heterogeneous team settings and release a bench-mark library and implementation to support future re-search on multi-robot physical sampling. II. R ELATED WORK 
+
+Informative path planning has been extended to multi-robot teams to coordinate where robots should collect mea-surements under limited sensing and motion resources. Cao et al. [11] developed information-theoretic multi-robot path-planning methods for active sensing of spatial environmental phenomena, while Dutta et al. [2] formulated informative path planning for Gaussian-process regression as a sparse optimization problem for resource-constrained robot teams. These methods coordinate information acquisition across multiple robots, but the measurements themselves do not become physical payloads that must subsequently be trans-ported. Consequently, collecting a measurement does not change the cost of traversing later edges through accumulated sample mass, and there is no downstream decision of whether another robot should take responsibility for transporting what was acquired. Kim et al. [7] introduced load-aware informative path planning (LIPP) for physical sampling missions, where col-lected samples become payload and increase the cost of sub-sequent motion. This makes route cost depend on sampling order. LIPP therefore captures the sampling–transportation coupling that is absent from conventional IPP, but only for a single robot. Thus, LIPP does not address how informative sampling tasks should be distributed among heterogeneous robots, how those assignments interact with multiple order-dependent routes, or when a collected sample should be transferred to another robot. Multi-robot task allocation studies how tasks should be assigned according to robot capabilities and task require-ments [12], [13], and later methods let these assignments change online: Emam et al. [10] adapt specialization pa-rameters from observed execution performance, Schillinger et al. [14] decompose and auction formally specified tasks to heterogeneous robots, and Notomista et al. [15] allocate under instantaneous energy costs. In each, the task set and its value are inputs to the allocator, and the decision is which robot executes them. In MA-LIPP the task set is itself a decision variable: which locations are worth sampling follows from the GP posterior, so sampling value is spatially correlated, diminishing, and dependent on which robot’s sensor acquires the measurement. These methods also price a task through capability matching or instantaneous energy, making assignment cost a property of the robot–task pair rather than of what the robot already carries or where the task falls in its route. Each line thus addresses part of MA-LIPP in isolation: multi-robot IPP selects informative measurements but treats them as massless; task allocation reallocates given tasks but prices them independently of route order and carried load; and load-coupled routing captures order dependence but with fixed, traveler-independent values and a single carrier per item. MA-LIPP requires all three at once. Assigning a sampling task to a robot cannot be evaluated apart from the route that realizes it: collection determines when payload enters the route, how long it must be transported, and whether a later handoff would reduce total cost, while the information obtained depends on which robot acquires it. Sampling value, allocation, route order, and transport responsibility are therefore coupled within a single planning problem rather than supplied as separable task utilities and execution costs. III. B ACKGROUND 
+
+A. LIPP Information Objective 
+
+MA-LIPP adopts and improves the information objective of load-aware informative path planning (LIPP) [7] literature, a single-robot framework that captures the central coupling in physical sampling: each sample improves the field esti-mate but also adds payload that raises the energy cost of subsequent motion. The unknown static scalar field is modeled as a Gaussian process f ∼ GP (0 , k ) with known kernel k, over candidate sampling nodes V and test locations T . Let kV V , kT V , and 
+
+kT T denote the corresponding covariance blocks, W ⪰ 0
+
+a diagonal matrix weighting prediction errors at the test locations, and N the diagonal observation-noise covariance at the sampling nodes. Since the GP posterior covariance depends on where and how precisely observations are taken, but not on their realized values, a plan’s information value can be evaluated before deployment, so both LIPP and MA-LIPP are offline deterministic planning problems. For a linear estimator with coefficient matrix A, where 
+
+Ajv weights the measurement at node v in the estimate at test location j, the weighted mean-square error is 
+
+J (A, N ) = tr  W A(kV V + N )A⊤ − 2kT V A⊤ + kT T 
+
+ ,
+
+(1) Because the field and noise are jointly Gaussian, the mini-mum mean-square-error estimator is linear, so 
+
+min  
+
+> A
+
+J (A, N ) = tr  W kT T − kT V (kV V + N )−1kV T 
+
+ ,
+
+(2) i.e., optimizing over A recovers the weighted GP posterior variance exactly rather than approximately [2]. LIPP makes the noise matrix N depend on the number of samples collected: averaging c independent samples with noise variance σ2 yields effective variance σ2/c [16], result-ing in the noise term of the objective 
+
+tr  W A(N )A⊤ = X
+
+> j∈T
+
+Wjj 
+
+X
+
+> v∈V
+> Smax
+
+X
+
+> c=1
+
+σ2
+
+c A2
+
+> jvc
+
+. (3) MA-LIPP retains this estimator but, since robots may differ in sensing quality, replaces the count-based noise model with one based on the aggregate precision of the samples collected at each node (Section IV-B). 
+
+B. Inherited Load-Aware Routing Structure 
+
+MA-LIPP also inherits LIPP’s payload-dependent traver-sal costs and order-dependent energy accounting. However, we replace the Miller–Tucker–Zemlin constraints used by LIPP to eliminate disconnected subtours with the single-commodity flow formulation presented in Section IV-C. Flow-based connectivity provides a stronger linear relaxation than MTZ constraints [17], [18] and also improves solution time on the single-robot LIPP instances. IV. P ROBLEM FORMULATION 
+
+The MA-LIPP formulation is organized into six parts. We first define the problem setting and information model, then the routing, handoff, and timing constraints, and finally a lexicographic objective over information quality, team energy, and mission completion time. 
+
+A. Problem Setting 
+
+Let R = {1, . . . , R } denote the robot team and V the set of candidate sampling nodes, with |V| = n. The physical depots 
+
+D are disjoint from V and T : they are neither sampled nor evaluated for prediction error. Each robot r starts at sr and may unload samples and terminate its route at any depot in its nonempty authorized set Dr ⊆ D , which may differ across robots. Setting Dr = {d} for every robot gives a common single depot; with R = 1 , this recovers the usual single-robot IPP start-and-terminal structure. Robot r has empty mass m0 
+
+> r
+
+, energy budget Br , payload capacity Kr , per-node sampling limit Smax  
+
+> r
+
+, and measurement-noise variance 
+
+σ2 
+
+> r
+
+. Each sample has unit mass ms, chosen together with the sampling limits to represent the largest mass collected at a node at sufficient resolution for payload and energy accounting. Samples are interchangeable for transportation, but their information value depends on both the sampling location and the acquiring robot’s σ2 
+
+> r
+
+. We assume digitally tagged containers preserve this provenance through transfers, so routing need only track aggregate sample counts. Every collected sample must eventually be delivered to an autho-rized depot. For each robot r, we construct a metric closure Er over its given physical motion graph: each arc (u, v ) ∈ E r represents a minimum-energy physical path from u to v. A closure arc may pass through other nodes, possibly repeatedly over a route, but only in transit, without node-level operations. Enforcing a simple route over the closure therefore does not exclude physical routes that revisit intermediate nodes. If robot r carries Q samples along a physical path P , its traver-sal energy is  P  
+
+> e∈P
+
+αre
+
+(m0 
+
+> r
+
++ msQ). Since the payload multiplier is common to every edge, the minimum-α path is payload-independent, and the closure can be constructed offline. 
+
+B. Heterogeneous Sensing and Information Model 
+
+Let arv ∈ Z≥0 denote the number of samples robot r
+
+acquires at node v, and let yrv ∈ { 0, 1} indicate that r visits 
+
+v. Sampling occurs only at visited candidate nodes v ∈ V ,with arv = 0 at all other routing nodes, including depots and terminal copies: 
+
+0 ≤ arv ≤ Smax  
+
+> r
+
+yrv . (4) MA-LIPP generalizes LIPP’s count-based noise model σ2/c 
+
+of (3) via inverse-variance weighting [19]. Under indepen-dent Gaussian noise, samples contribute additively to the ag-gregate precision pv at node v, and the effective observation-noise variance at a sampled node is its inverse: 
+
+pv = X
+
+> r∈R
+
+arv
+
+σ2
+
+> r
+
+, ρv = 1
+
+pv
+
+(5) Each robot’s sample count is thus weighted by its mea-surement precision. Setting Nvv = ρv in (1) incorporates this team-level model; with a common variance σ2, it reduces to LIPP’s ρv = σ2/ P 
+
+> r
+
+arv .To preserve the MIQP structure, let pv1, . . . , p vL v denote the distinct nonzero precision levels attainable under (4), with 
+
+ρvi = 1 /p vi . Binary zvi indicates that the team realizes level 
+
+pvi at v, and the estimator coefficients Ajvi are active only for the selected level: 
+
+pv =
+
+> Lv
+
+X
+
+> i=1
+
+pvi zvi ,
+
+> Lv
+
+X
+
+> i=1
+
+zvi ≤ 1, (6) 
+
+Ajv =
+
+> Lv
+
+X
+
+> i=1
+
+Ajvi , |Ajvi | ≤ Amax  
+
+> j
+
+zvi , (7) where Amax  
+
+> j
+
+is a valid coefficient bound, so all coefficients vanish at unsampled nodes. Substituting into (1) gives the MA-LIPP information objective 
+
+J(A, z ) = X
+
+> j∈T
+
+Wjj 
+
+" X
+
+> u,v ∈V
+
+kV V (u, v )Aju Ajv 
+
++ X
+
+> v∈V
+> Lv
+
+X
+
+> i=1
+
+ρvi A2
+
+> jvi
+
+− 2 X
+
+> v∈V
+
+kT V (j, v )Ajv + kT T (j, j )
+
+#
+
+,
+
+(8) which depends on z through (7). It is convex quadratic in the estimator coefficients, and minimizing over them for a fixed sampling plan recovers the exact weighted GP posterior variance. 
+
+C. Robot Routing Model 
+
+Let xruv ∈ {0, 1} indicate that robot r traverses arc 
+
+(u, v ). Each route starts at sr , conserves arcs at intermediate nodes, and ends at exactly one terminal copy node. To allow intermediate unloading while the terminal node has no outgoing arcs, each depot d ∈ Dr receives a terminal copy ˜dr with the same incoming arcs and no outgoing arcs. Denoting the copies by ˜Vr , the routing-node and unloading-node sets are 
+
+Vrt r = V ∪ D ∪ { sr } ∪ ˜Vr , Ur = Dr ∪ ˜Vr , (9) so a robot can unload at a physical depot, continue its route, and later terminate through a depot’s copy. The routing constraints are 
+
+X
+
+> w
+
+xrsr w = 1 , X
+
+> u
+
+xrus r = 0 , (10) 
+
+yrsr = 1 , X
+
+> u
+
+xruv = yrv , (11) 
+
+X 
+
+> ˜d∈˜Vr
+
+yr 
+
+> ˜d
+
+= 1 , (12) 
+
+X
+
+> w
+
+xrvw = X
+
+> u
+
+xruv , (13) where the second equality in (11) applies to v ∈ V rt  
+
+> r
+
+\ { sr },and (13) to intermediate nodes v ∈ V rt  
+
+> r
+
+\ ({sr } ∪ ˜Vr ).To eliminate disconnected subtours, we replace LIPP’s MTZ constraints with a single-commodity auxiliary flow 
+
+ϕruv ≥ 0. The start supplies one unit for each other visited node, and each such node consumes one unit: 
+
+xruv ≤ ϕruv ≤ Nr xruv , (14) 
+
+X
+
+> u
+
+ϕruv − X
+
+> w
+
+ϕrvw = yrv , (15) 
+
+X
+
+> w
+
+ϕrsr w − X
+
+> u
+
+ϕrus r = X  
+
+> v∈V rt
+> r\{ sr}
+
+yrv , (16) where (15) applies to v ∈ V rt  
+
+> r
+
+\{ sr }, and Nr = |V ∪D∪{ sr }| 
+
+bounds the number of visited nodes other than the start, since exactly one terminal copy is selected. Because the flow uses only selected arcs, every visited node must be connected to the start. 
+
+D. Payload, Custody, and Handoff 
+
+Unlike the auxiliary flow, Qruv ∈ Z≥0 is the physical number of samples robot r carries along arc (u, v ). Payload capacity and the energy budget require 
+
+Qruv ≤ Kr xruv , (17) 
+
+X
+
+> (u,v )∈E r
+
+αruv 
+
+ m0 
+
+> r
+
+xruv + msQruv 
+
+ ≤ Br . (18) Collecting, receiving, or unloading samples thus changes the energy cost of every subsequent arc, preserving the order dependence of LIPP. Robots may transfer samples through asynchronous dead drops: a sender deposits samples at a shared physical node for a receiver to collect later. Let Hr→r′ 
+
+> v
+
+∈ Z≥0 denote the transferred count and δr→r′ 
+
+> v
+
+∈ { 0, 1} indicate a positive transfer; handoffs are defined only at physical nodes shared by both robots’ routing sets, never at terminal copies. Let 
+
+grv ∈ Z≥0 denote unloading at v ∈ Ur , with grv = 0
+
+elsewhere. With Qin  
+
+> v,r
+
+, Qout  
+
+> v,r
+
+the incoming and outgoing carried counts and Hin  
+
+> v,r
+
+, Hout  
+
+> v,r
+
+the corresponding handoff totals, custody is conserved at every routing node: 
+
+Qin  
+
+> v,r
+
++ arv + Hin  
+
+> v,r
+
+= Qout  
+
+> v,r
+
++ Hout  
+
+> v,r
+
++ grv . (19) Summing over robots and nodes cancels carried and trans-ferred flows, so every collected sample is ultimately un-loaded. Transport needs only aggregate counts; arv retains the sensing provenance used by the information model. The next constraints limit unloading and outgoing deposits to the samples available from arrival and collection, keep the remaining payload within capacity after unloading, and bound the total outgoing deposit: 
+
+grv + Hout  
+
+> v,r
+
+≤ Qin  
+
+> v,r
+
++ arv , (20) 
+
+Qin  
+
+> v,r
+
++ arv ≤ Kr + grv , (21) 
+
+Hout  
+
+> v,r
+
+≤ Kr . (22) These guarantee that a feasible order of operations exists within each visit without explicitly scheduling it. In particu-lar, (19) and (17) imply that incoming handoffs fit within the space left after collection, unloading, and outgoing transfers: 
+
+Hin  
+
+> v,r
+
+≤ Kr −  Qin  
+
+> v,r
+
++ arv − grv − Hout 
+
+> v,r
+
+. (23) Positive transfers are activated and require both robots to visit the transfer node: 
+
+δr→r′ 
+
+> v
+
+≤ Hr→r′ 
+
+> v
+
+≤ Hr→r′
+
+δr→r′ 
+
+> v
+
+, (24) 
+
+δr→r′ 
+
+> v
+
+≤ yrv , δr→r′ 
+
+> v
+
+≤ yr′ 
+
+> v
+
+, (25) where Hr→r′
+
+= min {Kr , K r′ } is a constant activation bound; the tighter sender-inventory and receiver-capacity limits follow from (20)–(23). Finally, unloading requires a visit to an authorized depot: 
+
+grv ≤ Kr yrv , v ∈ U r , (26) with the amount further limited by (20) to the samples brought into the visit, minus those deposited for other robots. E. Asynchronous Dead-Drop Timing 
+
+Let trv denote robot r’s scheduled departure time from node v; at a selected terminal copy, tr 
+
+> ˜d
+
+is its mission com-pletion time. Each visit reserves a service window [trv −β, t rv ],where β ≥ 0 conservatively bounds the time for collec-tion, unloading, and handoff operations across all robots and nodes, given their service rates and permitted sample volumes. Travel and service times satisfy 
+
+trsr ≥ β, (27) 
+
+trv ≥ tru + τ ruv + β − M t,r uv (1 − xruv ). (28) An optional clearance margin ∆H ≥ 0 further separates the sender’s departure from the receiver’s service window at a handoff node ( ∆H = 0 if none is needed). Active handoffs satisfy 
+
+tr′ 
+
+> v
+
+≥ trv + β + ∆ H − M H,r →r′ 
+
+> v
+
+(1 − δr→r′ 
+
+> v
+
+),
+
+(29) 
+
+δr→r′ 
+
+> v
+
++ δr′→rv ≤ 1, r < r ′. (30) For an active handoff, (29) gives tr′ 
+
+> v
+
+− β ≥ trv + ∆ H : the receiver begins service only after the sender departs and the clearance margin elapses, so no simultaneous rendezvous is required. Departure times satisfy trv yrv ≤ trv ≤ trv yrv , which zeroes times at unvisited nodes, and the constants Mt,r uv and 
+
+MH,r →r′ 
+
+> v
+
+deactivate timing constraints when their indicators are zero. 
+
+F. Lexicographic Objective 
+
+Total team energy and mission completion time are defined by 
+
+Etot = X
+
+> r∈R
+
+X
+
+> (u,v )∈E r
+
+αruv 
+
+ m0 
+
+> r
+
+xruv + msQruv 
+
+, (31) 
+
+T end ≥ tr
+
+> ˜d
+
+, r ∈ R , ˜d ∈ ˜Vr . (32) MA-LIPP uses the lexicographic objective 
+
+lexmin  J(A, z ), E tot , T end , (33) which first selects the most informative feasible team sam-pling plan, then minimizes the energy required to realize it, and finally minimizes mission completion time. No sampler or carrier roles are imposed beforehand; they emerge from heterogeneous sensing value, payload-dependent transport cost, and handoff opportunities. The decision variables are 
+
+xruv , y rv , z vi , δ r→r′ 
+
+> v
+
+∈ { 0, 1}, ϕruv , t rv , T end ∈ R≥0,arv , Q ruv , H r→r′ 
+
+> v
+
+, g rv ∈ Z≥0, Ajv , A jvi ∈ R.
+
+(34) The information stage is a mixed-integer convex quadratic program; once the selected precision levels are fixed, the remaining stages are mixed-integer linear programs. The formulation contains O(RN 2) routing, connectivity-flow, and payload variables and O(R2N ) transfer variables, where 
+
+N = max r Nr , plus P 
+
+> v
+
+Lv precision-selector binaries, where Lv depends on the number of distinct sensor classes rather than directly on the number of robots. Equations (4)–(34) define the MA-LIPP model. The imple-mentation further tightens big-M constants, removes robot– node assignments that cannot appear in any feasible mission, and adds redundant valid inequalities that strengthen the relaxation without altering the feasible set. V. H EURISTIC : L ARGE -N EIGHBORHOOD SEARCH 
+
+The exact MIQP yields optimal plans for small teams, but its computational cost scales poorly for large missions. We therefore introduce a pairwise large-neighborhood search (LNS) heuristic (Algorithm 1) that iteratively improves the team plan by letting only two robots reroute within each neighborhood, while retaining team-wide coordination of sampling and sample transfers. Because it relies on time-limited subproblem solves, it provides no global optimality certificate. However, as evaluated in Section VI-C, it reliably recovers known optima on small instances and offers a highly favorable trade-off between information gain and computation time relative to Seq-LIPP at larger scales. It proceeds in three phases. 
+
+Algorithm 1 Pairwise LNS for MA-LIPP  
+
+> 1:
+
+S ← Initialize via Seq-LIPP (fallback: direct-depot routes, then unrestricted solve)  
+
+> 2:
+
+if S = ∅ then return no feasible plan found  
+
+> 3:
+
+end if  
+
+> 4:
+
+while time and sweep budgets remain do  
+
+> 5:
+
+improved ← false ; rank robot pairs by slack, shared nodes, and past failures  
+
+> 6:
+
+for each pair {r, r ′} in ranked order do  
+
+> 7:
+
+S′ ← Solve with only r, r ′ rerouted, warm-started with S, under time limit  
+
+> 8:
+
+if J(S′) < J (S) − ϵ then S ← S ′; improved ←
+
+true  
+
+> 9:
+
+Update the pair’s failure penalty  
+
+> 10:
+
+end for  
+
+> 11:
+
+if not improved then break  
+
+> 12:
+
+end if  
+
+> 13:
+
+end while  
+
+> 14:
+
+return S after refining energy and mission completion time with remaining time 
+
+a) Initialization: Routes are initialized with Seq-LIPP, a natural composition of single-robot LIPP [7] and sequential allocation [9] enhanced with mid-route unloading, in which each robot plans against the posterior conditioned on the robots committed before it. To prevent a fixed, sensing-blind order (e.g., one based purely on energy efficiency) from prematurely committing a coarse sensor to a high-value node, the order is chosen adaptively: at each step, every uncommitted robot is evaluated against the current posterior, and the one yielding the greatest team objective reduction is committed. If this fails to produce a feasible schedule, we fall back to direct-depot routes and, if those also fail, to a brief unrestricted solve. With the resulting routes frozen, MA-LIPP jointly optimizes sampling, payload transport, and timing to form the initial incumbent. 0 2 4 6 8 10 12 024            
+
+> y [m]
+> Seq-LIPP
+> DA21HC001
+> 0246810 12 024
+> MA-LIPP
+> DA11HC111
+> DEAD DROP / PICKUP 2 samples DEAD DROP / PICKUP 3 samples
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> Posterior variance
+> Scout Carrier
+> Energy:
+> Scout Carrier
+> Energy:
+
+Sampling and Delivery Behavior in Seq-LIPP and MA-LIPP scout sample carrier sample test location Fig. 2: Under Seq-LIPP, the scout cannot reach the right region after sampling the left because it must carry its accumulated payload. MA-LIPP enables the scout to drop its left-region samples at H, cross the corridor empty-handed, sample the right region, drop there, and return to the depot empty-handed. A more capable carrier then retrieves and consolidates all samples for final delivery, decoupling information acquisition from transport. 
+
+b) Pairwise improvement: For each robot pair, we re-lease the pair’s route decisions and fix all other routes to the incumbent. Sampling, payload, handoff, unloading, and timing decisions remain free for the entire team, so robots with fixed routes can still participate in revised transfers. Each subproblem is warm-started with the incumbent, and a candidate is accepted only if it reduces the information objective by more than a tolerance ϵ. Pairs are ranked by energy-slack asymmetry and shared reachable nodes, with a penalty for unsuccessful attempts. Each pair receives a fixed minimum time allowance, and the search stops when its time or sweep budget is exhausted or a full sweep yields no accepted improvement. Since only strictly improving moves are accepted, the final solution is guaranteed to perform at least as well as the initialization in the information objective. 
+
+c) Final refinement: With the incumbent’s routes and precision levels fixed, the remaining time is used to minimize team energy and mission completion time T end over custody decisions alone: which robot acquires each sample, where transfers occur, and where samples are unloaded. Both steps are small MILPs, which keeps refinement inexpensive, and neither alters the incumbent’s information value. VI. E XPERIMENTS 
+
+In this section, we evaluate three claims: (1) both the joint planning and dead-drop handoff features of MA-LIPP improve information collection over sequential planning; (2) the value of cooperation depends on sensing heterogene-ity and sample transport cost; and (3) the pairwise LNS heuristic closes the optimality gap against exact MA-LIPP on verifiable instances and outperforms baselines in both information gain and computation time at larger scales. To evaluate these claims, we compare Seq-LIPP against MA-LIPP (with/without handoffs) across difficulty levels (Fig. 3) and assess the impact of sensing heterogeneity and sample mass on cooperative gain (Fig. 4). Lastly, we measure the LNS heuristic’s optimality gap on small instances and bench-mark its scalability against Seq-LIPP on larger problems. Directly applying off-the-shelf task allocation or multi-robot IPP methods would require either pre-computing in-formation objective value to all possible cases or making ad-hoc repairs to energy constraints (Sec. II). We therefore evaluate Seq-LIPP and a no-handoff ablation as controlled baselines within a unified formulation. As detailed in Sec. V, our baseline Seq-LIPP incorporates both adaptive ordering and mid-route unloading, granting it identical individual sampling and delivery capabilities to MA-LIPP. However, inter-robot handoffs are structurally impossible under se-quential planning, as they demand coupled, simultaneous multi-agent spatio-temporal synchronization. As illustrated in Fig. 2, this restriction forces Seq-LIPP agents to self-deliver their accumulated payloads, whereas MA-LIPP coordinates handoffs so that high-quality sensing robots can delegate delivery tasks across long distances to efficient carriers and focus on sampling. We report information gain as the percentage reduction in weighted posterior variance relative to the sequential baseline on the same instance, with larger values indicating greater improvement: G = 100 Jseq −Jmethod  
+
+> Jseq
+
+(%) .
+
+Unless otherwise stated, instances use random directed graphs in a 10 × 10 workspace, edge density 0.30 , one-way-edge fraction 0.05 , and identical robot speeds. An RBF kernel with length scale 2.0 models the field; the identity-weighted posterior variance is used Wjj = 1 . All nodes except starts and depots permit sampling. Sample mass is 
+
+ms = λ = 1 , and β = ∆ H = 0 isolates routing and transport costs from service delays. The default solver time limit is 900 s per instance, with a relative MIP-gap target of 10 −4 for MIP solves. Error bars indicate 95% confidence intervals of the mean. We assign heterogeneous capabilities by giving higher-precision sensors to platforms with lower payload capacity and reach capability. 
+
+A. Joint Planning and Dead Drops 
+
+In this experiment, we compare a no-handoff base-line—which optimizes routes jointly but suppresses dead R=2 (n=100) R=4 (n=100) R=6 (n=100) 
+
+> 0510 15 20 25 30 35 40 information gain vs. fair baseline (%)
+> What each mechanism buys over the fair baseline
+> 2.3 7.1 11.1 13.4 28.2 33.1
+> MA-LIPP, no hando ff sMA-LIPP (full)
+
+Fig. 3: Information gain over Seq-LIPP for joint planning without handoffs versus full MA-LIPP across three team sizes. The gap between bars highlights the incremental value of handoff. Error bars denote 95% confidence intervals across 100 instances per bin. 
+
+Takeaway: Both joint planning and handoffs consistently outper-form sequential routing, with physical transfers contributing roughly three times more value than joint routing alone—an advantage that widens as fleet size increases. 
+
+drops— and a full MA-LIPP against Seq-LIPP across dif-ferent problem complexities. For increasing difficulty of the problem, we increase team sizes R ∈ { 2, 4, 6} while scaling the workspace so that we maintain a fixed workload of exactly three informative nodes per robot. Energy budgets are scaled proportionally to enforce consistently tight range constraints and maintain a uniform baseline difficulty across all sizes. We set a 20 × disparity in sensor noise across the fleet. Finally, solver time limits were set sufficiently high to ensure all runs terminated naturally without truncating the search. Figure 3 shows that both mechanisms consistently im-prove upon sequential planning, with performance margins widening as the fleet grows. Joint planning alone achieves information gains over Seq-LIPP of 2.33% , 7.14% , and 
+
+11 .10% at R = 2 , 4, and 6. Permitting dead drops contributes roughly three times more additional value, driving total MA-LIPP gains to 13 .44% , 28 .19% , and 33 .10% . In every instance, full MA-LIPP strictly matched or outperformed its no-handoff counterpart. This expanding advantage stems directly from increased physical cooperation, with average dead drops per mission rising from 1.61 at R = 2 to 
+
+10 .06 at R = 6 . Because the per-robot workload remains constant, these widening gains reflect a richer combinatorial space for division of labor rather than higher task density. Each added agent expands the opportunities for specialized roles to emerge dynamically, allowing range-limited but well-sensed robots to offload their payload to more capable teammates. This demonstrates that the architectural benefits of asynchronous handoffs compound effectively at scale. 
+
+B. Interaction Between Sensing and Sample Mass 
+
+We evaluate 120 base instances at all 25 combinations of five sample masses and five sensor-noise ratios, yielding 0.1 0.5 123 
+
+> sample mass λ 1× 3× 5× 20× 100×
+> sensor-noise ratio 510 15 20 25 30 gain (%)
+> MA-LIPP gain over Seq-LIPP (%)
+
+Fig. 4: Mean information gain of MA-LIPP over Seq-LIPP across sample mass λ and sensor-noise ratio ( σ2worst /σ 2best ). Surface height indicates the percentage reduction in weighted posterior variance across 120 base instances per configuration. Takeaway: Greater sensor disparity favors cooperation, but handoffs offer limited benefit when samples are too light to make transport costly or too heavy for the available energy budget to support much collection. 
+
+a total of 3,000 runs. All other properties remain fixed. Each instance has R = 3 robots and a total of 18 nodes. Energy budgets use 50% of the reference cost of visiting all informative nodes with weightless samples ( λ = 0 ), divided by team size, and remain fixed across both sweeps. We vary sample mass over λ ∈ { 0.1, 0.5, 1, 2, 3} and the noise-variance ratio over σ2worst /σ 2best ∈ { 1, 3, 5, 20 , 100 }. The two sensor classes satisfy 1/σ 2best + 1 /σ 2worst = 40 , so that the total sensing precision budget are fixed across the sweep. Figure 4 shows that the benefit of MA-LIPP increases monotonically with sensor disparity at every tested sample mass, with no observed saturation up to a noise-variance ratio of 100 . Greater disparity strengthens the advantage of separating sample acquisition from delivery: a robot with a better sensor can collect samples while a more capable carrier focuses on transporting them. In contrast, the benefit peaks at intermediate sample masses. Light samples offer limited transport savings from handoffs, whereas very heavy samples restrict feasible collection and delivery, leaving fewer opportunities for cooperation. 
+
+C. Scalability and Heuristic Quality 
+
+The optimality study evaluates 334 instances, specifically those where the exact MIQP solver successfully found and certified the global optimum, spanning R ∈ { 2, 3, 4, 6, 8} and 
+
+n ∈ { 10 , 12 , 14 , 16 , 18 , 20 } for both methods. The scalability study uses 180 instances divided equally among (R, n ) ∈{(8 , 31) , (10 , 38) , (12 , 45) }. Map size grows with team size to keep baseline sampling coverage near 53 –56% . In this study, Seq-LIPP receives 1200 s and LNS receives 1800 s ,including its sequential initialization. Figure 5 (top) plots the objective values reached by our LNS heuristic against these 334 certified MIQP optima. LNS finds feasible plans on all 334 instances and matches 319 of the known optima ( 95 .5% ) within a relative-gap tolerance of 0.001% ; another nine fall within 1% , bringing the total to 
+
+98 .2% . Misses become more frequent with model size, rising 0.4–1.2k 0/66 0.0% 1.2–1.8k 1/68 1.5% 1.8–2.4k 3/66 4.5% 2.4–3.3k 5/66 7.6% 3.3–6.5k 6/68 8.8%        
+
+> model size increases 319 (95.5%) matched exactly 9 (2.7%) missed, within 1% 6 (1.8%) missed by more than 1%
+> 95.5% match the exact optimum, and the misses collect in the larger models 0200 400 600 800
+> Search time since the instance's fi rst incumbent (s)
+> −5 0510 15 20 25
+> Mean information gain over Seq-LIPP (%)
+> Seq-LIPP +3s Seq-LIPP +78s Seq-LIPP +224s
+> Comparison of Seq-LIPP vs. LNS-Heuristic
+> R=8, n=31 (19,975 vars, seed 275s) R=10, n=38 (35,418 vars, seed 607s) R=12, n=45 (58,323 vars, seed 826s)
+
+Fig. 5: Top : Evaluation of LNS solution quality on the 334 instances where the exact MIQP solver successfully certified the global optimum, grouped by problem scale, with suboptimality rates reported at right. Bottom : mean posterior-variance reduction over Seq-LIPP versus search time since each run’s first incumbent. Shading denotes 95% confidence intervals; dashed lines mark mean baseline completion offsets. Each curve ends at its group’s shortest search duration to retain all 60 instances; an earlier endpoint does not indicate that all runs have stopped. Takeaway: LNS matches exact optima in 95 .5% of certified cases and reaches a better plan earlier than the baseline finishes, with performance steadily increasing as we provide more time. 
+
+from 0% to 8.8% across the five groups, but their magnitude does not consistently increase. Gaps above 1% are consistent with the search becoming trapped in pairwise local optima, where improvement requires changing the routes of three or more robots together. Figure 5 (bottom) aligns each LNS run at its first fea-sible incumbent, after sequential initialization and fixed-route optimization. The horizontal axis measures subsequent search time, showing how pairwise updates progressively reduce posterior variance relative to the standalone Seq-LIPP baseline. Dashed vertical lines mark the mean baseline completion times relative to these starting points. LNS begins searching earlier than Seq-LIPP because its sequential initial-ization has a shorter time limit, although this may produce a weaker initial plan. By the end of the allotted runs, mean reductions reach 19 .0% , 19 .8% , and 16 .1% for eight, ten, and twelve robots, respectively. VII. C ONCLUSION AND FUTURE WORK 
+
+In this work, we introduced a cooperative load-aware informative path-planning problem for heterogeneous teams, addressing the joint optimization of routing, sampling, and physical payload transfer. By leveraging asynchronous dead drops, our MA-LIPP framework enables agents to cache physical samples for teammates without requiring a synchronous rendezvous, allowing specialized roles to emerge dynamically. Moreover, we provided a pairwise search heuristic that approaches exact optimality on smaller benchmarks while scaling efficiently to yield significant variance reductions on larger fleets. Finally, standardizing these mechanics into an open-source library provides both an immediate pipeline for field deployment and an extensible baseline for multi-robot sample collection. For future work, MA-LIPP opens the door to adaptive, field-deployed sampling teams. Because the LNS warm-starts from an incumbent solution, MA-LIPP can be closed into an online loop: when in-situ measurements reveal an unexpectedly complex field or terrain delays disrupt the schedule, the team can re-plan its routes and handoffs mid-mission instead of executing a stale plan. On the hardware side, deploying MA-LIPP on heterogeneous rover and aerial– ground teams will turn dead drops from a planning abstrac-tion into a physical capability and validate our energy and timing models under real mission conditions. REFERENCES [1] G. A. Hollinger and G. S. Sukhatme, “Sampling-based robotic infor-mation gathering algorithms,” The International Journal of Robotics Research , vol. 33, no. 9, pp. 1271–1287, 2014. [2] S. Dutta, N. Wilde, and S. L. Smith, “Informative path planning for active regression with Gaussian processes via sparse optimization,” 
+
+IEEE Transactions on Robotics , vol. 41, pp. 2184–2199, 2025. [3] K. Jakkala and S. Akella, “Multi-robot informative path planning from regression with sparse Gaussian processes,” in IEEE International Conference on Robotics and Automation (ICRA) , 2024, pp. 12 382– 12 388. [4] K. A. Farley, K. H. Williford, K. M. Stack et al. , “Mars 2020 mission overview,” Space Science Reviews , vol. 216, p. 142, 2020. [5] T. H. Nguyen, E. Muller, M. R. Rubin, X. Wang, F. Sibona, A. McBrat-ney, and S. Sukkarieh, “A semi-autonomous robotic system for in situ soil sampling, analysis, and mapping in precision agriculture,” IEEE Transactions on Field Robotics , vol. 3, pp. 22–39, 2026. [6] J. Das, F. Py, J. B. J. Harvey, J. P. Ryan, A. Gellene, R. Graham, D. A. Caron, K. Rajan, and G. S. Sukhatme, “Data-driven robotic sampling for marine ecosystem monitoring,” The International Journal of Robotics Research , vol. 34, no. 12, pp. 1435–1452, 2015. [7] H. Kim, G. Shi, and G. S. Sukhatme, “LIPP: Load-aware informative path planning with physical sampling,” arXiv:2603.06924, 2026. [Online]. Available: https://arxiv.org/abs/2603.06924 [8] M. J. Schuster, M. G. Müller, S. G. Brunner, H. Lehner, P. Lehner, A. Dömel, M. Vayugundla, F. Steidle, P. Lutz, R. Sakagami, L. Meyer, R. Belder, M. Smisek, W. Stürzl, R. Triebel, and A. Wedler, “Towards heterogeneous robotic teams for collaborative scientific sampling in lunar and planetary environments,” in IROS Workshop on Informed Scientific Sampling in Large-scale Outdoor Environments , 2019. [Online]. Available: https://elib.dlr.de/132829/ [9] A. Singh, A. Krause, C. Guestrin, and W. J. Kaiser, “Efficient informa-tive sensing using multiple robots,” Journal of Artificial Intelligence Research , vol. 34, pp. 707–755, 2009. [10] Y. Emam, S. Mayya, G. Notomista, A. Bohannon, and M. Egerstedt, “Adaptive task allocation for heterogeneous multi-robot teams with evolving and unknown robot capabilities,” in IEEE International Conference on Robotics and Automation (ICRA) , 2020, pp. 7719– 7725. [11] N. Cao, K. H. Low, and J. M. Dolan, “Multi-robot informative path planning for active sensing of spatial environmental phenomena: A tale of two algorithms,” in Proceedings of the 12th International Conference on Autonomous Agents and Multiagent Systems (AAMAS) ,2013, pp. 7–14. [12] B. P. Gerkey and M. J. Matari´ c, “A formal analysis and taxonomy of task allocation in multi-robot systems,” The International Journal of Robotics Research , vol. 23, no. 9, pp. 939–954, 2004. [13] G. A. Korsah, A. Stentz, and M. B. Dias, “A comprehensive taxonomy for multi-robot task allocation,” The International Journal of Robotics Research , vol. 32, no. 12, pp. 1495–1512, 2013. [14] P. Schillinger, S. García, A. Makris, K. Roditakis, M. Logothetis, K. Alevizos, W. Ren, P. Tajvar, P. Pelliccione, A. Argyros, K. J. Kyriakopoulos, and D. V. Dimarogonas, “Adaptive heterogeneous multi-robot collaboration from formal task specifications,” Robotics and Autonomous Systems , vol. 145, p. 103866, 2021. [15] G. Notomista, S. Mayya, Y. Emam, C. Kroninger, A. Bohannon, S. Hutchinson, and M. Egerstedt, “A resilient and energy-aware task allocation framework for heterogeneous multirobot systems,” IEEE Transactions on Robotics , vol. 38, no. 1, pp. 159–179, 2022. [16] A. M. Mood, F. A. Graybill, and D. C. Boes, Introduction to the Theory of Statistics , 3rd ed. New York, NY, USA: McGraw-Hill, 1974. [17] M. Padberg and T.-Y. Sung, “An analytical comparison of different formulations of the travelling salesman problem,” Mathematical Pro-gramming , vol. 52, pp. 315–357, 1991. [18] T. Öncan, ˙ I. K. Altınel, and G. Laporte, “A comparative analysis of several asymmetric traveling salesman problem formulations,” Com-puters & Operations Research , vol. 36, no. 3, pp. 637–654, 2009. [19] J. R. Taylor, An Introduction to Error Analysis: The Study of Uncer-tainties in Physical Measurements , 2nd ed. University Science Books, 1997, ch. 7.
