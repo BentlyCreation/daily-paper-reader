@@ -1,0 +1,438 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-22T21:45:48.746838+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 2,
+    "deep_cap": 8,
+    "deep_selected": 2,
+    "quick_candidates": 8,
+    "quick_skim_target": 13,
+    "quick_selected": 8
+  },
+  "deep_dive": [
+    {
+      "id": "2609.23137v1",
+      "source": "arxiv",
+      "title": "TRACS: A Geometry-Aware Framework for Scalable Multi-Agent Path Finding in Warehouses",
+      "abstract": "Large scale warehouse automation relies on efficient multi agent path finding (MAPF) to coordinate thousands of robots in structured environments. Existing MAPF algorithms primarily improve conflict resolution while representing warehouses as generic navigation graphs, overlooking their inherent geometric structure and traffic patterns. This paper presents TRACS (Traffic aware Routing and Aisle Coordination System), a geometry aware planning framework that exploits warehouse layout to simplify planning rather than introducing another conflict-resolution algorithm. TRACS constructs a directed routing graph with alternating one way aisles that eliminates head on and edge swap conflicts by design, decoupling spatial routing from temporal traffic coordination. Independent hybrid graph grid routing is combined with lightweight edge based scheduling to avoid joint space time search while ensuring collision free execution. Experimental evaluation on warehouse benchmarks against representative priority based, iterative repair, and search based MAPF planners shows that TRACS consistently achieves a 100% empirical success rate while substantially improving planning scalability. On fixed scene benchmarks with up to 1000 robots, TRACS reduces planning time by up to 14.7X while maintaining competitive makespan, lower flowtime, and near optimal path quality. Under a fixed 10 minute planning budget, TRACS routes up to 5120 robots, roughly twice the largest fleet reached by the strongest baselines, while sustaining a 100% success rate, demonstrating the effectiveness of exploiting warehouse geometry for scalable robotic warehouse systems.",
+      "authors": [
+        "Siddhant Erande",
+        "Anuj Tiwari"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY",
+        "cs.MA"
+      ],
+      "published": "2026-09-19T17:07:08+00:00",
+      "link": "https://arxiv.org/pdf/2609.23137v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "geometry-aware scalable multi-agent path finding in warehouses",
+      "llm_evidence_cn": "仓储场景的几何感知可扩展多智能体路径规划",
+      "llm_evidence": "仓储场景的几何感知可扩展多智能体路径规划",
+      "canonical_evidence": "仓储场景的几何感知可扩展多智能体路径规划",
+      "llm_tldr_en": "The paper presents TRACS, a geometry-aware MAPF framework that exploits warehouse layout by building a directed routing graph with alternating one-way aisles to eliminate head-on and edge-swap conflicts by design, scaling to thousands of robots.",
+      "llm_tldr_cn": "针对大规模仓库自动化中现有MAPF算法只关注冲突消解、却把仓库当作通用导航图而忽略其几何结构与交通模式的问题，本文提出几何感知规划框架TRACS，通过构造单向交替通道的有向路由图，在设计层面消除对头冲突与边交换冲突，从而将空间路由与时间调度解耦。该框架可扩展到数千台机器人的协调，为结构化仓储环境提供了可扩展的MAPF方案。",
+      "llm_tldr": "针对大规模仓库自动化中现有MAPF算法只关注冲突消解、却把仓库当作通用导航图而忽略其几何结构与交通模式的问题，本文提出几何感知规划框架TRACS，通过构造单向交替通道的有向路由图，在设计层面消除对头冲突与边交换冲突，从而将空间路由与时间调度解耦。该框架可扩展到数千台机器人的协调，为结构化仓储环境提供了可扩展的MAPF方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.23269v1",
+      "source": "arxiv",
+      "title": "Latent Telepathy: Multi-Robot Communication with Self-Supervised Perceptual Latents",
+      "abstract": "In a decentralized multi-robot team under partial observability, the fact that decides a robot's next action is often visible only to a teammate. Existing decentralized methods communicate kinematic information, such as position or planned trajectory, which cannot convey what the teammate perceives. Learned communication in multi-agent reinforcement learning (MARL) can carry perceptual content, but the resulting messages are task-coupled and opaque. We propose Latent Telepathy. Each robot broadcasts the perceptual latent vector it already computes for its own use, the output of an encoder trained with a self-supervised joint-embedding predictive objective, frozen, and shared across the team. A teammate learns to act on it from task reward alone. Because the encoder already runs for perception, the message costs no additional computation and a single compact vector of bandwidth. Because the encoder is frozen before any policy is trained, the message means the same thing to every robot, and the receiving robot is never told what it means. We evaluate Latent Telepathy with a content-controlled protocol in which bandwidth, latency, topology and receiver are held fixed and only the message content varies. Broadcasting the latent lets a navigator avoid an occluded hazard in 99.7% of episodes, matching a noiseless hand-designed message. Position and trajectory messages remain at chance, and the raw camera image, 186 times wider, is less reliable than the compressed latent. The result holds from a discrete gridworld to rendered pixels under continuous velocity control, and the encoder decodes the hazard from a physical robot's camera in 102 of 102 live decisions. We also identify a requirement for porting MARL communication results to continuous control, that the decision a message informs must remain reachable by exploration, and show how to restore it.",
+      "authors": [
+        "Howard Wang",
+        "Han Zheng",
+        "Cathy Wu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG",
+        "cs.MA"
+      ],
+      "published": "2026-09-20T01:01:39+00:00",
+      "link": "https://arxiv.org/pdf/2609.23269v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "decentralized multi-robot learned communication under partial observability",
+      "llm_evidence_cn": "部分可观测下的去中心化多机器人学习通信",
+      "llm_evidence": "部分可观测下的去中心化多机器人学习通信",
+      "canonical_evidence": "部分可观测下的去中心化多机器人学习通信",
+      "llm_tldr_en": "Latent Telepathy lets each robot broadcast a frozen self-supervised perceptual latent instead of kinematic messages, enabling decentralized multi-robot teams under partial observability to share what teammates perceive rather than only where they are.",
+      "llm_tldr_cn": "在部分可观测的去中心化多机器人团队中，决定行动的关键信息往往只有队友能看到，而现有方法仅传递位置或轨迹等运动学信息，无法表达队友所感知的内容。本文提出Latent Telepathy，让每个机器人广播其自监督联合嵌入预测目标训练并冻结的感知隐向量，队友据此学习行动。实验表明该方式能传递感知内容且消息可跨任务复用，为多机器人协作通信提供了可解释的新范式。",
+      "llm_tldr": "在部分可观测的去中心化多机器人团队中，决定行动的关键信息往往只有队友能看到，而现有方法仅传递位置或轨迹等运动学信息，无法表达队友所感知的内容。本文提出Latent Telepathy，让每个机器人广播其自监督联合嵌入预测目标训练并冻结的感知隐向量，队友据此学习行动。实验表明该方式能传递感知内容且消息可跨任务复用，为多机器人协作通信提供了可解释的新范式。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.16947v1",
+      "source": "arxiv",
+      "title": "AeroLat: Channel-Aware Latent Space Semantic Communication for Decentralized UAV Swarms",
+      "abstract": "Communication in latent space offers an intriguing alternative to symbolic messages for decentralized autonomous Unmanned Aerial Vehicle (UAV) swarms operating over bandwidth-constrained, time-varying wireless links. However, when homogeneous frozen models are prompted with discretized perceptual inputs, their broadcast states collapse toward the shared prompt template. In view of this, we propose AeroLat, a channel-aware latent semantic communication framework that uses evidence injection. The resulting latent states are then passed through an explicit communication model that encompasses bandwidth-limited serialization, additive noise and information staleness, which facilitates a joint assessment of communication fidelity and swarm-level coordination. Across multi-seed simulations, AeroLat provably remains resilient to codec choice, faults and increasing swarm size. It consistently reproduces the latent-swarm anomaly, while no-whitening controls recover the collapse. In particular, AeroLat is capable of reducing false similarity by 97.5%.",
+      "authors": [
+        "Rajdeep Ghosh",
+        "Goparaju Venkata Seshachala Sree Vatsava",
+        "Sudip Misra"
+      ],
+      "primary_category": "cs.NI",
+      "categories": [
+        "cs.NI",
+        "cs.AI"
+      ],
+      "published": "2026-09-15T10:26:23+00:00",
+      "link": "https://arxiv.org/pdf/2609.16947v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "latent semantic communication for decentralized UAV swarms under bandwidth limits",
+      "llm_evidence_cn": "带宽受限下去中心化无人机集群的潜在语义通信",
+      "llm_evidence": "带宽受限下去中心化无人机集群的潜在语义通信",
+      "canonical_evidence": "带宽受限下去中心化无人机集群的潜在语义通信",
+      "llm_tldr_en": "AeroLat is a channel-aware latent semantic communication framework using evidence injection to prevent broadcast collapse, evaluated under bandwidth limits, noise and information staleness.",
+      "llm_tldr_cn": "面向带宽受限、时变的无线链路，去中心化无人机集群的潜在空间通信会出现广播状态坍缩到共享提示模板的问题。本文提出AeroLat信道感知潜在语义通信框架，通过证据注入缓解坍缩，并将潜在状态经带宽受限序列化、加性噪声与信息陈旧度等显式通信模型传递，联合评估通信保真度与集群协同性能。该工作为去中心化多智能体系统的语义通信提供了可行方案。",
+      "llm_tldr": "面向带宽受限、时变的无线链路，去中心化无人机集群的潜在空间通信会出现广播状态坍缩到共享提示模板的问题。本文提出AeroLat信道感知潜在语义通信框架，通过证据注入缓解坍缩，并将潜在状态经带宽受限序列化、加性噪声与信息陈旧度等显式通信模型传递，联合评估通信保真度与集群协同性能。该工作为去中心化多智能体系统的语义通信提供了可行方案。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.18004v1",
+      "source": "arxiv",
+      "title": "Missing Bridges: Composition-Aware Active Imitation Learning",
+      "abstract": "Active imitation learning reduces expert effort by allowing a learner to request the demonstrations it needs. Existing methods typically select these requests for their expected information gain about the expert policy. In structured multi-task domains, however, the number of start-goal tasks may grow combinatorially despite their solutions sharing reusable behavior. This makes composable behaviors especially valuable, since a single demonstration may help solve many tasks at once. Prior methods do not explicitly account for this value when selecting which demonstration to request. We introduce Adaptive Agents via Latent Topologies (AALT), which requests demonstrations that maximize expected gains in start-goal connectivity. We further show that this objective is formally tied to information gain about task reachability. AALT organizes existing demonstrations into a topology of latent hub states connected by learned behaviors, identifies high-value bridge demonstrations that are likely to enable many tasks at once, and grounds each to an expert query. At inference, it plans through the resulting topology and conditions a diffusion policy on each successive hub transition. In a simulated UR5e robot ordered-retrieval domain with 72 tasks, AALT improved from 42/72 to 72/72 (100%) successful tasks consistently using only 3 demonstrations totaling 5 transitions beyond the initial dataset. After 20 demonstrations, the strongest baseline averaged 88.6% success using 98 transitions.",
+      "authors": [
+        "Maxwell J. Jacobson",
+        "Ahmed H Qureshi",
+        "Yexiang Xue"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-09-16T01:48:13+00:00",
+      "link": "https://arxiv.org/pdf/2609.18004v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "active imitation learning from expert demonstrations",
+      "llm_evidence_cn": "从专家示范中进行主动模仿学习",
+      "llm_evidence": "从专家示范中进行主动模仿学习",
+      "canonical_evidence": "从专家示范中进行主动模仿学习",
+      "llm_tldr_en": "This paper introduces AALT, an active imitation learning method that requests demonstrations maximizing expected gains in start-goal connectivity, exploiting composable behaviors in multi-task domains.",
+      "llm_tldr_cn": "主动模仿学习通过让学习器主动请求所需示范来降低专家成本，但现有方法仅按对专家策略的信息增益选择请求。在结构化多任务领域中，起止任务数量可能组合爆炸，而解之间共享可复用行为，单一示范可能同时帮助解决多个任务。本文提出AALT，请求能最大化起止连通性期望增益的示范。该工作聚焦模仿学习的示范选择，与多智能体路径规划中的专家轨迹学习主题相关，但未涉及多智能体设定。",
+      "llm_tldr": "主动模仿学习通过让学习器主动请求所需示范来降低专家成本，但现有方法仅按对专家策略的信息增益选择请求。在结构化多任务领域中，起止任务数量可能组合爆炸，而解之间共享可复用行为，单一示范可能同时帮助解决多个任务。本文提出AALT，请求能最大化起止连通性期望增益的示范。该工作聚焦模仿学习的示范选择，与多智能体路径规划中的专家轨迹学习主题相关，但未涉及多智能体设定。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "imitation learning from expert demonstrations for multi-agent path finding",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.18813v1",
+      "source": "arxiv",
+      "title": "Asymptotically Optimal Multi-Robot Task and Motion Planning",
+      "abstract": "Multi-robot task and motion planning (MR-TAMP) requires jointly reasoning about discrete task decisions and continuous collision-free motions of multiple interacting robots. Although asymptotically optimal algorithms have been developed for task and motion planning, extending these guarantees to the multi-robot setting introduces an important challenge: different task transitions may involve different subsets of robots and therefore impose constraints of different dimensions on the composite configuration space. Consequently, an asymptotically optimal planner must not only optimize motion within each task mode, but also ensure sufficient exploration of the different types of transitions connecting them. We characterize this transition structure and establish sufficient conditions for global asymptotic optimality in MR-TAMP, requiring persistent coverage of relevant transitions and asymptotically improving motion planning within connected feasible regions. Based on these conditions, we develop an efficient asymptotically optimal MR-TAMP algorithm that combines evolving individual-robot roadmaps with implicit tensor-product search, avoiding explicit construction of the composite roadmap. The planner further employs conditional transition sampling, lazy collision checking, and mode- and solution-level guidance to improve finite-time planning efficiency while retaining persistent exploration. The resulting framework provides asymptotic optimality guarantees for multi-robot manipulation while efficiently exploiting the structure of individual-robot motion planning.",
+      "authors": [
+        "Thi Thuy Ngan Duong",
+        "Cheuk Tung Shadow Yiu",
+        "Rahul Shome",
+        "Yoonchang Sung"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-16T15:21:51+00:00",
+      "link": "https://arxiv.org/pdf/2609.18813v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Asymptotically optimal multi-robot task and motion planning",
+      "llm_evidence_cn": "渐近最优的多机器人任务与运动规划",
+      "llm_evidence": "渐近最优的多机器人任务与运动规划",
+      "canonical_evidence": "渐近最优的多机器人任务与运动规划",
+      "llm_tldr_en": "The paper extends asymptotically optimal TAMP to multiple robots, characterizing the varying-dimensional transitions between task modes to ensure complete exploration.",
+      "llm_tldr_cn": "多机器人任务与运动规划需同时推理离散任务决策与多机器人无碰撞连续运动，但不同任务转移涉及不同机器人子集，导致复合构型空间约束维度各异，给渐近最优性带来挑战。本文刻画了任务模式间的转移结构，提出兼顾模式内运动优化与跨模式转移充分探索的渐近最优规划算法。研究将渐近最优保证从单机器人扩展到多机器人协同规划，为多智能体路径规划提供了理论支撑。",
+      "llm_tldr": "多机器人任务与运动规划需同时推理离散任务决策与多机器人无碰撞连续运动，但不同任务转移涉及不同机器人子集，导致复合构型空间约束维度各异，给渐近最优性带来挑战。本文刻画了任务模式间的转移结构，提出兼顾模式内运动优化与跨模式转移充分探索的渐近最优规划算法。研究将渐近最优保证从单机器人扩展到多机器人协同规划，为多智能体路径规划提供了理论支撑。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.19912v1",
+      "source": "arxiv",
+      "title": "Distributed Model Predictive Control with Connectivity-based Contracts",
+      "abstract": "Teams of mobile robots rely on continuous communication with their neighbors for coordination, yet most distributed model predictive control (DMPC) schemes assume the communication network stays connected rather than actively enforcing it. Adding such a guarantee is hard since the usual mathematical condition for connectivity is nonconvex and links every agent to every other, which is incompatible with a scalable distributed real-time controller. We propose a DMPC framework in which each agent is assigned a connectivity contract: a local region prescribing where its predicted positions may lie over the prediction horizon. The contracts are designed so that, as long as every agent stays within its own contract, the team is guaranteed to remain connected. Given the maintained contract graph, an agent builds its contract from a single exchange with its immediate neighbors, after which every agent solves its own optimization problem independently. We prove that the resulting closed-loop system maintains connectivity, avoids collisions, and respects local state and input constraints. Simulation and hardware experiments on miniature autonomous car-like robots demonstrate the approach.",
+      "authors": [
+        "Jorit Geurts",
+        "Danilo Saccani",
+        "Melanie N. Zeilinger",
+        "Andrea Carron"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "math.OC"
+      ],
+      "published": "2026-09-17T08:53:28+00:00",
+      "link": "https://arxiv.org/pdf/2609.19912v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "distributed MPC with connectivity contracts for multi-robot coordination",
+      "llm_evidence_cn": "面向多机器人协调的带连通性契约的分布式模型预测控制",
+      "llm_evidence": "面向多机器人协调的带连通性契约的分布式模型预测控制",
+      "canonical_evidence": "面向多机器人协调的带连通性契约的分布式模型预测控制",
+      "llm_tldr_en": "This paper proposes a distributed MPC framework assigning each robot a connectivity contract, a local region for predicted positions, so teams stay connected while scaling to real-time distributed control.",
+      "llm_tldr_cn": "移动机器人团队依赖与邻居的持续通信来协调，但多数分布式模型预测控制方案假设通信网络保持连通，而非主动保证连通性。由于标准连通性条件非凸且涉及所有智能体两两连接，难以用于可扩展的分布式实时控制器。本文提出为每个智能体分配连通性契约，即规定其预测位置所在局部区域，只要各智能体留在各自契约内，团队即可保证连通，从而实现可扩展的分布式协同控制。",
+      "llm_tldr": "移动机器人团队依赖与邻居的持续通信来协调，但多数分布式模型预测控制方案假设通信网络保持连通，而非主动保证连通性。由于标准连通性条件非凸且涉及所有智能体两两连接，难以用于可扩展的分布式实时控制器。本文提出为每个智能体分配连通性契约，即规定其预测位置所在局部区域，只要各智能体留在各自契约内，团队即可保证连通，从而实现可扩展的分布式协同控制。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.22726v1",
+      "source": "arxiv",
+      "title": "Decentralized Multi-Robot Exploration with Probabilistic Peer Intent and Multi-hop Plan Propagation",
+      "abstract": "Efficient coordination under limited communication remains a key challenge in decentralized multi-robot exploration. While centralized approaches benefit from global information sharing, they are often impractical in large-scale or communication-constrained environments. Existing Monte Carlo Tree Search (MCTS)-based approaches, such as Decentralized Monte Carlo Exploration (DMCE), enable decentralized planning by taking peer intent into account. This peer intent is obtained by communicating sequences of planned waypoints with robots within direct communication range. In this work, we extend this idea by introducing Probabilistic Peer Intent (PPI), which converts peer trajectories into a continuous spatial representation of predicted intent and incorporates it into local MCTS action evaluation. We additionally study the effects of sharing peer intent beyond direct communication range by propagating plans over multiple hops. Experiments across multiple simulated environments and team sizes show that PPI and Multi-hop propagation can each improve decentralized exploration, with their relative benefits depending on environment structure and team size. We also demonstrate the real-world deployment of our method on three robots operating in different environment types.",
+      "authors": [
+        "Saurbh Singh Jamwal",
+        "Nived Chebrolu",
+        "Shivaram Kalyanakrishnan"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.MA"
+      ],
+      "published": "2026-09-19T03:19:14+00:00",
+      "link": "https://arxiv.org/pdf/2609.22726v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "decentralized multi-robot planning with peer intent and multi-hop plan propagation",
+      "llm_evidence_cn": "带同伴意图与多跳计划传播的去中心化多机器人规划",
+      "llm_evidence": "带同伴意图与多跳计划传播的去中心化多机器人规划",
+      "canonical_evidence": "带同伴意图与多跳计划传播的去中心化多机器人规划",
+      "llm_tldr_en": "Coordination under limited communication is hard in decentralized multi-robot exploration, where centralized methods are impractical. Extending DMCE, this work introduces Probabilistic Peer Intent (PPI) that converts peer trajectories into a continuous spatial representation with multi-hop plan propagation.",
+      "llm_tldr_cn": "通信受限下多机器人探索的协调十分困难，集中式方法在大规模或弱通信环境中往往不实用。本文在去中心化蒙特卡洛探索基础上提出概率同伴意图PPI，将同伴轨迹转为连续空间表示，并进行多跳计划传播。方法通过有限通信共享意图与计划，提升去中心化多机器人探索的协调效率，为通信受限的多智能体规划提供可扩展方案。",
+      "llm_tldr": "通信受限下多机器人探索的协调十分困难，集中式方法在大规模或弱通信环境中往往不实用。本文在去中心化蒙特卡洛探索基础上提出概率同伴意图PPI，将同伴轨迹转为连续空间表示，并进行多跳计划传播。方法通过有限通信共享意图与计划，提升去中心化多机器人探索的协调效率，为通信受限的多智能体规划提供可扩展方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.21504v1",
+      "source": "arxiv",
+      "title": "DPed-VLN: A Benchmark for Socially Compliant Vision-and-Language Navigation in Dynamic Pedestrian Environments",
+      "abstract": "Vision-and-language navigation (VLN) has advanced rapidly in static indoor environments, but robots operating in human-populated spaces must ground language while responding to moving pedestrians and social-safety constraints. We present DPed-VLN, a Habitat 3.0 benchmark for dynamic-pedestrian VLN that couples 33,093 navigation episodes with paired global and prior-augmented instructions, ORCA-controlled humanoid pedestrians, socially constrained expert paths, and metrics that jointly assess navigation efficiency and social safety. DPed-VLN separates ordinary goal-oriented route guidance from prior-augmented instructions that expose dynamic-pedestrian cues for controlled analysis. To instantiate the benchmark, we introduce DPet (Dynamic Pedestrian-aware Network), a pedestrian-aware policy network trained with reinforcement learning and imitation learning. We further adapt representative state-of-the-art VLM-based navigation models, including NaVILA and StreamVLN, to DPed-VLN through LoRA fine-tuning. Experiments show that LoRA adaptation improves zero-shot VLM baselines in several success and safety metrics, especially reducing StreamVLN's collision rate. Among the evaluated methods, DPet-RL achieves the highest SR, SPL, and STL.",
+      "authors": [
+        "Haojie Dai",
+        "Xiangyi Wang",
+        "Liuyi Wang",
+        "Kai Sheng",
+        "Zongtao He",
+        "Chengju Liu",
+        "Wei Ye",
+        "Qijun Chen"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-18T08:55:29+00:00",
+      "link": "https://arxiv.org/pdf/2609.21504v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "socially compliant navigation among dynamic pedestrians with collision avoidance",
+      "llm_evidence_cn": "动态行人环境中的社会合规导航与避障",
+      "llm_evidence": "动态行人环境中的社会合规导航与避障",
+      "canonical_evidence": "动态行人环境中的社会合规导航与避障",
+      "llm_tldr_en": "DPed-VLN is a Habitat 3.0 benchmark with 33,093 episodes, ORCA-driven humanoid pedestrians and socially constrained expert paths, jointly evaluating navigation efficiency and social safety in dynamic crowds.",
+      "llm_tldr_cn": "针对视觉语言导航在静态环境表现良好、却难以应对人群环境中移动行人与社会安全约束的问题，本文提出基于Habitat 3.0的DPed-VLN基准，包含33093个导航回合、ORCA控制的人形行人、社会约束专家路径以及同时评估导航效率与社会安全的指标。基准区分普通目标导航与暴露行人线索的先验增强指令，为动态行人环境下的社会合规导航提供标准化评测平台。",
+      "llm_tldr": "针对视觉语言导航在静态环境表现良好、却难以应对人群环境中移动行人与社会安全约束的问题，本文提出基于Habitat 3.0的DPed-VLN基准，包含33093个导航回合、ORCA控制的人形行人、社会约束专家路径以及同时评估导航效率与社会安全的指标。基准区分普通目标导航与暴露行人线索的先验增强指令，为动态行人环境下的社会合规导航提供标准化评测平台。",
+      "llm_tags": [
+        "query:intent-avoid:composite"
+      ],
+      "matched_query_tag": "query:intent-avoid:composite",
+      "matched_query_text": "Papers central to MAS, especially work that connects or combines: multi-agent intent prediction future motion planning; pedestrian trajectory prediction multi-agent system; crowd occupancy grid perception dynamic occupancy; potential field decentralized collision avoidance multi-agent; decentralized collision avoidance multi-agent system coordination; congestion avoidance multi-agent crowd navigation; Multi agent systems for future motion intent prediction and congestion avoidance; Decentralized potential field methods for crowd obstacle avoidance and path planning; Pedestrian trajectory prediction with crowd occupancy grid and diversified routing.",
+      "matched_requirement_id": "req-composite-intent-avoid",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.23256v1",
+      "source": "arxiv",
+      "title": "Paying for Space: Incentive-Aware Motion Planning for Multi-Agent Collision Avoidance",
+      "abstract": "Advanced Air Mobility (AAM) systems require scalable coordination mechanisms to manage large fleets of aerial vehicles operating in shared, capacity-limited airspace. In such environments, different operators may have private preferences over trajectory characteristics, such as travel time, fuel consumption, or deviation from nominal routes. If centralized traffic management relies on self-reported preferences, operators may strategically misreport their costs to obtain more favorable trajectories. This paper proposes a multistage motion planning framework augmented with mechanism design to enable collision avoidance for AAM systems with privately known costs. The proposed approach integrates convex safe corridor construction with a VCG-inspired mechanism to ensure conflict-free passage through constrained airspace while incentivizing truthful revelation of private preferences. Simulation results demonstrate safe and decentralized coordination among agents with heterogeneous preferences.",
+      "authors": [
+        "Debajyoti Chakrabarti",
+        "Anushri Dixit"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-09-20T00:08:04+00:00",
+      "link": "https://arxiv.org/pdf/2609.23256v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent collision avoidance, decentralized coordination",
+      "llm_evidence_cn": "多智能体碰撞避免与协调机制",
+      "llm_evidence": "多智能体碰撞避免与协调机制",
+      "canonical_evidence": "多智能体碰撞避免与协调机制",
+      "llm_tldr_en": "This paper proposes an incentive-aware multistage motion planning framework combining convex safe corridor construction with VCG mechanism design for multi-agent collision avoidance in capacity-limited airspace.",
+      "llm_tldr_cn": "先进空中交通需要在容量受限空域中协调大量飞行器，若集中管理依赖运营商自报偏好，可能出现策略性虚报成本的问题。本文提出多阶段运动规划框架，将凸安全走廊构建与VCG机制设计相结合，在运营商成本私有时实现多智能体碰撞避免与轨迹协调。方法兼顾安全性与激励相容性，为大规模多机协同避碰提供了机制设计视角下的可扩展方案。",
+      "llm_tldr": "先进空中交通需要在容量受限空域中协调大量飞行器，若集中管理依赖运营商自报偏好，可能出现策略性虚报成本的问题。本文提出多阶段运动规划框架，将凸安全走廊构建与VCG机制设计相结合，在运营商成本私有时实现多智能体碰撞避免与轨迹协调。方法兼顾安全性与激励相容性，为大规模多机协同避碰提供了机制设计视角下的可扩展方案。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.24702v1",
+      "source": "arxiv",
+      "title": "AC-DC: Adaptive Communication for Scalable Dynamic Average Consensus in Multi-Robot Ergodic Search",
+      "abstract": "We study scalable peer-to-peer dynamic average consensus (DC) for multi-robot systems under finite-range, finite-rate, and interference-constrained communication. We introduce Adaptive Communication for Dynamic Average Consensus (AC-DC), which jointly adapts Who communicates with whom, When, and over What parts of the consensus state, using local inputs and successfully received neighbor information. Each robot's consensus state estimates the current average of the robots' local inputs. AC-DC updates these estimates as local inputs change and averages the values exchanged between robot pairs. In AC-DC, robot pairs update without waiting for every robot to complete a communication round, and the selected-state messages carry consensus state coordinates independent of team size for a fixed state representation. We apply AC-DC to dynamic-priority multi-robot ergodic search: one consensus stream estimates team visitation for motion coordination, while the other fuses regional measurement information to update uncertainty maps and search targets. Across twelve settings with up to 80 robots and 20 paired trials per setting, AC-DC has the lowest mean (i) normalized covariance-trace area under the curve (AUC) and (ii) attempted modeled communication payload among the compared decentralized methods. Averaged across settings, AC-DC achieves paired AUC reductions of 27.5% relative to state-of-the-art baselines, with 8.7x less communication traffic. As the number of robots increases, we observe that AC-DC's communication payload approaches that of the ideal centralized baseline (one ground compute-station communicating directly with all robots): with 120 robots in a fixed 600 x 600 m scaling test, AC-DC uses 19.3 MB versus 19.2 MB for the ideal centralized baseline, while remaining peer-to-peer.",
+      "authors": [
+        "Robin Inho Kee",
+        "Begum Cannataro",
+        "Vasileios Tzoumas"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-21T14:48:24+00:00",
+      "link": "https://arxiv.org/pdf/2609.24702v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "adaptive who-when-what communication in multi-robot systems",
+      "llm_evidence_cn": "多机器人系统中谁-何时-何内容的自适应通信",
+      "llm_evidence": "多机器人系统中谁-何时-何内容的自适应通信",
+      "canonical_evidence": "多机器人系统中谁-何时-何内容的自适应通信",
+      "llm_tldr_en": "AC-DC adaptively selects who, when, and what to communicate for scalable dynamic average consensus in multi-robot systems under constrained communication.",
+      "llm_tldr_cn": "多机器人动态平均共识在有限通信范围、速率与干扰约束下面临可扩展性瓶颈，传统方法需等待所有机器人完成通信轮次且开销巨大。本文提出AC-DC自适应通信框架，联合决定与谁通信、何时通信以及交换共识状态的哪些部分，并利用局部输入与成功接收的邻居信息更新估计。实验表明机器人对可异步更新，压缩后的状态消息显著降低通信负载，实现可扩展的分布式共识。该工作为受限通信下的多机器人协作提供了高效通信调度方案。",
+      "llm_tldr": "多机器人动态平均共识在有限通信范围、速率与干扰约束下面临可扩展性瓶颈，传统方法需等待所有机器人完成通信轮次且开销巨大。本文提出AC-DC自适应通信框架，联合决定与谁通信、何时通信以及交换共识状态的哪些部分，并利用局部输入与成功接收的邻居信息更新估计。实验表明机器人对可异步更新，压缩后的状态消息显著降低通信负载，实现可扩展的分布式共识。该工作为受限通信下的多机器人协作提供了高效通信调度方案。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
