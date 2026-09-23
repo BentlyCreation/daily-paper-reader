@@ -1,0 +1,356 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-23T22:08:41.884875+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 1,
+    "deep_cap": 8,
+    "deep_selected": 1,
+    "quick_candidates": 7,
+    "quick_skim_target": 13,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2609.22967v1",
+      "source": "arxiv",
+      "title": "General Collaborative Intelligence: Architecting Cognition for Resilient Multi-Agent Ecosystems",
+      "abstract": "Multi-agent unmanned systems are moving from isolated, ego-centric sensing toward collaborative intelligence, in which distributed agents exchange compact features to overcome a local observation trap that no single agent can escape: occlusions, finite sensor range, and environmental degradation. The field has matured across architectural, communication, embodied, resilience, and trust dimensions, yet existing surveys examine these dimensions in isolation and rarely expose their dependencies. This review offers a unified synthesis through two complementary lenses. The first is a five-dimensional taxonomy spanning collaboration stage, communication paradigm, fusion architecture, learning strategy, and application domain. The second is three cognitive synergy conditions, Semantic Disambiguation, Pragmatic Information Exchange, and Proactive Informational Foraging, that turn cognitive synergy into operational criteria. Across these lenses we survey collaboration architectures and topologies, neural-communication co-design that treats the channel as a differentiable pipeline component, embodied action-perception loops via multi-agent reinforcement learning, and resilience mechanisms for synchronization, uncertainty quantification, and label-efficient learning. We then map these advances onto four operational domains, V2X, unmanned aerial, industrial logistics, and smart cities, and onto the safety-privacy-utility triad. To counter benchmark saturation and evaluation fragmentation, we propose GCI-Bench, a five-pillar scoring protocol with a maturity model that makes the trade-offs of collaborative methods comparable across studies. A critical reflection on reproducibility, the sim-to-real gulf, and conditions under which collaboration degrades performance identifies open challenges and charts directions toward general collaborative intelligence under real-world uncertainty.",
+      "authors": [
+        "Lei Zhang",
+        "Chun Ye",
+        "Le Yang",
+        "Zhaozhong Wang",
+        "Deng-Ping Fan",
+        "Hang Dai",
+        "Binglu Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-09-19T11:38:04+00:00",
+      "link": "https://arxiv.org/pdf/2609.22967v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "survey unifying multi-agent communication paradigms, fusion architectures and learning strategies",
+      "llm_evidence_cn": "统一梳理多智能体通信范式、融合架构与学习策略的综述",
+      "llm_evidence": "统一梳理多智能体通信范式、融合架构与学习策略的综述",
+      "canonical_evidence": "统一梳理多智能体通信范式、融合架构与学习策略的综述",
+      "llm_tldr_en": "This review unifies multi-agent collaborative intelligence across architecture, communication, embodied, resilience and trust dimensions, offering a five-dimensional taxonomy that exposes dependencies among communication paradigms and learning strategies.",
+      "llm_tldr_cn": "多智能体无人系统正从孤立的自我中心感知走向协同智能，通过交换紧凑特征突破遮挡、传感器范围有限与环境退化带来的局部观测困境。该综述指出现有研究多孤立考察架构、通信、具身、韧性与信任等维度，因而提出统一综合框架。作者构建了涵盖协作阶段、通信范式、融合架构、学习策略与应用域的五维分类法，并系统揭示各维度之间的依赖关系，为设计韧性多智能体生态系统提供了参考蓝图。",
+      "llm_tldr": "多智能体无人系统正从孤立的自我中心感知走向协同智能，通过交换紧凑特征突破遮挡、传感器范围有限与环境退化带来的局部观测困境。该综述指出现有研究多孤立考察架构、通信、具身、韧性与信任等维度，因而提出统一综合框架。作者构建了涵盖协作阶段、通信范式、融合架构、学习策略与应用域的五维分类法，并系统揭示各维度之间的依赖关系，为设计韧性多智能体生态系统提供了参考蓝图。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.23745v1",
+      "source": "arxiv",
+      "title": "FlockDiffusion: Assignment-Conditioned Diffusion for Multi-Drone Task Allocation and Completion",
+      "abstract": "Autonomous multi-drone navigation requires fleets to service distributed objectives in cluttered environments under tight computational budgets. Efficient coordination depends on task bundling, where each drone visits multiple objectives along its route. Separate solvers for cost estimation, assignment, and execution incur redundant graph search and produce long, abrupt paths. We propose FlockDiffusion, a learned framework combining a scene graph encoder, an explicit allocation head, an assignment conditioned diffusion transformer, and a closed form trajectory decoder. An autoregressive teacher provides offline supervision for parallel fleet trajectory generation. PyBullet ablations show that bundling increases task completion from 50% to 100%, while our complete teacher further reduces route cost by 8.4% relative to MAGNNET with bundling. In the optimized scalability benchmark, evaluated on 100 scenes per density with ten drones, FlockDiffusion achieves 6.2 to 7.6 times faster inference and approximately 37% shorter routes than the classical pipeline. As nominal task counts increase from 20 to 40, latency rises from 7.8 to 11.1 ms, compared with 48.0 to 75.8 ms for the baseline. In a separate evaluation across five Gazebo environments, FlockDiffusion achieves 100% planner coverage and reduces planned route cost by 15.4% relative to the baseline with bundling. These results demonstrate efficient planning under increasing task density in configurations that are demanding to reproduce with physical drone fleets.",
+      "authors": [
+        "Iana Zhura",
+        "Satenik Akopyan",
+        "Roohan Ahmed Khan",
+        "Miguel Altamirano Cabrera",
+        "Aleksey Fedoseev",
+        "Dzmitry Tsetserukou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-20T16:46:42+00:00",
+      "link": "https://arxiv.org/pdf/2609.23745v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "learned multi-drone coordination with allocation and diffusion transformer",
+      "llm_evidence_cn": "结合分配与扩散Transformer的多无人机协同学习框架",
+      "llm_evidence": "结合分配与扩散Transformer的多无人机协同学习框架",
+      "canonical_evidence": "结合分配与扩散Transformer的多无人机协同学习框架",
+      "llm_tldr_en": "Multi-drone fleets must service objectives under tight compute, but separate solvers for cost, assignment and execution cause redundant search. This paper proposes FlockDiffusion, combining a scene graph encoder, allocation head, diffusion transformer and trajectory decoder.",
+      "llm_tldr_cn": "自主多无人机导航需在受限算力下于杂乱环境中服务分布目标，而分离的代价估计、分配与执行求解器会带来冗余图搜索和冗长突兀的路径。本文提出FlockDiffusion学习框架，结合场景图编码器、显式分配头、分配条件扩散Transformer与闭式轨迹解码器，并由自回归教师提供离线监督。PyBullet消融实验表明任务打包提升了任务完成率。该工作为多机器人协同路径与任务分配提供了端到端学习方案。",
+      "llm_tldr": "自主多无人机导航需在受限算力下于杂乱环境中服务分布目标，而分离的代价估计、分配与执行求解器会带来冗余图搜索和冗长突兀的路径。本文提出FlockDiffusion学习框架，结合场景图编码器、显式分配头、分配条件扩散Transformer与闭式轨迹解码器，并由自回归教师提供离线监督。PyBullet消融实验表明任务打包提升了任务完成率。该工作为多机器人协同路径与任务分配提供了端到端学习方案。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.24317v1",
+      "source": "arxiv",
+      "title": "Performance-Preserving Online Adaptation in Social Navigation via Diffusion Steering",
+      "abstract": "In social navigation, modeling the complex interactions between humans and robots is difficult, and deep reinforcement learning has therefore been actively studied. However, because simulation alone cannot fully reproduce diverse scenarios, robot dynamics, and the social conventions that vary across deployment environments, fine-tuning in the deployment environment is promising. In doing so, learning that preserves the base model's performance is required, so as not to compromise the primary objective of navigation, namely avoiding pedestrians and reaching the destination. In this study, we propose a method that applies diffusion steering via reinforcement learning (DSRL), which trains only the noise policy while keeping the diffusion policy fixed, thereby achieving learning that preserves performance. Furthermore, we integrate diffusion-based RL policies trained with multiple seeds to construct the base policy, improving learning performance. Our evaluation shows that, compared with other methods, the proposed method enables efficient learning while preserving performance, and we confirm flexible behavior control through adaptation to social conventions, as well as its effectiveness on a physical robot through hardware-in-the-loop simulation.",
+      "authors": [
+        "Haruto Nagahisa",
+        "Kohei Matsumoto",
+        "Yuki Hyodo",
+        "Ryo Kurazume"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-21T09:16:45+00:00",
+      "link": "https://arxiv.org/pdf/2609.24317v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Social navigation reinforcement learning avoiding pedestrians and reaching goals",
+      "llm_evidence_cn": "社交导航强化学习避让行人并到达目标",
+      "llm_evidence": "社交导航强化学习避让行人并到达目标",
+      "canonical_evidence": "社交导航强化学习避让行人并到达目标",
+      "llm_tldr_en": "DSRL applies diffusion steering via reinforcement learning for social navigation, training only the noise policy while freezing the diffusion backbone, preserving base navigation performance while adapting online in deployment environments.",
+      "llm_tldr_cn": "社会性导航中机器人需理解复杂的人机交互并避让行人、到达目标，但纯仿真训练难以覆盖多样场景、机器人动力学与各地社会规范，而部署环境微调又容易损害原有性能。本文提出通过强化学习进行扩散引导的方法DSRL，冻结扩散策略主干、仅训练噪声策略，从而在部署环境中实现在线自适应。实验显示该方法在提升环境适应性的同时保持了基础模型原有的避人与导航性能。其贡献在于给出一种性能保持的在线微调范式，使社交导航策略能安全适配真实部署环境。",
+      "llm_tldr": "社会性导航中机器人需理解复杂的人机交互并避让行人、到达目标，但纯仿真训练难以覆盖多样场景、机器人动力学与各地社会规范，而部署环境微调又容易损害原有性能。本文提出通过强化学习进行扩散引导的方法DSRL，冻结扩散策略主干、仅训练噪声策略，从而在部署环境中实现在线自适应。实验显示该方法在提升环境适应性的同时保持了基础模型原有的避人与导航性能。其贡献在于给出一种性能保持的在线微调范式，使社交导航策略能安全适配真实部署环境。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "congestion avoidance multi-agent crowd navigation",
+      "matched_requirement_id": "req-26",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.24474v1",
+      "source": "arxiv",
+      "title": "Mixed-integer flow formulations for motion planning and decision-making of networked multi-agent systems",
+      "abstract": "This work investigates the use of flow-based connectivity maintenance constraints in mixed-integer linear programming (MILP) trajectory planning and decision-making models for networked multi-agent systems (MAS). We integrate flow-based encodings for standard and k-hop connectivity into MILP multi-vehicle maneuvering models that are widely used alongside receding horizon planning strategies. Their necessity and sufficiency is demonstrated, guaranteeing full coverage of potential network topologies. The flow formulation for standard connectivity decreases the growth of the required inequality constraints from exponential to polynomial w.r.t. the size of the MAS when compared to the state-of-the-art subtour elimination (SEC) method. The flow-based k-hop connectivity constraints decrease the number of required binary variables and decouple its growth from the number of hops. However, the impact of these formulations in performance is not straightforward due to the introduction of a substantial number of continuous flow optimization variables and, in the case of k-hop connectivity, additional inequality constraints. We investigate this trade-off through a statistical evaluation of costs and optimization times using a conventional branch-and-bound commercial solver and trials performed with randomized environments for increasingly larger MAS. The results show that the flow formulation outperforms SEC in standard connectivity problems, enabling the solutions to be computed for larger MAS considering the imposed optimization time limit. The reduction in number of binary variables enabled by the k-hop flow formulations decreases the theoretical worst-case number of iterations required by the branch-and-bound algorithm to compute the global optimal solution. Our results show that this advantage did not translate into improvements in the average performance when compared to the baseline.",
+      "authors": [
+        "Angelo Caregnato-Neto",
+        "Paul-Louis Delacour",
+        "Raf Van de Plas",
+        "Tamás Keviczky",
+        "Janito Vaqueiro Ferreira"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA"
+      ],
+      "published": "2026-09-21T12:15:28+00:00",
+      "link": "https://arxiv.org/pdf/2609.24474v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "MILP trajectory planning for networked multi-agent systems with connectivity constraints",
+      "llm_evidence_cn": "带连通性约束的网络化多智能体MILP轨迹规划",
+      "llm_evidence": "带连通性约束的网络化多智能体MILP轨迹规划",
+      "canonical_evidence": "带连通性约束的网络化多智能体MILP轨迹规划",
+      "llm_tldr_en": "This paper integrates flow-based connectivity constraints into MILP multi-vehicle motion planning, reducing constraint growth from exponential to polynomial for networked MAS.",
+      "llm_tldr_cn": "针对网络化多智能体系统运动规划需保持连通性、而传统子回路消除约束规模随系统增大急剧增长的问题，本文将标准与k跳连通性的流编码集成到MILP多车机动模型中，并结合滚动时域规划。方法证明了流公式的充分必要性，保证覆盖所有潜在网络拓扑。结果使所需不等式约束数量由指数级降为多项式级，为多智能体轨迹规划提供可扩展的混合整数建模方法。",
+      "llm_tldr": "针对网络化多智能体系统运动规划需保持连通性、而传统子回路消除约束规模随系统增大急剧增长的问题，本文将标准与k跳连通性的流编码集成到MILP多车机动模型中，并结合滚动时域规划。方法证明了流公式的充分必要性，保证覆盖所有潜在网络拓扑。结果使所需不等式约束数量由指数级降为多项式级，为多智能体轨迹规划提供可扩展的混合整数建模方法。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.24702v1",
+      "source": "arxiv",
+      "title": "AC-DC: Adaptive Communication for Scalable Dynamic Average Consensus in Multi-Robot Ergodic Search",
+      "abstract": "We study scalable peer-to-peer dynamic average consensus (DC) for multi-robot systems under finite-range, finite-rate, and interference-constrained communication. We introduce Adaptive Communication for Dynamic Average Consensus (AC-DC), which jointly adapts Who communicates with whom, When, and over What parts of the consensus state, using local inputs and successfully received neighbor information. Each robot's consensus state estimates the current average of the robots' local inputs. AC-DC updates these estimates as local inputs change and averages the values exchanged between robot pairs. In AC-DC, robot pairs update without waiting for every robot to complete a communication round, and the selected-state messages carry consensus state coordinates independent of team size for a fixed state representation. We apply AC-DC to dynamic-priority multi-robot ergodic search: one consensus stream estimates team visitation for motion coordination, while the other fuses regional measurement information to update uncertainty maps and search targets. Across twelve settings with up to 80 robots and 20 paired trials per setting, AC-DC has the lowest mean (i) normalized covariance-trace area under the curve (AUC) and (ii) attempted modeled communication payload among the compared decentralized methods. Averaged across settings, AC-DC achieves paired AUC reductions of 27.5% relative to state-of-the-art baselines, with 8.7x less communication traffic. As the number of robots increases, we observe that AC-DC's communication payload approaches that of the ideal centralized baseline (one ground compute-station communicating directly with all robots): with 120 robots in a fixed 600 x 600 m scaling test, AC-DC uses 19.3 MB versus 19.2 MB for the ideal centralized baseline, while remaining peer-to-peer.",
+      "authors": [
+        "Robin Inho Kee",
+        "Begum Cannataro",
+        "Vasileios Tzoumas"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-21T14:48:24+00:00",
+      "link": "https://arxiv.org/pdf/2609.24702v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "adaptive sparse communication in multi-robot consensus under bandwidth limits",
+      "llm_evidence_cn": "带宽受限下多机器人一致性的自适应稀疏通信",
+      "llm_evidence": "带宽受限下多机器人一致性的自适应稀疏通信",
+      "canonical_evidence": "带宽受限下多机器人一致性的自适应稀疏通信",
+      "llm_tldr_en": "Under finite-range, finite-rate and interference-limited links, AC-DC adaptively chooses who communicates with whom, when, and over which parts of the consensus state, letting robot pairs update without waiting for a full round.",
+      "llm_tldr_cn": "多机器人系统在有限通信距离、带宽和干扰约束下难以维持动态平均一致性，本文提出AC-DC自适应通信机制。它利用本地输入和已接收的邻居信息，自适应决定通信对象、通信时机以及交换一致性状态的哪些部分。机器人对无需等待全体完成通信轮次即可更新，所选状态消息可动态调整，从而在受限通信下维持一致性估计收敛。该工作为通信受限的多机器人协同提供了按需、稀疏且自适应的通信方案。",
+      "llm_tldr": "多机器人系统在有限通信距离、带宽和干扰约束下难以维持动态平均一致性，本文提出AC-DC自适应通信机制。它利用本地输入和已接收的邻居信息，自适应决定通信对象、通信时机以及交换一致性状态的哪些部分。机器人对无需等待全体完成通信轮次即可更新，所选状态消息可动态调整，从而在受限通信下维持一致性估计收敛。该工作为通信受限的多机器人协同提供了按需、稀疏且自适应的通信方案。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.25701v1",
+      "source": "arxiv",
+      "title": "Fully Byzantine-Resilient Multi-Agent Reinforcement Learning",
+      "abstract": "We study distributed Byzantine-resilient actor-critic multi-agent reinforcement learning (AC-MARL), where agents collectively learn policies through local interactions. Existing methods guarantee convergence of the agents' parameters only to a neighborhood of the attack-free limit points, resulting in degraded performance. We propose Fully Resilient AC-MARL (FRAC-MARL), a decentralized method in which each agent leverages redundancy in two-hop messages to identify reliable messages. Under linear parameterizations of the value and team-reward functions and Byzantine edge attacks, where adversarial behavior is confined to the communication layer, we prove that agents' parameters converge almost surely to the same limit points as in the attack-free case over time-varying communication graphs. We introduce a novel topological condition for the convergence of our method, present a systematic method to construct such networks, and prove that this condition can be verified in polynomial time. Finally, we demonstrate our method on cooperative multi-robot formation control tasks.",
+      "authors": [
+        "Haejoon Lee",
+        "Dimitra Panagou"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.MA",
+        "eess.SY"
+      ],
+      "published": "2026-09-22T05:09:10+00:00",
+      "link": "https://arxiv.org/pdf/2609.25701v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decentralized MARL with communication-layer attacks and message redundancy",
+      "llm_evidence_cn": "通信层攻击下的去中心化MARL与消息冗余",
+      "llm_evidence": "通信层攻击下的去中心化MARL与消息冗余",
+      "canonical_evidence": "通信层攻击下的去中心化MARL与消息冗余",
+      "llm_tldr_en": "Proposes FRAC-MARL, a decentralized Byzantine-resilient actor-critic MARL method where agents use two-hop message redundancy to filter unreliable messages, proving convergence to attack-free limit points.",
+      "llm_tldr_cn": "分布式拜占庭鲁棒actor-critic多智能体强化学习中，现有方法仅能收敛到无攻击极限点的邻域，性能下降。本文提出完全鲁棒的FRAC-MARL，每个智能体利用两跳消息的冗余来识别可靠消息，实现去中心化学习。在价值与团队奖励线性参数化及拜占庭边攻击假设下，证明智能体参数几乎必然收敛到与无攻击情形相同的极限点。该工作为多智能体通信的鲁棒性提供了可证明保障。",
+      "llm_tldr": "分布式拜占庭鲁棒actor-critic多智能体强化学习中，现有方法仅能收敛到无攻击极限点的邻域，性能下降。本文提出完全鲁棒的FRAC-MARL，每个智能体利用两跳消息的冗余来识别可靠消息，实现去中心化学习。在价值与团队奖励线性参数化及拜占庭边攻击假设下，证明智能体参数几乎必然收敛到与无攻击情形相同的极限点。该工作为多智能体通信的鲁棒性提供了可证明保障。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.25942v1",
+      "source": "arxiv",
+      "title": "Destination Support Restoration for Finite-Set Multimodal Trajectory Prediction",
+      "abstract": "Robots operating around pedestrians often reason over a finite set of predicted human futures. Repeated online updates can concentrate this limited prediction budget on dominant destinations and leave plausible alternatives underrepresented or absent, removing those alternatives from the finite representation available to downstream decision making. We introduce Destination Support Restoration (DSR), a causal post-selection operator that repairs destination support without retraining the host predictor or increasing the maintained set size. At a repair step, DSR evaluates a temporary destination-stratified candidate bank from the observed prefix, converts candidate evidence into integer target counts, protects representatives of active modes, and reallocates redundant surplus hypotheses to deficient modes. The maintained and returned sets retain exactly $N$ hypotheses, and DSR replaces at most $\\lceilρN\\rceil$ entries. Protected representatives preserve current categorical support; lineage-aware particle filters also preserve surviving resampling ancestors. Each replacement reduces the allocation mismatch to the evidence-driven target by one. On the complete 3,719-trajectory Edinburgh protocol over three seeds, DSR reduces MIF weighted ADE and FDE by 13.36% and 13.30% at $N=64$. Paired integrations with CLiFF, PPT, causal GDTS, Social Informer, and PECNet improve both metrics in every evaluated pair. These results show that finite-set support allocation is a useful prediction-side control point when a fixed hypothesis set serves as the interface to downstream systems.",
+      "authors": [
+        "Fengrui Liu",
+        "Jiajun Peng",
+        "Duo Peng",
+        "Feng Liu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-09-22T09:47:20+00:00",
+      "link": "https://arxiv.org/pdf/2609.25942v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "finite-set multimodal pedestrian future trajectory prediction",
+      "llm_evidence_cn": "有限集多模态行人轨迹预测",
+      "llm_evidence": "有限集多模态行人轨迹预测",
+      "canonical_evidence": "有限集多模态行人轨迹预测",
+      "llm_tldr_en": "Robots around pedestrians rely on a finite set of predicted futures, but repeated online updates concentrate the prediction budget on dominant destinations and drop plausible alternatives. DSR is a causal post-selection operator that repairs destination support via stratified candidate banks without retraining the predictor.",
+      "llm_tldr_cn": "机器人在行人周围常依赖有限的未来轨迹预测集合，但在线反复更新会使预测预算集中于主导目的地，导致可行备选被忽略。本文提出目的地支撑恢复DSR，一种因果后选择算子，通过目的地分层的候选库与整数目标计数修复支撑集，且无需重训练预测器或扩大集合规模。该算子能在下游决策前保留活跃模态代表，提升多模态轨迹预测的可用性。",
+      "llm_tldr": "机器人在行人周围常依赖有限的未来轨迹预测集合，但在线反复更新会使预测预算集中于主导目的地，导致可行备选被忽略。本文提出目的地支撑恢复DSR，一种因果后选择算子，通过目的地分层的候选库与整数目标计数修复支撑集，且无需重训练预测器或扩大集合规模。该算子能在下游决策前保留活跃模态代表，提升多模态轨迹预测的可用性。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "pedestrian trajectory prediction multi-agent system",
+      "matched_requirement_id": "req-22",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.26593v1",
+      "source": "arxiv",
+      "title": "Decentralized Guidance and Control for Rendezvous and Docking with a Tumbling Target using Multiple Servicers",
+      "abstract": "The growing trend of miniaturization in space, combined with an exponential increase in orbital debris, motivates a new operational paradigm, that is the deployment of multiple small servicers to collectively rendezvous, dock and service large tumbling targets. A single small spacecraft is often limited in thrust or reach for such targets, yet coordinating multiple autonomous spacecraft safely in close proximity remains an open challenge. This paper presents a proof-of-concept decentralized 6-DOF model predictive control (MPC) framework for multiple servicers to safely rendezvous and dock (RVD) to a tumbling target with no knowledge about each others predicted input over the prediction horizon. The proposed framework enforces soft docking conditions, inter-servicer collision avoidance, and obstacle avoidance through embedded constraints, while remaining computationally tractable via a linear time-invariant (LTI) formulation. Validation in MATLAB with three servicers and fixed obstacle arrangements confirms that all constraints are satisfied and successful docking is achieved.",
+      "authors": [
+        "Jonathan Taylor Jönsson",
+        "Sathyanarayanan Seshasayanan",
+        "Sumeet Gajanan Satpute",
+        "George Nikolakopoulos"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-09-22T15:35:08+00:00",
+      "link": "https://arxiv.org/pdf/2609.26593v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "query:intent-avoid"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decentralized multi-agent coordination without knowledge of others predicted input",
+      "llm_evidence_cn": "无需知晓彼此预测输入的分散式多智能体协调",
+      "llm_evidence": "无需知晓彼此预测输入的分散式多智能体协调",
+      "canonical_evidence": "无需知晓彼此预测输入的分散式多智能体协调",
+      "llm_tldr_en": "A proof-of-concept decentralized 6-DOF MPC framework coordinates multiple servicers to safely rendezvous and dock with a tumbling target without knowing each other's predicted inputs.",
+      "llm_tldr_cn": "针对单颗小航天器推力与可达范围有限、多航天器近距离安全协同交会对接困难的问题，本文提出分散式六自由度模型预测控制框架。方法在不知彼此预测输入的前提下协调多服务航天器的接近与对接，实现安全分散控制。概念验证表明多服务航天器可对大型翻滚目标完成交会对接，为在轨服务与碎片处理提供协同方案。",
+      "llm_tldr": "针对单颗小航天器推力与可达范围有限、多航天器近距离安全协同交会对接困难的问题，本文提出分散式六自由度模型预测控制框架。方法在不知彼此预测输入的前提下协调多服务航天器的接近与对接，实现安全分散控制。概念验证表明多服务航天器可对大型翻滚目标完成交会对接，为在轨服务与碎片处理提供协同方案。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
