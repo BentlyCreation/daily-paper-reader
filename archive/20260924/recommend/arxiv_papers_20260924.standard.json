@@ -1,0 +1,233 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-24T22:01:08.107527+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 0,
+    "deep_cap": 8,
+    "deep_selected": 0,
+    "quick_candidates": 5,
+    "quick_skim_target": 13,
+    "quick_selected": 5
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.20480v1",
+      "source": "arxiv",
+      "title": "Worst-Case Hidden-Vehicle Trajectory Search in Spatiotemporal Occlusion Regions",
+      "abstract": "Occlusion creates fundamental uncertainty in autonomous driving. Existing methods often propagate frame-wise hypotheses or optimize ego behavior against prescribed hidden-agent predictions, leaving the worst history-consistent interaction unexplored. We introduce History-Conditioned Minimax Trajectory Search (HC-MTS), which combines temporal occlusion reasoning with response-aware search. First, HC-MTS constructs finite hidden-state modes, each certified by a backward witness satisfying multi-frame visibility, occupancy, semantic-map support, and class-specific kinematic constraints. It then solves a bilevel minimax problem: an inner finite oracle maximizes the ego driving score over destination attainment and ride comfort, while the outer search selects the legal hidden-vehicle trajectory that minimizes this best-response value. Across eight Waymo Open Motion Dataset scenarios, increasing the visibility-memory horizon from K=1 to K=20 reduces the mean per-scenario vehicle, pedestrian, and total retained hidden-seed counts by 18.12%, 21.67%, and 18.45%, respectively. HC-MTS identifies six avoidable counterexamples, while no legal collision-producing attacker is found in the remaining two scenes within the finite search budget.",
+      "authors": [
+        "Ruichen Tan",
+        "Zengxiang Lei",
+        "Satish Ukkusuri"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.CR"
+      ],
+      "published": "2026-09-17T14:33:23+00:00",
+      "link": "https://arxiv.org/pdf/2609.20480v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "hidden-agent trajectory prediction and occupancy reasoning for ego planning",
+      "llm_evidence_cn": "隐藏智能体轨迹预测与占据推理用于自车规划",
+      "llm_evidence": "隐藏智能体轨迹预测与占据推理用于自车规划",
+      "canonical_evidence": "隐藏智能体轨迹预测与占据推理用于自车规划",
+      "llm_tldr_en": "HC-MTS combines temporal occlusion reasoning with response-aware search, constructing certified hidden-state modes and solving a bilevel minimax problem for worst-case hidden-vehicle trajectory search in occlusion.",
+      "llm_tldr_cn": "遮挡给自动驾驶带来根本性不确定性，现有方法多传播逐帧假设或针对预设的隐藏智能体预测优化自车行为，未探索最坏的历史一致交互。本文提出历史条件极小极大轨迹搜索HC-MTS，先构建经多帧可见性、占据与运动学约束认证的隐藏状态模式，再求解双层极小极大问题。该方法在遮挡场景下实现了对最坏隐藏车辆轨迹的搜索与自车安全规划，提升了不确定性下的规划鲁棒性。",
+      "llm_tldr": "遮挡给自动驾驶带来根本性不确定性，现有方法多传播逐帧假设或针对预设的隐藏智能体预测优化自车行为，未探索最坏的历史一致交互。本文提出历史条件极小极大轨迹搜索HC-MTS，先构建经多帧可见性、占据与运动学约束认证的隐藏状态模式，再求解双层极小极大问题。该方法在遮挡场景下实现了对最坏隐藏车辆轨迹的搜索与自车安全规划，提升了不确定性下的规划鲁棒性。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.22967v1",
+      "source": "arxiv",
+      "title": "General Collaborative Intelligence: Architecting Cognition for Resilient Multi-Agent Ecosystems",
+      "abstract": "Multi-agent unmanned systems are moving from isolated, ego-centric sensing toward collaborative intelligence, in which distributed agents exchange compact features to overcome a local observation trap that no single agent can escape: occlusions, finite sensor range, and environmental degradation. The field has matured across architectural, communication, embodied, resilience, and trust dimensions, yet existing surveys examine these dimensions in isolation and rarely expose their dependencies. This review offers a unified synthesis through two complementary lenses. The first is a five-dimensional taxonomy spanning collaboration stage, communication paradigm, fusion architecture, learning strategy, and application domain. The second is three cognitive synergy conditions, Semantic Disambiguation, Pragmatic Information Exchange, and Proactive Informational Foraging, that turn cognitive synergy into operational criteria. Across these lenses we survey collaboration architectures and topologies, neural-communication co-design that treats the channel as a differentiable pipeline component, embodied action-perception loops via multi-agent reinforcement learning, and resilience mechanisms for synchronization, uncertainty quantification, and label-efficient learning. We then map these advances onto four operational domains, V2X, unmanned aerial, industrial logistics, and smart cities, and onto the safety-privacy-utility triad. To counter benchmark saturation and evaluation fragmentation, we propose GCI-Bench, a five-pillar scoring protocol with a maturity model that makes the trade-offs of collaborative methods comparable across studies. A critical reflection on reproducibility, the sim-to-real gulf, and conditions under which collaboration degrades performance identifies open challenges and charts directions toward general collaborative intelligence under real-world uncertainty.",
+      "authors": [
+        "Lei Zhang",
+        "Chun Ye",
+        "Le Yang",
+        "Zhaozhong Wang",
+        "Deng-Ping Fan",
+        "Hang Dai",
+        "Binglu Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-09-19T11:38:04+00:00",
+      "link": "https://arxiv.org/pdf/2609.22967v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "survey on multi-agent communication paradigms and collaborative intelligence",
+      "llm_evidence_cn": "综述多智能体通信范式与协同智能",
+      "llm_evidence": "综述多智能体通信范式与协同智能",
+      "canonical_evidence": "综述多智能体通信范式与协同智能",
+      "llm_tldr_en": "This review synthesizes multi-agent collaborative intelligence across architecture, communication, embodied, resilience and trust dimensions, offering a five-dimensional taxonomy spanning communication paradigms and fusion architectures.",
+      "llm_tldr_cn": "多智能体无人系统正从孤立的自中心感知转向协同智能，通过分布式智能体交换紧凑特征来克服遮挡、有限感知范围等局部观测困境。然而现有综述往往孤立考察架构、通信、具身、韧性与信任等维度，未揭示其依赖关系。本文通过五维分类体系（协作阶段、通信范式、融合架构、学习策略与应用领域）进行统一综合，为多智能体通信与协同研究提供了整体框架与依赖分析。",
+      "llm_tldr": "多智能体无人系统正从孤立的自中心感知转向协同智能，通过分布式智能体交换紧凑特征来克服遮挡、有限感知范围等局部观测困境。然而现有综述往往孤立考察架构、通信、具身、韧性与信任等维度，未揭示其依赖关系。本文通过五维分类体系（协作阶段、通信范式、融合架构、学习策略与应用领域）进行统一综合，为多智能体通信与协同研究提供了整体框架与依赖分析。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.26010v1",
+      "source": "arxiv",
+      "title": "MATES: Learning Multi-Agent Interactions by Transforming Observations for Frozen Single-Agent Policies",
+      "abstract": "Multi-agent reinforcement learning (MARL) commonly trains decentralized policies from scratch, requiring agents to acquire individual task competence and coordination simultaneously. Yet many multi-agent problems admit a compatible single-agent counterpart in which the underlying task can be learned in isolation. We introduce Multi-Agent Observation Transformation for Existing Single-Agent Policies (MATES), an input-side adaptation framework for tasks whose multi-agent observations preserve the solo-task information while exposing separately identifiable neighbor information. From multi-agent experience, MATES learns a small adapter that maps this observation into the format expected by a frozen single-agent policy, inducing actions suited to the shared environment without updating the single-agent policy itself. MATES leaves the pretrained policy's internal architecture unchanged and retains the objectives and update procedures of the underlying MARL algorithm. We evaluate MATES using both on- and off-policy algorithms on lifelong pathfinding, navigation, and cooperative discovery, spanning discrete and continuous observation and action spaces. Across all evaluated settings, MATES optimizes only 3.5-7.3% as many parameters as full-policy training while consistently outperforming MARL training from scratch. It approaches the performance of full fine-tuning, remains competitive overall with demonstration-based baselines, and retains strong task performance at team sizes not encountered during training. These results provide evidence that, under this observation structure, effective multi-agent behavior can be learned without modifying the policy that encodes individual competence.",
+      "authors": [
+        "Elie Abboud",
+        "Oren Gal"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.RO",
+        "eess.SY"
+      ],
+      "published": "2026-09-22T11:10:34+00:00",
+      "link": "https://arxiv.org/pdf/2609.26010v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "decentralized multi-agent RL, learning-based multi-agent policy adaptation",
+      "llm_evidence_cn": "去中心化多智能体强化学习，学习式多智能体策略适配",
+      "llm_evidence": "去中心化多智能体强化学习，学习式多智能体策略适配",
+      "canonical_evidence": "去中心化多智能体强化学习，学习式多智能体策略适配",
+      "llm_tldr_en": "MATES is an input-side adaptation framework that learns a small adapter mapping multi-agent observations into the format expected by a frozen single-agent policy, enabling decentralized multi-agent coordination without training from scratch.",
+      "llm_tldr_cn": "多智能体强化学习通常需从头训练去中心化策略，要求智能体同时习得单任务能力与协调能力，成本高昂。MATES提出输入侧适配框架，从多智能体经验中学习一个小型适配器，将保留单任务信息且暴露邻居信息的多智能体观测映射为冻结单智能体策略所需的输入格式。该适配器诱导出可复用的多智能体协调行为。结果表明可借助已有单智能体策略完成多智能体任务，降低训练开销，为学习式多智能体协调提供策略复用思路。",
+      "llm_tldr": "多智能体强化学习通常需从头训练去中心化策略，要求智能体同时习得单任务能力与协调能力，成本高昂。MATES提出输入侧适配框架，从多智能体经验中学习一个小型适配器，将保留单任务信息且暴露邻居信息的多智能体观测映射为冻结单智能体策略所需的输入格式。该适配器诱导出可复用的多智能体协调行为。结果表明可借助已有单智能体策略完成多智能体任务，降低训练开销，为学习式多智能体协调提供策略复用思路。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.27338v1",
+      "source": "arxiv",
+      "title": "DUGM-R: Uncertainty-Aware Dynamic Grid Mapping and Risk-Triggered Recovery for Learned Local Navigation",
+      "abstract": "Learned local navigation in crowded indoor environments is sensitive to how dynamic obstacle motion is represented, while collision-prone behaviour may persist after nominal policy training. We present a risk-aware reinforcement-learning framework that addresses these two issues through an uncertainty-aware Dynamic Uncertainty Grid Map (DUGM) and a modular post-training recovery mechanism. DUGM combines local occupancy, estimated obstacle motion, and motion-estimation uncertainty in a robot-centric representation. After the nominal policy is frozen, a finite-horizon Risk Value Function (RVF) is trained from nominal rollouts and used to trigger a dedicated recovery policy when continued nominal execution is predicted to be collision-prone. Experiments in a held-out NVIDIA Isaac Sim clinical-logistics benchmark show that uncertainty-aware dynamic representation improves nominal navigation over static and deterministic alternatives, while the recovery mechanism further mitigates residual collision-prone behaviour. The complete framework is also deployed directly on a TurtleBot3 without policy fine-tuning, retraining, or site-specific adaptation, retaining the performance trend observed in simulation. These results indicate that uncertainty-aware dynamic representation and post-training recovery provide complementary mechanisms for improving learned local navigation.",
+      "authors": [
+        "Haoyun Feng",
+        "Adrian Rubio-Solis",
+        "Zhaodong Guo",
+        "George Mylonas"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-23T04:28:11+00:00",
+      "link": "https://arxiv.org/pdf/2609.27338v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "dynamic occupancy grid map with obstacle motion for crowded navigation",
+      "llm_evidence_cn": "动态占据栅格地图用于拥挤环境导航",
+      "llm_evidence": "动态占据栅格地图用于拥挤环境导航",
+      "canonical_evidence": "动态占据栅格地图用于拥挤环境导航",
+      "llm_tldr_en": "A risk-aware RL framework uses an uncertainty-aware dynamic occupancy grid and a risk-triggered recovery policy to improve learned local navigation in crowded indoor spaces.",
+      "llm_tldr_cn": "针对拥挤室内环境中学习型局部导航对动态障碍运动表征敏感、且训练后仍残留碰撞倾向的问题，本文提出风险感知强化学习框架，构建机器人中心的动态不确定性占据栅格地图DUGM，融合局部占据、障碍运动估计与运动不确定性。策略冻结后训练有限时域风险值函数，在预测到持续执行将碰撞时触发专用恢复策略。实验表明该方法能显著降低碰撞率并提升拥挤场景下的导航安全性。",
+      "llm_tldr": "针对拥挤室内环境中学习型局部导航对动态障碍运动表征敏感、且训练后仍残留碰撞倾向的问题，本文提出风险感知强化学习框架，构建机器人中心的动态不确定性占据栅格地图DUGM，融合局部占据、障碍运动估计与运动不确定性。策略冻结后训练有限时域风险值函数，在预测到持续执行将碰撞时触发专用恢复策略。实验表明该方法能显著降低碰撞率并提升拥挤场景下的导航安全性。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "crowd occupancy grid perception dynamic occupancy",
+      "matched_requirement_id": "req-23",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.28247v1",
+      "source": "arxiv",
+      "title": "Controlling Collectives of AI Agents in Reasoning Space with Spatial Transformers",
+      "abstract": "Large Language Models (LLMs) introduce an exciting new paradigm for planning and navigation in robotics, but fail on even simple multi-robot tasks as team sizes grow. We propose COMPASS, a scalable, decentralized multi-robot architecture for controlling large collectives of agentic robots with reasoning space feedback control. Feedback is generated locally on each robot by a spatial transformer which aggregates multi-hop messages across the fleet into a learned feedback token. Our experiments find that collectives of language models demonstrate performance gains from structured diversity of the input command, which can cancel biases; an advantage that is held across scale. Compared against a centralized frontier LLM policy and a language-only communication ablation, we find that the coupled design of COMPASS decisively produces cohesive flocking formations that accurately fly the commanded intent. We show that reasoning feedback works best when composed with a compact learned token. Our ablations show that hand engineered feedback with raw state appearing in the language channel obliterates cohesion. COMPASS generalizes zero-shot to unseen instructions of ambiguous meaning while commanding flocks up to 16 times its training scale, flying up to 1024 robots under natural language commands.",
+      "authors": [
+        "Frederic Vatnsdal",
+        "Roshan Gopal",
+        "Romina Garcia Camargo",
+        "Vijay Kumar",
+        "Alejandro Ribeiro"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-09-23T15:08:35+00:00",
+      "link": "https://arxiv.org/pdf/2609.28247v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "decentralized spatial transformer aggregates multi-hop messages",
+      "llm_evidence_cn": "去中心化空间Transformer聚合多跳消息",
+      "llm_evidence": "去中心化空间Transformer聚合多跳消息",
+      "canonical_evidence": "去中心化空间Transformer聚合多跳消息",
+      "llm_tldr_en": "COMPASS is a scalable decentralized multi-robot architecture where a local spatial transformer aggregates multi-hop fleet messages into a learned feedback token, enabling reasoning-space feedback control that scales to large agent collectives.",
+      "llm_tldr_cn": "针对大语言模型在多机器人规划导航中随团队规模扩大而失效的问题，本文提出COMPASS——一种可扩展的去中心化多机器人架构，通过推理空间反馈控制实现集群控制。每台机器人本地用空间Transformer聚合跨机群的多跳消息，生成学习到的反馈token。实验表明结构化输入多样性可抵消偏差且优势随规模保持，相比集中式前沿LLM策略更具可扩展性，为大规模智能体集群控制提供新范式。",
+      "llm_tldr": "针对大语言模型在多机器人规划导航中随团队规模扩大而失效的问题，本文提出COMPASS——一种可扩展的去中心化多机器人架构，通过推理空间反馈控制实现集群控制。每台机器人本地用空间Transformer聚合跨机群的多跳消息，生成学习到的反馈token。实验表明结构化输入多样性可抵消偏差且优势随规模保持，相比集中式前沿LLM策略更具可扩展性，为大规模智能体集群控制提供新范式。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "transformer based information aggregation for multi agent reinforcement learning in spatial tasks",
+      "matched_requirement_id": "req-20",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

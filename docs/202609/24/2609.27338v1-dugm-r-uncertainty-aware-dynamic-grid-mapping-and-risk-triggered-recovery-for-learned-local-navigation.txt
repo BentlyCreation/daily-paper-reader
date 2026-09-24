@@ -1,0 +1,459 @@
+Title: DUGM-R: Uncertainty-Aware Dynamic Grid Mapping and Risk-Triggered Recovery for Learned Local Navigation
+
+URL Source: https://arxiv.org/pdf/2609.27338v1
+
+Published Time: Thu, 24 Sep 2026 00:34:00 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# DUGM-R: Uncertainty-Aware Dynamic Grid Mapping and Risk-Triggered Recovery for Learned Local Navigation 
+
+Haoyun Feng 1, Adrian Rubio-Solis 1, Zhaodong Guo 2, and George Mylonas 1
+
+Abstract — Learned local navigation in crowded indoor en-vironments is sensitive to how dynamic obstacle motion is represented, while collision-prone behaviour may persist after nominal policy training. We present a risk-aware reinforcement-learning framework that addresses these two issues through an uncertainty-aware Dynamic Uncertainty Grid Map (DUGM) and a modular post-training recovery mechanism. DUGM combines local occupancy, estimated obstacle motion, and motion-estimation uncertainty in a robot-centric representation. After the nominal policy is frozen, a finite-horizon Risk Value Function (RVF) is trained from nominal rollouts and used to trigger a dedicated recovery policy when continued nominal execution is predicted to be collision-prone. Experiments in a held-out NVIDIA Isaac Sim clinical-logistics benchmark show that uncertainty-aware dynamic representation improves nom-inal navigation over static and deterministic alternatives, while the recovery mechanism further mitigates residual collision-prone behaviour. The complete framework is also deployed directly on a TurtleBot3 without policy fine-tuning, retraining, or site-specific adaptation, retaining the performance trend observed in simulation. These results indicate that uncertainty-aware dynamic representation and post-training recovery pro-vide complementary mechanisms for improving learned local navigation. 
+
+I. I NTRODUCTION 
+
+Mobile robots can support delivery, transport, telepres-ence, and other tasks in clinical-logistics and similarly con-strained indoor environments. To execute these tasks, a robot must navigate corridors, waiting areas, offices, and reception spaces shared with pedestrians, furniture, and mobile equip-ment. Local navigation must therefore make practical short-range decisions that balance progress and collision avoidance despite constrained geometry and dynamic interactions [1], [2]. Motion-aware learned local navigation can improve its response to dynamic obstacles, but pedestrian position and velocity are estimated through online perception and tracking rather than known exactly. Deterministically projecting un-certain motion estimates can consequently produce an overly confident representation of future occupancy. A policy-facing observation should instead expose both estimated motion and the uncertainty attached to that estimate, particularly when sensing is affected by noise, occlusion, short tracks, or association errors [3], [4], [5]. A second issue remains after a nominal policy has been trained: collision-prone states can still occur at deploy-ment. Reward shaping, constrained learning, and model-
+
+> 1The Hamlyn Centre for Robotic Surgery, Imperial College London, London, United Kingdom.
+> 2Department of Computing, Imperial College London, London, United Kingdom.
+
+based safety structures can improve nominal behaviour, but they couple safety handling to task optimisation or rely on assumptions about dynamics and safe sets [6], [7], [8]. A complementary question is whether an already-trained nominal policy can remain frozen and be augmented post hoc by a risk monitor and a dedicated recovery controller [9], [10]. We present DUGM-R and provide empirical evidence that uncertainty-aware dynamic representation and post-training recovery offer complementary benefits for learned navigation among moving obstacles. The Dynamic Uncertainty Grid Map (DUGM) encodes local occupancy, estimated obstacle motion, and motion-estimation uncertainty in a common grid observation for the nominal policy, risk estimator, and recovery policy. After nominal training, the policy is frozen; a finite-horizon Risk Value Function (RVF) learned from its rollouts guides recovery training and triggers intervention. Experiments show improved nominal navigation over static, deterministic, and fixed-inflation representations, with further collision reduction from recovery. The main contributions are:  
+
+> •
+
+We propose DUGM, which jointly represents local occupancy, estimated obstacle motion, and motion-estimation uncertainty for learned local navigation.  
+
+> •
+
+We introduce a post-training recovery module for a frozen nominal policy. A finite-horizon RVF shapes recovery-policy training and triggers intervention using a threshold selected by validation warning performance.  
+
+> •
+
+We evaluate DUGM-R in a held-out Isaac Sim clinical-logistics environment and demonstrate zero-shot de-ployment on a TurtleBot3 across unseen corridors, of-fices, and reception areas. II. R ELATED WORK 
+
+A. Learning-Based Local Navigation and Representations 
+
+Classical local planners explicitly encode collision avoid-ance, kinematic feasibility, and short-horizon motion ob-jectives. The Dynamic Window Approach (DWA) searches dynamically admissible velocities [11], whereas the Velocity Obstacle (VO) and Optimal Reciprocal Collision Avoid-ance (ORCA) methods exclude velocities predicted to cause collisions [12], [13], [14]. Trajectory-optimization methods such as the Timed Elastic Band optimize timed local tra-jectories [15], and sampling-based Model Predictive Path Integral (MPPI) controllers evaluate short-horizon rollouts [16]. These methods remain strong engineering baselines, but their behaviour depends on the available obstacle states, arXiv:2609.27338v1 [cs.RO] 23 Sep 2026 Fig. 1. Overview of the proposed framework: (a) DUGM observation construction, (b) RVF-triggered runtime switching, and (c) the two-stage training pipeline. 
+
+motion-model assumptions, planning horizon, and manually designed objectives. To acquire more complex navigation behaviours from data or repeated interaction, learned local navigation has explored imitation learning (IL) and reinforcement learning (RL), particularly deep reinforcement learning (DRL). Map-based IL learns obstacle avoidance from expert demonstrations [17]. DRL methods have learned socially aware motion poli-cies [18], navigation among dynamic decision-making agents [19], attention-based crowd interaction [20], and map-based local navigation [21], [22]. Other work combines learned policies with classical local-planning structure, as in DWA-RL [23]. Once the local controller is learned, the observation representation becomes a central modelling choice. At the sensor level, learned policies can consume light detection and ranging (LiDAR) scans or short temporal range histories directly [24], [25]. Such inputs retain measurement detail and require little object-specific abstraction, but place the burden of extracting relevant geometry and motion on the learned encoder. Agent-level representations instead ex-pose nearby pedestrians through quantities such as relative position, velocity, heading, radius, and interaction features [18], [19]. Attention mechanisms can aggregate a variable number of such agent states [20], although the resulting policy depends on reliable detection, association, tracking, and state estimation. DRL-VO combines a short LiDAR history and pedestrian kinematics with a VO-shaped learning objective [25], illustrating how explicit dynamic-interaction structure can inform a learned local controller while retaining this dependence on the perception and tracking pipeline. Grid-based representations provide a spatial interface be-tween perception and policy. Occupancy grids encode robot-centric free and occupied space while abstracting object identity [26]; related learned-navigation methods use local maps or pedestrian maps for IL and DRL [17], [21], [22]. Dynamic occupancy grids extend this interface with motion estimates [3], while learned spatiotemporal maps predict fu-ture occupancy [4]. Stochastic occupancy prediction further represents multiple possible scene futures [5]. These works show that explicit dynamic and predictive representations can expose valuable interaction information; once future occupancy is predicted, however, uncertainty in sensing, tracking, motion estimation, and future evolution becomes increasingly consequential. 
+
+B. Safety and Recovery for Learned Navigation 
+
+Safety can be incorporated during nominal-policy learning through collision-aware reward shaping [24], [25] or by optimizing task reward subject to explicit cost constraints, as in Constrained Policy Optimization [27]. These strategies can improve nominal behaviour, but safety and task performance remain coupled in the training problem and changes to their trade-off generally require further policy optimization. Model-based safety mechanisms instead intervene around a learned controller. Hamilton–Jacobi reachability can sup-port runtime safety filtering under uncertain dynamics [7], while control barrier functions can enforce state constraints during policy learning and execution [8]. Their guarantees and applicability depend on the assumed dynamics, dis-turbance bounds, safe sets, or tractability of the resulting constraints. Recovery RL pretrains a safety critic and recovery policy, then updates them alongside the task policy during interac-tion [9]. ABS uses reach-avoid values to optimize commands tracked by a recovery policy; its static-obstacle value training limits the reported dynamic generalization to quasi-static scenes [10]. Motivated by this limitation, DUGM explicitly encodes obstacle motion and estimation uncertainty for nom-inal navigation, risk assessment, and recovery. Our nominal policy remains frozen while a finite-horizon RVF learned from its rollouts directly shapes recovery training. III. M ETHOD 
+
+The proposed controller consists of a nominal policy and a post-training recovery layer. The nominal policy operates on a robot-centric DUGM. After training, the nominal policy is frozen and rolled out to train a finite-horizon RVF. The RVF estimates the risk of continued nominal execution and activates a separate recovery policy when that risk is high. The overall pipeline is illustrated in Fig. 1. 
+
+A. DUGM Observation Representation 
+
+As shown in Fig. 1(a), DUGM is constructed from the cur-rent LiDAR scan through three successive stages: dynamic tracking, uncertainty-aware motion prediction, and spatial fusion. The resulting robot-centric grid is combined with a four-dimensional scalar state qt, containing normalized goal distance and bearing together with the previously executed linear and angular velocities, to form the policy observation. The current-scan branch converts the LiDAR observation into a 16 m × 16 m robot-centric grid at 0.25 m resolution. It provides a current scan endpoint map St and an unsafe-space map Ut, in which occupied and currently unobserved cells are treated as unsafe. Invalid LiDAR returns do not create free-space evidence, so unobserved cells remain explicitly unsafe. Dynamic tracks are obtained from LiDAR clustering, inter-frame association, and a constant-velocity Kalman filter (KF); simulator ground-truth pedestrian states are never provided to the policy. Track states are transformed into the current robot frame before prediction. This stage corresponds to the Dynamic Tracking block in Fig. 1(a) and provides the estimated obstacle states and their uncertainty for subsequent motion prediction. For track m with estimated position pt,m , velocity vt,m ,and speed-clipped velocity ¯vt,m , we first linearly project its expected centre over the prediction horizon: 
+
+μt,m (τ ) = pt,m + τ ¯vt,m . (1) The reported rollout uses a 4.0 s horizon sampled every 0.2 s ,with pedestrian speed capped at 0.70 m s −1.The linear rollout specifies where an obstacle is expected to move, but treating this trajectory deterministically would ignore uncertainty in the tracked state and future motion. DUGM therefore propagates this uncertainty over the same prediction horizon, corresponding to the Uncertainty-aware Motion Prediction block in Fig. 1(a). To represent this uncer-tainty spatially, we express the predicted position covariance in a motion-aligned basis. Let B = [ e∥, e ⊥] be the basis aligned with the estimated track velocity, with an isotropic branch for speeds below 
+
+0.05 m s −1. The KF position covariance is propagated to time 
+
+τ and expressed in this basis as σ2KF ,∥(τ ) and σ2KF ,⊥(τ ). The directional position variances used by the rasterizer are 
+
+˜σ2
+
+> ∥,⊥
+
+(τ ) = σ2KF ,∥,⊥(τ ) + 14
+
+ σasa
+
+> ∥,⊥
+
+2τ 4 + ϵΣ, (2) where the nominal acceleration prior is σa = 0 .50 m s −2,the anisotropic scales are sa 
+
+> ∥
+
+= 1 .0 and sa 
+
+> ⊥
+
+= 0 .15 , and 
+
+ϵΣ = 10 −4 m2. Thus, the predicted uncertainty combines on-line state-estimation uncertainty from the Kalman filter with increasing uncertainty due to unmodelled future acceleration. The effective covariance is 
+
+Σeff 
+
+> t,m
+
+(τ ) = B
+
+σ2 
+
+> ∥
+
+(τ ) 00 σ2
+
+> ⊥
+
+(τ )
+
+
+
+B⊤,σ2
+
+> d
+
+(τ ) = clip  ˜σ2
+
+> d
+
+(τ ), λ min , λ max 
+
+> d
+
+ , d ∈ {∥ , ⊥} .
+
+(3) with λmin = 10 −4 m2, λmax  
+
+> ∥
+
+= 0.64 m 2, and λmax  
+
+> ⊥
+
+=0.09 m 2. The implementation also scales the velocity co-variance by sv 
+
+> ∥
+
+= 1 .0 and sv 
+
+> ⊥
+
+= 0 .25 before propagation. The covariance grows anisotropically with the prediction horizon up to the specified caps, which limit excessive spatial expansion under prolonged acceleration extrapolation. Each projected obstacle state is thus represented by a mean– covariance pair (μt,m (τ ), Σeff 
+
+> t,m
+
+(τ )) , which is then rasterized into the dynamic prediction map. To convert these continuous predictions into the pol-icy grid, each mean–covariance pair defines an anisotropic Gaussian spatial support. For cell centre gij , the dynamic prediction is rasterized using the Mahalanobis distance: 
+
+δ2 
+
+> t,m,τ
+
+(i, j ) = ( gij − μt,m (τ )) ⊤
+
+(Σ eff 
+
+> t,m
+
+(τ )) −1(gij − μt,m (τ )) ,Dt(i, j ) = max  
+
+> (m,τ )∈S t
+
+exp  − 12 δ2 
+
+> t,m,τ
+
+(i, j ) .
+
+(4) Only track–time pairs satisfying δ2 
+
+> t,m,τ
+
+(i, j ) ≤ χ2max are retained in St. Here, χ2max = 6 .25 , and the value is zero outside this support. Taking the maximum over all retained tracks and prediction times produces the dynamic prediction map Dt.Finally, the Spatial Fusion stage in Fig. 1(a) combines the predicted dynamic support Dt with the current LiDAR endpoint map St:
+
+Ct(i, j ) = max {St(i, j ), D t(i, j )}. (5) The fused result forms the second DUGM channel, while the first channel retains the current unsafe-space representation. The final two-channel 64 × 64 robot-centric grid is therefore 
+
+Mt[0 , i, j ] = Ut(i, j ), Mt[1 , i, j ] = Ct(i, j ). (6) Together with the scalar state qt, this grid forms the complete observation supplied to the nominal policy. Fig. 2. Architecture template for the nominal policy, recovery policy, and RVF. Each network has an independent instance of blocks 1–4 and its corresponding output heads; no parameters are shared across networks. 
+
+This construction also defines the distinctions used in the observation ablation. The occupancy grid map (OGM) retains only static occupancy, while a velocity-augmented variant (OGM-V2) adds sparse velocity channels. Deter-ministic dynamic grid mapping (DDGM) uses the same tracked states and deterministic motion rollout as DUGM, but does not propagate estimation uncertainty into the predicted spatial support. DDGM+FI additionally applies fixed spatial inflation matched to DUGM’s clipping upper bounds in Eq. (3). 
+
+B. Nominal Policy 
+
+The nominal policy maps the DUGM observation to a continuous linear–angular velocity action at = ( avt , a ωt ) ∈
+
+[−1, 1] 2, which is scaled to vt ∈ [0 , 0.22] m s −1 and ωt ∈
+
+[−2.84 , 2.84] rad s −1. Executed commands are rate-limited to ensure smooth and feasible actuation. The policy uses the grid–scalar processing architecture illustrated in Fig. 2 and is trained with proximal policy optimization (PPO). The reward is designed to balance three objectives: goal-directed task completion, collision-avoidance shaping, and smooth executable motion. It is decomposed as 
+
+rnom  
+
+> t
+
+= rprog  
+
+> t
+
++ rgoal  
+
+> t
+
++ rcol  
+
+> t
+
++ rtimeout 
+
+> t
+
++ rnear  
+
+> t
+
++ rclose  
+
+> t
+
++ rreg  
+
+> t
+
+. (7) To provide dense feedback toward the local goal, the progress term is 
+
+rprog  
+
+> t
+
+= 4 .0( dt − dt+1 ), (8) where dt and dt+1 are the pre- and post-action distances to the local goal. Episode-level success and failure are specified separately through the terminal terms 
+
+rgoal  
+
+> t
+
+= 60 I[dt+1 ≤ 0.25 m] ,rcol  
+
+> t
+
+= −100 I[collision t+1 ],rtimeout  
+
+> t
+
+= −40 I[timeout t+1 ].
+
+(9) To discourage unsafe interactions before an actual col-lision occurs, obstacle proximity and closing motion are shaped separately. Let ct denote the minimum clearance after the corresponding control step. The near-obstacle term is 
+
+rnear  
+
+> t
+
+= −0.125 ϕnear (ct+1 ),ϕnear (c) = clip 
+
+ 1.2 − c
+
+1.2 − 0.101 , 0, 1
+
+
+
+. (10) and the closing-clearance term is 
+
+rclose  
+
+> t
+
+= −0.1 ϕclose (ct, c t+1 ),ϕclose (ct, c t+1 ) = clip 
+
+ max(0 , c t − ct+1 )0.22 ∆ t , 0, 1
+
+
+
+. (11) The proximity term penalizes small clearance below 1.2 m ,whereas the closing term penalizes a reduction in clearance between consecutive steps, with ∆t = 0 .1 s . The 0.101 m 
+
+value is a reward-shaping anchor and is not the Isaac Sim episode collision threshold. Finally, to encourage smooth and executable commands without dominating the primary navigation objective, we add weak regularization terms: 
+
+rreg  
+
+> t
+
+= − 0.04 − 0.1 max( |ωt| − 1.2, 0) − 0.02 I[vt ≤ 0.05] 
+
+− 0.05 |vt − vt−1|
+
+0.60∆ t − 0.05 |ωt − ωt−1|
+
+7.50∆ t .
+
+(12) The nominal policy uses no separate dynamic-risk reward conditioned on the action. Estimated pedestrian motion and its uncertainty enter the policy only through DUGM. 
+
+C. Finite-Horizon RVF 
+
+Although the nominal policy is trained for collision avoidance, residual collision-prone states may still occur at deployment. Following the general idea of separating task execution from learned risk assessment and recovery in Recovery RL [9], we learn a separate RVF after freezing the nominal policy. The RVF estimates the risk associated with continuing nominal execution over a finite horizon and provides the trigger signal for the recovery policy described in Sec. III-D. After the nominal policy is frozen, 50,000 deterministic nominal-policy episodes are collected without recovery. We use a horizon of H = 40 control steps, corresponding to approximately 4 s at the 10 Hz control rate. For an episode ending at Te, we define the finite-horizon collision return as 
+
+Grisk  
+
+> t
+
+= I∃u ∈ [t, min( t + H, T e)] : ccol  
+
+> u
+
+= 1  , (13) and the corresponding risk value under continued nominal execution as 
+
+V πnom  
+
+> R
+
+(ot) = Eπnom 
+
+Grisk  
+
+> t
+
+| ot
+
+ . (14) Each nominal rollout therefore provides a Monte Carlo target for the finite-horizon risk value. Timeout is not treated as a collision-positive event unless a collision occurs within the prediction horizon. The RVF takes the same grid and scalar observation as the nominal policy, but is trained as an independent network with no shared weights or gradients, as illustrated in Fig. 2. It out-puts a scalar risk score and is trained from the rollout-derived targets using class-weighted binary cross-entropy. Because (a) Down, 0.1 m s −1. (b) Down, 0.2 m s −1.    
+
+> (c) Left, 0.2 m s −1.(d) Right, 0.2 m s −1.Fig. 3. RVF scores queried across robot positions in a fixed scene. Green/red indicate low/high scores; blue arrows show motion directions. Top-left insets specify the robot velocity used in each panel.
+
+class weighting is used and no post-hoc calibration is applied, its output ˆrt is treated as an uncalibrated finite-horizon risk score rather than a calibrated collision probability or a formal safety certificate. To provide intuition for the learned risk representation, Fig. 3 visualizes the RVF response in a fixed scene while varying only the robot motion state. The direction- and speed-dependent score fields illustrate that the RVF captures the risk of continued nominal execution rather than encoding static obstacle proximity alone. Before deployment, activation thresholds are selected on the held-out nominal-rollout validation split. Candidate thresholds must satisfy Recall ≥ 0.90 , FPR ≤ 0.25 , and a mean collision-warning time W ≥ 0.5 s , after which lower false-intervention rates are preferred. For DUGM, this yields 
+
+ϵon = 0.634 (90.0% recall, 1.14% FPR) and ϵreturn =0.317 = 0 .5ϵon ; other representations are calibrated inde-pendently using the same procedure. 
+
+D. Recovery Policy and Runtime Switching 
+
+The recovery policy is trained with PPO after both the nominal policy and the RVF are frozen. It uses the same observation and action interfaces as the nominal policy, but is trained with an independent policy network. Unlike the nominal policy, recovery is not intended to continuously maximize goal progress; its immediate objective is to move the robot away from collision-prone states while preserving the possibility of eventual task completion. Accordingly, the dense goal-progress term used by the nominal policy is replaced by an RVF-based risk-reduction signal, while terminal task outcomes, local collision-avoidance shaping, and action regularization are retained. The recovery reward is rrec  
+
+> t
+
+= rrisk  
+
+> t
+
++ rgoal  
+
+> t
+
++ rcol  
+
+> t
+
++ rtimeout 
+
+> t
+
++ rhandoff  
+
+> t
+
++ rclear  
+
+> t
+
++ rfwd  
+
+> t
+
++ rreg  
+
+> t
+
+. (15) Because recovery is activated specifically in high-risk states, its primary dense objective is to move toward states assigned lower risk by the frozen RVF. Let ˆrt denote the RVF score. Risk reduction is rewarded by 
+
+rrisk  
+
+> t
+
+= α(ˆ rt − ˆrt+1 ), α = 1 .0. (16) A transition therefore receives positive reward when the estimated finite-horizon risk decreases. The RVF remains fixed throughout recovery training, so the recovery policy is optimized against a stationary risk signal rather than co-adapting the risk estimator. Risk reduction alone, however, does not ensure that re-covery leaves the robot in a state from which the navigation task can still be completed. The dense goal-progress reward is therefore omitted, but final task outcomes are retained to discourage recovery behaviours that reduce risk at the expense of eventual task completion: 
+
+rgoal  
+
+> t
+
+= 8 I[final success] ,rcol  
+
+> t
+
+= −12 I[final collision] ,rtimeout  
+
+> t
+
+= −4 I[final timeout] .
+
+(17) Recovery must also return control only when nominal exe-cution can continue successfully. A failed handoff back to the nominal policy is therefore penalized by 
+
+rhandoff  
+
+> t
+
+= −4 I[handoff failure] , (18) where a handoff is considered unsuccessful if the subsequent nominal execution terminates in collision or timeout. In addition to the learned RVF signal, direct geometric shaping is retained to preserve basic close-range collision avoidance. Let κt+1 denote the post-action minimum clear-ance. Small clearance is penalized by 
+
+rclear  
+
+> t
+
+= −0.25 
+
+ max(0 , 0.35 − κt+1 )0.35 
+
+2
+
+, (19) while continued forward motion when already close to an obstacle is discouraged by 
+
+rfwd  
+
+> t
+
+= −0.20 I[κt+1 < 0.35 m ∧ vt > 0] vt. (20) These terms complement the finite-horizon RVF with an explicit local clearance signal during corrective manoeuvres. Finally, to encourage smooth recovery actions, weak action-magnitude and action-change penalties are applied: 
+
+rreg  
+
+> t
+
+= −0.01 − 0.005 ∥at∥22 − 0.01 ∥at − at−1∥22. (21) Only recovery-controlled transitions are stored in the recovery PPO buffer. After control is handed back to the nominal policy, it resumes execution until the next recovery trigger or a terminal event. If this nominal continuation terminates the episode, the corresponding task outcome and handoff signal are assigned to the immediately preceding recovery transition; nominal-policy transitions themselves are not inserted into the recovery buffer. (a) Collision and sensing model. (b) Dense pedestrian interaction. Fig. 4. Held-out Isaac Sim clinical-logistics benchmark used for final evaluation, including static furnishings and dynamic pedestrian interactions. 
+
+At deployment, the frozen RVF and the two independently trained policies are combined through the hysteretic switch-ing mechanism illustrated in Fig. 1(b): 
+
+πt =
+
+
+
+πrec , ˆrt ≥ ϵon ,πnom , ˆrt ≤ ϵreturn ,πt−1, otherwise .
+
+(22) Here, πnom and πrec denote the nominal and recovery policies, respectively. The lower return threshold suppresses rapid nominal–recovery switching and allows control to return to the nominal policy only after the RVF score has fallen sufficiently below the activation threshold. IV. E XPERIMENTS 
+
+A. Experimental Setup 
+
+Policies were trained in a lightweight procedural 2-D simulator containing straight, L-shaped, and T-junction cor-ridors with random static obstacles and three to five moving pedestrians. Corridor geometry, start–goal configurations, pedestrian motion, and LiDAR noise were randomised at reset. Training and deployment used the same TurtleBot3 footprint, 360 ◦ LiDAR interface, 0.1 s control interval, and command limits. Final evaluation was conducted in a held-out NVIDIA Isaac Sim clinical-logistics environment containing intercon-nected corridors, hospital furnishings, and animated pedes-trians. Static and dynamic objects were included in the raycast and collision model. Three crowd-density conditions contributed 30 fixed start–goal tasks each, giving 90 episodes per method. An episode was successful within 0.25 m of the goal, timed out after 200 s , and was marked as a collision when the minimum valid PhysX raycast hit distance to obstacle collision geometry was at most 0.19 m . With the 
+
+0.089 m robot radius, this corresponds to approximately 
+
+0.10 m of remaining surface clearance. Representative bench-mark views are shown in Fig. 4. All methods were evaluated on the same 90 held-out tasks under identical sensing, actuation, and terminal conditions. DWA, Nav2 MPPI, ORCA, and DRL-VO were adapted only to the common local-navigation interface and task contract; their implementation hyperparameters were retained, with no benchmark-specific tuning. OGM–Lagrangian was included as an in-project constrained-RL safety comparison. ORCA and DRL-VO received dynamic-obstacle estimates from the                                                        
+
+> TABLE I SIMULATION RESULTS OVER THE 90 HELD -OUT BENCHMARK EPISODES .Group Method SR ↑CR ↓TR ↓¯v(m/s) ↑
+> External DWA 51.1% 15.6% 33.3% 0.150 Nav2 MPPI 35.6% 3.3% 61.1% 0.114 ORCA 27.8% 65.6% 6.6% 0.125 DRL-VO 38.9% 61.1% 0.0% 0.134 OGM–Lagrangian 58.9% 41.1% 0.0% 0.140 Observation OGM 57.8% 41.1% 1.1% 0.149 OGM-V2 62.2% 37.8% 0.0% 0.132 DDGM 52.2% 47.8% 0.0% 0.136 DDGM+FI 54.4% 45.6% 0.0% 0.157 DUGM 68.9% 25.6% 5.6% 0.117 Recovery LiDAR history 58.9% 41.1% 0.0% 0.162 LiDAR history + recovery 63.3% 33.3% 3.3% 0.163 OGM + recovery 62.2% 32.2% 5.6% 0.148
+> DUGM + recovery 76.7% 13.3% 10.0% 0.138
+
+same LiDAR clustering and Kalman-tracking pipeline as the proposed method rather than simulator ground truth. A nominal policy using LiDAR history is included in the recovery ablation. Its observation concatenates four consec-utive LiDAR frames, ordered from oldest to newest, with the current goal and previous-command scalars. 
+
+B. Evaluation Metrics 
+
+We report success rate (SR), collision rate (CR), time-out rate (TR), and the mean executed linear velocity over successful episodes ( ¯v). Outcome rates are computed over all evaluation episodes, while ¯v provides a supplementary measure of motion conservatism. 
+
+C. Simulation Results 
+
+Table I reports the external baseline comparison to-gether with ablations on observation representation and post-training recovery. 
+
+External baseline comparison. DUGM + recovery achieves the highest success rate (76.7%) and the second-lowest collision rate (13.3%) among the evaluated methods. Nav2 MPPI attains a lower collision rate, but this is accom-panied by a 61.1% timeout rate and only 35.6% success. ORCA and DRL-VO exhibit substantially higher collision rates under the same sensing and actuation conditions. 
+
+Observation ablation. OGM-V2’s improvement over OGM indicates that explicit velocity cues are useful. How-ever, DDGM’s lower success shows that deterministic motion projection alone does not ensure a better representation. Fixed inflation partially recovers this loss, suggesting that broader spatial support can help, yet DDGM+FI remains below OGM. DUGM achieves the strongest nominal perfor-mance. Together, these comparisons support combining mo-tion projection with uncertainty-dependent spatial support, as implemented in DUGM, over the tested deterministic and fixed-inflation alternatives. 
+
+Recovery ablation. Recovery improves success and re-duces collision across all three evaluated observation fam-ilies. The largest gain occurs with DUGM, where success Fig. 5. Observation ablation: colored curves show robot trajectories for the indicated representations; white curves show pedestrian paths. Matching inset borders identify observations at locally comparable interaction states, sampled at different times.  
+
+> Fig. 6. DUGM trajectories without recovery (magenta) and with RVF-triggered recovery (colored by RVF score: green, low; red, high). White curves show pedestrian paths.
+
+increases from 68.9% to 76.7% and collision decreases from 25.6% to 13.3%, at the cost of a modest increase in timeout. Mean successful-episode speed is not systematically reduced by recovery, suggesting that the improvement is not obtained simply through global velocity suppression. 
+
+D. Qualitative Case Studies 
+
+Fig. 5 compares representative interactions under OGM, OGM-V2, DDGM, and DUGM. OGM contains no explicit motion cue, while OGM-V2 provides sparse velocity chan-nels. DDGM projects estimated motion deterministically, whereas DUGM expands the same rollout according to estimation uncertainty. In the illustrated interaction, the first three policies collide, while DUGM represents a broader fu-ture conflict region and initiates avoidance earlier. Snapshots are selected from locally comparable interaction states rather than identical timestamps because the policies diverge during execution. Fig. 6 illustrates a task where the nominal DUGM policy collides. The rising RVF score triggers recovery, which ac-tively changes the robot’s local path to avoid the interaction. Once the score falls below the return threshold, nominal navigation resumes and the robot reaches the goal. This behaviour is consistent with the recovery objective: temporar-ily prioritizing risk reduction over immediate goal progress allows corrective manoeuvres before returning control to the nominal policy.                            
+
+> (a) Corridor 1. (b) Corridor 2. (c) Office 1. (d) Office 2.
+> (e) Office 3. (f) Reception 1. (g) Reception 2. (h) Reception 3. Fig. 7. Representative views of the eight real-robot evaluation scenes with overlaid robot–pedestrian interactions at selected timestamps. Green annotations denote the robot, while yellow annotations denote pedestrians. TABLE II REAL -ROBOT EVALUATION RESULTS OVER 24 RUNS PER METHOD .Method SR ↑CR ↓TR ↓
+> DWA 62.5% 8.3% 29.2% OGM 70.8% 29.2% 0.0% DUGM 79.2% 20.8% 0.0% DUGM + recovery 83.3% 4.2% 12.5%
+
+E. Real-Robot Evaluation 
+
+The complete controller was deployed on a TurtleBot3 Burger without policy fine-tuning or site-specific adapta-tion. Observations were constructed online from live LDS-02 LiDAR and robot odometry using the same perception interface as in simulation; no privileged state information was available. Mean neural inference time was 25 .9 ms on the deployment laptop’s central processing unit (i7-13700h), indicating that network evaluation itself fits comfortably within the nominal 100 ms policy interval. The evaluation covered eight unseen corridor, office, and reception scenes with static and dynamic interactions Fig. 7.Each method was tested three times per scene with a 45 s time limit, giving 24 runs per method Table II. DUGM + recovery achieved 83.3% success and 4.2% collision, com-pared with 79.2% and 20.8% for DUGM. Its three timeout runs subsequently reached the goal but remain classified as timeouts. These results provide preliminary evidence of direct transfer to live sensing without policy adaptation. V. D ISCUSSION AND LIMITATIONS 
+
+The larger recovery gain with DUGM suggests a syn-ergistic interaction between observation representation and post-training intervention. Recovery improves success by 7.8 percentage points with DUGM, compared with 4.4 points for both OGM and LiDAR history, despite DUGM’s stronger nominal performance. DUGM supplies motion and uncertainty cues to nominal navigation, risk assessment, and recovery; these cues may support both risk detection and corrective action selection. The results therefore suggest that observation representation influences not only nominal per-formance but also the effectiveness of subsequent recovery. The framework remains dependent on reliable online mo-tion estimation, and recovery may query the RVF outside its nominal-rollout training distribution. Safety improvements are empirical, without formal guarantees, and real-robot eval-uation remains limited in scale. Future work will strengthen motion and risk estimation and extend validation to more diverse real-world interactions. VI. C ONCLUSION 
+
+This work presented a learned local-navigation framework combining DUGM with a post-training RVF-triggered recov-ery policy. DUGM improved nominal navigation over static and deterministic dynamic representations, while recovery further reduced residual collisions across multiple observa-tion families. The complete system achieved 76.7% success with 13.3% collision in the 90-episode Isaac Sim benchmark and transferred directly to a TurtleBot3 without policy fine-tuning, achieving 83.3% success and 4.2% collision across 24 runs. These results support uncertainty-aware dynamic representation and modular post-training recovery as com-plementary mechanisms for robust learned local navigation. REFERENCES [1] A. A. Morgan, J. Abdi, M. A. Q. Syed, G. El Kohen, P. Barlow, and M. P. Vizcaychipi, “Robots in Healthcare: A Scoping Review,” 
+
+Current Robotics Reports , vol. 3, no. 4, pp. 271–280, 2022. [2] L. Bernhard, P. Schwingenschl¨ ogl, J. Hofmann, D. Wilhelm, and A. Knoll, “Boosting the Hospital by Integrating Mobile Robotic Assistance Systems: A Comprehensive Classification of the Risks to Be Addressed,” Autonomous Robots , vol. 48, no. 1, p. 1, 2024. [3] M. Schreiber, V. Belagiannis, C. Gl¨ aser, and K. Dietmayer, “Dynamic Occupancy Grid Mapping with Recurrent Neural Networks,” in 2021 IEEE International Conference on Robotics and Automation (ICRA) ,May 2021, pp. 6717–6724, iSSN: 2577-087X. [Online]. Available: https://ieeexplore.ieee.org/abstract/document/9561375 [4] H. Thomas, M. G. de Saint Aurin, J. Zhang, and T. D. Barfoot, “Learning Spatiotemporal Occupancy Grid Maps for Lifelong Navigation in Dynamic Scenes,” in 2022 International Conference on Robotics and Automation (ICRA) , May 2022, pp. 484–490. [Online]. Available: https://ieeexplore.ieee.org/abstract/document/9812297 [5] Z. Xie and P. Dames, “Stochastic Occupancy Grid Map Prediction in Dynamic Scenes,” in Proceedings of the 7th Conference on Robot Learning , ser. Proceedings of Machine Learning Research, J. Tan, M. Toussaint, and K. Darvish, Eds., vol. 229. Atlanta, USA: PMLR, Nov. 2023, pp. 1686–1705. [Online]. Available: https://proceedings.mlr.press/v229/xie23a.html [6] B. L¨ utjens, M. Everett, and J. P. How, “Safe Reinforcement Learning With Model Uncertainty Estimates,” in 2019 International Conference on Robotics and Automation (ICRA) , May 2019, pp. 8662–8668, iSSN: 2577-087X. [Online]. Available: https: //ieeexplore.ieee.org/abstract/document/8793611/authors [7] J. F. Fisac, A. K. Akametalu, M. N. Zeilinger, S. Kaynama, J. Gillula, and C. J. Tomlin, “A General Safety Framework for Learning-Based Control in Uncertain Robotic Systems,” IEEE Transactions on Automatic Control , vol. 64, no. 7, pp. 2737–2752, July 2019. [Online]. Available: https://ieeexplore.ieee.org/document/8493361 [8] R. Cheng, G. Orosz, R. M. Murray, and J. W. Burdick, “End-to-End Safe Reinforcement Learning through Barrier Functions for Safety-Critical Continuous Control Tasks,” Mar. 2019, arXiv:1903.08792 [cs]. [Online]. Available: http://arxiv.org/abs/1903.08792 [9] B. Thananjeyan, A. Balakrishna, S. Nair, M. Luo, K. Srinivasan, M. Hwang, J. E. Gonzalez, J. Ibarz, C. Finn, and K. Goldberg, “Recovery RL: Safe Reinforcement Learning with Learned Recovery Zones,” IEEE Robotics and Automation Letters , vol. 6, no. 3, pp. 4915–4922, July 2021. [10] T. He, C. Zhang, W. Xiao, G. He, C. Liu, and G. Shi, “Agile But Safe: Learning Collision-Free High-Speed Legged Locomotion,” in 
+
+Proceedings of Robotics: Science and Systems , Delft, Netherlands, July 2024. [11] D. Fox, W. Burgard, and S. Thrun, “The Dynamic Window Approach to Collision Avoidance,” IEEE Robotics & Automation Magazine ,vol. 4, no. 1, pp. 23–33, 1997. [12] P. Fiorini and Z. Shiller, “Motion Planning in Dynamic Environments Using Velocity Obstacles,” The International Journal of Robotics Research , vol. 17, no. 7, pp. 760–772, 1998. [13] J. van den Berg, M. Lin, and D. Manocha, “Reciprocal Velocity Obstacles for Real-Time Multi-Agent Navigation,” in 2008 IEEE International Conference on Robotics and Automation . IEEE, 2008, pp. 1928–1935. [14] J. van den Berg, S. J. Guy, M. Lin, and D. Manocha, “Reciprocal n-Body Collision Avoidance,” in Robotics Research: The 14th Inter-national Symposium ISRR , ser. Springer Tracts in Advanced Robotics, C. Pradalier, R. Siegwart, and G. Hirzinger, Eds. Springer Berlin Heidelberg, 2011, vol. 70, pp. 3–19. [15] C. R¨ osmann, W. Feiten, T. W¨ osch, F. Hoffmann, and T. Bertram, “Efficient Trajectory Optimization Using a Sparse Model,” in 2013 European Conference on Mobile Robots . IEEE, 2013, pp. 138–143. [16] G. Williams, A. Aldrich, and E. A. Theodorou, “Model Predictive Path Integral Control: From Theory to Parallel Computation,” Journal of Guidance, Control, and Dynamics , vol. 40, no. 2, pp. 344–357, Feb. 2017. [17] Y. Liu, A. Xu, and Z. Chen, “Map-based Deep Imitation Learning for Obstacle Avoidance,” in 2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , Oct. 2018, pp. 8644–8649, iSSN: 2153-0866. [Online]. Available: https://ieeexplore.ieee.org/document/8593683 [18] Y. F. Chen, M. Everett, M. Liu, and J. P. How, “Socially aware motion planning with deep reinforcement learning,” in 2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) ,Sept. 2017, pp. 1343–1350, iSSN: 2153-0866. [Online]. Available: https://ieeexplore.ieee.org/abstract/document/8202312 [19] M. Everett, Y. F. Chen, and J. P. How, “Motion Planning Among Dynamic, Decision-Making Agents with Deep Reinforcement Learning,” in 2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , Oct. 2018, pp. 3052–3059, iSSN: 2153-0866. [Online]. Available: https://ieeexplore.ieee.org/abstract/ document/8593871 [20] C. Chen, Y. Liu, S. Kreiss, and A. Alahi, “Crowd-Robot Interaction: Crowd-aware Robot Navigation with Attention-based Deep Reinforcement Learning,” in 2019 International Conference on Robotics and Automation (ICRA) . IEEE, May 2019, pp. 6015–6022. [Online]. Available: https://ieeexplore.ieee.org/document/8794134 [21] G. Chen, L. Pan, Y. Chen, P. Xu, Z. Wang, P. Wu, J. Ji, and X. Chen, “Robot Navigation with Map-Based Deep Reinforcement Learning,” in 2020 IEEE International Conference on Networking, Sensing and Control (ICNSC) , Oct. 2020, pp. 1–6. [Online]. Available: https://ieeexplore.ieee.org/document/9238090 [22] S. Yao, G. Chen, Q. Qiu, J. Ma, X. Chen, and J. Ji, “Crowd-Aware Robot Navigation for Pedestrians with Multiple Collision Avoidance Strategies via Map-based Deep Reinforcement Learning,” in 2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , Sept. 2021, pp. 8144–8150, iSSN: 2153-0866. [23] U. Patel, N. K. S. Kumar, A. J. Sathyamoorthy, and D. Manocha, “DWA-RL: Dynamically Feasible Deep Reinforcement Learning Policy for Robot Navigation among Mobile Obstacles,” in 2021 IEEE International Conference on Robotics and Automation (ICRA) ,May 2021, pp. 6057–6063, iSSN: 2577-087X. [Online]. Available: https://ieeexplore.ieee.org/abstract/document/9561462 [24] Z. Xie, P. Xin, and P. Dames, “Towards Safe Navigation Through Crowded Dynamic Environments,” in 2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , Sept. 2021, pp. 4934–4940, iSSN: 2153-0866. [25] Z. Xie and P. Dames, “DRL-VO: Learning to Navigate Through Crowded Dynamic Scenes Using Velocity Obstacles,” IEEE Transactions on Robotics , vol. 39, no. 4, pp. 2700–2719, Aug. 2023. [Online]. Available: https://ieeexplore.ieee.org/document/10089196 [26] A. Elfes, “Using occupancy grids for mobile robot perception and navigation,” Computer , vol. 22, no. 6, pp. 46–57, June 1989. [Online]. Available: https://ieeexplore.ieee.org/document/30720/ [27] J. Achiam, D. Held, A. Tamar, and P. Abbeel, “Constrained Policy Optimization,” in Proceedings of the 34th International Conference on Machine Learning , ser. Proceedings of Machine Learning Research, D. Precup and Y. W. Teh, Eds., vol. 70. PMLR, 2017, pp. 22–31. [Online]. Available: https://proceedings.mlr.press/v70/achiam17a.html
