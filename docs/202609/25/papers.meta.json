@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-25",
+  "date": "2026-09-25",
+  "generated_at": "2026-09-25T22:50:18",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/25/2609.27467v1-kairos-grounded-forecasting-of-presence-and-directional-flow-in-4d-scene-graphs",
+      "section": "quick",
+      "title_en": "Kairos: Grounded Forecasting of Presence and Directional Flow in 4D Scene Graphs",
+      "authors": "Iacopo Catalano, Julio A. Placed, Javier Civera, Jorge Peña Queralta",
+      "date": "2026-09-23",
+      "pdf": "https://arxiv.org/pdf/2609.27467v1",
+      "score": "7.0",
+      "evidence": "四维场景图中的人群运动方向流预测",
+      "tldr": "长期自主需预测未观测时刻行人是否出现及运动方向，但现有方法要么只给标量活动率，要么方向分布不随时间变化。Kairos 将分层 3D 场景图扩展为 4D 场景图，在每个观测体素存储方向混合与存在率，并用谱预测器对未来任意时刻联合预测出现概率和完整方向分布。在校园、商场和连续十一个月车站数据上，其预测与全检测流训练的专用占用/流模型相当，却只利用巡逻机器人可见的小部分数据。基于该表示的下游遭遇概率规划在同等成功率下遇到更多人，且回路闭合校正后状态保持一致。",
+      "tags": "query:intent-avoid",
+      "abstract_en": "Long-term autonomy in human-populated environments requires anticipating whether and how people will move at times a robot has not yet observed. Existing representations of pedestrian motion face a tradeoff: they either forecast future activity, reducing each location to a scalar rate, or model the full directional distribution, holding it fixed in time. We present Kairos, a predictive directional-flow memory that extends a hierarchical 3D scene graph (3DSG) to a 4D scene graph (4DSG). Every observed voxel of the reconstructed geometry stores a directional mixture and a presence rate, and spectral predictors forecast, for any future query time, both the probability that people are present and the full directional distribution of their motion. Pairwise flow dependence between adjacent voxels supports conditional queries, and per-voxel predictive variances yield calibrated credible intervals that tighten as observations accumulate. We evaluate Kairos on three real pedestrian environments: a robot-collected campus dataset, a shopping mall, and a station concourse recorded continuously for eleven months. Its learned state remains consistent under loop-closure corrections, and its forecasts are competitive with dedicated occupancy and flow models trained on the full detection stream, although Kairos learns from only the small fraction available to a patrolling robot. Finally, we validate the representation on a downstream encounter-probability planning task, where plans computed over the Kairos forecasts encounter more people than plans computed over any time-invariant map at an equal success rate. We provide the code at https://github.com/IacopomC/kairos.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/25/2609.21470v2-risk-aware-occupancy-for-safety-oriented-end-to-end-autonomous-driving",
+      "section": "quick",
+      "title_en": "Risk-Aware Occupancy for Safety-Oriented End-to-End Autonomous Driving",
+      "authors": "Jiaxing Chen, Hengduo Zou, Yiren Zhao, Bolin Gao",
+      "date": "2026-09-18",
+      "pdf": "https://arxiv.org/pdf/2609.21470v2",
+      "score": "6.0",
+      "evidence": "用于规划的动态智能体占据预测密集BEV感知",
+      "tldr": "传统端到端自动驾驶以稀疏目标与车道建模，效率高但在拥挤遮挡场景丢失规划关键风险信息。本文提出风险感知占据，一种密集BEV表示，融合几何占据、地图交通约束与未来动态智能体占据作为互补风险信号。基于此构建ROIDrive，以滑窗采样和交叉注意力将占据注入规划查询，并用时序查询一致性抑制闪烁。集成GenAD后碰撞率降低35.0%（UniAD指标）与52.9%（ST-P3指标），并发布RiskOcc4D-nuScenes风险监督基准。",
+      "tags": "query:intent-avoid",
+      "abstract_en": "Conventional end-to-end driving systems model the environment with sparse objects and lane elements. While efficient, this paradigm discards planning-critical information in crowded and occluded scenarios, particularly for unstructured obstacles, ambiguous free space, and complex interactions. We propose risk-aware occupancy, a dense BEV representation that explicitly fuses geometric occupancy, map-derived traffic constraints, and future dynamic-agent occupancy as complementary risk signals. Built upon this representation, we develop ROIDrive, an instance-centric end-to-end framework with a dedicated risk-aware occupancy branch. The predicted occupancy is tokenized via sliding-window sampling and injected into planning queries via cross-attention, while temporal query consistency mitigates unreliable flickering queries. We also contribute RiskOcc4D-nuScenes, a benchmark derived from nuScenes and Occ3D-nuScenes with four automated annotation pipelines for multi-dimensional risk supervision. Experiments on representative occupancy architectures verify the learnability and transferability of our representation. Integrated with GenAD, it reduces collision rates by 35.0% (UniAD metric) and 52.9% (ST-P3 metric), confirming the efficacy of the proposed representation modality.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/25/2609.23745v1-flockdiffusion-assignment-conditioned-diffusion-for-multi-drone-task-allocation-and-completion",
+      "section": "quick",
+      "title_en": "FlockDiffusion: Assignment-Conditioned Diffusion for Multi-Drone Task Allocation and Completion",
+      "authors": "Iana Zhura, Satenik Akopyan, Roohan Ahmed Khan, Miguel Altamirano Cabrera, Aleksey Fedoseev, Dzmitry Tsetserukou",
+      "date": "2026-09-20",
+      "pdf": "https://arxiv.org/pdf/2609.23745v1",
+      "score": "6.0",
+      "evidence": "基于学习与离线监督的多无人机路由与任务分配",
+      "tldr": "多无人机需在复杂环境中以有限算力服务分布目标，任务捆绑可让单机顺路访问多目标，但分离式成本估计、分配与执行会造成冗余图搜索和长而突兀的路径。FlockDiffusion 将场景图编码器、显式分配头、分配条件扩散 Transformer 与闭式轨迹解码器结合，并用自回归教师提供离线监督，实现并行车队轨迹生成。PyBullet 消融显示，捆绑将任务完成率从 50% 提升到 100%，完整教师较 MAGNNET 再降路线成本 8.4%；优化基准下推理快 6.2–7.6 倍、路线短约 37%。Gazebo 五环境达到 100% 规划覆盖，路线成本较基线降 15.4%，说明高任务密度下仍能高效规划。",
+      "tags": "query:lbm",
+      "abstract_en": "Autonomous multi-drone navigation requires fleets to service distributed objectives in cluttered environments under tight computational budgets. Efficient coordination depends on task bundling, where each drone visits multiple objectives along its route. Separate solvers for cost estimation, assignment, and execution incur redundant graph search and produce long, abrupt paths. We propose FlockDiffusion, a learned framework combining a scene graph encoder, an explicit allocation head, an assignment conditioned diffusion transformer, and a closed form trajectory decoder. An autoregressive teacher provides offline supervision for parallel fleet trajectory generation. PyBullet ablations show that bundling increases task completion from 50% to 100%, while our complete teacher further reduces route cost by 8.4% relative to MAGNNET with bundling. In the optimized scalability benchmark, evaluated on 100 scenes per density with ten drones, FlockDiffusion achieves 6.2 to 7.6 times faster inference and approximately 37% shorter routes than the classical pipeline. As nominal task counts increase from 20 to 40, latency rises from 7.8 to 11.1 ms, compared with 48.0 to 75.8 ms for the baseline. In a separate evaluation across five Gazebo environments, FlockDiffusion achieves 100% planner coverage and reduces planned route cost by 15.4% relative to the baseline with bundling. These results demonstrate efficient planning under increasing task density in configurations that are demanding to reproduce with physical drone fleets.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -6,37 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-24
-- 运行时间：2026-09-24 22:07:48 UTC
+- 最新运行日期：2026-09-25
+- 运行时间：2026-09-25 22:50:13 UTC
 - 运行状态：成功
-- 本次总论文数：5
+- 本次总论文数：3
 - 精读区：0
-- 速读区：5
+- 速读区：3
 
 ### 今日简报（AI）
-1) 今日日报成功：0篇精读、5篇速读，速读列表可见三篇均7.0分，聚焦自动驾驶遮挡搜索、多智能体交互迁移与不确定性导航。
-2) 最值得看“时空遮挡区最坏情况隐藏车辆轨迹搜索”和“不确定性感知
-- 详情：[/202609/24/README](/202609/24/README)
+今日3篇速读、0精读，Kairos以7.0分领跑论文雷达。  
+最值得看的是4D场景图中的存在与方向流预测，以及安全导向端到端自动驾驶的风险感知占用。  
+普通读者可先读Kairos，再按对自动驾驶或多无人机任务分配的兴趣选读其余两篇。
+- 详情：[/202609/25/README](/202609/25/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Worst-Case Hidden-Vehicle Trajectory Search in Spatiotemporal Occlusion Regions](/202609/24/2609.20480v1-worst-case-hidden-vehicle-trajectory-search-in-spatiotemporal-occlusion-regions)  
+1. [Kairos: Grounded Forecasting of Presence and Directional Flow in 4D Scene Graphs](/202609/25/2609.27467v1-kairos-grounded-forecasting-of-presence-and-directional-flow-in-4d-scene-graphs)  
    标签：评分：7.0/10、query:intent-avoid
-   evidence：隐藏智能体轨迹预测与占据推理用于自车规划
-2. [MATES: Learning Multi-Agent Interactions by Transforming Observations for Frozen Single-Agent Policies](/202609/24/2609.26010v1-mates-learning-multi-agent-interactions-by-transforming-observations-for-frozen-single-agent-policies)  
-   标签：评分：7.0/10、query:lbm
-   evidence：去中心化多智能体强化学习，学习式多智能体策略适配
-3. [DUGM-R: Uncertainty-Aware Dynamic Grid Mapping and Risk-Triggered Recovery for Learned Local Navigation](/202609/24/2609.27338v1-dugm-r-uncertainty-aware-dynamic-grid-mapping-and-risk-triggered-recovery-for-learned-local-navigation)  
-   标签：评分：7.0/10、query:intent-avoid
-   evidence：动态占据栅格地图用于拥挤环境导航
-4. [Controlling Collectives of AI Agents in Reasoning Space with Spatial Transformers](/202609/24/2609.28247v1-controlling-collectives-of-ai-agents-in-reasoning-space-with-spatial-transformers)  
-   标签：评分：7.0/10、query:marl-comm
-   evidence：去中心化空间Transformer聚合多跳消息
-5. [General Collaborative Intelligence: Architecting Cognition for Resilient Multi-Agent Ecosystems](/202609/24/2609.22967v1-general-collaborative-intelligence-architecting-cognition-for-resilient-multi-agent-ecosystems)  
-   标签：评分：6.0/10、query:marl-comm
-   evidence：综述多智能体通信范式与协同智能
+   evidence：四维场景图中的人群运动方向流预测
+2. [Risk-Aware Occupancy for Safety-Oriented End-to-End Autonomous Driving](/202609/25/2609.21470v2-risk-aware-occupancy-for-safety-oriented-end-to-end-autonomous-driving)  
+   标签：评分：6.0/10、query:intent-avoid
+   evidence：用于规划的动态智能体占据预测密集BEV感知
+3. [FlockDiffusion: Assignment-Conditioned Diffusion for Multi-Drone Task Allocation and Completion](/202609/25/2609.23745v1-flockdiffusion-assignment-conditioned-diffusion-for-multi-drone-task-allocation-and-completion)  
+   标签：评分：6.0/10、query:lbm
+   evidence：基于学习与离线监督的多无人机路由与任务分配
 
 
 <div class="dpr-home-promo-card">

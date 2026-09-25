@@ -1,0 +1,145 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-25T22:48:48.212061+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 0,
+    "deep_cap": 8,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 13,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.27467v1",
+      "source": "arxiv",
+      "title": "Kairos: Grounded Forecasting of Presence and Directional Flow in 4D Scene Graphs",
+      "abstract": "Long-term autonomy in human-populated environments requires anticipating whether and how people will move at times a robot has not yet observed. Existing representations of pedestrian motion face a tradeoff: they either forecast future activity, reducing each location to a scalar rate, or model the full directional distribution, holding it fixed in time. We present Kairos, a predictive directional-flow memory that extends a hierarchical 3D scene graph (3DSG) to a 4D scene graph (4DSG). Every observed voxel of the reconstructed geometry stores a directional mixture and a presence rate, and spectral predictors forecast, for any future query time, both the probability that people are present and the full directional distribution of their motion. Pairwise flow dependence between adjacent voxels supports conditional queries, and per-voxel predictive variances yield calibrated credible intervals that tighten as observations accumulate. We evaluate Kairos on three real pedestrian environments: a robot-collected campus dataset, a shopping mall, and a station concourse recorded continuously for eleven months. Its learned state remains consistent under loop-closure corrections, and its forecasts are competitive with dedicated occupancy and flow models trained on the full detection stream, although Kairos learns from only the small fraction available to a patrolling robot. Finally, we validate the representation on a downstream encounter-probability planning task, where plans computed over the Kairos forecasts encounter more people than plans computed over any time-invariant map at an equal success rate. We provide the code at https://github.com/IacopomC/kairos.",
+      "authors": [
+        "Iacopo Catalano",
+        "Julio A. Placed",
+        "Javier Civera",
+        "Jorge Peña Queralta"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-09-23T07:30:00+00:00",
+      "link": "https://arxiv.org/pdf/2609.27467v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "pedestrian motion forecasting with directional flow in 4D scene graphs",
+      "llm_evidence_cn": "四维场景图中的人群运动方向流预测",
+      "llm_evidence": "四维场景图中的人群运动方向流预测",
+      "canonical_evidence": "四维场景图中的人群运动方向流预测",
+      "llm_tldr_en": "Kairos extends a 3D scene graph to a 4D predictive directional-flow memory forecasting pedestrian presence probability and full directional motion distributions.",
+      "llm_tldr_cn": "针对人类活动环境长期自主需预测未来人群移动、而现有表示或只给出标量活动率或固定方向分布的问题，论文提出Kairos，一种将分层三维场景图扩展为四维场景图的预测性方向流记忆。每个观测体素存储方向混合与存在率，谱预测器可对未来任意查询时刻输出人群存在概率与完整方向分布。其贡献在于为机器人长期自主的人群运动预测提供了兼顾时间与方向信息的统一表示。",
+      "llm_tldr": "针对人类活动环境长期自主需预测未来人群移动、而现有表示或只给出标量活动率或固定方向分布的问题，论文提出Kairos，一种将分层三维场景图扩展为四维场景图的预测性方向流记忆。每个观测体素存储方向混合与存在率，谱预测器可对未来任意查询时刻输出人群存在概率与完整方向分布。其贡献在于为机器人长期自主的人群运动预测提供了兼顾时间与方向信息的统一表示。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "pedestrian trajectory prediction multi-agent system",
+      "matched_requirement_id": "req-22",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.21470v2",
+      "source": "arxiv",
+      "title": "Risk-Aware Occupancy for Safety-Oriented End-to-End Autonomous Driving",
+      "abstract": "Conventional end-to-end driving systems model the environment with sparse objects and lane elements. While efficient, this paradigm discards planning-critical information in crowded and occluded scenarios, particularly for unstructured obstacles, ambiguous free space, and complex interactions. We propose risk-aware occupancy, a dense BEV representation that explicitly fuses geometric occupancy, map-derived traffic constraints, and future dynamic-agent occupancy as complementary risk signals. Built upon this representation, we develop ROIDrive, an instance-centric end-to-end framework with a dedicated risk-aware occupancy branch. The predicted occupancy is tokenized via sliding-window sampling and injected into planning queries via cross-attention, while temporal query consistency mitigates unreliable flickering queries. We also contribute RiskOcc4D-nuScenes, a benchmark derived from nuScenes and Occ3D-nuScenes with four automated annotation pipelines for multi-dimensional risk supervision. Experiments on representative occupancy architectures verify the learnability and transferability of our representation. Integrated with GenAD, it reduces collision rates by 35.0% (UniAD metric) and 52.9% (ST-P3 metric), confirming the efficacy of the proposed representation modality.",
+      "authors": [
+        "Jiaxing Chen",
+        "Hengduo Zou",
+        "Yiren Zhao",
+        "Bolin Gao"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-18T08:18:07+00:00",
+      "link": "https://arxiv.org/pdf/2609.21470v2",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "dynamic-agent occupancy prediction as dense BEV perception for planning",
+      "llm_evidence_cn": "用于规划的动态智能体占据预测密集BEV感知",
+      "llm_evidence": "用于规划的动态智能体占据预测密集BEV感知",
+      "canonical_evidence": "用于规划的动态智能体占据预测密集BEV感知",
+      "llm_tldr_en": "Risk-aware occupancy is a dense BEV representation fusing geometric occupancy, map traffic constraints and future dynamic-agent occupancy, injected into ROIDrive planning queries to improve safety in crowded, occluded driving scenes.",
+      "llm_tldr_cn": "传统端到端自动驾驶用稀疏目标与车道元素建模环境，虽高效却在拥挤遮挡场景丢失了对规划至关重要的信息，尤其是非结构化障碍与复杂交互。本文提出风险感知占据这一密集BEV表示，融合几何占据、地图交通约束与未来动态智能体占据作为互补风险信号，并构建实例中心的ROIDrive框架。预测占据经滑窗采样令牌化后通过交叉注意力注入规划查询，提升了安全导向的驾驶规划能力。",
+      "llm_tldr": "传统端到端自动驾驶用稀疏目标与车道元素建模环境，虽高效却在拥挤遮挡场景丢失了对规划至关重要的信息，尤其是非结构化障碍与复杂交互。本文提出风险感知占据这一密集BEV表示，融合几何占据、地图交通约束与未来动态智能体占据作为互补风险信号，并构建实例中心的ROIDrive框架。预测占据经滑窗采样令牌化后通过交叉注意力注入规划查询，提升了安全导向的驾驶规划能力。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "crowd occupancy grid perception dynamic occupancy",
+      "matched_requirement_id": "req-23",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.23745v1",
+      "source": "arxiv",
+      "title": "FlockDiffusion: Assignment-Conditioned Diffusion for Multi-Drone Task Allocation and Completion",
+      "abstract": "Autonomous multi-drone navigation requires fleets to service distributed objectives in cluttered environments under tight computational budgets. Efficient coordination depends on task bundling, where each drone visits multiple objectives along its route. Separate solvers for cost estimation, assignment, and execution incur redundant graph search and produce long, abrupt paths. We propose FlockDiffusion, a learned framework combining a scene graph encoder, an explicit allocation head, an assignment conditioned diffusion transformer, and a closed form trajectory decoder. An autoregressive teacher provides offline supervision for parallel fleet trajectory generation. PyBullet ablations show that bundling increases task completion from 50% to 100%, while our complete teacher further reduces route cost by 8.4% relative to MAGNNET with bundling. In the optimized scalability benchmark, evaluated on 100 scenes per density with ten drones, FlockDiffusion achieves 6.2 to 7.6 times faster inference and approximately 37% shorter routes than the classical pipeline. As nominal task counts increase from 20 to 40, latency rises from 7.8 to 11.1 ms, compared with 48.0 to 75.8 ms for the baseline. In a separate evaluation across five Gazebo environments, FlockDiffusion achieves 100% planner coverage and reduces planned route cost by 15.4% relative to the baseline with bundling. These results demonstrate efficient planning under increasing task density in configurations that are demanding to reproduce with physical drone fleets.",
+      "authors": [
+        "Iana Zhura",
+        "Satenik Akopyan",
+        "Roohan Ahmed Khan",
+        "Miguel Altamirano Cabrera",
+        "Aleksey Fedoseev",
+        "Dzmitry Tsetserukou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-20T16:46:42+00:00",
+      "link": "https://arxiv.org/pdf/2609.23745v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "learned multi-drone routing and task allocation with transformer and offline supervision",
+      "llm_evidence_cn": "基于学习与离线监督的多无人机路由与任务分配",
+      "llm_evidence": "基于学习与离线监督的多无人机路由与任务分配",
+      "canonical_evidence": "基于学习与离线监督的多无人机路由与任务分配",
+      "llm_tldr_en": "FlockDiffusion addresses multi-drone task allocation and routing by combining a scene graph encoder, allocation head, assignment-conditioned diffusion transformer, and closed-form trajectory decoder trained with offline teacher supervision.",
+      "llm_tldr_cn": "多无人机在杂乱环境中服务分布式目标时，成本估计、任务分配与执行分离会导致冗余图搜索和冗长突兀的路径。本文提出FlockDiffusion，融合场景图编码器、显式分配头、以分配为条件的扩散Transformer与闭式轨迹解码器，并用自回归教师提供离线监督。PyBullet消融实验表明任务打包能提升任务完成率，为学习式多智能体路径规划与协同分配提供了统一框架。",
+      "llm_tldr": "多无人机在杂乱环境中服务分布式目标时，成本估计、任务分配与执行分离会导致冗余图搜索和冗长突兀的路径。本文提出FlockDiffusion，融合场景图编码器、显式分配头、以分配为条件的扩散Transformer与闭式轨迹解码器，并用自回归教师提供离线监督。PyBullet消融实验表明任务打包能提升任务完成率，为学习式多智能体路径规划与协同分配提供了统一框架。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "learning based multi agent pathfinding",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

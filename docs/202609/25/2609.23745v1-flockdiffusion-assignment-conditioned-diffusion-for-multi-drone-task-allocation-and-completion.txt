@@ -1,0 +1,343 @@
+Title: FlockDiffusion: Assignment-Conditioned Diffusion for Multi-Drone Task Allocation and Completion
+
+URL Source: https://arxiv.org/pdf/2609.23745v1
+
+Published Time: Tue, 22 Sep 2026 01:42:41 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# FlockDiffusion: Assignment-Conditioned Diffusion for Multi-Drone Task Allocation and Completion 
+
+Iana Zhura ∗, Satenik Akopyan ∗, Roohan Ahmed Khan, Miguel Altamirano Cabrera, Aleksey Fedoseev and Dzmitry Tsetserukou 
+
+Abstract — Autonomous multi-drone navigation requires fleets to service distributed objectives in cluttered environments under tight computational budgets. Efficient coordination depends on task bundling, where each drone visits multiple objectives along its route. Separate solvers for cost estimation, assignment, and execution incur redundant graph search and produce long, abrupt paths. We propose FlockDiffusion, a learned framework combining a scene graph encoder, an explicit allocation head, an assignment conditioned diffusion transformer, and a closed form trajectory decoder. An autoregressive teacher provides offline supervision for parallel fleet trajectory generation. Py-Bullet ablations show that bundling increases task completion from 50% to 100%, while our complete teacher further reduces route cost by 8.4% relative to MAGNNET with bundling. In the optimized scalability benchmark, evaluated on 100 scenes per density with ten drones, FlockDiffusion achieves 6.2 to 7.6 times faster inference and approximately 37% shorter routes than the classical pipeline. As nominal task counts increase from 20 to 40, latency rises from 7.8 to 11.1 ms, compared with 48.0 to 75.8 ms for the baseline. In a separate evaluation across five Gazebo environments, FlockDiffusion achieves 100% planner coverage and reduces planned route cost by 15.4% relative to the baseline with bundling. These results demonstrate efficient planning under increasing task density in configurations that are demanding to reproduce with physical drone fleets. 
+
+I. INTRODUCTION The deployment of autonomous drone swarms has grown rapidly across applications such as aerial inspection, disaster response, environmental monitoring, and last-mile deliv-ery [1]. A central bottleneck is assigning tasks to the most suitable agents, especially when tasks outnumber the fleet and each drone must serve several objectives. Effective co-ordination then depends on bundling : a drone should collect multiple tasks that lie along its route rather than completing one before accepting the next. Bundling couples assignment to flight geometry, since whether a task is along the way depends on the obstacle-aware path a drone would actually fly. Recent learning-based methods combine multi-agent re-inforcement learning with graph neural networks to make decentralized allocation decisions from local observations and agent-to-task relations [2]. MAGNNET [3], which forms the basis of our offline allocation teacher, pairs a graph neural network with a Proximal Policy Optimization policy while relying on separately computed motion costs and classical  
+
+> ∗Equal contribution. All authors are with the Skolkovo Institute of Science and Technology, Moscow, Russia. Email:
+
+{ yana.zhura, satenik.akopyan, roohan.khan, m.altamirano, aleksey.fedoseev, d.tsetserukou }@skoltech.ru   
+
+> Fig. 1: FlockDiffusion overview. A scene GNN predicts task assignments that are refined into ordered bundles and conditions the parallel diffusion of smooth fleet trajectories. An autoregressive CTDE PPO teacher and route rollout provide offline supervision. Colors associate each drone with tasks collected along its route; check marks denote completed tasks, and dashed curves show the remaining paths.
+
+planning for trajectory execution. More broadly, task allo-cation and motion planning have also been coupled through reinforcement learning and optimization, but they commonly retain distinct decision and trajectory-generation stages. This separation can introduce repeated geometric computation: obstacle-aware costs are evaluated for allocation, after which a trajectory planner again reasons about the environment to realize the assigned routes. FlockDiffusion instead uses the predicted task allocation and visit order as an explicit conditioning signal for learned fleet trajectory generation. Denoising diffusion models are powerful generators of continuous outputs [4], [5] and have been applied to robot trajectory generation from visual observations and LiDAR point clouds [6], [7]. Recent work has also extended diffusion to multi-robot motion planning and swarm trajectory gener-ation [8], [9]. These approaches demonstrate that diffusion can generate coordinated motion for multiple robots, but they arXiv:2609.23745v1 [cs.RO] 20 Sep 2026 assume navigation objectives or motion goals rather than jointly predicting which robot should service each task and in which order. FlockDiffusion addresses this complementary problem by encoding the drone-task scene as a graph, predicting capacity-feasible ordered task bundles, and using those bundles as explicit conditions for parallel fleet trajec-tory generation. Few-step DDIM sampling and parallel fleet denoising then remove the search-based trajectory planner from the learned deployment pipeline. In summary, our contributions are:  
+
+> •
+
+A diffusion-based fleet trajectory generator that com-bines a scene graph neural network, an explicit allo-cation head, assignment conditioned parallel denoising, and a closed form decoder. The model performs no graph search at inference, runs 6 to 8 times faster than the classical stack, and generates shorter, smoother routes with complete task service.  
+
+> •
+
+An autoregressive task bundling teacher built on the Centralized Training with Decentralized Execution (CTDE) framework and trained using Proximal Pol-icy Optimization (PPO). Our redesign introduces alightweight local task multilayer perceptron, recurrent bundle memory, capacity-aware sequential selection, and vectorized bundle refinement. Bundling increases task completion from 50% to 100%, while the complete teacher further reduces route cost by 8.4% relative to MAGNNET with bundling.  
+
+> •
+
+Real-time fleet demonstrations in PyBullet and Gazebo across environments with varied obstacle ge-ometry, showing feasible, collision-free execution of the generated multi-drone trajectories. II. RELATED WORK 
+
+A. Reinforcement Learning for Task Allocation 
+
+Multi-robot task allocation is inherently combinatorial because assignment quality depends on agent state, task geometry, capacity, and the future cost of servicing additional objectives. Reinforcement learning has consequently been used to replace manually designed allocation heuristics with policies that adapt their decisions to the current fleet and task configuration. RTAW [10] formulates warehouse task alloca-tion as a Markov decision process and uses an attention-based PPO policy whose representation does not depend directly on the number of robots or tasks. This improves scalability, although allocation remains separated from the trajectories executed by the robots. DC-MRTA [11] cou-ples an RL allocator with decentralized navigation through feedback from the navigation layer, allowing assignment decisions to account for executable motion. Nevertheless, task allocation and path generation are still performed by distinct modules. Several approaches introduce additional structure to handle large allocation spaces. DL-DRL [12] separates multi-UAV scheduling into an upper-level task assignment policy and a lower-level route construction policy. This hierarchical factorization supports large problem instances but requires separate learned decision stages. Paul et al. [13] retain a classical bipartite matching solver while using graph rein-forcement learning to predict robot-to-task edge weights, demonstrating the value of combining learned representa-tions with explicit optimization. MAGNNET [3], the closest basis for our allocation teacher, combines a graph neural network with a multi-agent PPO policy to represent agent-to-task interactions and produce decentralized assignments. Its deployment pipeline, however, still depends on separately computed motion costs and search-based path execution. These methods demonstrate that reinforcement learning and graph representations can produce effective assignments, but they generally preserve a plan-then-fly decomposition. Assignment is predicted first, after which another planner constructs the trajectories. In contrast, FlockDiffusion uses the predicted and refined assignment as an explicit condition-ing signal for joint fleet trajectory generation. Task allocation and flight geometry are therefore coupled within the learned inference process. 
+
+B. Diffusion Models for Planning and Allocation 
+
+Denoising diffusion models generate structured samples by iteratively transforming noise into data [4]. DDIM reduces the required sampling steps [5], while Diffusion Trans-formers provide a scalable architecture for high-dimensional denoising [14]. In planning, Diffuser generates complete trajectories conditioned on objectives [15], and Diffusion Policy models multimodal robot actions through conditional denoising [16]. These approaches primarily address single-agent planning or control. Diffusion has also been applied to combinatorial opti-mization. DIFUSCO [17] performs graph-based denoising to generate discrete solutions for problems such as the travel-ing salesperson problem. However, discrete assignments or tours do not directly provide smooth, obstacle-aware multi-robot trajectories. FlockDiffusion connects these settings by predicting task-to-drone assignments from a scene graph and using them to condition the parallel generation of continuous fleet trajectories. This jointly captures task ownership, visit geometry, and trajectory completion within a unified learned framework. 
+
+C. Reinforcement Learning Supervision for Diffusion 
+
+Reinforcement learning and diffusion can be combined in several ways. One line of work optimizes a diffusion policy directly using reward feedback [18]. Another uses reinforcement learning to generate or improve demonstra-tions and then distills those demonstrations into a diffusion model. The latter approach moves expensive exploration and optimization offline while retaining efficient diffusion inference at deployment. DiffusionRL [19] follows this teacher-to-student pattern for robotic grasping. Reinforcement learning is used to adapt and improve a large grasp dataset, after which a lightweight diffusion policy is trained on the resulting task-aligned demonstrations. X-Sim [20] similarly trains an RL policy in simulation using object-centric rewards and then distills its synthetic rollouts into an image-conditioned diffusion policy. These methods show that RL-generated data can transfer optimized behavior into a diffusion model without requiring the RL policy to remain in the deployed control loop. FlockDiffusion adopts this teacher-to-student principle for multi-drone task bundling and trajectory generation. A graph-based PPO allocation policy and classical execution stack act as an offline teacher, grouping spatially compatible tasks into capacity-feasible ordered bundles and producing their corresponding trajectory demonstrations. The student jointly learns an allocation head and an assignment-conditioned diffusion model from these demonstrations. At inference, the teacher is removed: the scene graph is encoded once, predicted assignments are refined into ordered bundles, and the conditioned denoiser generates all fleet trajectories in parallel. Unlike prior RL-to-diffusion approaches focused primarily on manipulation, our formulation transfers route-aware multi-agent allocation together with continuous fleet trajectory generation. The final decoder preserves the as-signed task coordinates and visit sequence by construction, while capacity and unique task ownership are inherited from the refined bundles. III. METHOD 
+
+A. Problem Formulation 
+
+We consider a fleet of N drones operating in a bounded three-dimensional workspace containing M tasks and a set of obstacles. Drone i starts at si ∈ R3 and can service at most 
+
+Ci tasks. Each task j is represented by a location g j ∈ R3
+
+and must be visited by exactly one drone. The allocation is represented by A ∈ { 0, 1}N×M , where Ai j = 1 indicates that drone i services task j. For each drone, the assigned tasks are arranged into an ordered bundle 
+
+Bi = ( bi,1, . . . , bi,Ki ), Ki ≤ Ci, (1) where bi,r is the index of the rth task visited by drone i,
+
+r ∈ { 1, . . . , Ki}, and Ki = ∑Mj=1 Ai j is its bundle size. The fleet trajectory is X = {Xi}Ni=1, with Xi ∈ RT ×3, where T
+
+is the number of sampled positions per drone and each row contains three spatial coordinates. Indices i ∈ { 1, . . . , N} and 
+
+j ∈ { 1, . . . , M} refer to drones and tasks, respectively. A valid solution must satisfy 
+
+> N
+
+# ∑
+
+> i=1
+
+Ai j = 1 ∀ j,
+
+> M
+
+# ∑
+
+> j=1
+
+Ai j ≤ Ci ∀i, (2) The first constraint assigns each task exactly once, and the second bounds each drone’s workload by Ci. A valid solution must also produce smooth, obstacle-aware trajectories that visit the tasks in the order specified by each bundle. Allo-cation and trajectory generation are therefore coupled: the quality of a bundle depends on the flight geometry required to execute it. FlockDiffusion addresses this coupling through offline teacher supervision and a single learned student pipeline. A sequential policy trained using Proximal Policy Optimization (PPO) under Centralized Training with Decentralized Exe-cution (CTDE) first generates expert task bundles and exe-cutable trajectories. The student then learns both the discrete allocation structure and the continuous fleet geometry from these demonstrations. Figure 2 summarizes the complete training and inference procedure. 
+
+B. Separation from MAGNNET. 
+
+The offline teacher is adapted from MAGNNET [3], whereas the FlockDiffusion student is trained independently from its generated demonstrations. From MAGNNET, the teacher retains the graph-based global representation, CTDE formulation, PPO objective, centralized critic, and discrete task-or-idle action space. We redesign the decentralized actor by replacing per-decision graph processing with a lightweight MLP that encodes the currently available tasks. We further introduce a recurrent bundle state and an au-toregressive, capacity-aware construction procedure in which each selected task updates the context for the next decision. An offline route rollout then converts the resulting ordered bundles into trajectory demonstrations. The complete teacher branch is used only for offline data generation. The lower branch in Fig. 2 is the new FlockDiffusion model. Its scene graph encoder is distinct from both the teacher’s lightweight local MLP and the MAGNNET graph module. The local MLP embeds task candidates indepen-dently for fast sequential teacher decisions, whereas the stu-dent scene graph neural network (GNN) performs relational message passing across drones and tasks and appends obsta-cle condition tokens. Thus, graph reasoning is retained where global scene structure is useful, while the local teacher actor uses our cheaper MLP design. The student scene GNN is trained jointly with a new allocation head, bundle refinement module, bundle conditioner, diffusion transformer, and closed form trajectory decoder. None of the teacher actor or critic parameters are used by the student at inference. 
+
+C. Autoregressive CTDE PPO Teacher 
+
+The upper branch of Fig. 2 combines the graph based CTDE PPO foundation inherited from MAGNNET with our lightweight local MLP actor and autoregressive bundle construction. The local actor does not use the FlockDiffusion student scene GNN. At allocation step k, drone i receives a local observation oki containing its current state, the available task descriptors, the remaining capacity, and a valid action mask. A lightweight multilayer perceptron maps every can-didate task feature fkj to an embedding 
+
+ekj = φtask (fkj). (3) Here, k indexes allocation decisions, fkj is the feature vector of task j, φtask is the learned task MLP, and ekj is its output embedding. The task embeddings are combined with an agent context embedding zki , obtained from the local observation oki , and a recurrent bundle state hki . The recurrent state is updated as 
+
+hki = GRU 
+
+
+
+hk−1 
+
+> i
+
+, [zki , ekak−1
+
+> i
+
+]
+
+
+
+, (4) Fig. 2: FlockDiffusion training and inference architecture. The sequential CTDE PPO teacher uses a lightweight task encoder, recurrent bundle memory, and masked task selection to construct ordered task bundles. A centralized critic supplies the PPO training signal, while an offline route rollout converts the bundles into expert fleet trajectories. These expert allocations, bundles, and trajectories supervise the student. The student encodes the drone, task, and obstacle scene, predicts and refines capacity feasible task bundles, and conditions a diffusion transformer on the resulting ordered bundle tokens. The transformer denoises all drone trajectories in parallel, and a closed form decoder enforces exact task visits and produces smooth fleet routes. The teacher is used only during offline data generation and is removed at inference. 
+
+where GRU is a gated recurrent unit, hk−1 
+
+> i
+
+is its previous hidden state, and brackets denote feature concatenation. The index ak−1 
+
+> i
+
+identifies the previously selected task, so ekak−1
+
+> i
+
+denotes its task embedding at the current decision step. This expression describes updates following a task selection; an initial or idle action requires a designated non-task input to the recurrent unit. This memory records the allocation history, occupied bundle slots, and remaining capacity. The actor computes an agent to task compatibility score 
+
+ℓki j = ψ
+
+
+
+zki , hki , ekj
+
+
+
+, (5) where ψ is the learned compatibility function and ℓki j is the scalar, unnormalized score for assigning task j to drone i
+
+at step k. The actor then applies the action mask, which excludes invalid choices, before selecting a valid task or the idle action. The selected task is appended to Bi and becomes part of the next recurrent context. This process continues until all tasks are allocated or all valid bundle slots are filled. The teacher follows centralized training with decentralized execution. During training, a centralized critic receives the global fleet state, the task set, and the environment context, and estimates Vω (Sk, hk), where Vω is the value function with learned parameters ω, Sk denotes the global system state, and hk = {hki }Ni=1 collects the fleet’s recurrent states. Its output estimates expected discounted future reward. The global state Sk is distinct from the fixed start position si.The actor is optimized with the clipped PPO objective [2], while execution uses only the local observation and recurrent bundle memory. Consequently, the teacher benefits from a global learning signal without requiring global processing in the local allocation policy. After a complete set of bundles has been produced, an offline execution planner rolls out each ordered bundle in the training environment. Each demonstration contains the scene G ∗, expert assignments A∗, ordered bundles B∗, and resampled fleet trajectories X∗ ∈ RN×T ×3. A superscript ∗
+
+marks teacher demonstrations, and B∗ = {B∗ 
+
+> i
+
+}Ni=1 collects their ordered bundles. The scene representation G ∗ contains the associated drone, task, and obstacle information. The teacher and the offline execution planner are used only to construct this dataset and are removed from the deployment pipeline. 
+
+D. Scene Graph Encoding and Bundle Prediction 
+
+This subsection describes the new FlockDiffusion student rather than the MAGNNET-derived PPO teacher. The student receives the drone states, task states, and obstacle description. We represent the scene as a heterogeneous graph whose valid drone and task nodes exchange information through message passing. For layer l, a node representation is updated according to 
+
+hl+1 
+
+> u
+
+= σ Wl
+
+> s
+
+hlu + 1
+
+|N (u)| ∑ 
+
+> v∈N(u)
+
+Wl
+
+> n
+
+hlv
+
+!
+
+. (6) Here, u and v index graph nodes, l indexes message passing layers, and hlu is the feature embedding of node u at layer l.This graph embedding is distinct from the teacher’s recurrent state hki . The set N (u) contains the neighbors of u, and 
+
+|N (u)| is its cardinality. Wl 
+
+> s
+
+and Wl 
+
+> n
+
+are learned linear maps for self and neighbor features, respectively, and σ is the elementwise activation. The neighbor term is taken as zero for an isolated node. Drone to task edges communicate assignment compatibility, while drone to drone edges provide fleet wide context about position and load. Obstacle features are encoded as additional condition tokens and concatenated with the graph tokens. The resulting scene representation is denoted by HG , the collection of condition tokens for scene 
+
+G . In our implementation, three message passing rounds operate at hidden width 128, after which the valid node features are projected to 256 dimensional condition tokens. Obstacle features are processed by a separate lightweight encoder and appended to the graph representation. With ten drone slots, twenty task slots, and eight obstacle slots, the encoder produces at most 38 scene condition tokens. An allocation head predicts a task to drone distribution as: 
+
+pi j = p(Ai j = 1 | HG ). (7) Here, pi j is the predicted probability that drone i serves task j, conditional on the scene tokens; ∑Ni=1 pi j = 1 for each valid task. The predicted assignment is refined into ordered, capacity-feasible bundles. This refinement removes duplicate service, enforces each drone capacity, and orders the tasks assigned to every drone. The resulting bundle bBi is encoded into bundle tokens: 
+
+cB 
+
+> i
+
+= φB( bBi, HG ). (8) Here, a hat denotes a predicted or refined quantity, φB is the bundle encoding function, and cB 
+
+> i
+
+contains the condition tokens for drone i’s ordered bundle; the superscript B denotes bundle conditioning. Conditioning on the ordered bundle explicitly separates the combinatorial decision of which tasks a drone serves from the continuous decision of how it flies. This reduces ambiguity in the trajectory distribution and supports accurate sampling with few denoising steps. The allocation head is supervised using the expert teacher assignments: 
+
+Lalloc = − 1
+
+M
+
+> M
+
+# ∑
+
+> j=1
+> N
+
+# ∑
+
+> i=1
+
+A∗ 
+
+> i j
+
+log pi j . (9) This cross entropy loss Lalloc averages over the M tasks. The binary teacher label A∗ 
+
+> i j
+
+selects the expert drone for task 
+
+j, and log denotes the natural logarithm. 
+
+E. Assignment Conditioned Fleet Diffusion 
+
+The diffusion model learns the distribution of executable fleet trajectories conditioned on the scene and ordered task bundles. During training, Gaussian noise is applied to the normalized expert trajectory X∗ using a forward diffusion process [4] 
+
+q(Xt | X∗) = N  √ ¯αt X∗, (1 − ¯αt )I . (10) Here, t ∈ { 1, . . . , S} indexes diffusion noise levels, where S
+
+is the number of training diffusion steps; t is distinct from a flight sample index and S is distinct from the trajectory length T . Xt is the noisy fleet trajectory, and q denotes the forward noising distribution. The symbol N (μ, Σ) denotes a Gaussian distribution with mean μ and covariance Σ, distinct from the graph neighborhood notation. The cumulative signal coefficient is ¯αt = ∏tr=1(1 − βr), where βr is the noise variance at diffusion step r. The identity matrix I acts on the flattened trajectory coordinates, giving independent noise in each coordinate. We use clean trajectory prediction. The denoiser therefore estimates 
+
+bX0 = fθ
+
+ Xt ,t, HG , cB , (11) where fθ is the denoising network with learned parameters 
+
+θ , bX0 is its estimate of the clean fleet trajectory, and 
+
+cB = {cB 
+
+> i
+
+}Ni=1 collects the bundle conditions for the entire fleet. The subscript 0 denotes the clean diffusion state, not the initial flight position. The trajectory is divided into temporal patches and combined with learned drone and time embeddings. A diffusion transformer processes the scene tokens and all drone trajectory tokens jointly, enabling every generated path to account for the other agents and the shared environment. All N trajectories are denoised in parallel rather than planned independently. We use T = 64 trajectory samples and patches of four time steps, yielding 16 trajectory tokens per drone. The denoiser contains eight transformer blocks with width 256, eight attention heads, and adaptive layer normalization with zero initialized residual gates. The diffusion loss is the active drone masked mean squared error 
+
+Ldiff = 1
+
+T ∑Ni=1 miN
+
+# ∑
+
+> i=1
+
+mi bX0,i − X∗ 
+
+> i
+> 2F
+
+, (12) where mi ∈ { 0, 1} equals one for an active drone and zero for an inactive or padded slot. The slice bX0,i is the predicted clean trajectory of drone i, and X∗ 
+
+> i
+
+is its normalized expert trajectory. The squared Frobenius norm ∥ · ∥ 2F sums squared errors across all T samples and three coordinates. Thus, Ldiff 
+
+averages squared position error over active drone samples, assuming at least one active drone. The complete student loss is 
+
+L = λalloc Lalloc + λdiff Ldiff . (13) Here, L is the combined student training objective, and 
+
+λalloc and λdiff are nonnegative weights balancing allocation and trajectory supervision. At inference, the reverse process is evaluated with deterministic Denoising Diffusion Implicit Model (DDIM) sampling [5]. The direct clean trajectory parameterization, assignment conditioning, deterministic up-dates, and parallel fleet prediction allow the model to use a small number of sampling steps. Training uses S = 1000 steps with a cosine diffusion schedule and an exponential moving average of the denoiser parameters; only the short DDIM trajectory is evaluated at deployment. F. Constraint Preserving Trajectory Decoding 
+
+The sampled trajectories provide smooth global flight geometry, while the decoder enforces the discrete service structure. For drone i, its start and the ordered task coor-dinates in bBi are treated as fixed anchors. The generated samples provide intermediate control points between these anchors. A centripetal Catmull–Rom construction converts the control points into a continuous spatial curve, and a quintic minimum jerk time law 
+
+ρ(τ) = 10 τ3 − 15 τ4 + 6τ5, τ ∈ [0, 1], (14) produces smooth progress along each segment. Here, τ is normalized time within a segment, and ρ(τ) is its normalized progress parameter. For segment duration ∆ > 0 and elapsed time u ∈ [0, ∆], τ = u/∆. The function moves from ρ(0) = 0to ρ(1) = 1 with zero first and second derivatives at both endpoints. Since every assigned task is inserted as an exact anchor, the decoded routes preserve task coordinates and visit order by construction. Capacity and unique service are in-herited from the refined bundles. Obstacle inflation and local geometric correction are applied during decoding, followed by collision validation in the execution environment. The deployed pipeline therefore consists only of scene encoding, bundle prediction, parallel DDIM sampling, and closed form decoding. No teacher policy or graph search is evaluated online. IV. EXPERIMENTS AND RESULTS 
+
+A. Evaluation metrics. 
+
+We report planner coverage (percentage of tasks included in generated plans) and execution completion (percentage actually serviced during simulation). Planned route cost 
+
+captures aggregate fleet routing cost, while tasks per unit distance measures service efficiency. For bundling methods, we additionally report bundle compactness (spatial spread of co-assigned tasks) and mean marginal insertion cost (added route cost per inserted task), with lower values preferred for both. Allocation episode steps and the standard deviation of tasks per drone characterize decision effort and workload balance, respectively. Computational cost is measured via allocation or diffusion generation time, A* and oracle time, and their summed total (including repair where applicable, excluding model loading); note that diffusion denoising iterations are distinct from allocation episode steps. 
+
+B. Teacher Ablation Study 
+
+We conduct the ablation study in PyBullet, using con-trolled task and obstacle configurations to compare the task allocation policies. The baseline is the MAGNNET alloca-tor [3], while the second variant adds only the proposed task bundling mechanism. Our complete teacher additionally uses a lightweight local task MLP, recurrent bundle memory, au-toregressive bundle construction, and vectorized refinement. Table I shows that adding bundling to the baseline in-creases task completion from 50% to 100%. Our complete teacher preserves 100% completion while reducing route cost                              
+
+> TABLE I: Teacher architecture ablation in PyBullet. Arrows indicate the preferred direction and – denotes a metric that is not applicable.
+> Metric Baseline Baseline + bundling Ours Completion (%) ↑50 100 100
+> Route cost ↓413.10 338.80 310.22
+> Bundle compactness ↓–0.47 0.45
+> Mean insertion cost ↓–12.90 10.84
+> Tasks / distance ↑–0.06 0.07
+> Episode steps ↓100.00 4.20 3.78
+> Tasks / robot std. 0.00 0.97 1.01
+
+by 8.4%, mean marginal insertion cost by 16.0%, and episode steps by 10.0% relative to the baseline with bundling. Bundle compactness improves from 0.47 to 0.45, and tasks per unit distance increase from 0.06 to 0.07. These results show that the complete teacher architecture provides additional routing benefits beyond the bundling mechanism alone. Bundle compactness, marginal insertion cost, and tasks per distance describe the quality of constructed bundles. They are therefore not applicable to the original baseline, which does not perform task bundling. The zero workload dispersion reported for the baseline must also be interpreted together with its 50% completion rate. Our complete teacher has slightly higher workload dispersion than the baseline with bundling, with a standard deviation of 1.01 rather than 0.97 tasks per robot. The quantitative ablation results in Table I are obtained exclusively in PyBullet. 
+
+C. Experimental Setup 
+
+The experiments were conducted in a customized Crazyflie simulation environment built on ROS 2 Hum-ble, Crazyswarm2, Crazyflie firmware software-in-the-loop (SITL), and Gazebo Harmonic. Each simulated Crazyflie ran an independent firmware instance and communicated with the Crazyswarm2 ROS interface through a dedicated UDP port. The setup provided pose feedback and accepted position commands through the same multi-robot software stack used for the fleet experiments. The simulator additionally sup-ports dynamic task insertion and removal, simulated drone failures, assignment replanning, and trajectory execution. In this work, it is used to evaluate the complete allocation and trajectory-generation pipeline in physics-based simulation and to study computational scaling with task density. 
+
+D. Qualitative Results 
+
+Figure 3 illustrates the generated allocations and fleet trajectories in two environments with distinct geometric con-straints. In the cylindrical scene, the assigned task sequences must traverse the free space between multiple obstacles, while in the corridor scene the routes organize tasks around narrow partitioned passages. In both examples, each colored route connects several tasks assigned to the same drone, qual-itatively demonstrating the task bundling behavior learned by FlockDiffusion. The comparison against MAGNNET + bundling also makes the effect of the diffusion planner (a) MAGNNET + bundling (A*) (b) Ours — diffusion planner (c) Simulation environment   
+
+> Scene 1 — cylinders Scene 2 — partitioned aisles Fig. 3: Qualitative multi-drone allocation and trajectory results. Column (a) shows MAGNNET + bundling with A* execution and column (b) our diffusion planner, both visualizing the ordered task bundles and generated fleet trajectories; column (c) shows the corresponding Gazebo scene. Rows are two environments: cylindrical obstacles (top) and a constrained partitioned-aisle corridor (bottom). Colors associate each drone with the tasks assigned along its route, illustrating multi task collection under different obstacle geometries.
+
+apparent: whereas A* execution turns only on voxel axes and produces axis-aligned staircase segments with sharp heading reversals at every waypoint, jointly denoising all trajectories yields curvature-continuous paths that pass through the same task sequence without stopping to turn. Smoother paths are directly preferable for aerial platforms: eliminating the stop-and-turn behavior at each waypoint removes the repeated deceleration and reacceleration that dominate energy use on a quadrotor, keeps commanded accelerations within the vehi-cle’s actuation limits, and leaves trajectories that the onboard tracking controller can follow with far lower position error. 
+
+E. Gazebo Pipeline Evaluation 
+
+We evaluate the complete allocation and trajectory gener-ation pipelines across five Gazebo environments, each con-taining ten drones and 20 tasks. Both MAGNNET variants use A* for trajectory planning, while FlockDiffusion uses a diffusion model and decoder. These experiments extend the teacher policy ablations conducted in PyBullet. Table II shows that FlockDiffusion achieves 100% plan-ner coverage in every scene, matching MAGNNET with bundling and exceeding the original baseline’s 50%. Relative to MAGNNET with bundling, it reduces mean planned route cost by 15.4%, improves bundle compactness by 22.9%, and increases tasks per unit distance by 17.3%. It produces the fleet plan in one recorded allocation step, compared with four for the bundling baseline and 1000 for MAGNNET. This single allocation step contains multiple diffusion denoising iterations. 
+
+> TABLE II: Average pipeline results across five Gazebo scenes. Completion denotes planner coverage. Allocation time includes trajectory generation for diffusion. Planning time includes the logged A* and oracle stages; total is the sum of reported allocation, planning, and repair times, excluding model loading. – denotes not applicable.
+
+Metric MAGNNET MAGNNET + bundling Flock Diffusion Trajectory planner A* A* Diffusion Plan completion (%) ↑ 50 100 100 
+
+Planned route cost ↓ 394.40 192.80 163.20 
+
+Bundle compactness ↓ – 0.362 0.279 
+
+Tasks / distance ↑ 0.026 0.105 0.123 
+
+Episode steps ↓ 1000 4 1
+
+Alloc./generation (ms) ↓ 4473.58 8.40 24.28 A* + oracle (ms) ↓ 30.12 36.50 53.86 Total stage time (ms) ↓ 4503.70 44.90 78.14 
+
+Diffusion allocation and trajectory generation average 24.28 ms, compared with 4473.58 ms for MAGNNET and 8.40 ms for MAGNNET with bundling; the large latency of the original baseline accompanies its 1000-step rollouts and incomplete allocation. 
+
+a) Latency analysis. 
+
+The timing breakdown shows that FlockDiffusion’s higher latency arises primarily from trajectory generation rather than task assignment. Its allocation head requires only 1.29 ms, while embedding and five denoising steps require 17.65 ms and trajectory decoding adds 5.33 ms. In compar-ison, MAGNNET with bundling spends 8.40 ms on policy 20 (density 2) 30 (density 3) 40 (density 4) 
+
+Nominal number of tasks   
+
+> 020 40 60 80 100
+> Total latency (ms)
+> 48.0 67.2 75.8
+> 7.8 8.8 11.1
+> Classical baseline FlockDiffusion (DDIM-5)
+
+Fig. 4: Latency scaling with task density. Mean total latency over 100 scenes per density for ten drones. Nominal task counts are 20, 30, and 40, with approximately 17, 26, and 34 realized tasks, respectively. Shaded bands show the reported variation around each mean. 
+
+rollout and 2.08 ms on A* planning. The Gazebo evaluation also records higher oracle time for diffusion, increasing from 34.42 to 53.86 ms. Consequently, the reported stage sum is 78.14 ms for FlockDiffusion versus 44.90 ms for MAGNNET with bundling. 
+
+b) Scalability. 
+
+Figure 4 evaluates the optimized pipeline as nominal task counts increase from 20 to 40. FlockDiffusion’s mean latency rises from 7.8 to 11.1 ms, compared with 48.0 to 75.8 ms for the classical baseline. Across the three densities, FlockDiffu-sion achieves a 6.2 to 7.6 times speedup, retaining a 6.8 times advantage at the highest density. Fixed token dimensions, five denoising steps, and vectorized bundle refinement limit computational growth, demonstrating favorable latency scal-ing over the tested range. This benchmark isolates the same allocation head, denoising, and decoding stages profiled in Section IV-E, where trajectory generation, not the allocation head, accounts for most of FlockDiffusion’s latency. The scalability benchmark and Gazebo experiments use separate evaluation protocols. The former measures the optimized pipeline across task densities, whereas the latter reports timings from the deployed simulation implementation, in-cluding separately logged oracle processing. Their absolute latencies are therefore reported separately and are not directly comparable. V. C ONCLUSION 
+
+We presented FlockDiffusion, a framework combining an autoregressive bundling teacher with assignment conditioned diffusion for multi-drone task allocation and trajectory gener-ation. PyBullet ablations showed that bundling increased task completion from 50% to 100%, while our complete teacher further reduced route cost by 8.4% relative to MAGNNET with bundling. The optimized scalability benchmark achieved 6.2 to 7.6 times faster inference than the classical pipeline, with latency increasing from 7.8 to 11.1 ms as nominal task counts increased from 20 to 40 for ten drones. In the separate Gazebo planning evaluation, FlockDiffusion achieved 100% task coverage and reduced planned route cost by 15.4%. These simulations demonstrate efficient coordination of 10 drones under increasing task density, enabling evaluation of configurations that are logistically demanding to reproduce with physical fleets. REFERENCES [1] J. Saunders, S. Saeedi, and W. Li, “Autonomous aerial robotics for package delivery: A technical review,” Journal of Field Robotics ,vol. 41, no. 1, pp. 3–49, 2024. [2] L. Ratnabala, R. Peter, A. Fedoseev, and D. Tsetserukou, “Hippo-mat: Decentralized task allocation using graphsage and multi-agent deep reinforcement learning,” 2025, arXiv:2503.07662. [3] L. Ratnabala, A. Fedoseev, R. Peter, and D. Tsetserukou, “Magnnet: Multi-agent graph neural network-based efficient task allocation for autonomous vehicles with deep reinforcement learning,” in Proc. IEEE Intelligent Vehicles Symposium (IV) , 2025, pp. 970–975. [4] J. Ho, A. Jain, and P. Abbeel, “Denoising diffusion probabilistic models,” in Proc. Int. Conf. on Neural Information Processing Systems ,2020, pp. 6840–6851. [5] J. Song, C. Meng, and S. Ermon, “Denoising diffusion implicit models,” 2020, arXiv:2010.02502. [6] J. Liang, A. Payandeh, D. Song, X. Xiao, and D. Manocha, “Dtg: Diffusion-based trajectory generation for mapless global navigation,” in Proc. IEEE/RSJ Int. Conf. on Intelligent Robots and Systems (IROS) ,2024, pp. 5340–5347. [7] I. Zhura, S. Karaf, F. Batool, N. D. W. Mudalige, V. Serpiva, A. A. Abdulkarim, A. Fedoseev, D. Seyidov, H. Amjad, and D. Tsetserukou, “Embodieddiffusion: End-to-end traversability-guided visual diffusion for heterogeneous robot navigation,” IEEE Robotics and Automation Letters , vol. 11, no. 10, pp. 11 697–11 704, 2026. [8] Y. Shaoul, I. Mishani, S. Vats, J. Li, and M. Likhachev, “Multi-robot motion planning with diffusion models,” in Proc. Int. Conf. on Learning Representations (ICLR) , 2025, pp. 1–21. [9] K. Ding, C. Jiao, Y. Hu, K. Zhou, P. Wu, Y. Mu, and C. Liu, “Swar-mdiff: Swarm robotic trajectory planning in cluttered environments via diffusion transformer,” in Proc. IEEE/CVF Conf. on Computer Vision and Pattern Recognition Workshops , 2025, pp. 4203–4212. [10] A. Agrawal, A. S. Bedi, and D. Manocha, “Rtaw: An attention inspired reinforcement learning method for multi-robot task allocation in warehouse environments,” in Proc. IEEE Int. Conf. on Robotics and Automation (ICRA) , 2023, pp. 1393–1399. [11] A. Agrawal, S. Hariharan, A. S. Bedi, and D. Manocha, “Dc-mrta: Decentralized multi-robot task allocation and navigation in complex environments,” in Proc. IEEE/RSJ Int. Conf. on Intelligent Robots and Systems (IROS) , 2022, pp. 11 711–11 718. [12] X. Mao, G. Wu, M. Fan, Z. Cao, and W. Pedrycz, “Dl-drl: Adouble-level deep reinforcement learning approach for large-scale task scheduling of multi-uav,” IEEE Trans. on Automation Science and Engineering , vol. 22, pp. 1028–1044, 2025. [13] S. Paul, N. Maurer, and S. Chowdhury, “Bigraph matching weighted with learnt incentive function for multi-robot task allocation,” in Proc. IEEE Int. Conf. on Robotics and Automation (ICRA) , 2024, pp. 7250– 7256. [14] W. Peebles and S. Xie, “Scalable Diffusion Models with Transform-ers,” in Proc. IEEE/CVF Int. Conf. on Computer Vision (ICCV) , 2023, pp. 4172–4182. [15] M. Janner, Y. Du, J. B. Tenenbaum, and S. Levine, “Planning with diffusion for flexible behavior synthesis,” 2022, arXiv:2205.09991. [16] C. Chi, Z. Xu, S. Feng, E. Cousineau, Y. Du, B. Burchfiel, R. Tedrake, and S. Song, “Diffusion policy: Visuomotor policy learning via action diffusion,” Int. J. Rob. Res. , vol. 44, no. 10–11, p. 1684–1704, 2025. [17] Z. Sun and Y. Yang, “Difusco: graph-based diffusion solvers for combinatorial optimization,” in Proc. Int. Conf. on Neural Information Processing Systems (NIPS) . Red Hook, NY, USA: Curran Associates Inc., 2023, pp. 3706–3731. [18] K. Black, M. Janner, Y. Du, I. Kostrikov, and S. Levine, “Training diffusion models with reinforcement learning,” in Proc. Int. Conf. on Learning Representations , vol. 2024, 2024, pp. 4965–4987. [19] M. Makarova, Q. Liu, and D. Tsetserukou, “Diffusionrl: Efficient training of diffusion policies for robotic grasping using rl-adapted large-scale datasets,” 2025, arXiv:2505.18876. [20] P. Dan, K. Kedia, A. Chao, E. W. Duan, M. A. Pace, W.-C. Ma, and S. Choudhury, “X-sim: Cross-embodiment learning via real-to-sim-to-real, 2025,” 2025, arxiv:2505.07096.
