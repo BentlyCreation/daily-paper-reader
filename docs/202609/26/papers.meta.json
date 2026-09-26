@@ -1,0 +1,69 @@
+{
+  "label": "2026-09-26",
+  "date": "2026-09-26",
+  "generated_at": "2026-09-26T22:12:39",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202609/26/2609.23310v1-when-does-communication-help-beyond-spectral-descriptions-of-collective-intelligence",
+      "section": "quick",
+      "title_en": "When Does Communication Help? Beyond Spectral Descriptions of Collective Intelligence",
+      "authors": "Xuening Wu",
+      "date": "2026-09-20",
+      "pdf": "https://arxiv.org/pdf/2609.23310v1",
+      "score": "7.0",
+      "evidence": "多智能体通信增益分析",
+      "tldr": "分布式推断中，通信常使智能体达成一致却可能让决策更差。论文指出聚合谱描述的两类局限：谱相同而增益符号可相反，且平均准确率提升可能伤害部分社区。作者用任务投影局部响应近似与独立校准数据，预测多轮增益并约束社区损害。在合成任务上预测误差约0.45个百分点，改变消息方向可使准确率从72.6%升至91.2%或降至65.9%。结果表明谱摘要不足，需任务感知预测与收益分配视角，但广泛迁移与实用优势仍待验证。",
+      "tags": "query:marl-comm",
+      "abstract_en": "Communication can bring agents into agreement while making their decisions worse. We identify two limits of aggregate descriptions of communication gain in distributed inference. First, stable linear systems with fixed evidence, network and readout can have interaction and finite-time state operators with identical eigenvalue and singular-value spectra, yet produce gains of opposite sign. Changing only message orientation raises accuracy from 72.6% to 91.2% or lowers it to 65.9%. A standard task-projected local-response approximation retains the directional information missing from spectral summaries. Using labeled calibration data separate from the test set, it predicts multi-round gains in small trained nonlinear agents with a root-mean-square error of 0.45 percentage points on two synthetic tasks; tests with natural edge changes and handwritten digits extend the evaluation. Second, under community-shared bias, higher mean individual accuracy can coexist with harm to unaffected communities or lower global-vote accuracy. At fixed communication rounds, calibration constraints reduce observed community harm while retaining much of the mean benefit, but do not guarantee protection. Full direct calibration performs similarly. The results connect spectral insufficiency, task-aware prediction and the distribution of communication benefits, while leaving broad transfer and practical superiority open.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/26/2609.21504v1-dped-vln-a-benchmark-for-socially-compliant-vision-and-language-navigation-in-dynamic-pedestrian-environments",
+      "section": "quick",
+      "title_en": "DPed-VLN: A Benchmark for Socially Compliant Vision-and-Language Navigation in Dynamic Pedestrian Environments",
+      "authors": "Haojie Dai, Xiangyi Wang, Liuyi Wang, Kai Sheng, Zongtao He, Chengju Liu, Wei Ye, Qijun Chen",
+      "date": "2026-09-18",
+      "pdf": "https://arxiv.org/pdf/2609.21504v1",
+      "score": "6.0",
+      "evidence": "在移动行人中社会合规导航并使用专家路径",
+      "tldr": "动态行人环境的社会合规VLN缺乏统一评测，现有方法难兼顾语言导航与社交安全。本文提出Habitat 3.0基准DPed-VLN，含33,093片段、成对全局与先验增强指令、ORCA行人及社会约束专家路径。方法上提出DPet行人感知策略网络，用强化与模仿学习训练，并以LoRA适配NaVILA、StreamVLN等VLM。实验显示LoRA提升零样本成功与安全指标并降低StreamVLN碰撞率，DPet-RL取得最高SR、SPL与STL。",
+      "tags": "query:intent-avoid",
+      "abstract_en": "Vision-and-language navigation (VLN) has advanced rapidly in static indoor environments, but robots operating in human-populated spaces must ground language while responding to moving pedestrians and social-safety constraints. We present DPed-VLN, a Habitat 3.0 benchmark for dynamic-pedestrian VLN that couples 33,093 navigation episodes with paired global and prior-augmented instructions, ORCA-controlled humanoid pedestrians, socially constrained expert paths, and metrics that jointly assess navigation efficiency and social safety. DPed-VLN separates ordinary goal-oriented route guidance from prior-augmented instructions that expose dynamic-pedestrian cues for controlled analysis. To instantiate the benchmark, we introduce DPet (Dynamic Pedestrian-aware Network), a pedestrian-aware policy network trained with reinforcement learning and imitation learning. We further adapt representative state-of-the-art VLM-based navigation models, including NaVILA and StreamVLN, to DPed-VLN through LoRA fine-tuning. Experiments show that LoRA adaptation improves zero-shot VLM baselines in several success and safety metrics, especially reducing StreamVLN's collision rate. Among the evaluated methods, DPet-RL achieves the highest SR, SPL, and STL.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/26/2609.26010v1-mates-learning-multi-agent-interactions-by-transforming-observations-for-frozen-single-agent-policies",
+      "section": "quick",
+      "title_en": "MATES: Learning Multi-Agent Interactions by Transforming Observations for Frozen Single-Agent Policies",
+      "authors": "Elie Abboud, Oren Gal",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.26010v1",
+      "score": "6.0",
+      "evidence": "多智能体强化学习分散策略通过观测适配器复用单智能体技能",
+      "tldr": "多智能体强化学习通常需从零训练分散策略，同时学习个体任务能力与协调。MATES提出输入侧适配框架：在多智能体观测保留单智能体任务信息且可分离邻居信息时，学习小型适配器，将多智能体观测转换为冻结单智能体策略所需的输入格式，从而诱导合适动作，且不更新原策略。实验覆盖终身寻路、导航与合作发现，兼容在线/离线策略及离散/连续空间，仅优化3.5-7.3%参数即持续优于从零MARL，接近全量微调，并能在未见过团队规模下保持性能。",
+      "tags": "query:lbm",
+      "abstract_en": "Multi-agent reinforcement learning (MARL) commonly trains decentralized policies from scratch, requiring agents to acquire individual task competence and coordination simultaneously. Yet many multi-agent problems admit a compatible single-agent counterpart in which the underlying task can be learned in isolation. We introduce Multi-Agent Observation Transformation for Existing Single-Agent Policies (MATES), an input-side adaptation framework for tasks whose multi-agent observations preserve the solo-task information while exposing separately identifiable neighbor information. From multi-agent experience, MATES learns a small adapter that maps this observation into the format expected by a frozen single-agent policy, inducing actions suited to the shared environment without updating the single-agent policy itself. MATES leaves the pretrained policy's internal architecture unchanged and retains the objectives and update procedures of the underlying MARL algorithm. We evaluate MATES using both on- and off-policy algorithms on lifelong pathfinding, navigation, and cooperative discovery, spanning discrete and continuous observation and action spaces. Across all evaluated settings, MATES optimizes only 3.5-7.3% as many parameters as full-policy training while consistently outperforming MARL training from scratch. It approaches the performance of full fine-tuning, remains competitive overall with demonstration-based baselines, and retains strong task performance at team sizes not encountered during training. These results provide evidence that, under this observation structure, effective multi-agent behavior can be learned without modifying the policy that encodes individual competence.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/26/2609.30150v1-graph-based-inference-and-topology-aware-multi-agent-reinforcement-learning-for-large-scale-railway-network-management",
+      "section": "quick",
+      "title_en": "Graph-Based Inference and Topology-Aware Multi-Agent Reinforcement Learning for Large-Scale Railway Network Management",
+      "authors": "Giacomo Arcieri, Gregory Duthé, Christophe Muller, Konstantinos G. Papakonstantinou, Daniel Straub, Eleni Chatzi",
+      "date": "2026-09-24",
+      "pdf": "https://arxiv.org/pdf/2609.30150v1",
+      "score": "6.0",
+      "evidence": "拓扑感知多智能体强化学习",
+      "tldr": "大规模铁路网络维护是长周期、空间相关且具规模效应的序贯决策问题，集中式强化学习难扩展，分散式又缺乏协调。本文提出图基框架：用图高斯过程分层贝叶斯模型从瑞士联邦铁路真实数据推断空间相关环境，再以图神经网络与图Transformer构建拓扑感知多智能体强化学习。关键在零样本迁移：仅在小子网训练的智能体可直接部署到大规模未见图网络，无需重训。结果表明其显著优于优化启发式和标准MARL基线，并降低训练计算时间，兼顾可扩展性与网络级性能。",
+      "tags": "query:marl-comm",
+      "abstract_en": "Modern infrastructure asset management constitutes a complex sequential decision-making problem, characterized by long planning horizons and system-level interactions, such as spatial deterioration correlations and economies of scale. While deep reinforcement learning has shown promise in optimizing maintenance policies, scaling to real-world networks remains challenging. Centralized approaches become computationally intractable in large-scale systems, whereas decentralized approaches often fail to capture essential coordination mechanisms. To address these challenges, we propose a graph-based framework that integrates accurate environment modeling with scalable decision support. First, we employ a hierarchical Bayesian model leveraging a Gaussian Process on Graph kernel to infer a realistic, spatially correlated networked environment of railway maintenance planning from real-world data provided by the Swiss Federal Railways. Second, we introduce a topology-aware Multi-Agent Reinforcement Learning (MARL) framework by integrating graph neural networks and graph Transformers to optimize network-level policies. A central contribution of this work is the demonstration of scalability through zero-shot transfer learning: graph-based agents, trained only on small network portions, are successfully deployed in a zero-shot manner on large-scale unseen networks without any retraining. Numerical results indicate that the proposed method significantly outperforms optimized heuristics and standard MARL baselines, reducing computational training time while maintaining superior performance on large-scale networks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

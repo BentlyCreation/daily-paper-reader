@@ -6,32 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-25
-- 运行时间：2026-09-25 22:50:13 UTC
+- 最新运行日期：2026-09-26
+- 运行时间：2026-09-26 22:12:30 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：4
 - 精读区：0
-- 速读区：3
+- 速读区：4
 
 ### 今日简报（AI）
-今日3篇速读、0精读，Kairos以7.0分领跑论文雷达。  
-最值得看的是4D场景图中的存在与方向流预测，以及安全导向端到端自动驾驶的风险感知占用。  
-普通读者可先读Kairos，再按对自动驾驶或多无人机任务分配的兴趣选读其余两篇。
-- 详情：[/202609/25/README](/202609/25/README)
+- 今日共生成 4 篇推荐（精读 0 篇，速读 4 篇）
+- 速读：《When Does Communication Help? Beyond Spectral Descriptions of Collective Intelligence》（7.0/10）, 《DPed-VLN: A Benchmark for Socially Compliant Vision-and-Language Navigation in Dynamic Pedestrian Environments》（6.0/10）, 《MATES: Learning Multi-Agent Interactions by Transforming Observations for Frozen Single-Agent Policies》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202609/26/README](/202609/26/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Kairos: Grounded Forecasting of Presence and Directional Flow in 4D Scene Graphs](/202609/25/2609.27467v1-kairos-grounded-forecasting-of-presence-and-directional-flow-in-4d-scene-graphs)  
-   标签：评分：7.0/10、query:intent-avoid
-   evidence：四维场景图中的人群运动方向流预测
-2. [Risk-Aware Occupancy for Safety-Oriented End-to-End Autonomous Driving](/202609/25/2609.21470v2-risk-aware-occupancy-for-safety-oriented-end-to-end-autonomous-driving)  
+1. [When Does Communication Help? Beyond Spectral Descriptions of Collective Intelligence](/202609/26/2609.23310v1-when-does-communication-help-beyond-spectral-descriptions-of-collective-intelligence)  
+   标签：评分：7.0/10、query:marl-comm
+   evidence：多智能体通信增益分析
+2. [DPed-VLN: A Benchmark for Socially Compliant Vision-and-Language Navigation in Dynamic Pedestrian Environments](/202609/26/2609.21504v1-dped-vln-a-benchmark-for-socially-compliant-vision-and-language-navigation-in-dynamic-pedestrian-environments)  
    标签：评分：6.0/10、query:intent-avoid
-   evidence：用于规划的动态智能体占据预测密集BEV感知
-3. [FlockDiffusion: Assignment-Conditioned Diffusion for Multi-Drone Task Allocation and Completion](/202609/25/2609.23745v1-flockdiffusion-assignment-conditioned-diffusion-for-multi-drone-task-allocation-and-completion)  
+   evidence：在移动行人中社会合规导航并使用专家路径
+3. [MATES: Learning Multi-Agent Interactions by Transforming Observations for Frozen Single-Agent Policies](/202609/26/2609.26010v1-mates-learning-multi-agent-interactions-by-transforming-observations-for-frozen-single-agent-policies)  
    标签：评分：6.0/10、query:lbm
-   evidence：基于学习与离线监督的多无人机路由与任务分配
+   evidence：多智能体强化学习分散策略通过观测适配器复用单智能体技能
+4. [Graph-Based Inference and Topology-Aware Multi-Agent Reinforcement Learning for Large-Scale Railway Network Management](/202609/26/2609.30150v1-graph-based-inference-and-topology-aware-multi-agent-reinforcement-learning-for-large-scale-railway-network-management)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：拓扑感知多智能体强化学习
 
 
 <div class="dpr-home-promo-card">
