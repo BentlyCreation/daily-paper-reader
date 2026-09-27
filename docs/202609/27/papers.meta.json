@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-27",
+  "date": "2026-09-27",
+  "generated_at": "2026-09-27T22:39:06",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/27/2609.23997v1-robotalk-learning-multi-robot-communication-and-coordination-from-multimodal-demonstrations",
+      "section": "deep",
+      "title_en": "RoboTalk: Learning Multi-Robot Communication and Coordination from Multimodal Demonstrations",
+      "authors": "Dorian Benhamou Goldfajn, Mason Nakamura, Saaduddin Mahmud, Justin Svegliato, Kyle H. Wray, Shlomo Zilberstein",
+      "date": "2026-09-21",
+      "pdf": "https://arxiv.org/pdf/2609.23997v1",
+      "score": "8.0",
+      "evidence": "从示范中学习机器人间通信与协作",
+      "tldr": "多机器人协作在部分可观测下仍难协调，自然语言通信有望缓解，但面向端侧小模型、从多模态示范中联合学习显式通信与技能动作选择尚缺数据与方法。为此，RoboTalk提出合成数据生成管线与数据集，含7,950条多模态轨迹、覆盖53个移动操作厨房任务。微调开源小VLM在新任务上成功率可达77%，远高于未微调的约2%。",
+      "tags": "query:marl-comm",
+      "abstract_en": "Multi-robot collaboration could enable more efficient and scalable solutions to complex robotic tasks, but collaboration under partial observability remains challenging. Natural-language communication offers a promising approach to coordinating robots under partial observability. However, in decentralized manipulation, jointly learning explicit inter-robot communication and skill-level action selection from multimodal demonstrations remains underexplored for small vision-language models (VLMs) intended for on-device deployment. To address this gap, we introduce RoboTalk, a synthetic data-generation pipeline and dataset of 7,950 multimodal trajectories spanning 53 mobile-manipulation kitchen tasks for training small VLMs to communicate and coordinate. The dataset includes a leader-follower planning protocol, tool calls (perception, manipulation, navigation, and communication), rationale traces, and diversified natural-language communication. Fine-tuning open-source models on our dataset can reach 77% success on novel held-out tasks, a significant improvement over the untuned open source models, which had a success rate of around ~2%.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/27/2609.26783v1-a-decentralized-partially-observable-team-decision-methodology-with-delayed-information-sharing",
+      "section": "quick",
+      "title_en": "A Decentralized Partially Observable Team Decision Methodology with Delayed Information Sharing",
+      "authors": "Xiaoxing Ren, Thomas Parisini, Andreas A. Malikopoulos",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.26783v1",
+      "score": "6.0",
+      "evidence": "部分可观测下协作团队决策的完全去中心化学习与规划",
+      "tldr": "针对未知模型、部分可观测且仅能延迟共享信息的协作团队决策问题，本文提出一种完全去中心化的学习与规划方法。该方法利用团队理论等价性与低秩模型表示，让每个成员仅凭本地私有信息和延迟公共信息学习近似低秩MDP，并用最小二乘值迭代求解策略。理论表明各成员可恢复近似团队最优策略的对应分量，并给出有限样本性能保证与样本复杂度界。",
+      "tags": "query:lbm",
+      "abstract_en": "We study decentralized partially observable team decision problems with low-rank latent dynamics and unknown system models. The proposed framework combines team-theoretic equivalence with low-rank model representations to address cooperative decision-making in partially observable Markov decision processes without prior knowledge of the transition model. Each team member makes decisions based on local private information and delayed common information shared across the team. Using only this available information, each member learns an approximate low-rank Markov decision process and applies least-squares value iteration to compute its policy. This yields a fully decentralized learning and planning algorithm that requires neither a centralized coordinator nor centralized training. We show that the resulting member-side solutions approximate the centralized team solution: despite partial observability, unknown dynamics, and delayed common information, each member recovers the corresponding component of an approximate team-optimal policy. We further establish finite-sample performance guarantees and derive a corresponding sample-complexity bound for the proposed algorithm.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/27/2609.27720v1-corelnav-collaborative-relational-navigation-for-multi-robot-spatially-constrained-semantic-navigation",
+      "section": "quick",
+      "title_en": "CoRelNav: Collaborative Relational Navigation for Multi-Robot Spatially Constrained Semantic Navigation",
+      "authors": "Jinyu He, Zihao Mao, Haonan Jin, Mengyin Fu, Wenjie Song",
+      "date": "2026-09-23",
+      "pdf": "https://arxiv.org/pdf/2609.27720v1",
+      "score": "6.0",
+      "evidence": "分散式多机器人协同导航",
+      "tldr": "空间约束语义导航需按类别及物体关系定位目标，未知环境中既要高效探索，又要收集足够证据验证关系。现有关系导航多为单机，多机器人协作很少协同验证实例级关系。为此提出 CoRelNav，将任务条件多机器人探索与候选驱动协同验证耦合：用空间语义场生成探索效用，按团队成本重分配机器人收集互补证据，并跨拓扑节点聚合实例一致观测。仿真中稳定优于代表性基线，消融验证机制有效，并在两台实体移动机器人上完成部署。",
+      "tags": "query:intent-avoid",
+      "abstract_en": "Spatially constrained semantic navigation requires robots to identify targets specified not only by semantic categories but also by relations to surrounding objects. In unknown environments, resolving such goals requires efficient exploration together with sufficient target and contextual evidence for reliable relation verification. Existing methods leave relation-aware verification and multi-robot collaboration largely disconnected: relational navigation is predominantly single-agent, while multi-robot systems seldom coordinate distributed observations for instance-specific relation verification. We propose CoRelNav, whose core is coupling task-conditioned multi-robot exploration with candidate-driven collaborative verification. A spatial-semantic field converts task constraints, scene nodes, and object features into exploration utility; as candidate information accumulates, robots are reallocated toward complementary evidence under team navigation costs, while instance-consistent observations are aggregated across topology nodes. This coupling reduces redundant search and enables relation hypotheses to be resolved from distributed partial evidence that independent exploration or isolated-view verification can leave ambiguous. Experiments in photorealistic simulation demonstrate consistent improvements over representative baselines, with ablations validating the proposed exploration and verification mechanisms. We further deploy the complete system on two physical mobile robots, demonstrating its applicability to real-world collaborative navigation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
