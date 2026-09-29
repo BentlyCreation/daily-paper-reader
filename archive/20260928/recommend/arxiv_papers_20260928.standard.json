@@ -1,0 +1,259 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-29T00:03:00.017561+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 1,
+    "deep_cap": 8,
+    "deep_selected": 1,
+    "quick_candidates": 5,
+    "quick_skim_target": 13,
+    "quick_selected": 5
+  },
+  "deep_dive": [
+    {
+      "id": "2609.31099v1",
+      "source": "arxiv",
+      "title": "Collision-free Movement on Grids and Beyond",
+      "abstract": "We study collision-free movement problems on graphs, where the task is to coordinate a set of robots so that they reach a target formation satisfying a desired property while minimizing the total travel distance. This framework extends two classical models: (a) minimizing movement [Demaine et al., TALG '09, '14], which does not enforce collision avoidance, and (b) coordinated motion planning or multi-agent path finding [Eiben et al., SoCG '23, Deligkas et al., ICALP '24, among many others], where each robot is assigned an explicit target position.   We focus on the setting where the target formation of the robots should be connected. We analyze the parameterized complexity of the problem with respect to the number of (main) robots and the total travel length on grid graphs and two natural generalizations thereof: planar graphs and unit disk graphs.",
+      "authors": [
+        "Hendrik Molter",
+        "Meirav Zehavi"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.DS"
+      ],
+      "published": "2026-09-25T10:37:23+00:00",
+      "link": "https://arxiv.org/pdf/2609.31099v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "coordinated motion planning and multi-agent path finding on graphs",
+      "llm_evidence_cn": "图上的协调运动规划与多智能体路径规划",
+      "llm_evidence": "图上的协调运动规划与多智能体路径规划",
+      "canonical_evidence": "图上的协调运动规划与多智能体路径规划",
+      "llm_tldr_en": "The paper studies collision-free movement on graphs, coordinating robots to reach a connected target formation while minimizing total travel distance. Unifying minimizing-movement and multi-agent path finding models, it analyzes parameterized complexity on grid graphs, giving theoretical insight into coordinated motion planning.",
+      "llm_tldr_cn": "本文研究图上的无碰撞移动问题，要求多机器人协调到达满足连通性等属性的目标编队并最小化总移动距离。该框架统一了最小移动与多智能体路径规划两类经典模型，重点关注目标编队连通的情形。作者以机器人数与总移动长度为主参数分析问题的参数化复杂度，在网格图等结构上给出可解性刻画，为协调运动规划提供了复杂度层面的理论认识。",
+      "llm_tldr": "本文研究图上的无碰撞移动问题，要求多机器人协调到达满足连通性等属性的目标编队并最小化总移动距离。该框架统一了最小移动与多智能体路径规划两类经典模型，重点关注目标编队连通的情形。作者以机器人数与总移动长度为主参数分析问题的参数化复杂度，在网格图等结构上给出可解性刻画，为协调运动规划提供了复杂度层面的理论认识。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.30578v1",
+      "source": "arxiv",
+      "title": "Reinforcement Learning of Communication in a Mesh of Small Language Models",
+      "abstract": "Language models gain accuracy from more compute at test time, but majority voting over independent samples saturates: as samples grow, the vote converges to the model's most frequent answer. Communication can add what sampling cannot: an agent that solves a problem can pass the key step to the others. We present TalkMesh, a decentralized mesh of small language model agents that learns when and what to communicate. Each agent samples a proposal and scores it with a trained confidence head. The most confident agent broadcasts a hint; agents below a confidence threshold revise, keeping each revision that outscores its proposal. Gossip consensus approximates the vote weighted by confidence without a coordinator. A talk policy, trained with group relative policy optimization on the change in correctness after revision, writes hints and revisions. With three agents, which together generate at most six outputs, the mesh reaches the accuracy of majority voting over 32 samples with each of three models. Trained with at most 8 agents and evaluated with 32, it raises accuracy from 0.568 under self-consistency to 0.705 (Qwen3.5-0.8B, GSM8K) and from 0.492 to 0.722 (SmolLM3-3B, MATH-500). When 4 of 8 agents collude on a wrong answer with fabricated confidence and poisoned hints, majority vote accuracy falls to 0.000 (Qwen3.5-0.8B, GSM8K). A defended mesh, whose agents rescore solutions with their own confidence heads, retains 0.507. Across reasoning, embodied coordination, and traffic signal control, messages improve a decision when the acting agent cannot observe the information it requires and another agent can send it.",
+      "authors": [
+        "Mehmet Kerem Turkcan"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-09-24T21:41:12+00:00",
+      "link": "https://arxiv.org/pdf/2609.30578v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "learns when and what to communicate in a decentralized multi-agent mesh",
+      "llm_evidence_cn": "在去中心化多智能体网格中学习何时通信与通信内容",
+      "llm_evidence": "在去中心化多智能体网格中学习何时通信与通信内容",
+      "canonical_evidence": "在去中心化多智能体网格中学习何时通信与通信内容",
+      "llm_tldr_en": "TalkMesh learns a decentralized communication policy among small language model agents, using confidence-scored hints and gossip consensus to beat independent majority voting.",
+      "llm_tldr_cn": "多数投票随采样增多会收敛到模型最常见答案，通信能提供采样无法带来的信息。本文提出TalkMesh，一个由小型语言模型智能体组成的去中心化网格，每个智能体采样提案并用置信度头打分，最自信者广播提示，低置信智能体据此修正，并以gossip共识近似置信度加权投票。通信策略经群体相对学习训练，无需协调者即可协作。实验表明学习到的通信可突破独立采样投票上限，为多智能体通信学习提供新范式。",
+      "llm_tldr": "多数投票随采样增多会收敛到模型最常见答案，通信能提供采样无法带来的信息。本文提出TalkMesh，一个由小型语言模型智能体组成的去中心化网格，每个智能体采样提案并用置信度头打分，最自信者广播提示，低置信智能体据此修正，并以gossip共识近似置信度加权投票。通信策略经群体相对学习训练，无需协调者即可协作。实验表明学习到的通信可突破独立采样投票上限，为多智能体通信学习提供新范式。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.24864v1",
+      "source": "arxiv",
+      "title": "SE(3) Neural Potential Fields for 6-DoF Trajectory Planning Directly from Images Without Explicit 3D Reconstruction",
+      "abstract": "Reaching a 6-DoF grasp pose in clutter requires a collision-free trajectory, conventionally obtained by reconstructing the scene in 3D and planning inside that reconstruction, at the cost of its accuracy and compute. Potential fields learned directly from images remove that dependency but inherit the classical weakness of artificial potential fields: where attractive and repulsive gradients cancel, the descent grazes the obstacle instead of going around it, and can stall short of the goal. We present an SE(3) neural potential field learned from posed RGB images and supervised with a navigation function, the geodesic distance to the grasp through free space recovered from those same images during training, which removes both failures. On two tabletop scenes, from obstacle-blocked starts executed on a UR10, the field converges within 3 cm of the grasp from every start and every path it executes is collision-free against the ground-truth geometry, against 25% and 0% under image supervision alone; mean clearance rises from under a centimeter to 8.6-8.8 cm and arm-link contacts fall from 20.6-50.4% to 2.7-5.5% of executed configurations. Executed grasp success is 90.0% and 40.0% on the two scenes, the residual failures being refusals of the Cartesian executor rather than of the field. Planning takes about 2 s against 67-133 s for RRT* on a reconstruction of the same images, though under a common offline harness the two are comparable: the deployed margin is the cost of collision-checking a dense reconstruction, not planner complexity.",
+      "authors": [
+        "Jeffrey Eiyike",
+        "Masoud Ataei",
+        "Elvis Gyaase",
+        "Vikas Dhiman"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-09-21T16:35:57+00:00",
+      "link": "https://arxiv.org/pdf/2609.24864v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "query:intent-avoid"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "learned SE(3) neural potential field for collision-free trajectory planning from images",
+      "llm_evidence_cn": "从图像学习SE(3)神经势场进行无碰撞轨迹规划",
+      "llm_evidence": "从图像学习SE(3)神经势场进行无碰撞轨迹规划",
+      "canonical_evidence": "从图像学习SE(3)神经势场进行无碰撞轨迹规划",
+      "llm_tldr_en": "An SE(3) neural potential field learned from posed RGB images plans 6-DoF collision-free trajectories without 3D reconstruction, avoiding classic potential-field stalls.",
+      "llm_tldr_cn": "在杂乱环境中到达六自由度抓取位姿通常需先重建三维场景再规划，代价高且受重建精度限制；直接从图像学习势场又继承了人工势场梯度抵消、易停滞的缺陷。本文提出从带位姿RGB图像学习的SE(3)神经势场，以导航函数即自由空间测地距离进行监督训练，使下降过程绕开障碍而非擦碰。方法无需显式三维重建即可生成无碰撞轨迹，缓解了势场局部极小问题，为图像驱动规划提供新途径。",
+      "llm_tldr": "在杂乱环境中到达六自由度抓取位姿通常需先重建三维场景再规划，代价高且受重建精度限制；直接从图像学习势场又继承了人工势场梯度抵消、易停滞的缺陷。本文提出从带位姿RGB图像学习的SE(3)神经势场，以导航函数即自由空间测地距离进行监督训练，使下降过程绕开障碍而非擦碰。方法无需显式三维重建即可生成无碰撞轨迹，缓解了势场局部极小问题，为图像驱动规划提供新途径。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "Decentralized potential field methods for crowd obstacle avoidance and path planning",
+      "matched_requirement_id": "req-28",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.29175v1",
+      "source": "arxiv",
+      "title": "A Human-Like Pedestrian Model for Automated Driving Simulations",
+      "abstract": "Automated vehicles must be able to interact with pedestrians safely and efficiently across diverse traffic situations. Although driving simulators offer a scalable testbed for learning such capabilities, existing theory-inspired pedestrian models are narrow in scope and limited to go/no-go crossing decisions in single-lane settings. While data-driven approaches can predict pedestrian behavior in complex situations, they lack sufficient observations in rare, safety-critical scenarios. Here, we propose an approach to training pedestrian models in simulators so that learned policies generate demonstrably human-like behavior in realistic, complex traffic scenarios, including multiple lanes, heavy traffic, and dangerous driving styles. Our technical contribution is a novel definition of pedestrian-vehicle interaction as a partially observable Markov decision process (POMDP) with theory-grounded perceptual, cognitive, and motor constraints. It accounts for the highly adaptive nature of human behavior in traffic and simulates how people adjust their responses according to perceived danger, time pressure, and the complexity of the situation. When trained via deep reinforcement learning (RL) with domain randomization in a simulator, the model reproduces the broadest range of empirical findings shown so far on human crossing behavior, including gap acceptance, yielding acceptance, hesitation, and evasive speed adjustment. We show that learned policies transfer to unseen traffic environments, and can be further adapted to local traffic norms with finetuning. Together, these results establish a blueprint for simulator-ready pedestrian models that can support the development and evaluation of automated driving systems.",
+      "authors": [
+        "Ruofeng Wang",
+        "Patrick Ebel",
+        "Philipp Wintersberger",
+        "Antti Oulasvirta"
+      ],
+      "primary_category": "cs.HC",
+      "categories": [
+        "cs.HC"
+      ],
+      "published": "2026-09-24T07:45:47+00:00",
+      "link": "https://arxiv.org/pdf/2609.29175v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "human-like pedestrian model with learned policies for interaction simulation",
+      "llm_evidence_cn": "面向交互仿真的类人行人模型与学习策略",
+      "llm_evidence": "面向交互仿真的类人行人模型与学习策略",
+      "canonical_evidence": "面向交互仿真的类人行人模型与学习策略",
+      "llm_tldr_en": "The paper addresses narrow theory-based pedestrian models in driving simulators by training learned pedestrian policies that reproduce human-like behavior in complex multi-lane and dense traffic scenarios.",
+      "llm_tldr_cn": "论文针对自动驾驶仿真中现有行人模型适用范围狭窄、仅能处理单车道让行决策的问题，提出在仿真器中训练行人策略，使其在真实复杂交通场景中表现类人。方法利用学习型策略生成行人行为，涵盖多车道、高密度车流与危险驾驶风格等情形。结果表明学习策略能够产生可验证的类人行为，弥补了理论模型与数据驱动方法在稀有安全场景中样本不足的缺陷，为自动驾驶交互测试提供可扩展的仿真工具。",
+      "llm_tldr": "论文针对自动驾驶仿真中现有行人模型适用范围狭窄、仅能处理单车道让行决策的问题，提出在仿真器中训练行人策略，使其在真实复杂交通场景中表现类人。方法利用学习型策略生成行人行为，涵盖多车道、高密度车流与危险驾驶风格等情形。结果表明学习策略能够产生可验证的类人行为，弥补了理论模型与数据驱动方法在稀有安全场景中样本不足的缺陷，为自动驾驶交互测试提供可扩展的仿真工具。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "pedestrian trajectory prediction multi-agent system",
+      "matched_requirement_id": "req-22",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.30704v1",
+      "source": "arxiv",
+      "title": "From Visual Search to Movement Control: A Priority Field for Artificial Agents",
+      "abstract": "Human spatial attention is widely conceptualized as being guided by a priority map that integrates perceptual salience, current goals, and past experiences. Here, we extend priority-based computation to movement control in artificial agents. We first introduce a lightweight model of visual search based on an integrated priority map. Trained on human saccades, it reproduced key behavioral patterns, including oculomotor suppression and history-driven selection. Extending the search model, we equipped an artificial agent with a priority field and evaluated its performance in a reach-avoid task that required reaching a goal destination while avoiding moving obstacles. Compared with alternative architectures, priority-field agents trained more efficiently and performed better in unseen, complex scenarios, even from simple demonstrations. Adding a simple memory mechanism also produced human-like, history-driven effects in anticipating the likely location of the upcoming goal. These findings suggest that priority-based computation may provide a promising foundation for movement control in artificial agents.",
+      "authors": [
+        "Han Zhang",
+        "Zhong Cao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-25T02:24:36+00:00",
+      "link": "https://arxiv.org/pdf/2609.30704v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "priority field for reach-avoid with moving obstacles, analogous to potential field collision avoidance",
+      "llm_evidence_cn": "用于移动障碍到达-避障的优先场，类似势场避碰",
+      "llm_evidence": "用于移动障碍到达-避障的优先场，类似势场避碰",
+      "canonical_evidence": "用于移动障碍到达-避障的优先场，类似势场避碰",
+      "llm_tldr_en": "Extends priority-map computation to movement control: a priority-field agent is evaluated in a reach-avoid task with moving obstacles and trains more efficiently than alternative architectures.",
+      "llm_tldr_cn": "人类空间注意常被视为由整合感知显著性、当前目标与过往经验的优先图引导，本文把这种基于优先的计算扩展到人工智能体的运动控制。作者先建立基于整合优先图的轻量视觉搜索模型，再为智能体装备优先场，并在需到达目标同时避开移动障碍的到达-避障任务中评估。结果显示优先场智能体训练更高效，优于其他架构，表明优先场可作为类似势场的避障与控制机制。",
+      "llm_tldr": "人类空间注意常被视为由整合感知显著性、当前目标与过往经验的优先图引导，本文把这种基于优先的计算扩展到人工智能体的运动控制。作者先建立基于整合优先图的轻量视觉搜索模型，再为智能体装备优先场，并在需到达目标同时避开移动障碍的到达-避障任务中评估。结果显示优先场智能体训练更高效，优于其他架构，表明优先场可作为类似势场的避障与控制机制。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "potential field decentralized collision avoidance multi-agent",
+      "matched_requirement_id": "req-24",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.31137v1",
+      "source": "arxiv",
+      "title": "INTERACT: Interactive Planning for Autonomous Driving via Anchor-Conditioned Prediction and Trust-Region Refinement",
+      "abstract": "Driving in dense urban traffic is interactive: whether a merge or an unprotected turn succeeds depends on how surrounding agents respond to the ego vehicle. Conventional planners predict first and plan second and, therefore, cannot account for this dependency. Methods that integrate prediction and planning either train both jointly, which introduces task interference, or keep them separate and are restricted to a predefined set of proposals. We present INTERACT: Interactive Planning for Autonomous Driving via Anchor-Conditioned Prediction and Trust-Region Refinement. Our key insight is that surrounding agents react to the intent a trajectory expresses rather than to its exact realization, so a single reactive prediction stays valid across an entire family of plans. INTERACT therefore decomposes interactive planning into prediction across driving intents and optimization within each intent. We derive a small set of diverse intents, which we call anchors, from map geometry, query a dedicated ego-conditioned prediction model once per anchor, and refine every anchor with the Cross-Entropy Method under a trust-region penalty that keeps the refined plan close enough to its anchor for the conditioned reaction to still apply. Prediction thus remains a separate model, avoiding task interference, while conditioning on anchors preserves the dependency. Because each anchor is refined continuously, the final plan is not restricted to the anchor set, yet INTERACT requires only one predictor query per anchor rather than one per candidate plan, with all anchors processed in parallel. On the nuPlan and interPlan closed-loop benchmarks, INTERACT sets a new state of the art, with the largest gains precisely in the interactive scenarios that motivate the method. The code will be released upon acceptance.",
+      "authors": [
+        "Aron Distelzweig",
+        "Andreas Look",
+        "Faris Janjoš",
+        "Steffen Hagedorn",
+        "Luigi Palmieri",
+        "Joschka Boedecker"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-25T11:27:27+00:00",
+      "link": "https://arxiv.org/pdf/2609.31137v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "joint intent prediction and motion planning for interactive driving",
+      "llm_evidence_cn": "交互驾驶中的意图预测与运动规划联合",
+      "llm_evidence": "交互驾驶中的意图预测与运动规划联合",
+      "canonical_evidence": "交互驾驶中的意图预测与运动规划联合",
+      "llm_tldr_en": "INTERACT integrates prediction and planning for autonomous driving by conditioning surrounding-agent prediction on the intent a trajectory expresses, using trust-region refinement to plan in dense interactive traffic without task interference.",
+      "llm_tldr_cn": "密集城市交通中驾驶具有交互性，传统先预测后规划的方法无法考虑周围智能体对自车的反应，而联合训练又存在任务干扰。本文提出INTERACT，以锚点条件预测刻画周围智能体对轨迹意图而非具体实现的反应，并用信赖域细化进行规划。该框架在交互式驾驶场景中实现了更准确的预测与更优的规划决策。",
+      "llm_tldr": "密集城市交通中驾驶具有交互性，传统先预测后规划的方法无法考虑周围智能体对自车的反应，而联合训练又存在任务干扰。本文提出INTERACT，以锚点条件预测刻画周围智能体对轨迹意图而非具体实现的反应，并用信赖域细化进行规划。该框架在交互式驾驶场景中实现了更准确的预测与更优的规划决策。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,2405 @@
+Title: Collision-free Movement on Grids and Beyond
+
+URL Source: https://arxiv.org/pdf/2609.31099v1
+
+Published Time: Mon, 28 Sep 2026 00:54:46 GMT
+
+Number of Pages: 44
+
+Markdown Content:
+# Collision-free Movement on Grids and Beyond 
+
+# Hendrik Molter #
+
+Chair for Algorithm Engineering, Hasso Plattner Institute, Potsdam, Germany Department of Computer Science, Ben-Gurion University of the Negev, Beer-Sheva, Israel 
+
+# Meirav Zehavi #
+
+Department of Computer Science, Ben-Gurion University of the Negev, Beer-Sheva, Israel 
+
+Abstract 
+
+We study collision-free movement problems on graphs, where the task is to coordinate a set of robots so that they reach a target formation satisfying a desired property while minimizing the total travel distance. This framework extends two classical models: (a) minimizing movement [Demaine et al., TALG ’09, ’14], which does not enforce collision avoidance, and (b) coordinated motion planning or 
+
+multi-agent path finding [Eiben et al., SoCG ’23, Deligkas et al., ICALP ’24, among many others], where each robot is assigned an explicit target position. We focus on the setting where the target formation of the robots should be connected . We analyze the parameterized complexity of the problem with respect to the number of (main) robots and the total travel length on grid graphs and two natural generalizations thereof: planar graphs and unit disk graphs. 
+
+2012 ACM Subject Classification Theory of computation → Parameterized complexity and exact algorithms; Theory of computation → Graph algorithms analysis; Mathematics of computing →
+
+Graph algorithms 
+
+Keywords and phrases Coordinated Motion Planning, Multi-Agent Path Finding, Planar Graphs, Unit Disk Graphs, Clique Grids, Parameterized Complexity, Approximation, Kernelization 
+
+Funding Hendrik Molter : Supported by the Israel Science Foundation, grant nr. 1470/24, by the European Union’s Horizon Europe research and innovation programme under grant agreement 949707, by the European Research Council, grant nr. 101039913 (PARAPATH), and by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) – 565381415. 
+
+Meirav Zehavi : Supported by the Israel Science Foundation, grant nr. 1470/24, and by the European Research Council, grant nr. 101039913 (PARAPATH). 
+
+Acknowledgements Main work was done while Hendrik Molter was affiliated with the Ben-Gurion University of the Negev. arXiv:2609.31099v1 [cs.MA] 25 Sep 2026 2 Collision-free Movement on Grids and Beyond 
+
+# 1 Introduction 
+
+Coordinated motion of robots is a fundamental task in computational geometry and robotics. The environment is frequently modeled by a grid, often consisting also of “obnoxious robots” in addition to the “main robots”. Within the environment, the main robots are set to move so as to perform a predetermined task; the obnoxious robots, on the other hand, are simply meant to model movable obstacles. To date, most efforts were directed at the following: 
+
+1. Given a target position for each main robot, plan a collision-free motion for all robots so that each main robot will reach its target (see, e.g., [10, 16, 21, 36, 39, 41, 42]). This setting, widely known as MAPF (Multi-Agent Path Finding) , was part of the 3rd Computational Geometry Challenge of SoCG 2021 [18]. 
+
+2. Given a formation for all main robots (where a formation of particular interest is to induce a connected set), plan a motion (collisions allowed) of all robots as to achieve this formation (see, e.g., [3, 11, 12, 26]). Both objectives have been extensively studied in a variety of discrete and continuous set-tings, from both a theoretical perspective—particularly in the frameworks of parameterized complexity [10, 12, 16, 17, 21] and approximation algorithms [3, 11, 36]—and a practical perspective [18, 40]. The above leaves open a very obvious and natural question: 
+
+What about the task of, given a characterization of a formation for all main robots, planning a collision-free motion of all robots as to achieve this formation? 
+
+To the best of our knowledge, the present work is the first to address this problem. As in the classical settings discussed above, two natural optimization goals arise: (i) minimize the total number of moves taken by all robots, i.e.,the total energy ; (ii) minimize the number of time steps needed, i.e., the makespan . Here, we focus on the first goal, while the desired formation is to establish a connected set . We provide a spectrum of parameterized results for grids and generalizations thereof, with respect to the two most natural parameters in this context: the number of main robots ( k), and the total energy to spend ( c). Notably, our results delineate the subtle boundaries between various tractable and intractable cases. Previous works most closely related to ours—i.e., which focus on parameterized complexity, environments modeled by graphs (particularly grids), and total energy minimization, are Eiben et al. [16] and Deligkas et al. [10] for the first task, and Demaine et al. [12] for the second task. Discussion (non-exhaustive) of some other related works can be found at the end of this section. Eiben et al. [16] studied MAPF on solid grids with both (total) energy and makespan minimization as objectives, and without obnoxious robots. This generalizes the well-known (n2 − 1)-Puzzle, which was extensively studied before and is known to be NP-hard [13, 38]. They showed (for solid grids only) that both energy and makespan minimization problems are fixed-parameter tractable (FPT) w.r.t. the number of (main) robots k, the energy minimization problem is FPT w.r.t. the energy c, and the makespan minimization problem is paraNP-hard w.r.t. the makespan. The follow-up work by Deligkas et al. [10] focused on (total) energy minimization, in the presence of obnoxious robots (thereby closely related to the Rush Hour problem, which was also extensively studied before [20, 22]). Further, they considered general graphs, and showed: FPT w.r.t. the number of obnoxious robots ℓ when 
+
+k = 1; FPT w.r.t. the total number of robots k + ℓ plus the treewidth of the input graph; FPT approximation w.r.t. k + ℓ and additive error; W[1]-hardness w.r.t. c; FPT w.r.t. c on Hendrik Molter and Meirav Zehavi 3
+
+planar graphs. In further follow-up, Deligkas et al. [9] show that the problem is W[1]-hard w.r.t. c even if k = 1 and FPT w.r.t. k plus the treedepth of the input graph. It remains open whether the problem is FPT w.r.t. k + ℓ.Demaine et al. [12] studied the parameterized complexity of a very general problem addressing movement to specific formations and for several objectives, including both main and obnoxious robots. Here, recall, collisions are allowed (also in the final formation itself). They provided a dichotomy that asserted that, when the family of possible formations, F, is decidable and closed under edge-addition, the problem is FPT w.r.t. k if the edge-minimal formations in F have bounded treewidth, and W[1]-hard otherwise. In particular, this asserts that the problem where we aim to move robots so that the main robots will form a connected set, and with the objective of energy minimization, is FPT w.r.t. k. We remark that this case (of connectivity) has received previous focused attention, particularly from the viewpoint of approximation (see, e.g., [3]). Additionally, Demaine et al. [12] provided W[1]-hardness w.r.t. k for the setting where the formation is a hereditary property that does not contain all cliques or all independent sets. 
+
+# 1.1 Our Contributions 
+
+We refer to the problem introduced here as Collision-Free Movement to Connectivity .If results hold for more general formations we call the problem Collision-Free Movement to Π. All formal definitions are given in Section 3. Recall that k is the number of main robots, ℓ is the number of obnoxious robots, and c is the (total) energy bound. We start by discussing some results that are easy to obtain or follow straightforwardly from the literature [11, 12] in Section 3. Notably, we have the following. If ℓ = 0, then Collision-Free Movement to Connectivity is fixed-parameter tractable when parameterized by k.If Π is hereditary and does not contain all complete graphs and all empty graphs, then 
+
+Collision-Free Movement to Π is W[1]-hard when parameterized by k + c even if ℓ = 0. 
+
+Collision-Free Movement to Connectivity is NP-hard even if ℓ = 0 and the input graph is planar. If deciding whether a graph has property Π is polynomial-time solvable, then Collision-Free Movement to Π is in XP when parameterized by c.In the following, we give a brief description of each of our results and point to the sections where we present the full proofs. In Section 2 we give a more detailed overview on our results and explain the techniques we use to obtain them (deferring the proofs to the later sections). Note that since connectivity is not hereditary, the W[1]-hardness result for parameter 
+
+k + c mentioned above does not apply to Collision-Free Movement to Connectivity .In Section 4, show the following as our first hardness result. 
+
+▶ Theorem 1. Collision-Free Movement to Connectivity is W[1]-hard when para-meterized by k + c.
+
+It follows that if we wish to obtain fixed-parameter tractability results for k, c, or k + c,we have to restrict the class of input graphs. We focus our investigation on grid graphs, and two natural generalizations: planar graphs and unit disk graphs. Our main technical hardness result for grids is the following (Section 4). 
+
+▶ Theorem 2. Collision-Free Movement to Connectivity is NP-hard even if k = 2 
+
+and the input graph is a grid. 4 Collision-free Movement on Grids and Beyond 
+
+That is, it is hard for just two robots to meet on a grid! We remark that in both hardness results, the instances produced by the reductions have an unbounded number of obnoxious robots, which is not completely unexpected since Collision-Free Movement to Con-nectivity is fixed-parameter tractable when parameterized by k if there are no obnoxious robots. On the positive side, we provide the following kernelization results in Section 5. 
+
+▶ Theorem 3. Collision-Free Movement to Π parameterized by k+c admits a polynomial kernel of size O(k · c2) if the input graph is a grid. 
+
+For the case where Π is connectivity, we can give a better bound on the kernel size. 
+
+▶ Theorem 4. Collision-Free Movement to Connectivity parameterized by k + c
+
+admits a polynomial kernel of size O(min {k · c2, k 2 + c2}) if the input graph is a grid. 
+
+Furthermore, we give a number of kernelization lower bounds in Section 5. The construc-tions used are all based on ideas from the reduction behind Theorem 2. We first show that we presumably cannot obtain polynomial kernels for the parameter k + c on planar graphs. Hence, exploiting the properties of grids is essential for the kernelization algorithms. 
+
+▶ Theorem 5. Collision-Free Movement to Connectivity parameterized by c does not admit a polynomial kernel unless coNP ⊆ NP/poly, even if the input graph is planar and 
+
+k = 2 .
+
+Further, we show that the dependency of the polynomial kernel size on k for grids presumably is unavoidable. 
+
+▶ Theorem 6. Collision-Free Movement to Connectivity parameterized by c does not admit a polynomial kernel unless coNP ⊆ NP/poly, even if the input graph is a grid. 
+
+Finally, we show that we presumably cannot significantly improve the kernel size given in Theorem 4. 
+
+▶ Theorem 7. Collision-Free Movement to Connectivity parameterized by k + c does not admit a polynomial kernel of size O(( k + c)2−ε) for any ε > 0 unless coNP ⊆ NP/poly, even if the input graph is a grid. 
+
+In Section 6, we turn our attention to planar graphs and show the following result. 
+
+▶ Theorem 8. Collision-Free Movement to Π is fixed-parameter tractable when para-meterized by k + c if the input graph is planar. 
+
+We obtain this result by providing a monadic second-order logic (MSO) formulation of the problem and then employing Courcelle’s famous theorem [2, 5, 6]. In Section 7, we show that Collision-Free Movement to Connectivity on unit disk graphs admits an FPT approximation algorithm when parameterized by k + c for the canonical optimization variant of the problem where we aim to minimize the energy. 
+
+▶ Theorem 9. Collision-Free Movement to Connectivity admits a fixed-parameter approximation when parameterized by k + c if the input graph is a unit disk graph, that produces a solution with energy at most 2 · OPT + 3 k, where OPT is the energy of an optimal solution. 
+
+Finally, we give some open questions and future research directions in Section 8. Hendrik Molter and Meirav Zehavi 5
+
+# 1.2 Further Related Work 
+
+In recent years there has been intensive research on multi-agent path finding (MAPF) problems in multiple variations [39, 41, 42]. As mentioned, MAPF can be seen as a generalization of the ( n2 − 1)-Puzzle and other so-called pebble motion problems on graphs [13, 28, 38, 43]. It is also closely related to the problem such as Rush Hour [20, 22], Temporally Disjoint Paths [34, 35], the Snake Game [29], and Chip Reconfiguration [7]. To the best of our knowledge, the current state-of-the-art (optimal) algorithms for MAPF problems employ the so-called conflict-based search approach [40]. The following works are more closely related to our problem. Papadimitriou et al. [36] study coordinated motion planning there is only one main robot and show that the problem is NP-hard on planar graphs. They give some further approximation results. Fioravantes et al. [21] study coordinated motion planning where the goal is to minimize the makespan rather than the total energy. They obtain an extensive number of parameterized complexity results. Eiben et al. [17] investigate the parameterized complexity a problem variant, where robots may move an arbitrary distance in each step and the number of step shall be minimized. There is also work on the parameterized complexity of coordinated motion planning problems where the robots have geometric shapes [1, 31]. Various version of the movement problem (where collisions do not matter) have been studied by Demaine et al. [11] from an approximation perspective. Improved approximation results have been given by Berman et al. [3]. Friggstad and Salavatipour [26] study a closely related problem: Mobile Facility Location. Here, facilities and clients should be moved in a graph such that every client is close to a facility. They study approximability of this problem. 
+
+# 2 Overview of Results and Techniques 
+
+In this section, we present a more detailed overview on our results, together with intuitive and informal explanations and descriptions of the techniques that we use. Full details and formal proofs can be found in the later sections. 
+
+Hardness Resuls (Section 4). We first show that Collision-Free Movement to Con-nectivity is W[1]-hard when parameterized by k + c (Theorem 1). To this end, we present a parameterized reduction from Multicolored Clique [19]. Here, given an ℓ-partite graph, we are asked whether it contains a clique of size ℓ. The parameter is ℓ. The reduction uses an edge-selection gadget for every color-combination. Each one has two main robots and one obnoxious robot for each edge. One of the obnoxious robots may be moved (the corresponding edge is “selected”) which enables the two main robots to move to verification gadgets for the colors in the color-combination. Each verification gadget of a color contains “immovable” formations of main robots which can only be connected if the selected edges of the color-combinations containing the color have the same endpoints. For an illustration see Figure 1. Our main hardness result is that Collision-Free Movement to Connectivity is NP-hard on a grid even if there are only two main robots (Theorem 2). We obtain the result via a reduction from Linked Planar 3-SAT [37]. This reduction is described in two construction steps: We first construct a planar instance of Collision-Free Movement to Connectivity and then show how the produced graph can be embedded into a grid (with appropriate modifications). In Linked Planar 3-SAT , we are given a Boolean formula ϕ
+
+in 3-CNF with clause set Y and variable set X, and a graph H = ( Y ∪ X, F ) such that the following holds: 6 Collision-free Movement on Grids and Beyond     
+
+> Edge selection gadget for color combination i, j
+> Verification gadget for color iVerification gadget for color j
+
+· · · 
+
+> j
+
+... 
+
+> i
+
+... 
+
+> Figure 1 Illustration of the graph W[1]-hardness reduction. The black filled round vertices have obnoxious robots on them, and the blue filled square vertices have main robots on them. The red filled square vertices have main robots on them and paths of sufficient length attached to them that have main robots on each vertex (which are not depicted). The two red edges correspond to connections between the edge selecting gadget and the verification gadgets.
+
+Graph H is the union of a Hamiltonian cycle that first visits all elements of X and then all elements of Y , and the incidence graph of ϕ.Graph H is planar and there is an embedding where each edge between a clause and a variable that appears negated in the clause is inside the cycle, and each edge between a clause and a variable that appears non-negated in the clause is outside of the cycle. Each variable appears in at most three clauses. We may assume that we know the embedding of H and the Hamiltonian cycle [37]. Informally speaking, the main idea on how to reduce from Linked Planar 3-SAT to 
+
+Collision-Free Movement to Connectivity planar graphs is as follows. We split the Hamiltonian cycle in H between the last clause vertex and the first variable vertex, in that way obtaining a Hamiltonian path that first traverses all variable vertices and then all clause vertices. If we draw this path horizontally (from left to right), then (in a planar drawing) each edge between a clause and a variable that appears negated in the clause is below the path, and each edge between a clause and a variable that appears non-negated in the clause is above of the path. We add an extra vertex to the beginning of the path and an extra vertex to the end, and place a main robot on each of them. Now we “replace” each variable vertex with the variable gadget illustrated in Figure 2. We connect edges above the path to the three vertices on top of the gadget, and edge below the path to the three vertices below. For an illustration see Figure 3. Then these edges (that originally connected the clause and variable vertices) are subdivided a number of times and obnoxious robots are places on all newly created vertices. Furthermore, obnoxious robots are places on all clause vertices. The idea is that the three obnoxious robots in each variable gadget (see Figure 2) need to move either to the three upper or lower vertices, which will encode setting the variable to true or false. Now the main robot on the left can freely move until the last variable gadget. Then Hendrik Molter and Meirav Zehavi 7    
+
+> Figure 2 Illustration of a variable gadget. The black vertices have obnoxious robots on them. Variable gadget Variable gadget Clause gadgets
+> Figure 3 Illustration of the informally described graph G. The blue filled round vertices have obnoxious robots on them, and the black filled square vertices have main robots on them. The red edges correspond to long paths that have obnoxious robots on all inner vertices.
+
+the obnoxious robot on each clause vertex needs to move out of the way. To this end, all obnoxious robots on one of the paths connecting the clause vertex to a variable gadget need to move. This is only possible if the vertex of the variable gadget where the path arrives is free, hence encoding that the corresponding literal satisfies the clause. Now the main robots can freely meet on some adjacent clause vertices. Afterwards, we modify the informally described graph (call it G) depicted in Figure 3 to produce a graph G′ that is a grid (together with an embedding that shows this). Note that there are three main obstacles to overcome: The clause vertices in G may have degree 5, which is not possible in a grid. Hence, we have to modify the vertices to “clause gadgets” that are grids. All paths connecting clause gadgets to variable gadgets need to have the same length in order for the reduction to work. The path between the last variable gadget and the first clause gadget has to be sufficiently long (that is, longer than any path from a clause gadget to a variable gadget) for the reduction to work. We introduce clause gadgets, which are, informally speaking, small tree-like grids rooted at the clause vertices and three leaves pointing upward, and three pointing downward. All vertices in the gadgets have obnoxious robots, and the paths to the variable gadgets now start at the leaves. In order to ensure that all paths between variable and clause gadgets have the appropriate length, we introduce a “zone” in the grid between all variable gadgets and all clause gadgets, which is sufficiently large such that we can change the length of each path to the desired length by using “snake-like” embeddings in the grid. For an illustration see Figure 4. 8 Collision-free Movement on Grids and Beyond     
+
+> Figure 4 Illustration of an embedding of the graph G′obtained from graph G. The drawing is not up to scale but rather should give the rough idea on how the embedding looks like. The grid points on the thick black lines have obnoxious robots on them, and the blue filled square vertices have main robots on them. The red edges correspond to long paths that have obnoxious robots on all inner vertices. The light blue area surrounded by the black dashed line indicates the part of the grid, where we make sure that all red paths have the same length, and the path connecting the last variable gadget with the first clause gadget is sufficiently long. This is also indicated by the snake-like shape of the paths in the area.
+
+Collision Free Movement on Grids (Section 5). We give several kernelization algorithms and kernelization lower bounds for Collision-Free Movement to Connectivity on grids. In fact, our first kernelization algorithm works for general formations Π. The main insight here is that vertices that are far away from each of the main robots (regardless of whether they are occupied by obnoxious robots or not) cannot be relevant for any solution. This allows us to obtain a reduction rule that, when applied exhaustively, yields a kernel of size O(k · c2) for Collision-Free Movement to Π (Theorem 3). If Π is connectivity, we can improve the size of the kernel. In this case, informally speaking, we have that if a vertex is too far away from some main robot, it cannot be relevant, since eventually, all main robots have to be close together. This allows us to obtain an additional reduction rule. Exhaustively applying both rules yields a kernel of size O(min {k · c2, k 2 + c2}) for 
+
+Collision-Free Movement to Connectivity (Theorem 4). Furthermore, we give a number of kernelization lower bounds, using the well-known frame-work of OR-cross-compositions [4, 25]. For all results, we cross-compose from Linked Planar 3-SAT and reuse (modified versions of) the constructions devised to obtain Theorem 2. We first show that we presumably cannot obtain polynomial kernels for Collision-Free Movement to Connectivity parameterized by c on planar graphs, even if k = 2 (The-orem 5). To this end, we use the planar instances of Collision-Free Movement to Connectivity produced by the reduction behind Theorem 2 before the modifications to obtain a grid are applied (Figure 3). We remove the main robots from each instance, and Hendrik Molter and Meirav Zehavi 9
+
+> Instance 1 Instance 2
+
+...  
+
+> Instance t
+> Figure 5 Illustration of the OR-cross-composition. Blue filled square vertices have main robots on them.
+
+connect the (previous) starting locations of the main robots to a new starting location with sufficiently long paths (ensuring that the main robots cannot move between instances). For an illustration see Figure 5. This result shows that the restriction to grids is essential for obtaining polynomial kernels. We further show that we cannot obtain polynomial kernels for Collision-Free Move-ment to Connectivity on grids for the single parameter c (Theorem 7). Note that Theorem 2 obviously rules out polynomial kernels for the single parameter k. Here, we use the grid instances produced by the reduction behind Theorem 2. Note that we cannot connect the instances in the same fashion as in the previous cross-composition, as this introduces a high-degree vertex which is not embeddable in a grid. We replace this with a tree-like grid that has a main robots each vertex. Intuitively, we cannot use a single main robot since the distance between its starting location and the instances would be too large. Now, instead of single main robots moving through one of the instances, a “snake” of main robots moves through it to establish a connection between the right and the left side of the instance. To accommodate this, we have to also make some modifications to instances produced by the reduction behind Theorem 2. Finally, we show that we presumably cannot significantly improve the size of the kernel produced by Theorem 4 (Theorem 7). Here, we use the weak cross-compositions framework [25, 30]. Informally speaking, we have to ensure here that the parameter of the instance produced by the weak cross-composition can be upper-bounded by the maximum size among the input instances multiplied by the square root of the number of input instances. We can achieve this by again using the instances produced by the reduction behind Theorem 2 and arranging the input instances in a grid-like fashion, see Figure 6. Furthermore, we remove the main robots from each input instance and use one main robot starting in the lower left of the arrangement and one in the upper right. Together with appropriate connections between the instances, this ensures that the sum of the distances of both main robots to any of the instances is in 
+
+O(√t · xmax ), where t is the number of input instances and xmax is the maximum instance size. 
+
+Collision Free Movement on Planar Graphs (Section 6). We show that Collision-Free Movement to Π is fixed-parameter tractable when parameterized by k + c if the input graph is planar (Theorem 8). Note that this result holds for general formation Π. We obtain it by providing a monadic second-order logic (MSO) formulation of the problem and then employing Courcelle’s famous theorem [2, 5, 6], stating that MSO Model Checking is fixed-parameter tractable w.r.t the size of the formula and the treewidth of the relational 10 Collision-free Movement on Grids and Beyond   
+
+> 12
+
+. . . √t    
+
+> √t+ 1 √t+ 2
+
+. . . ......   
+
+> t− √t+ 1
+
+. . . 
+
+...   
+
+> t
+> Figure 6 Illustration of the weak cross-composition. The drawing is not up to scale but rather should give the rough idea on how the embedding looks like. Black boxes correspond to the instances and red lines to the connecting paths. Blue filled square vertices have main robots on them. The thick lines correspond to the paths visited by the main robots when instance nr. √t+ 2 is selected.
+
+structure on which the formula is defined. As the relational structure, we take the input graph together with “time steps” that model at which point in a movement a vertex is visited by a robot or an edge is traversed by a robot. Since the number of moves is upper-bounded by c, we need c of such time steps. Informally speaking, we associate each time step with each of the vertices and edges, which increases the treewidth of the graph by some factor depending on c. Additionally, we can remove vertices that are far away from any main robot (similar to the reduction rule in the kernelization algorithm). This allows us to upper-bound the diameter of the input graph by a function in k + c and, since it is planar, also its treewidth. It follows that the treewidth of the relational structure can be upper-bounded by a function in k + c.Now we define movements as sets of vertex-time step pairs with the following properties: For each time step, there is one vertex-time step pair in the set. For each pair of consecutive time steps, the corresponding vertices are either equal (the robot does not move) or connected by an edge. The vertex corresponding to the first time step is the starting location of a robot. These properties can be checked with MSO formulas. Furthermore, we can check (with an MSO formula) for each pair of movements, whether the two corresponding robots do not collide. If during a movement, a robot visits a vertex that is the starting location of another robot, there must be another movement moving that robot out of the way. Finally, we can have at most c non-trivial movements (that is, the robot actually moves at least once). Putting this together, we can obtain an MSO formula that checks for a set of c
+
+movements, whether they are collision-free and also do not collide with any robot that is not moved. Finally, we can straightforwardly determine the locations of all main robots after the movements and check whether the formation has property Π. We remark that the size of the overall MSO formula only depends on c and the size of a subformula that checks whether a graph on k vertices has property Π (which, notably, is constant if Π is connectivity). Hendrik Molter and Meirav Zehavi 11 
+
+Collision Free Movement on Unit Disk Graphs (Section 7). We show that Collision-Free Movement to Connectivity on unit disk graphs admits an FPT approximation algorithm when parameterized by k + c for the canonical optimization variant of the problem, where we aim to minimize the energy. More specifically, we give a fixed-parameter approx-imation for Collision-Free Movement to Connectivity on unit disk graphs when parameterized by k + c, that produces a solution with energy at most 2 · OPT + 3 k, where OPT is the energy of an optimal solution (Theorem 9). The algorithm makes use of the fact that unit disk graphs are a subclass of so-called clique grids. Informally speaking, a clique grid, each vertex is associated with a grid cell, and all vertices in the same cell form a clique. All additional edges are between vertices in grid cells of distance at most two. We start by “guessing” the optimal value for c, and removing all vertices that are too far away from any main robot starting location (as in the kernelization algorithms). Afterwards, the number of cliques / grid cells in the clique grid is upper-bounded by some function in 
+
+k + c. Furthermore, we guess a spanning tree that witnesses the connectivity of the formation of the main robots after the movements. We introduce a type for each vertex of a clique that, intuitively, describes via which cliques the vertex can be reached from each main robot and whether it is occupied by an obnoxious robot. We show how to upper-bound the number of types in a function of c and k.We guess the type of each vertex in the spanning tree. Now, informally speaking, we guess up to c movement vectors of types that move the main robots to vertices of the correct type (as specified by the guesses for the spanning tree), and check whether they are collision-free. When two robots move to vertices of the same type, we need to ensure that these are different vertices to be collision-free. This, intuitively, is where the factor two in the approximation comes from. We potentially need to move robots to a “free” vertex of a certain type, which requires at most one extra move as all vertices of the same type form a clique. Finally, at the end we may need to move all main robots to the “correct” vertex of the guessed type in order to obtain the guessed spanning tree, which, as we show, requires at most three extra moves per main robot. 
+
+# 3 Preliminaries and Known Results 
+
+In this section, we provide all necessary notation and terminology, as well as some preliminary results that are easy to obtain or straightforwardly follow from known results. 
+
+Parameterized Complexity. We use the following standard concepts from parameterized complexity theory [8, 15, 23, 25]. A parameterized problem L ⊆ Σ∗ × N is a subset of all instances ( x, k ) from Σ ∗ × N, where k denotes the parameter . A parameterized problem L is in the class FPT (or fixed-parameter tractable ) if there is an algorithm that decides every instance ( x, k ) for L in f (k) · | x|O(1) time for some computable function f that depends only on the parameter. A decidable parameterized problem L admits a kernel if there is a polynomial-time algorithm that transforms each instance ( x, k ) ∈ { 0, 1} × N into an instance ( x′, k ′) ∈ { 0, 1} × N such that |x′| + k′ ≤ f (k), for some computable function f , and (x′, k ′) ∈ L if and only if ( x, k ) ∈ L. It is known that a decidable parameterized problem 
+
+L admits a kernel if and only if it is fixed-parameter tractable [25]. If f is a polynomial, that is, |x′| + k′ ∈ rO(1) , we say that L admits a polynomial kernel . Presumably, not all problems that are fixed-parameter tractable admit a polynomial kernel [25]. We give more details on how to exclude polynomial kernels under standard complexity assumptions in the respective section of the paper. A parameterized problem L is in the class XP, if there is 12 Collision-free Movement on Grids and Beyond 
+
+an algorithm that decides every instance ( x, k ) for L in |x|f (k) time for some computable function f that depends only on the parameter. If a parameterized problem L is W[1]-hard, then it is presumably not contained in FPT [8, 15, 23]. 
+
+Graph Theory. We use standard notation and terminology from graph theory [14]. Let 
+
+G = ( V, E ) with E ⊆ (V
+
+> 2
+
+) be a graph. We denote by V (G) = V and E(G) = E the sets of its vertices and edges, respectively. We use n to denote the number of vertices of G.We call two vertices u, v ∈ V adjacent if {u, v } ∈ E. The degree of a vertex v ∈ V is deg( v) = |{ u | { u, v } ∈ E}| . We say that a graph G′ is a subgraph of G if V (G′) ⊆ V (G) and 
+
+E(G′) ⊆ E(G). For some vertex set V ′ ⊆ V , we denote by G[V ′] the induced subgraph of G on the vertex set V ′, that is, G[V ′] = ( V ′, E ′) where E′ = {{ v, w } | { v, w } ∈ E∧v ∈ V ′∧w ∈ V ′}.We further denote G − V ′ = G[V \ V ′]. We say that a sequence P = ( {vi−1, v i})ℓi=1 of edges in E forms a path of length ℓ in G from v0 to vℓ if vi̸ = vj for all 0 ≤ i < j ≤ ℓ. We say that vertices u and v are connected in G if there is a path from u to v in G. We say that graph 
+
+G is connected if for all u, v ∈ V we have that u and v are connected. We say that G[V ′]for some V ′ ⊆ V is a connected component of G if G[V ′] is connected and for all v ∈ V \ V ′
+
+we have that G[V ′ ∪ { v}] is not connected. We say that a path P of length ℓ in G from vertex u to v is a shortest path if there is no path from u to v in G of length ℓ − 1. The 
+
+distance between u and v in G is the length of a shortest path from u to v in G and denoted dist( u, v ). If u and v are in different connected components of G, then we set dist( u, v ) = ∞.The diameter of a graph G is the maximum distance between any two vertices that are in the same connected component, that is, diam( G) = max u,v ∈V (G)|dist( u,v )̸=∞ dist( u, v ). A graph G is planar if it can be embedded in the plane (drawn with points for vertices and curves for edges) without crossing edges. A graph G = ( V, E ) is a unit disk graph if it has an intersection model consisting of disks of unit size, that is, there is a f : V → R such that for all {u, v } ∈ E it holds that |f (u) − f (v)| ≤ 1. The set D = {f (v) | v ∈ V } is called the point set of G. A graph G = ( V, E ) is a grid if there exists a function f : V → [t] × [t′]for some t, t ′ ∈ N such that for all {u, v } ∈ E it holds that if f (u) = ( i, j ) and f (v) = ( i′, j ′)then |i − i′| = 1 and j = j′, or |j − j′| = 1 and i = i′. Note that grids are planar graphs and unit disk graphs. 
+
+Problem Definition. Assume we are given a graph G = ( V, E ) and two sets R, O ⊆ V
+
+with R ∩ O = ∅. Here, R denotes the starting positions of the main robots and O denotes the starting positions of the obnoxious robots . We denote k = |R| and ℓ = |O|. Let m ∈ N
+
+r ∈ R ∪ O. We call a vector Mr = ( v1, v 2, v 3, . . . , v m) a movement for r with m steps if v1 = r
+
+and for all i ∈ [m − 1] it holds that vi = vi+1 or {vi, v i+1 } ∈ E. Intuitively, in every step of a movement, the robot may stay on its current position or move to an adjacent vertex. The 
+
+length len( Mr) of a movement Mr = ( vi)i∈[m] is len( Mr) = |{ i ∈ [m − 1] | vi̸ = vi+1 }| , that is, the number of steps in which r moves to an adjacent vertex. We say that a movement Mr
+
+is trivial if len( Mr) = 0. We say that two movements Mr = ( vi)i∈[m] and Mr′ = ( v′
+
+> i
+
+)i∈[m]
+
+for some r, r ′ ∈ R ∪ O with m steps each are collision-free if for all i ∈ [m] it holds that 
+
+vi̸ = v′ 
+
+> i
+
+and for all i ∈ [m − 1] it holds that {vi, v i+1 }̸ = {v′
+
+> i
+
+, v ′
+
+> i+1
+
+}. Intuitively, robots collide if they occupy the same vertex in the same step or if they use the same edge (in opposite directions) to move to an adjacent vertex in the same step. A movement plan for R ∪ O
+
+is a set M = {Mr | r ∈ R ∪ O} containing a movement for each robot in R ∪ O with the same number of steps. The length of a movement plan len( M) is the sum of length of all movements in M, that is, len( M) = ∑  
+
+> Mr∈M
+
+len( Mr ). We say that a movement plan M is 
+
+collision-free if for all Mr , M r′ ∈ M with r̸ = r′ we have that the movements Mr and Mr′Hendrik Molter and Meirav Zehavi 13 
+
+are collision-free. The end-configuration of R after a movement plan M = {Mr | r ∈ R ∪ O}
+
+is R⋆(M) = {vm | ∃ Mr ∈ M s.t. r ∈ R and Mr = ( vi)i∈[m]}, that is, the set of vertices that are occupied by robots in R after all movements. Let Π be a recursively enumerable graph property. We define the problem Collision-Free Movement to Π as follows. 
+
+Collision-Free Movement to Π                           
+
+> Input: A graph G= ( V, E ), two sets R, O ⊆Vwith R∩O=∅, and an integer c∈N.Question: Is there a collision-free movement plan Mfor R∪Osuch that len( M)≤cand
+> G[R⋆(M)] ∈Π?
+
+In this work, we will focus on the case of Π being the property of a graph to be connected .We call this problem Collision-Free Movement to Connectivity .
+
+First Observations and Results. Since Collision-Free Movement to Π contains the problem of deciding whether a graph has property Π as a special case, we immediately get the following. 
+
+▶ Observation 10. If deciding whether a graph has property Π is NP-hard, then Collision-Free Movement to Π is NP-hard even if ℓ = 0 and c = 0 .
+
+If we do not require the movement plan to be collision-free, then we call the problem 
+
+Movement to Π. A generalization of Movement to Π has been studied by Demaine et al. [11, 12]. We can observe that Collision-Free Movement to Π and Movement to Πcoincide if ℓ = 0. 
+
+▶ Lemma 11. Let I = ( G = ( V, E ), R, O, c ) be an instance of Collision-Free Movement to Π. If O = ∅, then I is a yes-instance of Collision-Free Movement to Π if and only if I is a yes-instance of Movement to Π.
+
+Proof. If I is a yes-instance of Collision-Free Movement to Π, then clearly it is also a yes-instance of Movement to Π. For the other direction, assume that I is a yes-instance of Movement to Π and let M be a movement plan that is a solution for I. Assume that 
+
+M is not collision-free. Now let M = ( v1, v 2, . . . , v m) and M ′ = ( v′
+
+> 1
+
+, v ′
+
+> 2
+
+, . . . , v ′ 
+
+> m′
+
+) be two movements for robots r, r ′ ∈ R, respectively, in M that collide. Let t be the step in which a collision happens, that is, vt = v′
+
+> t
+
+, or vt = v′ 
+
+> t−1
+
+and v′ 
+
+> t
+
+= vt−1. Consider the latter case first, that is, vt = v′ 
+
+> t−1
+
+and v′ 
+
+> t
+
+= vt−1. Here, instead of the robots swapping their position, they can “swap their identities” instead. Formally, we can define a new movement M ⋆ for robot r which equals M for the first t − 1 steps, and equals M ′ for all subsequent steps, that is, M ⋆ = ( v1, v 2, . . . , v t−1, v ′
+
+> t
+
+, v ′
+
+> t+1
+
+, . . . , v ′ 
+
+> m′
+
+). Analogously, we define a new movement for r′. Clearly, the end-configuration of M stays the same. By iterating this modification, we can eliminate all collisions of this type. Now consider the former case, that is, vt = v′
+
+> t
+
+.First consider the case that both r and r′ moved to vt = v′ 
+
+> t
+
+in step t, that is vt−1̸ = vt
+
+and v′
+
+> t−1
+
+̸ = v′
+
+> t
+
+. Then we create a new movement for r where the movement from vt−1 to 
+
+vt happens one time step later. By iterating this modification, we can create a movement plan where no two robots simultaneously move to the same vertex. Now assume w.l.o.g. that robot r moves to vt in step t, that is, vt−1̸ = vt and robot r′ was already at vt = v′ 
+
+> t
+
+at the previous step, that is, v′ 
+
+> t
+
+= v′
+
+> t−1
+
+. Furthermore, assume that t is the latest step where such a collision happens. Then at some later time step t′ > t we must have that one of the robots moves away. Assume w.l.o.g. that r′ moves away first (if only r moves away, they can “swap identities” according to the modification above). This implies that v′ 
+
+> t−1
+
+= v′ 
+
+> t
+
+= . . . = vt′−1 in 14 Collision-free Movement on Grids and Beyond 
+
+M ′. Then we can create a new movement M ⋆ for r′ that is equal to M ′ until step t − 1 and then “skips” steps t to t′ − 1 and immediately moves to v′ 
+
+> t′
+
+at step t and then continues with the steps of M ′ from t′ onward, that is, M ⋆ = ( v′
+
+> 1
+
+, v ′
+
+> 2
+
+, . . . , v ′
+
+> t−1
+
+, v ′ 
+
+> t′
+
+, v ′
+
+> t′+1
+
+, . . . , v ′ 
+
+> m′
+
+). Note that this may introduce new collisions, but it (strictly) shortens one of the movement vectors. It follows that iterating this modification will eventually eliminate all collisions. ◀
+
+Lemma 11 implies that algorithmic results for Movement to Π carry over to Collision-Free Movement to Π (and vice versa) if ℓ = 0. In particular, we get the following. 
+
+▶ Theorem 12 ([12]) . If ℓ = 0 , then Collision-Free Movement to Connectivity is fixed-parameter tractable when parameterized by k.
+
+Due to the similarity of Movement to Π and Collision-Free Movement to Π, the reductions behind some known hardness results for Movement to Π can be straightforwardly modified to work for Collision-Free Movement to Π. In particular, Demaine et al. [12] show that if Π is hereditary and does not contain all complete graphs and all empty graphs, then Movement to Π is W[1]-hard when parameterized by k + c even if ℓ = 0 via a reduction from the well-known Π-subgraph detection problem [33]. The reduction formalizes the intuition that already finding a suitable target location for the main robots is hard, rather than finding out in which way the robots move to that location. The reduction can be straightforwardly modified to yield the following result. 
+
+▶ Theorem 13 ([12, 33]) . If Π is hereditary and does not contain all complete graphs and all empty graphs, then Collision-Free Movement to Π is W[1]-hard when parameterized by k + c even if ℓ = 0 .
+
+Demaine et al. [11] show that Movement to Connectivity is NP-hard even if ℓ = 0 via a reduction from Hamiltonian Path [32]. This reduction can be straightforwardly modified as well. If additionally we reduce from Hamiltonian Path on planar graphs [27], we obtain the following result. 
+
+▶ Theorem 14 ([11]) . Collision-Free Movement to Connectivity is NP-hard even if 
+
+ℓ = 0 and the input graph is planar. 
+
+If the main robots have prescribed destinations, that is, for each r ∈ R there is a dr ∈ V
+
+given as part of the input, and we ask for a collision free movement plan M (of length at most c) that moves each robot in R to its destination, that is, for each r ∈ R we have 
+
+Mr ∈ M with Mr = ( vi)i∈[m] and vm = dr, then the problem is called Collision-Free Movement . A generalization of Collision-Free Movement has been studied by Deligkas et al. [10]. Observe that, given an instance ( G, R, O, c ) of Collision-Free Movement to Π, if we can “guess” a destination vertex dr for each main robot r ∈ R such that the subgraph of 
+
+G induced on the destination vertices has property Π, then we can reduce the problem of finding a collision-free movement plan of length at most c to an instance of Collision-Free Movement . In particular, this gives us the following. 
+
+▶ Observation 15. If deciding whether a graph has property Π is in NP, then Collision-Free Movement to Π is in NP. 
+
+Last but not least, we can observe that Collision-Free Movement to Π can be solved by a simple guess-and-check algorithm if deciding whether a graph has property Π is polynomial-time solvable. We can iterate over all nO(c) possibilities to pick c moves and Hendrik Molter and Meirav Zehavi 15 
+
+assign each one to one of the robots. Then we check whether this yields a collision-free movement plan and whether the end-configuration yields a subgraph with property Π. Hence, we get the following. 
+
+▶ Theorem 16. If deciding whether a graph has property Π is polynomial-time solvable, then 
+
+Collision-Free Movement to Π is in XP when parameterized by c.
+
+# 4 Hardness Results 
+
+In this section, we give our main hardness results for Collision-Free Movement to Connectivity . We begin by proving Theorem 1 (restated below), that is, showing that the problem is W[1]-hard when parameterized by k + c on general graphs. Afterwards, we investigate the cases where the input graph is a grids. 
+
+▶ Theorem 1. Collision-Free Movement to Connectivity is W[1]-hard when para-meterized by k + c.
+
+To prove Theorem 1, we present a parameterized reduction from Multicolored Clique [19]. Here, given an ℓ-partite graph H = ( W1 ⊎ W2 ⊎ . . . ⊎ Wℓ, F ), we are asked whether H contains a clique of size ℓ. If v ∈ Wi, then we say that v has color i. Let Fi,j 
+
+denote the set of all edges between vertices from Wi and Wj . This problem is known to be W[1]-hard when parameterized by ℓ [19]. 
+
+▶ Construction 1. Given an instance H = ( W1 ⊎ W2 ⊎ . . . ⊎ Wℓ, F ) of Multicolored Clique , we construct an instance ( G = ( V, E ), R, O, c ) of Collision-Free Movement to Connectivity as follows. For each color combination i, j with i < j we create an edge selection gadget Gi,j .For every edge e ∈ Fi,j we add a vertex ve, place an obnoxious robot on it. We add three additional vertices v1, v 2, v 3. We connect v1 to each ve with e ∈ Fi,j and place a main robot on v1. We connect v2 to each ve with e ∈ Fi,j and place a main robot on v2. We connect v3 to each ve.For an illustration see Figure 7. For each color i we create a validation gadget Gi as follows. For every vertex w ∈ Wi we create ℓ − 1 vertices w1, w 2, . . . , w i−1, w i+1 , . . . , w ℓ and connect them to a path (from w1 to wℓ). We add two vertices u(i)1 , u (i)2 and place main robots on them. We connect u(i)1 to each w1
+
+with w ∈ Wi. We connect u(i)2 to each wℓ with w ∈ Wi. We create a path on c vertices, place main robots on each vertex, and connect one of the endpoints to u(i)1 , where we specify c later. We create a second path on c vertices, place main robots on each vertex, and connect one of the endpoints to u(i)2 .The graph G is now the disjoint union of the edge selection gadgets of all color combinations 
+
+i, j with i < j and the verification gadgets of all colors i. We connect the gadgets as follows. Let j = i + 1 ≤ ℓ, then we connect vertex u(i)2 from the verification gadget Gi and vertex 
+
+u(j)1 from the verification gadget Gj with an edge. Finally, let e = {w, w ′} ∈ Fi,j such that 
+
+w ∈ Wi and w′ ∈ Wj . We connect vertex ve from the edge selection gadget Gi,j with vertex 
+
+wj from the verification gadget Gi. Then we subdivide ℓ2 times the edge {ve, w j }. We connect vertex ve from the edge selection gadget Gi,j with vertex w′ 
+
+> i
+
+from the verification gadget Gj . Then we subdivide ℓ2 times the edge {ve, w ′
+
+> i
+
+}. Finally, we set c = (2 ℓ2 + 3) (ℓ
+
+> 2
+
+).16 Collision-free Movement on Grids and Beyond     
+
+> Edge selection gadget for color combination i, j
+> Verification gadget for color iVerification gadget for color j
+
+· · · 
+
+> j
+
+... 
+
+> i
+
+...       
+
+> Figure 7 Illustration of the graph Gproduced by Construction 1. The black filled round vertices have obnoxious robots on them, and the blue filled square vertices have main robots on them. The red filled square vertices have main robots on them and paths of length cattached to them that have main robots on each vertex (which are not depicted). The two red edges correspond to paths of length ℓ2connecting the edge selecting gadget to the verification gadgets.
+
+This finished the construction, which can clearly be performed in polynomial time. Note that the number of main robots is in O(ℓ4) and c ∈ O(ℓ4). Now we prove the correctness of the reduction, that is, the constructed instance ( G, R, O, c ) is a yes-instance of Collision-Free Movement to Connectivity if and only if H is a yes-instance of Multicolored Clique . This together with the above observations yields Theorem 1. 
+
+Proof of Theorem 1. Let be H = ( W1 ⊎ W2 ⊎ . . . ⊎ Wℓ, F ) an instance of Multicolored Clique and let ( G, R, O, c ) be an instance of Collision-Free Movement to Connectiv-ity created from H by Construction 1. (⇒) : Assume that H is a yes-instance of Multicolored Clique and we are given a clique X ⊆ V (H). We construct a collision-free movement plan M of length c for ( G, R, O, c )as follows. For each color combination i, j with i < j let e = {w, w ′} ∈ Fi,j such that w ∈ Wi,
+
+w′ ∈ Wj , and w, w ′ ∈ X. We move the obnoxious robot on vertex ve of the edge selection gadget Gi,j to vertex v3 of the edge selection gadget Gi,j . By Construction 1, we have that 
+
+ve is connected to vertex wj from the verification gadget Gi via a path of length ℓ2 + 1 and is connected to vertex w′ 
+
+> i
+
+from the verification gadget Gj via a path of length ℓ2 + 1. We move the main robot on v1 to wj via ve and the connecting path, and we move the main robot on v2 to w′ 
+
+> i
+
+via ve and the connecting path. Note that this is collision-free and takes 2ℓ2 + 2 moves. This finishes the description of the movement plan. Note that it uses 2 ℓ2 + 3 moves for every edge selection gadget and hence c = (2 ℓ2 + 3) (ℓ
+
+> 2
+
+) moves in total. It remains to show that the end-configuration forms a connected subgraph. To this end, note that for some fixed i, all edges of a color combination that contains i that are contained in the clique X have the same endpoint in Wi. Let that endpoint be w ∈ WiHendrik Molter and Meirav Zehavi 17 
+
+Hence, we have that in the verification gadget for color i, one main robot is moved to each of 
+
+w1, w 2, . . . , w i−1, w i+1 , . . . , w ℓ and hence vertices u(i)1 , u (i)2 (which have main robots on them) are connected via a path that has a main robot on each vertex. Since this is the case for every verification gadget and there are no main robots left in the edge selection gadgets, we have that the main robots form a connected subgraph. (⇐) : Assume that ( G, R, O, c ) is a yes-instance of Collision-Free Movement to Connectivity and we are given a collision-free movement plan M of length c that is a solution for ( G, R, O, c ). We construct a clique of size ℓ in H as follows. Assume that M is a movement plan with a minimum number of moves. First, observe the following. For each verification gadget for a color i it holds that the main robots on 
+
+u(i)1 , u (i)2 do not move. Recall that by Construction 1, each of the vertices is connected to a path of length c that has main robots on every vertex. Moving the main robot on u(i)1
+
+or u(i)2 breaks the connection to the main robots on the respective path. To reestablish connection, either the robot needs to move back to u(i)1 or u(i)2 , respectively, which does not happen in a movement plan with a minimum number of moves, or all robots on the path need to be moved by at least one step, which costs more than c moves in total and hence cannot happen in a solution. It follows that only the 2 (ℓ
+
+> 2
+
+) main robots in edge selection gadgets move. Furthermore, notice that the paths between verification gadgets and edge selection gadgets have length ℓ2 > 2(ℓ
+
+> 2
+
+). It follows that a connection cannot be established via those paths since there are not enough main robots that can move. We can conclude that for each color i the vertices w1, w 2, . . . , w i−1, w i+1 , . . . , w ℓ for some w ∈ Wi need to be occupied by main robots in the end-configuration. The distance of a starting position of a main robot in an edge selection gadget to such a vertex is at least ℓ2 + 2. Furthermore, all neighboring vertices of starting position of a main robot in an edge selection gadget are occupied by obnoxious robots that need to be moved away first. Note that for each edge selection gadget, there are at most one move available to do this. It follows that in each edge selection gadget, we move exactly one obnoxious robot from some ve to the v3 vertex of that gadget. We say that edge e is “selected”. Furthermore, we have that for each color i, exactly the vertices w1, w 2, . . . , w i−1, w i+1 , . . . , w ℓ for some w ∈ Wi are occupied by main robots in the end-configuration, which each were moved there with exactly ℓ2 + 2 moves. Let X be the set of all endpoints of selected edges. We claim that X forms a clique of size ℓ in H. Note that X contains at least one vertex of each color, hence |X| ≥ ℓ. In the remainder, we show that also |X| ≤ ℓ. Note that this implies that X is a clique, since for each color i we have that all edges of a color combination that contains i have the same endpoint of color i. Assume for contradiction that w, w ′ ∈ X with w, w ′ ∈ Wi for some color i. Then there are selected edges e, e ′ such that w is an endpoint of e and w′ is an endpoint of e′. Consider the edge selection gadgets where e and e′ were selected. Both correspond to a color combination that involves i, so both are connected to the verification gadget of color i. If two main robots from one of the gadgets are moved into the verification gadget of color i, this involves at least ℓ2 + 3 moves. Hence, by arguments made above, this is not possible in a solution. We can conclude that from both edge selection gadgets, one main robot must be moved to the verification gadget of color i with ℓ2 + 2 moves. Then, however, the main robots are moved to vertices wj and w′ 
+
+> j′
+
+for some j, j ′ in the verification gadget for color i. This is a contradiction to the observation above, that for color i the vertices 
+
+w1, w 2, . . . , w i−1, w i+1 , . . . , w ℓ for some w ∈ Wi need to be occupied by main robots in the end-configuration. We can conclude that X is a clique in H. ◀18 Collision-free Movement on Grids and Beyond 
+
+vx 
+
+> 1
+
+vx 
+
+> 2
+
+vx
+
+> 3
+
+ux 
+
+> 1
+
+ux 
+
+> 2
+
+ux
+
+> 3
+
+wx 
+
+> 3
+
+wx 
+
+> 2
+
+wx
+
+> 1
+
+vx     
+
+> 4
+> Figure 8 Illustration of a variable gadget Gxfor a variable x(Construction 2). The black filled vertices have obnoxious robots on them.
+
+Hardness on Grids. Now we prove Theorem 2 (restated below), that is, we show that 
+
+Collision-Free Movement to Connectivity is NP-hard if the input graph is a grid, even if there are only two main robots. To this end, we first give a reduction that produces a planar graph, and then we show how to modify the construction such that we obtain a grid. 
+
+▶ Theorem 2. Collision-Free Movement to Connectivity is NP-hard even if k = 2 
+
+and the input graph is a grid. 
+
+To prove Theorem 2, we present a polynomial-time reduction from Linked Planar 3-SAT [37]. Here, we are given a Boolean formula ϕ in 3-CNF with clause set Y and variable set X, and a graph H = ( Y ∪ X, F ) such that the following holds: Graph H is the union of a Hamiltonian cycle that first visits all elements of X and then all elements of Y , and the incidence graph of ϕ (i.e., the graph on Y ∪ X where c ∈ Y
+
+and x ∈ X are connected by an edge if and only if variable x appears on clause c). Graph H is planar and w.l.o.g. there is an embedding where each edge between a clause and a variable that appears negated in the clause is inside the cycle, and each edge between a clause and a variable that appears non-negated in the clause is outside of the cycle. Each variable appears in at most three clauses. This problem is known to be NP-hard even if H together with its embedding are given in the input [37]. Note that the Hamiltonian cycle can easily be computed from H.In the following, we first describe a construction that, given an instance of Linked Planar 3-SAT , produces an instance of Collision-Free Movement to Connectivity 
+
+with a planar graph. Later, we describe how to modify the instance such that the graph is a grid. 
+
+▶ Construction 2. Given an instance ( ϕ, H ) of Linked Planar 3-SAT , we construct an instance ( G = ( V, E ), R, O, c ) of Collision-Free Movement to Connectivity with 
+
+k = 2 as follows. Let the variables X and clauses Y in ϕ be ordered in the way they appear in the Hamiltonian cycle in H.For each variable x ∈ X, we create a variable gadget Gx = ( Vx, E x) with 
+
+Vx = {vx 
+
+> 1
+
+, v x 
+
+> 2
+
+, v x 
+
+> 3
+
+, v x 
+
+> 4
+
+, u x 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x 
+
+> 3
+
+, w x 
+
+> 1
+
+, w x 
+
+> 2
+
+, w x 
+
+> 3
+
+}, and 
+
+Ex = {{ vx 
+
+> 1
+
+, v x 
+
+> 2
+
+}, {vx 
+
+> 2
+
+, v x 
+
+> 3
+
+}, {vx 
+
+> 3
+
+, u x 
+
+> 1
+
+}, {ux 
+
+> 1
+
+, u x 
+
+> 2
+
+}, {ux 
+
+> 2
+
+, u x 
+
+> 3
+
+}, {ux 
+
+> 3
+
+, v x 
+
+> 4
+
+}, {vx 
+
+> 3
+
+, w x 
+
+> 3
+
+}, {wx 
+
+> 3
+
+, w x 
+
+> 2
+
+},
+
+{wx 
+
+> 2
+
+, w x 
+
+> 1
+
+}, {wx 
+
+> 1
+
+, v x 
+
+> 4
+
+}} .Furthermore, we place obnoxious robots on the vertices vx 
+
+> 1
+
+, v x 
+
+> 2
+
+, v x 
+
+> 3
+
+. For an illustration of the variable gadget see Figure 8. We construct the graph G of the Collision-Free Movement to Connectivity 
+
+instance by first taking the graph H and replacing each vertex corresponding to a variable, Hendrik Molter and Meirav Zehavi 19      
+
+> Variable gadget Variable gadget Clause gadgets
+> Figure 9 Illustration of an embedding described in the proof of Observation 17 of the graph G
+> produced by Construction 2. The black filled round vertices have obnoxious robots on them, and the blue filled square vertices have main robots on them. There are two variable gadgets on the left and three clause gadgets on the right (indicated by light gray boxes). The red lines correspond to paths of length sthat have obnoxious robots on all inner vertices.
+
+say x, with variable gadget Gx in the following way. If two vertices corresponding to variables 
+
+x, y are adjacent in H, that is, they appear consecutive in the ordering (first x and then y), then we add edge {vx 
+
+> 4
+
+, v y 
+
+> 1
+
+} to G. Let x be the last variable in the ordering and let c be the first clause in the ordering, then we add edge {vx 
+
+> 4
+
+, v c} to G and subdivide it s + 2 times, where s = |X| + |Y |. For each clause c ∈ C we add call the vertex corresponding to it vc
+
+and place an obnoxious robot on vc. Let variable x appear in clauses c1, c 2, c 3. Then the vertex x in H is connected to vertices vc1 , v c2 , v c3 in H. Let w.l.o.g. the order c1, c 2, c 3 be the linearization of the cyclic ordering in which the edges incident with x to the vertices 
+
+c1, c 2, c 3 are embedded around x in the planar embedding of H, such that all clauses in which x appears non-negated are ordered before the clauses in which x appears negated. For 
+
+i ∈ { 1, 2, 3}, if x appears in ci non-negated, then we connect uxi with vci with an edge and subdivide the edge s times. Furthermore, we place an obnoxious robot on each vertex created by a subdivision. If x appears in ci negated, then we connect wxi with vci with an edge and subdivide the edge s times. Furthermore, we place an obnoxious robot on each vertex created by a subdivision. Finally, we add two vertices r1, r 2 to G and place a main robot on each of them. Let x be the first variable in the ordering, then we add edge {r1, v x 
+
+> 1
+
+} to G. Let 
+
+c be the last clause in the ordering, then we add edge {r2, v c} to G. For an illustration, see Figure 9. Finally, we set c = 16 · | X| + ( s + 2) · (|Y | + 1) + 1. We will assume in the proofs of correctness that s2/4 > c . Note that this is clearly the case if |X| and |Y | are sufficiently large. This finishes the construction, which can clearly be performed in polynomial time. It is fairly straightforward to check that the constructed graph G is planar. 
+
+▶ Observation 17. The graph G obtained from Construction 2 is planar. 
+
+Proof. For an illustration, see Figure 9. Recall that H is the union of a Hamiltonian cycle that first visits all variables X and then all clauses Y , and the incidence graph of ϕ. Consider a planar embedding of H where each edge between a clause and a variable that appears negated in the clause is inside the cycle, and each edge between a clause and a variable that 20 Collision-free Movement on Grids and Beyond 
+
+appears non-negated in the clause is outside of the cycle. In Construction 2, when we replace the vertex corresponding to a variable x with variable gadget Gx, we can arrange it such that vertices ux 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x 
+
+> 3
+
+point towards the outside of the cycle and wx 
+
+> 1
+
+, w x 
+
+> 2
+
+, w x 
+
+> 3
+
+to the inside. The gadget Gx itself is clearly planar. Now we can embed the paths in G connecting the clause vertices with the variable gadgets along the edges between clauses and variables in H. Note that in the construction of G, when we connect the variable gadgets with the clause vertices, we connect clause vertices to vertices of the variable gadget in the same cyclic ordering as the edges around the corresponding variable in H. It follows that we can embed the paths connecting variable gadgets and clause vertices in G in a planar way. Finally, vertices r1, r 2
+
+and their incident edges can clearly be embedded in a planar way. ◀
+
+Next, we show correctness of the reduction, that is, the constructed instance ( G, R, O, c )is a yes-instance of Collision-Free Movement to Connectivity if and only if ( ϕ, H ) is a yes-instance of Linked Planar 3-SAT .
+
+▶ Lemma 18. If (ϕ, H ) is a yes-instance of Linked Planar 3-SAT , then (G, R, O, c ) is a yes-instance of Collision-Free Movement to Connectivity .
+
+Proof. Assume we are given a satisfying assignment for ϕ. We create the following movement plan. We iterate over the variables in some arbitrary but fixed order. Let x be a variable. If x
+
+is set to true, then we move the three obnoxious robots on vx 
+
+> 1
+
+, v x 
+
+> 2
+
+, v x 
+
+> 3
+
+to wx 
+
+> 1
+
+, w x 
+
+> 2
+
+, w x 
+
+> 3
+
+in a collision-free way using 9 moves: We first move the robot on vx 
+
+> 3
+
+to wx 
+
+> 3
+
+, then we move the robot on vx 
+
+> 2
+
+to wx 
+
+> 2
+
+, and finally we move the robot on vx 
+
+> 1
+
+to wx 
+
+> 1
+
+. It is straightforward to check that this requires 9 moves and is collision-free. If x is set to false, then we move the three obnoxious robots on vx 
+
+> 1
+
+, v x 
+
+> 2
+
+, v x 
+
+> 3
+
+to ux 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x 
+
+> 3
+
+in an analogous way. Doing this for each variable requires 9 · | X| moves in total. Let z be the last variable in the ordering (implied by the Hamiltonian cycle). We now move r1 to vz 
+
+> 4
+
+. Note that in each variable gadget for some variable x, the vertices 
+
+vx 
+
+> 1
+
+, v x 
+
+> 2
+
+, v x 
+
+> 3
+
+, v x 
+
+> 4
+
+are not occupied by any robot. Furthermore, either vertices ux 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x
+
+> 3
+
+or vertices wx 
+
+> 1
+
+, w x 
+
+> 2
+
+, w x 
+
+> 3
+
+are not occupied by any robot. It follows that we can move r1
+
+collision-free to vz 
+
+> 4
+
+using 7 · | X| + 1 moves. Now for each clause c we identify a literal ℓ that satisfies the clause. Let x be the variable of literal ℓ. If x appears in ℓ non-negated, then by construction we have that vc is connected by a path of length ( s + 1) to one of the vertices ux 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x 
+
+> 3
+
+and no other literal of any other clause is connected to the same vertex as ℓ. Furthermore, we have that these vertices are not occupied by any robot. Let vc be connected to uxi with i ∈ [3]. The vertex vc as well as all inner vertices on the path of length ( s + 1) from vc to uxi are occupied by obnoxious robots. We move all robots towards uxi by one step, starting with the one closest to uxi and ending with the one occupying vc. This takes ( s + 1) moves and is clearly collision-free. Afterwards, vertex vc is not occupied by any vertex. If x
+
+appears in ℓ negated, we have an analogous situation with vertices wx 
+
+> 1
+
+, w x 
+
+> 2
+
+, w x 
+
+> 3
+
+instead of 
+
+ux 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x 
+
+> 3
+
+. Doing this for each clause requires ( s + 1) · | Y | moves in total. Let c⋆ be the last clause in the ordering (implied by the Hamiltonian cycle). We now move r1 from vz 
+
+> 4
+
+to vc⋆
+
+. This is collision-free since, after the previous moves, all vertices corresponding to clauses are not occupied by any robot, and it requires |Y | + s + 2 moves. After the above-described movement plan, main robot r1 occupies vertex vc⋆
+
+and main robot r2 still occupies its starting location. Since these two vertices are connected, we have Hendrik Molter and Meirav Zehavi 21 
+
+that the end-configuration of the movement plan forms a connected subgraph. Furthermore, the movement plan clearly has length 16 · | X| + ( s + 2) · (|Y | + 1) + 1. ◀▶ Lemma 19. If (G, R, O, c ) is a yes-instance of Collision-Free Movement to Con-nectivity , then (ϕ, H ) is a yes-instance of Linked Planar 3-SAT .
+
+Proof. Assume we are given a movement plan M that is a solution to ( G, R, O, c ). We create a satisfying assignment for ϕ as follows. First, we start with the following observation: If a main robot moves (collision-free) along one of the paths of length ( s + 1) from a vertex of a variable gadget to a clause vertex, all obnoxious robots need to move out of the way. This requires at least 2 · ∑⌊s+1 ⌋ 
+
+> i=1
+
+i > s 2/4 > c 
+
+moves. Hence, we can conclude that in the movement plan M, no main robot moves along such a path. It follows that each variable gadget is traversed by one of the main robots, and each clause vertex is traversed by one of the main robots. In particular, we can conclude that the main robots make at least 7 · | X| + |Y | + s + 3 moves. We can conclude the following: In each variable gadget, the three obnoxious robots need to be moved such that one of the main robots can pass through the gadget. Moving them inside the gadget to ux 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x 
+
+> 3
+
+or wx 
+
+> 1
+
+, w x 
+
+> 2
+
+, w x 
+
+> 3
+
+requires 9 moves. Moving them in any other way that allows a main robot to pass (e.g. to an adjacent gadget) costs strictly more than 9 moves. Hence, at least 9 · | X| moves are required to move obnoxious robots in the variable gadgets. Now consider the clause vertices. Moving the obnoxious robot away from the clause vertex requires either moving each vertex on one of the paths of length ( s + 1) be one step and hence requires ( s + 1) moves in total, or moving the obnoxious robot into a path connected to a different clause vertex, , which requires at least ( s + 2) moves, or moving the obnoxious robot into a variable gadget, which also requires at least ( s + 2) moves. Hence, at least ( s + 1) · | Y |
+
+moves are required to move obnoxious robots away from the clause vertices. Adding up the above-derived lower bounds for the required moves yields exactly c. We can conclude that in each variable gadget, the three obnoxious robots move to either ux 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x
+
+> 3
+
+or wx 
+
+> 1
+
+, w x 
+
+> 2
+
+, w x 
+
+> 3
+
+. Furthermore, for each clause vertex, all robots from the vertex along one of the paths of length ( s + 1) to a variable gadget are moved by one step each. We construct an assignment for the variables in X as follows. For each x ∈ X, if three obnoxious robots move to ux 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x 
+
+> 3
+
+, then we set x to true. Otherwise, we set x to false. We claim that this is a satisfying assignment for ϕ.Assume for contradiction that this is not a satisfying assignment. Then there is a clause 
+
+c that is not satisfied. Consider the corresponding clause vertex vc. If none of c’s literals are satisfied, then by construction the vertices of the variable gadgets that are connected to vc
+
+by paths of length ( s + 1) are occupied by obnoxious robots. It follows that at least ( s + 2) moves are necessary to move the obnoxious robot from vc. Then, however, by the arguments given above, the total number of moves is strictly larger than c, a contradiction. ◀
+
+From Observation 17 and Lemmas 18 and 19 follows that Collision-Free Movement to Connectivity is NP-hard even if k = 2 and the input graph is planar. In the following, we show how to modify Construction 2 to produce a graph that is a grid. First, we argue that we can find an alternative embedding for G by “unfolding” it, such that r1 and r2 lie on the outer face, see Figure 10 for an “unfolded” version of Figure 9. More formally, we can “break” the Hamiltonian cycle in H between the first variable vertex and the last clause vertex, creating a Hamiltonian path that first visits all variable vertices and then all clause vertices. We can draw this path along a horizontal line. Then all edges that were outside the cycle are now above the path, and all edges inside the cycle are now 22 Collision-free Movement on Grids and Beyond 
+
+Variable gadget Variable gadget Clause gadgets 
+
+Figure 10 Illustration of a “unfolded” embedding of the graph G produced by Construction 2. The blue filled round vertices have obnoxious robots on them, and the black filled square vertices have main robots on them. The red edges correspond to paths of length s that have obnoxious robots on all inner vertices. 
+
+below the path. We take this embedding as a starting point to construct a modified graph 
+
+G′ that is a grid (together with an embedding that shows this). Note that there are three main obstacles to overcome: The clause vertices in G may have degree 5, which is not possible in a grid. Hence, we have to modify the vertices to “clause gadgets” that are grids. All paths connecting clause gadgets to variable gadgets need to have the same length in order for the reduction to work. The path between the last variable gadget and the first clause gadget has to be sufficiently long (that is, longer than any path from a clause gadget to a variable gadget) for the reduction to work. Formally, we construct G′ as follows. 
+
+▶ Construction 3. Given an instance ( ϕ, H ) of Linked Planar 3-SAT , we construct an instance ( G′ = ( V ′, E ′), R ′, O ′, c ′) of Collision-Free Movement to Connectivity with 
+
+k = 2 as follows. Let the variables X and clauses Y in ϕ be ordered in the way they appear in the Hamiltonian cycle in H.For each variable x ∈ X, we create a variable gadget G′ 
+
+> x
+
+= ( V ′
+
+> x
+
+, E ′
+
+> x
+
+) with 
+
+V ′ 
+
+> x
+
+= {vx 
+
+> 1
+
+, v x 
+
+> 2
+
+, v x 
+
+> 3
+
+, v x 
+
+> 4
+
+, v x 
+
+> 5
+
+, v x 
+
+> 6
+
+, v x 
+
+> 7
+
+, u x 
+
+> 1
+
+, u x 
+
+> 2
+
+, u x 
+
+> 3
+
+, u x 
+
+> 4
+
+, u x 
+
+> 5
+
+, w x 
+
+> 1
+
+, w x 
+
+> 2
+
+, w x 
+
+> 3
+
+, w x 
+
+> 4
+
+, w x 
+
+> 5
+
+}, and 
+
+E′ 
+
+> x
+
+= {{ vx 
+
+> 1
+
+, v x 
+
+> 2
+
+}, {vx 
+
+> 2
+
+, v x 
+
+> 3
+
+}, {vx 
+
+> 3
+
+, v x 
+
+> 4
+
+}, {vx 
+
+> 4
+
+, v x 
+
+> 5
+
+}, {vx 
+
+> 5
+
+, u x 
+
+> 1
+
+}, {ux 
+
+> 1
+
+, u x 
+
+> 2
+
+}, {ux 
+
+> 2
+
+, u x 
+
+> 3
+
+}, {ux 
+
+> 3
+
+, u x 
+
+> 4
+
+},
+
+{ux 
+
+> 4
+
+, u x 
+
+> 5
+
+}, {ux 
+
+> 5
+
+, v x 
+
+> 6
+
+}, {vx 
+
+> 5
+
+, w x 
+
+> 5
+
+}, {wx 
+
+> 5
+
+, w x 
+
+> 4
+
+}, {wx 
+
+> 4
+
+, w x 
+
+> 3
+
+}, {wx 
+
+> 3
+
+, w x 
+
+> 2
+
+}, {wx 
+
+> 2
+
+, w x 
+
+> 1
+
+},
+
+{wx 
+
+> 1
+
+, v x 
+
+> 6
+
+}, {vx 
+
+> 6
+
+, v x 
+
+> 7
+
+}} .Furthermore, we place obnoxious robots on the vertices vx 
+
+> 1
+
+, v x 
+
+> 2
+
+, v x 
+
+> 3
+
+, v x 
+
+> 4
+
+, v x 
+
+> 5
+
+. For an illustration of the variable gadget see Figure 11. For each variable c ∈ Y , we create a variable gadget G′ 
+
+> c
+
+= ( V ′ 
+
+> c
+
+, E ′
+
+> c
+
+) with 
+
+V ′ 
+
+> c
+
+= {vc
+
+> 1
+
+, v c
+
+> 2
+
+, v c
+
+> 3
+
+, v c
+
+> 4
+
+, v c
+
+> 5
+
+, v c
+
+> 6
+
+, u c
+
+> 1
+
+, u c
+
+> 2
+
+, u c
+
+> 3
+
+, u c
+
+> 4
+
+, u c
+
+> 5
+
+, w c
+
+> 1
+
+, w c
+
+> 2
+
+, w c
+
+> 3
+
+, w c
+
+> 4
+
+, w c
+
+> 5
+
+}, and 
+
+E′ 
+
+> c
+
+= {{ vc
+
+> 1
+
+, v c
+
+> 2
+
+}, {vc
+
+> 2
+
+, v c
+
+> 3
+
+}, {vc
+
+> 3
+
+, v c
+
+> 4
+
+}, {vc
+
+> 4
+
+, v c
+
+> 5
+
+}, {vc
+
+> 3
+
+, u c
+
+> 3
+
+}, {uc
+
+> 1
+
+, u c
+
+> 2
+
+}, {uc
+
+> 2
+
+, u c
+
+> 3
+
+}, {uc
+
+> 3
+
+, u c
+
+> 4
+
+},
+
+{uc
+
+> 4
+
+, u c
+
+> 5
+
+}, {vc
+
+> 3
+
+, w c
+
+> 3
+
+}, {wc
+
+> 5
+
+, w c
+
+> 4
+
+}, {wc
+
+> 4
+
+, w c
+
+> 3
+
+}, {wc
+
+> 3
+
+, w c
+
+> 2
+
+}, {wc
+
+> 2
+
+, w c
+
+> 1
+
+}} .Hendrik Molter and Meirav Zehavi 23 
+
+vx 
+
+> 1
+
+vx 
+
+> 2
+
+vx 
+
+> 3
+
+vx
+
+> 4
+
+vx
+
+> 5
+
+ux 
+
+> 1
+
+ux
+
+> 2
+
+ux
+
+> 3
+
+ux 
+
+> 4
+
+ux
+
+> 5
+
+wx 
+
+> 5
+
+wx
+
+> 4
+
+wx
+
+> 3
+
+wx 
+
+> 2
+
+wx
+
+> 1
+
+vx
+
+> 6
+
+vx
+
+> 7
+
+Figure 11 Illustration of a variable gadget G′ 
+
+> x
+
+for a variable x (Construction 3). The black filled vertices have obnoxious robots on them. Red dashed lines indicate where the paths between variable gadgets and clause gadgets are connected. 
+
+vc 
+
+> 1
+
+vc 
+
+> 2
+
+vc 
+
+> 3
+
+vc 
+
+> 4
+
+vc 
+
+> 5
+
+vc
+
+> 6
+
+uc
+
+> 5
+
+uc 
+
+> 4
+
+uc 
+
+> 3
+
+uc
+
+> 2
+
+uc
+
+> 1
+
+wc
+
+> 1
+
+wc 
+
+> 2
+
+wc 
+
+> 3
+
+wc
+
+> 4
+
+wc
+
+> 5
+
+Figure 12 Illustration of a clause gadget G′ 
+
+> c
+
+for a clause c (Construction 3). The black filled vertices have obnoxious robots on them. Red dashed lines indicate where the paths between variable gadgets and clause gadgets are connected. 
+
+Furthermore, we place obnoxious robots on the vertices vc
+
+> 3
+
+, u c
+
+> 1
+
+, u c
+
+> 2
+
+, u c
+
+> 3
+
+, u c
+
+> 4
+
+, u c
+
+> 5
+
+, w c
+
+> 1
+
+, w c
+
+> 2
+
+, w c
+
+> 3
+
+, w c
+
+> 4
+
+, w c
+
+> 5
+
+.For an illustration of the clause gadget see Figure 12. We construct the graph G′ of the Collision-Free Movement to Connectivity 
+
+instance by first taking the graph H and replacing each vertex corresponding to a variable, say x, with variable gadget G′ 
+
+> x
+
+in the following way. If two vertices corresponding to variables 
+
+x, y are adjacent in H, that is, they appear consecutive in the ordering (first x and then y), then we add edge {vx 
+
+> 7
+
+, v y 
+
+> 1
+
+} to G′. Let x be the last variable in the ordering and let c be the first clause in the ordering, then we add edge {vx 
+
+> 7
+
+, v c
+
+> 1
+
+} to G′ and subdivide it s + 4 times, where s = 90 · (|X| + |Y |) − 4. For each clause c ∈ C we replace the corresponding vertex with clause gadget G′ 
+
+> c
+
+in the following way. If two clauses c, c ′ appear consecutive in the ordering (first c and then c′), then we add edge {vc
+
+> 6
+
+, v c′ 
+
+> 1
+
+} to G. Let variable x appear in clauses 
+
+c1, c 2, c 3. Then the vertex x in H is connected to vertices vc1 , v c2 , v c3 in H. Let w.l.o.g. the order c1, c 2, c 3 be the linearization of the clockwise cyclic ordering in which the edges incident with x to the vertices c1, c 2, c 3 are embedded around x in the planar embedding of H, such that all clauses in which x appears non-negated are ordered before the clauses in which x
+
+appears negated. For each clause c, let w.l.o.g. the order ℓ1 
+
+> c
+
+, ℓ 2 
+
+> c
+
+, ℓ 3 
+
+> c
+
+the linearization of the anti-clockwise cyclic ordering in which edges incident with c to the variables corresponding to literals ℓ1 
+
+> c
+
+, ℓ 2 
+
+> c
+
+, ℓ 3 
+
+> c
+
+are embedded around c. For i ∈ { 1, 2, 3}, if x appears in ci non-negated as the jth literal according to the above ordering, then we connect uxi with uci 
+
+> j
+
+with an edge. If j̸ = 2 and subdivide the edge s times and otherwise s + 2 times. Furthermore, we place an obnoxious robot on each vertex created by a subdivision. If x appears in ci negated as the 
+
+jth literal according to the above ordering, then we connect wxi with wci 
+
+> j
+
+with an edge. If 24 Collision-free Movement on Grids and Beyond   
+
+> Figure 13 Illustration of an embedding described in the proof of Lemma 20 of the graph G′
+> produced by Construction 3. The drawing is not up to scale but rather should give the rough idea on how the embedding looks like. The grid points on the thick black lines have obnoxious robots on them, and the blue filled square vertices have main robots on them. The red edges correspond to long paths that have obnoxious robots on all inner vertices. The light blue area surrounded by the black dashed line indicates the part of the grid, where we make sure that all red paths have the same length, and the path connecting the last variable gadget with the first clause gadget is sufficiently long. This is also indicated by the snake-like shape of the paths in the area.
+
+j̸ = 2 and subdivide the edge s times and otherwise s + 2 times. Furthermore, we place an obnoxious robot on each vertex created by a subdivision. Finally, we add two vertices r1, r 2
+
+to G and place a main robot on each of them. Let x be the first variable in the ordering, then we add edge {r1, v x 
+
+> 1
+
+} to G. Let c be the last clause in the ordering, then we add edge {r2, v c
+
+> 6
+
+}
+
+to G. For an illustration, see Figure 13. Finally, we set c = 37 · | X| + ( s + 8) · | Y | + s + 5. We will assume in the proofs of correctness that s2/4 > c . Note that this is clearly the case if |X| and |Y | are sufficiently large. This finishes the construction, which can clearly be performed in polynomial time. In the following, we argue that G′ is indeed a grid. 
+
+▶ Lemma 20. The graph G′ obtained from Construction 3 is a grid. 
+
+Proof. For an illustration see Figure 13. The main idea of the embedding is as follows. It has a very similar structure as the embedding of G (by Construction 2) illustrated in Figure 10. Informally speaking, we arrange the variable gadgets in a line (more specifically, according to Figure 11 and the next leftmost vertex of the next gadget connects via a horizontal edge to the rightmost vertex of the current gadget). Afterwards, we leave a horizontal “gap” of size 10 · (|X| + |Y |) and then we arrange the clause gadgets (Figure 12) in a line. This gap corresponds to the horizontal size of the light blue area in Figure 13, where the paths make the snake-like shaped. Informally speaking, this gap is large enough (and the paths are sufficiently far apart from each other), that we can realize paths of length s, s + 2, or s + 4 Hendrik Molter and Meirav Zehavi 25 
+
+no matter from which vertices exactly they start and finish, and no matter how far up or dowm from the middle we embed those paths. Formally, we start replacing the variable gadget of G′ in the way shown in Figure 11 on the grid, such that the vertex vx 
+
+> 1
+
+for the first variable x according to the ordering is placed on grid point (0 , 0). Then we place the second variable gadget next to it, formally also in the way depicted in Figure 11 such that vx′ 
+
+> 1
+
+is (where x′ is the second variable) is placed on grid point (10 , 0), and so on. After the last variable gadget, we keep 10 · (|X| + |Y |) free grid points (horizontally). This corresponds to the horizontal size of the light blue area on Figure 13. Then we embed the clause gadgets according to Figure 12. Formally, the first clause gadget is positions such that vc 
+
+> 1
+
+(where c is the first clause) is placed on grid point (10 · | X| + 10 · (|X| + |Y |), 0), and so on. Note that by Construction 3, the last variable gadget and the first clause gadget are connected by a path of length s + 4 = 90 · (|X| + |Y |). This we can do by arranging the path snake-like, going 4 grid-cells up and 4 grid-cells down, as depicted in Figure 13. We embed each path connecting a clause gadget with a variable gadget as follows. Assume that the path connects the jth literal (for j ∈ [3]) of the ith clause with a variable gadget. Assume that the literal is non-negated. Then we embed the path upward using 10 ≤ 10 · (3 i + j − 3) ≤ 30 · | Y | grid points. Note that this ensures that any two paths are at least 10 horizontal grid points apart from each other. The vertex of the variable gadget to which the path connects is at most 6 · | Y | + 10 · | X| + 10 · (|X| + |Y |) and at least 10( |X| + |Y |) grid points to the left. Note that 66 · | Y | + 10 · | X| + 10 · (|X| + |Y |) ≤ s, hence embedding a path like this never creates a path that is already too long. If the path is too short when embedded like this, we can add snake-like shapes going 4 grid-cells up and 4 grid-cells down (note that does not interfere with any other path, since they are at least 10 grid cells above or below) until the path has the correct length. Here it is important to see that the connecting points of variable gadgets and clause gadgets have an even horizontal distance and the “initial” embedding has even length. By adding snake-like shaped, we can make the path longer by an arbitrary even number that is smaller than s + 4. Hence, we can ensure all paths can be embedded in the described way by adding an appropriate amount of snake-like shapes. If the literal is negated. Then we embed the path downward using 10 ≤ 10 · (3 i + j − 3) ≤ 30 · | Y | grid cells. The rest of the embedding is analogous. ◀
+
+Now we have all ingredients to prove Theorem 2. 
+
+Proof of Theorem 2. By Lemma 20 we have that the graph produced by Construction 3 is a grid. Clearly, there are only two main robots. The correctnenss can be shown analogously to Lemmas 18 and 19 by adjusting the movement steps needed in the gadgets and to traverse the gadgets. We omit the details. ◀
+
+# 5 Collision Free Movement on Grids 
+
+In this section, we present parameterized algorithms for Collision-Free Movement to Π parameterized by k + c on grids. Specifically, we give kernelization algorithms that produce problems kernels of size O(k · c2) for Collision-Free Movement to Π and 
+
+O(min {k · c2, k 2 + c2}) for Collision-Free Movement to Connectivity . This means, if c ∈ ω(√k), we have a strictly better kernel size for Collision-Free Movement to Connectivity . These kernelization algorithms can then e.g. be combined with Theorem 16 to obtain an algorithm with a running time in ( k · c)O(c) + nO(1) .26 Collision-free Movement on Grids and Beyond 
+
+Kernelization. To obtain the kernelization results, we give a number of straightforward reduction rules. A reduction rule is a description of a procedure that takes a problem instance as input and outputs an instance of the same problem. We say that a reduction rule is safe ,if it holds that the input instance is a yes-instance if and only if the output instance is a yes-instance. First, we prove Theorem 3 (restated below). 
+
+▶ Theorem 3. Collision-Free Movement to Π parameterized by k+c admits a polynomial kernel of size O(k · c2) if the input graph is a grid. 
+
+To prove Theorem 3, we present the following simple reduction rule. Essentially, it allows us to remove vertices that are too far away from all main robots. The intuition here is that if a vertex v has distance more than c to any main robot starting location, then it cannot be visited by any main robot, and it also cannot be visited by any obnoxious robot that needs 
+
+to move in order to avoid collision. 
+
+▶ Reduction Rule 1. Let ( G = ( V, E ), R, O, c ) be an instance of Collision-Free Move-ment to Π. If there is a v ∈ V such that for all r ∈ R it holds that dist G(v, r ) > c , then remove v from G (and from O, if it is contained in O). Reduction Rule 1 can clearly be applied in polynomial time and it will also be useful in the algorithms we present in later sections. Next, we prove that it can be safely applied. 
+
+▶ Lemma 21. Reduction Rule 1 is safe. 
+
+Proof. Assume for contradiction that there is a vertex v that Reduction Rule 1 would remove and to or from which a robot is moved in a solution to the instance. Assume that the solution has a minimum number of movements. Note that this cannot be a main robot, since all of them have distance more than c to v and hence cannot be moved to v. It follows that an obnoxious robot is moved to v (or moved away from v). In a solution with a minimum number of movements, an obnoxious robot is only moved to avoid a collision with a main robot or another obnoxious robot. In the latter case, this property holds recursively for the other obnoxious robot. We can conclude that in the end-configuration, there is a path from v to a vertex v′ with a main robot such that all vertices of the path (except v′) have obnoxious robots on them an each one has been moved by at least one step. Let ℓ′ be the number of obnoxious robots that have been moved. Then the distance of v′ to any main robot starting location is at least c − ℓ′ + 1. It follows that moving a main robot to v′ and moving the ℓ′ obnoxious robots by one step each requires more that c movements in total, a contradiction. ◀
+
+Now we can prove Theorem 3. 
+
+Proof of Theorem 3. We apply Reduction Rule 1 exhaustively, which can clearly be done in polynomial time. By Lemma 21 we have that the rule is safe. The definition of Reduction Rule 1 implies that we keep a ball of radius c around every vertex that has a main robot. In a grid, a ball of radius c around a vertex contains O(c2) vertices. It follows that after exhaustively applying Reduction Rule 1, the remaining graph G has O(k · c2) vertices. ◀
+
+Now we refine the kernelization algorithm for Collision-Free Movement to Con-nectivity by introducing some additional reduction rules with which we can achieve a smaller kernel if k < c 2. This allows us to prove Theorem 4 (restated below). 
+
+▶ Theorem 4. Collision-Free Movement to Connectivity parameterized by k + c
+
+admits a polynomial kernel of size O(min {k · c2, k 2 + c2}) if the input graph is a grid. Hendrik Molter and Meirav Zehavi 27 
+
+To show Theorem 4, we introduce an additional reduction rule. Informally, this rule says that if a vertex v is too far away (distance more than c + k) from some main robot r’s starting location, then is is irrelevant. 
+
+▶ Reduction Rule 2. Let ( G = ( V, E ), R, O, c ) be an instance of Collision-Free Move-ment to Connectivity . If there is a v ∈ V \ R such that there exists r ∈ R such that dist G(v, r ) > c + k, then remove v from G (and from O, if it is contained in O). Reduction Rule 2 can clearly be applied in polynomial time. Next we prove that it is safe. 
+
+▶ Lemma 22. Reduction Rule 2 is safe. 
+
+Proof. Assume for contradiction that there is a vertex v that Reduction Rule 2 would remove and to or from which a robot is moved in a solution to the instance. Assume that the solution has a minimum number of movements. Let r ∈ R such that dist G(v, r ) > c + k. Assume that an obnoxious robot is moved to v (or moved away from v). In a solution with a minimum number of movements, an obnoxious robot is only moved to avoid a collision with a main robot or another obnoxious robot. In the latter case, this property holds recursively for the other obnoxious robot. We can conclude that in the end-configuration, there is a path from v
+
+to a vertex v′ with a main robot such that all vertices of the path (except v′) have obnoxious robots on them an each one has been moved by at least one step. Let ℓ′ be the number of obnoxious robots that have been moved. If a main robot is moved to or from v, set ℓ′ = 0 and v = v′ in the following argument. Then the distance of v′ to r is at least c + k − ℓ′ + 1. Note that at most k vertices on any path from v′ to r can have main robots on them. It follows that connecting the main robot with starting location r to the main robot on v′ and moving the ℓ′ obnoxious robots by one step each requires more that c movements in total, a contradiction. ◀
+
+Now we can prove Theorem 4. 
+
+Proof of Theorem 4. We apply Reduction Rules 1 and 2 exhaustively, which can clearly be done in polynomial time. By Lemmas 21 and 22 we have that the rules are safe. By Theorem 3 we know that after exhaustively applying Reduction Rule 1, the remaining graph 
+
+G has O(k · c2) vertices. After applying Reduction Rule 2 we have that in particular, for any fixed r ∈ R, we have that for all v ∈ V \ R it holds that dist G(v, r ) ≤ c + k. It follows that we keep a ball of radius c + k around r that contains all vertices except possibly some vertices in R. In a grid, a ball of radius c + k around a vertex contains O(c2 + k2) vertices. It follows that after exhaustively applying Reduction Rule 2, the remaining graph G has 
+
+O(k2 + c2) vertices. The theorem statement follows. ◀
+
+Kernelization Lower Bounds. Now we present several kernelization lower bounds. We use the popular OR-cross-compositions framework [4, 25] to refute the existence of a polynomial kernel for a parameterized problem under the assumption that coNP ̸ ⊆ NP/poly, the negation of which would cause a collapse of the polynomial-time hierarchy to the third level. In order to formally define OR-cross-compositions, we introduce equivalence relations first. An equivalence relation R on the instances of some problem L is a polynomial equivalence relation if 
+
+1. one can decide for every two instances in time polynomial in their sizes whether they belong to the same equivalence class, and 
+
+2. for each finite set S of instances, R partitions the set into at most (max x∈S |x|)O(1) 
+
+equivalence classes. 28 Collision-free Movement on Grids and Beyond 
+
+> Instance 1 Instance 2
+
+...  
+
+> Instance t
+> Figure 14 Illustration of the OR-cross-composition from Theorem 5. Blue filled square vertices have main robots on them.
+
+An OR-cross-composition of a problem L ⊆ { 0, 1}∗ into a parameterized problem P (with respect to a polynomial equivalence relation R on the instances of L) is an algorithm that takes t R -equivalent instances x1, . . . , x t of L and constructs in time polynomial in ∑ti=1 |xi|
+
+an instance ( y, k ) of P such that 
+
+1. k ≤ (max i∈[t] |xi| + log t)O(1) , and 
+
+2. (y, k ) is a yes-instance of P if and only if there is an i ∈ [t] s.t. xi is a yes-instance of L.If an NP -hard problem L OR-cross-composes into a parameterized problem P , then P does not admit a polynomial kernel, unless coNP ⊆ NP/poly [4, 25]. First, we show Theorem 5 (restated below), which implies that we cannot get similar kernelization results as Theorems 3 and 4 for planar graphs. 
+
+▶ Theorem 5. Collision-Free Movement to Connectivity parameterized by c does not admit a polynomial kernel unless coNP ⊆ NP/poly, even if the input graph is planar and 
+
+k = 2 .
+
+Proof. We provide an OR-cross-composition from Linked Planar 3-SAT [37] based on Construction 2 that is used in the proof of Theorem 2. We say that two instances of Linked Planar 3-SAT are equivalent if the two formulas have the same number of variables and the same number of clauses. Assume we are given t equivalent instances x1, x 2, . . . , x t of 
+
+Linked Planar 3-SAT . We apply Construction 2 to each instance of Linked Planar 3-SAT . We identify the vertices r1 and r2 (the start positions of the main robots) of all instances. Then each edge incident with r1 and r2 we subdivide s + 2 = |X| + |Y | + 2 times, where |X| and |Y | are the number of variables and clauses, respectively. We set 
+
+c = 16 · | X| + ( s + 2) · (|Y | + 3) + 1. This finishes the construction. For an illustration see Figure 14. The edge subdivisions ensure that it is too expensive to move obnoxious robots between the instances. Intuitively, the allowed movement amount forces r1 and r2 to meet through one of the instances. The formal correctness is analogous to Lemmas 18 and 19. ◀
+
+Next, we prove Theorem 6 (restated below), that is, we presumably cannot drop the parameter k from the kernelization results in Theorems 3 and 4. 
+
+▶ Theorem 6. Collision-Free Movement to Connectivity parameterized by c does not admit a polynomial kernel unless coNP ⊆ NP/poly, even if the input graph is a grid. 
+
+Proof. We provide an OR-cross-composition from Linked Planar 3-SAT [37] based on Construction 3 that is used in the proof of Theorem 2. We say that two instances of Linked Hendrik Molter and Meirav Zehavi 29 
+
+Planar 3-SAT are equivalent if the two formulas have the same number of variables and the same number of clauses. Assume we are given t equivalent instances x1, x 2, . . . , x t of Linked Planar 3-SAT . We apply Construction 3 to each instance of Linked Planar 3-SAT with one small modification: we do not place any obnoxious robots in the variable gadgets. Note that the created instances all have the same horizontal size when embedded into a grid using the description on Lemma 20. We place the instances on top of each other (aligned) such that they to not overlap, see Figure 15 for an illustration. Then in each instance, the we subdivide the edges incident with r1 and r2, respectively, c + 1 times, where we specify c later, respectively. We put a main robot on each newly created vertex. We embed the new vertices produced by the edge subdivisions horizontally to the left and right, respectively, from the original positions of r1 and r2, respectively. Now we create a vertical path connecting all 
+
+r1-vertices of all instances and a vertical path connecting all r2-vertices of all instances. We place main robots on all vertices of those two paths. For an illustration see Figure 15. Now, for each instance, we create one additional path with main robots on each vertex as follows. Let ( x, y ) be the coordinates of the original grid point of the r1-vertex of an instance (before the edge subdivisions). Then we start a path at grid point ( x − 1, y − 1) of length k′ < c − 1horizontally to the left, where we specify k′ later. Furthermore, we connect the vertex on grid point ( x − 1, y − 1) to the one on grid point ( x − 1, y ). The intuition here is that instead of having two main robots meet from each side of an instance constructed by Construction 3, we create a connection between the main robots on the left side of the instances and the main robots on the right side of the instances by moving k′ robots into one of the instances. This is why the obnoxious robots in the variable gadgets are removed. The main robots will play the role of the obnoxious robots instead. This also means that k′ essentially needs to equal the number of steps made by main robots in the reduction of Theorem 2. Since the other paths on both sides of the instances have length c + 1, main robots on those paths cannot be moved, since broken connections cannot be repaired with less than c moves. To finish the construction, we set k′ = 12 · | X| + 6 · | Y | + s + 5, where |X| and |Y | are the numbers of variables and clauses, respectively, and s = 90 · (|X| + |Y |) − 4. We set 
+
+c = ( k′)2 + ( s + 2) · | Y |.Note that for the main robots on the left and the right side of the instances to be connected, a connection through one of the instances has to be established. The formal correctness is analogous to Theorem 2 with a few minor differences: If one of the instances is a yes-instance, then we can move the main robots on the path of length k′ next to the instance through the instance using ( k′)2 moves. In the variable gadget, the main robots assume the role of the obnoxious robots in the original reduction, that is, they leave the same vertices in the variable gadgets unoccupied as the obnoxious robots, such that the obnoxious robots on the paths from clause gadgets to variable gadgets can move if the variable is set to a truth value that satisfied the corresponding literal of the clause. Those are ( s + 2) · | Y |
+
+moves in total. For the other direction, also analogous arguments hold with the following modification. We argue that the main robots cannot take “short-cuts” through paths connecting variable gadgets and clause gadgets since moving all obnoxious robots out of the way and moving main robots into the path costs at least 2 · (s + 2) 2 moves. For large enough |X| and |Y | we have that 2 · (s + 2) 2 > c , and hence this is not possible. It follows that we can use the same arguments for the correctness as in the proof of Theorem 2. ◀
+
+Finally, we prove Theorem 7 (restated below), that is, we presumably cannot improve the kernel size from Theorem 4. For this kernelization lower bound, we use the weak cross-30 Collision-free Movement on Grids and Beyond 
+
+> Instance 1 Instance 2
+
+... 
+
+> Instance t
+
+c + 1 
+
+k′ 
+
+> Figure 15 Illustration the OR-cross-composition from Theorem 6. The grid points on blue paths have main robots on them. The thick blue paths have the main robots on them that would move through the corresponding instance.
+
+compositions framework [25, 30] to refute the existence of a polynomial kernel of a certain size for a parameterized problem under the assumption that coNP ̸ ⊆ NP/poly. A weak cross-composition of a problem L ⊆ { 0, 1}∗ into a parameterized problem P (with respect to a polynomial equivalence relation R on the instances of L) is an algorithm that takes 
+
+t R -equivalent instances x1, . . . , x t of L and constructs in time polynomial in ∑ti=1 |xi| an instance ( y, k ) of P such that 
+
+1. k ≤ (max i∈[t] |xi|)O(1) · t 1 
+
+> d
+
+for some d ∈ N, and 
+
+2. (y, k ) is a yes-instance of P if and only if there is an i ∈ [t] s.t. xi is a yes-instance of L.If an NP -hard problem L weakly cross-composes into a parameterized problem P , then P does not admit a polynomial kernel of size O(kd−ε) for any ε > 0, unless coNP ⊆ NP/poly [25, 30]. 
+
+▶ Theorem 7. Collision-Free Movement to Connectivity parameterized by k + c does not admit a polynomial kernel of size O(( k + c)2−ε) for any ε > 0 unless coNP ⊆ NP/poly, even if the input graph is a grid. 
+
+Proof. We provide a weak cross-composition from Linked Planar 3-SAT [37] based on Construction 3 that is used in the proof of Theorem 2. We say that two instances of Linked Planar 3-SAT are equivalent if the two formulas have the same number of variables and the same number of clauses. Assume we are given t equivalent instances x1, x 2, . . . , x t of 
+
+Linked Planar 3-SAT . Furthermore, assume that √t = t′ for some t′ ∈ N (if not, we can copy some of the instances sufficiently many times). We apply Construction 3 to each instance of Linked Planar 3-SAT . We remove the main robots from vertices r1 and r2Hendrik Molter and Meirav Zehavi 31 
+
+of all instances. Then in each instance, the we subdivide the edges incident with r1 and r2,respectively, s + 4 = 90 · (|X| + |Y |) times, where |X| and |Y | are the number of variables and clauses, respectively. We use the embedding for the instances described in Lemma 20 and embed the new vertices produced by the edge subdivisions horizontally to the left and right, respectively, from the original positions of r1 and r2, respectively. Let xmax = max i∈[t] |xt|. We arrange the t instances in a ( √t × √t)-“super grid” where each cell has size ( xmax + 4) × (xmax + 4) and place one of the instances into each super grid cell so that there are at least 2 empty rows / columns of grid cells between each instance and the boundaries of the super grid cells. For an illustration see Figure 16. Now we place two verices r⋆ 
+
+> 1
+
+and r⋆ 
+
+> 2
+
+at the bottom-left and top-right corner of the super grid, respectively, and place main robots on them. We create paths from r⋆ 
+
+> 1
+
+horizontally (to the right) and vertically (to the top) of length √t · (xmax + 4) − 1, that is, they reach just short of the bottom-right and top-left corner of the super grid. From the vertical path, we create horizontal paths (to the left) of length √t · (xmax + 4) − 1 along the bottom (plus one grid cell up) of each super grid cell. We connect this path (via vertical paths up) to the r1-vertex of each instance in each super grid cell that it traverses. Now we do an analogous construction from r⋆ 
+
+> 2
+
+. We create paths from 
+
+r⋆ 
+
+> 2
+
+horizontally (to the left) and vertically (to the bottom) of length √t · (xmax + 4) − 1, that is, they also reach just short of the bottom-right and top-left corner of the super grid and do not touch the paths starting at r⋆ 
+
+> 1
+
+. From the vertical path, we create horizontal paths (to the left) of length √t · (xmax + 4) − 1 along the top (minus one grid cell up) of each super grid cell. We connect this path (via vertical paths down) to the r2-vertex of each instance in each super grid cell that it traverses. The path just described are depicted in red in Figure 16. We set c = 2 · √t · (xmax + 4) + 2 · (s + 4) + c′, where c′ is the allowed movement amout of an instance xi with i ∈ [t] (note that since the instances are equivalent, they all have the same allowed movement amount). This finishes the construction. Note that for the main robots on r⋆ 
+
+> 1
+
+and r⋆ 
+
+> 2
+
+, respectively, to meet, they have to traverse at least one of the instances. Assume w.l.o.g. that the two robots meet in an instance (if they do not, we can move the meeting point to r1 or r2 with a respective neighbor of one of the instances). In order to reach said instance, the have to travel at least 2 · √t · (xmax + 4) along red paths in Figure 16. Furthermore, they have to traverse the edge-subdivision after r1 and 
+
+r2 of said instance, which takes another 2 · (s + 4) steps. There are now c′ steps remaining to traverse at least one instance. The edge subdivisions ensure that it is too expensive to move obnoxious robots between the instances. Intuitively, the allowed movement amount forces r1 and r2 to meet through one of the instances. The formal correctness is analogous to Theorem 2. ◀
+
+# 6 Collision Free Movement on Planar Graphs 
+
+In this section, we prove Theorem 8 (restated below), that is, we show that Collision-Free Movement to Π is fixed-parameter tractable when parameterized by k + c if the input graph is planar. 
+
+▶ Theorem 8. Collision-Free Movement to Π is fixed-parameter tractable when para-meterized by k + c if the input graph is planar. 
+
+To prove Theorem 8, we show that Collision-Free Movement to Π is expressable in monadic second-order logic (MSO). This allows us to employ Courcelle’s famous theorem [2, 5, 6] to obtain the result. 32 Collision-free Movement on Grids and Beyond   
+
+> x1x2
+
+. . . x√t  
+
+> x√t+1 x√t+2
+
+. . . ...... 
+
+> xt−√t+1
+
+. . . 
+
+...
+
+> xt
+
+r⋆
+
+> 1
+
+r⋆   
+
+> 2
+> Figure 16 Illustration of the weak cross-composition from Theorem 7. The drawing is not up to scale but rather should give the rough idea on how the embedding looks like. Black boxes correspond to the instances and red lines to the connecting paths. Blue filled square vertices have main robots on them. The thick lines correspond to the paths visited by the main robots when instance x√t+2 is selected.
+
+We begin by recalling some basic notation and terminology for relational structures. A 
+
+relational vocabulary is a finite set τ of relation symbols, each of which is associated with a natural number, known as its arity . Given any relational vocabulary τ , a τ -structure is a pair A = ( A, {RA | R ∈ τ }); A is said to be the universe of A while, for each R ∈ τ ,the interpretation RA of R in A is a subset of Ar, where r is the arity of R. Here, we are interested only in relational structures with finite universes, and where the maximum arity of any relation is two. For any vocabulary τ , the set of first-order formulas is built up from a countably infinite set of individual variables x1, x 2, . . . , the relation symbols R ∈ τ , the connectives ∧, ∨, ¬ and the quantifiers ∀x, ∃x ranging over elements of the universe of the structure (for notational convenience we will also use standard shorthand such as ⇒, ⇔, =, and ∈). Monadic second-order logic (MSO) additionally allows quantification over subsets of the universe via unary relation variables (which we will call set variables ). Given an MSO-formula ϕ, an individual variable x (respectively a unary relation variable X) appearing in ϕ is said to be a free variable if x (respectively X) is not in the scope of a quantifier ∃x or ∀x (respectively 
+
+∃X or ∀X). We write ϕ(X1, . . . , X n, x 1, . . . , x m) for a formula ψ with with free relation variables X1, . . . , X n and individual variables x1, . . . , x m. Given subsets A1, . . . , A n ⊆ A
+
+(formally these define interpretations of unary relation variables over A) and elements 
+
+a1, . . . , a m ∈ A, we write A | = ϕ(A1, . . . , A n, a 1, . . . , a m) to mean that A satisfies ϕ if the variables X1, . . . , X n, x 1, . . . , x m are interpreted as A1, . . . , A n, a 1, . . . , a m respectively. A tree decomposition of a τ -structure A with universe A is a pair ( T, B), where T =(VT , E T ) is a tree and B = ( Bv )v∈VT is a collection of subsets of A such that: 
+
+1. for all a ∈ A, the set {v ∈ VT : a ∈ Bv } is non-empty and induces a connected subtree in 
+
+T , and Hendrik Molter and Meirav Zehavi 33 
+
+2. for every relation symbol R ∈ τ and every tuple ( a1, . . . , a r) ∈ RA, there exists Bv ∈ B 
+
+such that a1, . . . , a r ∈ BV .As for graphs, the width of the tree decomposition ( T, B) is max Bv ∈B |Bv | − 1, and the 
+
+treewidth of A (denoted tw( A)) is the minimum width over all tree decompositions of A.We now give the formal definition of the MSO Model Checking problem. 
+
+MSO Model Checking               
+
+> Input: A relational structure Aand an MSO-formula ϕ.Question: Are there subsets A1, . . . , A n⊆Aand elements a1, . . . , a m∈Asuch that A | =
+> ϕ(A1, . . . , A n, a 1, . . . , a m)?
+
+Courcelle’s theorem [2, 5, 6] implies the following. 
+
+▶ Theorem 23 ([2, 5, 6]) . MSO Model Checking is fixed-parameter tractable when parameterized by tw( A) + |ϕ|.
+
+We begin by defining the relational structure A that will encode our instance of Collision-Free Movement to Π. Assume we are given an instance ( G = ( V, E ), R, O, c ) of Collision-Free Movement to Π. The universe A of A consists of the following elements: The set V of vertices .The set E of edges .The set [ c] of steps .The set Sv = V × [c] of vertex-step pairs .The set Se = V × [c] of edge-step pairs .The structure A has eight relation symbols (two unary and six binary relations), with the following interpretations: The unary relation main on V , where main( v) ⇔ v ∈ R.The unary relation robot on V , where robot( v) ⇔ v ∈ R ∪ O.The binary relation inc on V × E, where inc( v, e ) ⇔ v ∈ e.The binary relation vertex on Sv × V , where vertex(( v, i ), w ) ⇔ v = w.The binary relation edge on Se × E, where edge(( e, i ), f ) ⇔ e = f .The binary relation step v on Sv × [c], where step v (( v, i ), j ) ⇔ i = j.The binary relation step e on Se × [c], where step e(( e, i ), j ) ⇔ i = j.The binary relation nextstep on [ c] × [c], where nextstep( i, j ) ⇔ i = j + 1. We now bound the treewidth of A. Let ( T, B) be a tree decomposition for G of width tw( G). We construct a tree decomposition ( T, B′) for A, indexed by the same tree T = ( VT , E T ), as follows. Fix a vertex v ∈ VT , and let Bv be the corresponding element of B. We define the corresponding element of B′ to be 
+
+B′ 
+
+> v
+
+:= Bv ∪{ e = {u, w } ∈ E : v, w ∈ Bv }∪{ s = ( u, i ) ∈ Sv : u ∈ Bv }∪{ s = ( {u, w }, i ) ∈ Se : u, w ∈ Bv }∪ [c].
+
+It is straightforward to verify that, with this definition, ( T, B′) is indeed a tree decomposition for A. Furthermore, it is immediate that |B′ 
+
+> v
+
+| ≤ | Bv | + (|Bv |
+
+> 2
+
+) + c · (|Bv |
+
+> 2
+
+) + c · | Bv | + c. Hence, we have the following. 
+
+▶ Lemma 24. It holds that tw( A) ∈ O(c · tw( G)2).
+
+We now proceed to define the formula ϕ. The main idea (intuitively) is as follows. 34 Collision-free Movement on Grids and Beyond 
+
+For each main robot, we try to find a movement of length c.If an obnoxious robot is encountered in a movement, then we try to find a (non-trivial) movement of length c for the obnoxious robot. We know that in total, we can only have c non-trivial movements in the movement plan. The movement plan should be collision-free and the end-configuration of the main robots should induce a subgraph with property Π. The length of the moment plan should be at most c.We introduce several subformulas: movement( X) has as free variable X and checks whether these are exactly c elements from Sv that correspond to a movement. movement( X) = ∃x1, . . . , x c ∈ Sv
+
+( ∧ 
+
+> i∈[c]
+
+(xi ∈ X ∧ step v (x, i )) ∧ ∀ x ∈ X ∨
+
+> i∈[c]
+
+(x = xi)∧
+
+∧
+
+> i∈[c−1]
+
+(∃v ∈ V (vertex( xi, v ) ∧ vertex( xi+1 , v )) ∨∃e ∈ E ∃v, w ∈ V (inc( v, e ) ∧ inc( w, e ) ∧ vertex( xi, v ) ∧ vertex( xi+1 , w )
+
+)
+
+Note that the size of movement( X) is in O(c). The formula checks whether there are c
+
+elements in Sv with c different steps (note that this implies that the elements are different) and that each element in X is equal to one of these c elements from Sv . This implies that X contains exactly c elements from Sv . Then the formula checks for every pair of vertex-step pairs in X with consecutive time steps whether they have the same vertex or adjacent vertices. collision-free( X1, X 2) has as free variables X1 and X2, which are expected to be move-ments, and checks whether they are collision-free. collision-free( X1, X 2) = ∀x1 ∈ X1 ∀x2 ∈ X2 ∀i ∈ [c] ∃v, w ∈ V
+
+(
+
+(step v (x1, i ) ∧ step( x2, i )) ⇒
+
+(v̸ = w ∧ vertex( x1, v ) ∧ vertex( x2, w )
+
+)
+
+∧∀x1, x 2 ∈ X1 ∀x3, x 4 ∈ X2 ∀i, j ∈ [c] ∀v, w ∈ V
+
+(
+
+(nextstep( i, j )∧
+
+step v (x1, i ) ∧ step( x2, j ) ∧ step v (x3, i ) ∧ step( x4, j )) ⇒¬(vertex( x1, v ) ∧ vertex( x2, w ) ∧ vertex( x3, w ) ∧ vertex( x4, v )) 
+
+)
+
+Note that the size of collision-free( X1, X 2) is constant. move( X, x ) has as free variables X and x where X is expected to be a movement and x
+
+is expected to be an element from Se. It checks whether the edge-step pair x = ( e, i ) is a move in the movement, that is, whether at step i there is a move along edge e in the movement X.move( X, x ) = ∃x1, x 2 ∈ X ∃v, w ∈ V ∃e ∈ E ∃i, j ∈ [c]
+
+(
+
+nextstep( i, j ) ∧ step v (x1, i ) ∧ step v (x2, j )∧
+
+v̸ = w ∧ vertex( x1, v ) ∧ vertex( x2, w ) ∧ inc( v, e ) ∧ inc( w, e ) ∧ edge( x, e ) ∧ step e(x, i )
+
+)
+
+Note that the size of move( X, x ) is constant. start( X, x ), end( X, x ), and visit( X, x ) have as free variables X and x, respectively, where 
+
+X is expected to be a movement and x is expected to be an element from V . start( X, x )checks whether the movement X starts at vertex x. end( X, x ) checks whether the Hendrik Molter and Meirav Zehavi 35 
+
+movement X ends at vertex x. visit( X, x ) checks whether the movement X visits vertex 
+
+x at some step. start( X, x ) = ∃x1 ∈ X(vertex( x1, x ) ∧ step v (x, 1)) end( X, x ) = ∃x1 ∈ X(vertex( x1, x ) ∧ step v (x, c )) visit( X, x ) = ∃x1 ∈ X(vertex( x1, x )) Note that the sizes of start( X, x ), end( X, x ), and visit( X, x ) are each constant. Now we are ready to give the formula ϕ. Denote with c⋆ = min( k + ℓ, c ). 
+
+ϕ(X1, . . . , X c⋆ , x 1, . . . , x c) = ∧
+
+> i∈[c⋆]
+
+movement( Xi) ∧ ∧
+
+> i,j ∈[c⋆]
+
+(( i̸ = j) ⇒ collision-free( Xi, X j )) ∧∀v ∈ V
+
+(
+
+(robot( v) ∧ ( ∨
+
+> i∈[c⋆]
+
+visit( Xi, v ))) ⇒ ( ∨
+
+> i∈[c⋆]
+
+start( Xi, v )) 
+
+)
+
+∧∀x ∈ Se
+
+(
+
+( ∨
+
+> i∈[c⋆]
+
+move( Xi, x )) ⇒ ( ∨
+
+> i∈[c]
+
+(x = xi)) 
+
+)
+
+∧∃X ⊆ V
+
+(
+
+(∀v ∈ V ((main( v) ∧ ∧
+
+> i∈[c⋆]
+
+¬ start( Xi, v )) ∨∃w ∈ V (main( w) ∧ ( ∨
+
+> i∈[c⋆]
+
+(start( Xi, w ) ∧ end( Xi, v ))) ⇔ (v ∈ X))) ∧ Π( X)
+
+)
+
+Note that the size of the formula ϕ is in O(c2 + |Π|). Since the graph property Π is recursively enumerable, we can conclude |Π( X)| = f (k) for |X| = k and some computable function f .Hence, we have the following. 
+
+▶ Lemma 25. It holds that |ϕ| ∈ O(c2) + f (k), for some computable function f .
+
+It remains to show that the formula is correct. 
+
+▶ Lemma 26. The formula ϕ is satisfiable if and only if (G = ( V, E ), R, O, c ) is a yes-instance of Collision-Free Movement to Π.
+
+Proof. First, assume that ϕ is satisfiable. We show that then ( G = ( V, E ), R, O, c ) is a yes-instance of Collision-Free Movement to Π. Let X1, . . . , X c⋆ , x 1, . . . , x c denote a satisfying assignment for ϕ. We construct a movement plan M as follows. We have that the sets Xi with i ∈ [c⋆] satisfy movement( Xi). It follows that Xi = {(v1, 1) , (v2, 2) , . . . , (vc, c )}
+
+(see the first line of the definition of movement( X)). We claim that Mi = ( v1, v 2, . . . , v c) is a movement. The second and third line of the definition of movement( X) give us exactly that for all vj , v j+1 with j ∈ [c − 1] we have that vj = vj+1 or {vj , v j+1 } ∈ E. Hence, we can conclude that Mi is a movement. Now for each Mi that is a movement for a robot r ∈ R ∪ O,we add Mi to the movement plan M. For each r ∈ R ∪ O such that none of the Mi with 
+
+i ∈ [c⋆] is a movement for r, we add a trivial movement to the movement plan M. Now we show the following, from which clearly follows that ( G = ( V, E ), R, O, c ) is a yes-instance of 
+
+Collision-Free Movement to Π. 
+
+1. For each r ∈ R ∪ O there is at most one i ∈ [c⋆] such that Mi is a movement for i, that is, the movement plan M is well-defined. 
+
+2. The movement plan M is collision-free. 
+
+3. len( M) ≤ c and G[R⋆(M)] ∈ Π. 36 Collision-free Movement on Grids and Beyond 
+
+Consider the first statement and assume for contradiction that there are two move-ments Mi and Mj with i̸ = j for some r ∈ R ∪ O. Note that in ϕ, the subformula collision-free( Xi, X j ) is checked and evaluates to true, since otherwise ϕ would evaluate to false. In collision-free( Xi, X j ) it is, in particular, checked, that ( v1, 1) ∈ Xi and ( v′
+
+> 1
+
+, 1) ∈ Xj
+
+implies v1̸ = v′
+
+> 1
+
+. It follows that Mi and Mj cannot both be a movement for the same 
+
+r ∈ R ∪ O.Consider the second statement and assume for contradiction that there are two movements 
+
+Mi and Mj with i̸ = j for robots r, r ′ ∈ R ∪ O, respectively, that are not collision-free. First, consider that both Mi and Mj are non-trivial. Then in ϕ, the subformula collision-free( Xi, X j )is checked and evaluates to true, since otherwise ϕ would evaluate to false. However, if Mi
+
+and Mj then there exists some vertex v and some step t such that both r and r′ occupy v
+
+in step t or there exit an edge {v, w } ∈ E and some step t such that r occupies v in step 
+
+t and w in step t + 1 and r′ occupies w in step t and v in step t + 1. In this case we can verify that collision-free( Xi, X j ) evaluates to false: In the former case the first two lines in the definition of collision-free( X1, X 2) evaluate to false, and in the latter case, the last three lines in the definition of collision-free( X1, X 2) evaluate to false. In each case we reach a contradiction. Now consider the case that w.l.o.g. Mi is a non-trivial movement and Mj is a trivial movement. If Mi and Mj are not collision-free, then there must be a step t such that robot r occupies r′ in step t. However, then robot( r′) and visit( Xi, r ′) both evaluate to true. It follows that ∨ 
+
+> j∈[c⋆]
+
+start( Xj , r ′) must also evaluate to true. It follows that Mj
+
+corresponds to some Xj and collision-free( Xi, X j ) evaluates to true. By the same arguments as earlier we can conclude that Mi and Mj are collision-free. Finally, consider the third statement. Let Mi be a non-trivial movement for some 
+
+r ∈ R ∪ O. First, it is straightforward to verify that if robot r moves along edge {v, w } in step 
+
+t, then move( Xi, ({v, w }, t )) evaluates to true. Since the movement plan M is collision-free according to the previous arguments, we have that for a fixed ( {v, w }, t ), the subformula move( Xi, ({v, w }, t )) evaluates to true for at most one Xi. In the third line of the definition of ϕ it is checked that whenever move( Xi, ({v, w }, t )) evaluates to true, then ( {v, w }, t ) = xj
+
+for some j ∈ [c]. It follows that the set {x1, x 2, . . . , x c} contains all moves made by robots according to movement plan M. It follows that there are at most c different moves, and hence len( M) ≤ c. Next, consider the last two lines of the definition of ϕ. We show that the set X here corresponds to R⋆(M): The formula ensures that a vertex v is contained in 
+
+X if and only if v is a main robot and not the start of any Xi (in this case v has a trivial movement), or there is a main robot w and an Xi starting with w that ends in v, that is, Xi
+
+corresponds to a movement for a main robot w that ends in v. Finally ϕ checks whether Π( X) evaluates to true. It follows that G[R⋆(M)] ∈ Π. Now assume that ( G = ( V, E ), R, O, c ) is a yes-instance of Collision-Free Movement to Π. Then there is a collision-free movement plan M that contains at most c⋆ non-trivial movements which make at most c moves. Let X1, X 2, . . . , X c⋆ correspond to the non-trivial movements (if there are strictly less than c⋆ non-trivial movements, we can add sets X that only contain a vertex that is never visited (we can easily ensure that such a vertex always exists). Let x1, x 2, . . . , x c correspond to the moves. If there are strictly less than c moves, then we can duplicate arbitrary moves. By analogous arguments to the first part of this proof, we can argue that ϕ(X1, X 2, . . . , X c⋆ , x 1, x 2, . . . , x c) evaluates to true. ◀
+
+Now we have all ingredients to prove Theorem 8. 
+
+Proof of Theorem 8. Given an instance ( G = ( V, E ), R, O, c ) of Collision-Free Move-ment to Π, we first apply Reduction Rule 1. By Lemma 21 this creates an equivalent Hendrik Molter and Meirav Zehavi 37 
+
+instance ( G′ = ( V ′, E ′), R, O ′, c ). We can observe that diam( G′) ∈ O(k · c) (where if G′ is disconnected, we assume that diam( G′) is the maximum diameter of the connected compon-ents of G′). This follows from the fact that after Reduction Rule 1 is applied, every vertex in G′ has distance at most c from some r ∈ R, and for every r, r ′ ∈ R such that r and r′
+
+are in the same connected component of G′, we have that dist( r, r ′) ∈ O(k · c). Since G′ is planar, it is well-known that this implies that tw( G′) ∈ O(k · c). Theorem 8 now follows from Lemmas 24–26, and Theorem 23. ◀
+
+We remark that the described algorithm does not exploit planarity. It is only used to upper-bound the treewidth with the diameter of the input graph. Hence, the algorithm also implies that Collision-Free Movement to Π is fixed-parameter tractable when parameterized by k + c and the treewidth of the input graph combined. 
+
+# 7 Collision Free Movement on Unit Disk Graphs 
+
+In this section, we consider the canonical optimization version of the problem Collision-Free Movement to Connectivity , where the objective is to minimize the length of the movement plan. We prove Theorem 9 (restated below), that is, we give a fixed-parameter approximation algorithm for Collision-Free Movement to Connectivity parameterized by k + c on unit disk graphs, that produces a solution with energy at most 2 · OPT + 3 k,where OPT is the energy of an optimal solution (Theorem 9). Here, the parameter c is the number of moves in an optimal solution. In fact, the algorithm we present also works on a slightly more general graph class, so-called clique grids , which are generalizations of grids and defined as follows. 
+
+▶ Definition 27 (Clique Grid) ([24]) . A graph G = ( V, E ) is a clique grid graph if there exists a function f : V → [t] × [t′] for some t, t ′ ∈ N such that for all (i, j ) ∈ [t] × [t′] it holds that f −1(i, j ) is a clique in G, and for all {u, v } ∈ E it holds that if f (u) = ( i, j ) and f (v) = ( i′, j ′), then |i − i′| ≤ 2 and 
+
+|j − j′| ≤ 2.The function f is a representation of G.
+
+It is known that unit disk graphs are clique grids and that, given the point set of the unit disk graph, a representation can be computed in polynomial time. 
+
+▶ Lemma 28 ([24]) . Let G be a unit disk graph with point set D. Then G is a clique grid graph and a representation f of G can be computed from D in polynomial time. 
+
+In this section, we will assume that a representation of the input graph in form of a point set or a clique grid representation is given as part of the input. Now we prove the following result. 
+
+▶ Theorem 9. Collision-Free Movement to Connectivity admits a fixed-parameter approximation when parameterized by k + c if the input graph is a unit disk graph, that produces a solution with energy at most 2 · OPT + 3 k, where OPT is the energy of an optimal solution. 
+
+We present an algorithm to prove Theorem 9 with the following steps. Assume we are given an instance ( G = ( V, E ), R, O ) of (the optimization version) of Collision-Free Movement to Connectivity and we have a clique grid representation of G. We first start with some basic “guessing” steps, which in this context means that we exhaustively enumerate and check all possibilities for the guess. 38 Collision-free Movement on Grids and Beyond 
+
+We first guess the optimal value for c.We exhaustively apply Reduction Rule 1, that is, we remove each vertex that has distance more than c from every main robot. We guess a tree T with k vertices that witnesses the connectivity in an optimal solution of the instance. We guess a bijection between the main robots and the vertices of T .Next, we define a continuation type ti(v) of a vertex v for step i and we defines a type of a vertex v as follows: For step c, the continuation type tc(v) of vertex v is an element from {F, O, r 1, r 2, . . . , r k}
+
+and set as follows. We set tc(v) = F meaning the vertex is free if v / ∈ O ∪ R, we set 
+
+tc(v) = O meaning the vertex is occupied by an obnoxious robot if v ∈ O, and we set 
+
+tc(v) = ri meaning the vertex is occupied by a main robot if v = ri ∈ R.For step i < c , the continuation type ti(v) of a vertex v is defined as the following set: For each clique C that is neighboring the clique of i, and each v′ that is a neighbor of c
+
+in C, add the pair ( C, t i+1 (v′)) to ti(v). The type of v is a triple consisting of the clique C of v, an element from {F, O, r 1, . . . , r k}
+
+indicating whether v is free or occupied (as above), and the list of all continuation types of v for all steps i ≤ c.If there is a vertex type such that there are at most 2 k + c + 2 vertices of that type, we additionally add the identity of the vertices to their type. Note that since we apply Reduction Rule 1, we have O(k · c2) different cliques (this follows from an analogous argument as the proof of Theorem 3). Since each clique only has constantly many neighboring cliques, the number of different continuation types is in 2 O(k·c2). We can iteratively compute the continuation types of all vertices for all steps in 2 O(k·c2) · nO(1) time, starting with step c, in a straightforward way. The intuition behind the continuation types is as follows. If a robot arrives at a vertex in step c it cannot travel any further afterwards. So the only relevant information is whether the vertex is free or occupied by another robot. In the latter case, the other robot needs to be moved before step c to avoid a collision. If a robot arrives at a vertex at some step i < c ,it can travel further, so it is relevant which types of vertices it can reach. This is encoded in the list of clique-vertex type pairs. Of course, it is also still relevant whether the vertex is free or occupied by another robot. Note that if a clique-neighbor type pair is in the list of the type of a vertex, it only means that the vertex can reach some neighbor in the clique with the type (not all). This, intuitively, is the reason for the approximation factor two, since we can only guarantee that we move a robot to a vertex of the “correct” vertex type in the “correct” clique at each step, but we cannot guarantee that we move the robot to the “correct” vertex. So the solution we construct may need an extra step in each clique to move to the “correct” vertex. The algorithm now continues with a second guessing step, where we guess up to max {c, k }
+
+vectors Mi of vertex types that each have length up to c (possibly including duplicates). Whenever there is a type switch from one position to the next in the vector, we consider this to be a move. We reject all guesses where the total number of moves is greater than c.These vectors will be templates for the movements in the movement plan we construct. In a later step, we will replace the types with actual vertices. The main goal is to first move the main robots into the “correct” cliques, and then afterwards to the “correct” vertices inside the cliques. For a given guess, we make the following checks: Hendrik Molter and Meirav Zehavi 39 
+
+For each vector Mi, we check whether it is a movement. More specifically, whenever two subsequent entries in the vector are two different types t, t ′ we check whether the types are neighboring types , that is, whether there are two vertices u, v which are neighbors and u has type t, and v has type t′. Furthermore, we check whether the first entry of the vector is a vertex type for a vertex that is occupied by a robot. For each vector Mi, we check whether it is collision-free, that is, whenever there is a vertex type t in the vector for a vertex that is occupied by a robot, there is another movement vector Mj starting with type t that moves the robot away (sufficiently early). If several vectors (say ℓ) move a robot to a vertex of type t for a vertex that is occupied by another robot, such that the time steps where the moved robots occupy the vertex of type t intersect, we check whether there are ℓ other movements vector starting with type 
+
+t that move the robots away (sufficiently early). For each pair of vectors Mi, M j we check whether they are collision-free. This is only relevant if the vectors contain types that have vertex identities. We want to find vectors where the number of moves in each step is minimum, that is, moves only happen simultaneously if they have to, that is, when robots move around a cycle of length at least 3. We check whether at each step across all vectors, there is either at most one move, or at most one cyclic set of moves. If none of the above checks fail, we check whether T is a subgraph of G such that the location of the vertices of T in G complies with our guess, that is, they have the correct type. To do this, we use a subgraph finding algorithm that allows us to define a cost function for possible mappings from the vertices of T to the vertices of G. We use this to make sure that the subgraph embedding complies with our guesses. 
+
+▶ Theorem 29 ([12]) . Let F be an undirected graph with s vertices and treewidth t. Let G
+
+be an undirected graph with n vertices and let c : V (F ) × V (G) → N be a cost function of mapping a vertex of F to a vertex of G. If F is a subgraph of G, then it is possible to find in time 2O(s) · nO(t) a subgraph embedding ϕ that minimizes c(ϕ).
+
+We define a cost function c as follows: For v ∈ V (T ) such that we guessed that v is mapped to main robot r, and the movement for r moves the robot to a vertex of type t, and v′ ∈ V (G), we set 
+
+c(v, v ′) = 
+
+{1, if v′ has type t, n, otherwise. We use the algorithm behind Theorem 29 to find subgraph embedding ϕ for T into G of minimal cost. If the cost is larger than k, we reject the guess. Now we have all ingredients to construct a movement plan M for the Collision-Free Movement to Connectivity instance. For each movement M ∈ M we have that the first vertex type for a vertex that is occupied by a robot, otherwise the checks described above fail. We pick an arbitrary vertex of that type (a different one for each movement) and identify the robot on that vertex as the one corresponding to the movement. We iterate through the steps from i = 1 to c:We perform the ith move of each move of each movement. That is, for each M ∈ M , we pick a (different) vertex v of type M [i + 1], and move the robot corresponding to M from its previous position to v.40 Collision-free Movement on Grids and Beyond 
+
+When picking the vertices, we avoid collision where two robots use the same edge in opposite directions. This can always be done since there are strictly more than 2 k vertices of each type that does not include the vertex identity. Recall that if such a collision happens due to types that contain vertex identities, then the third of the above-described checks fails. If after the ith move is performed for each movement, a robot r is moved to a vertex v of some type t that is occupied by another robot r′, then we moved robot r to the “wrong” vertex type t.Since the second of the above-described checks did not fail, there must be another vertex v′
+
+of type t that is not occupied by any robot after the ith move. Furthermore, since the last of the above-described checks did not fail, we know that r′ was already on v in the previous step. We introduce an intermediate step (between steps i − 1 and i) in which we move robot r′
+
+from v to v′.By construction, the above described movements are collision-free. Furthermore, the resulting movement plan as length at most 2 c since for every move in the type vectors we add at most one additional move in the second of the above-described steps of the construction. To ensure that the end-configuration is connected, we have to move the main robots to the vertices specified by the embedding ϕ of the tree T on the main robots. By construction, we have that M moves each main robot to a vertex that has the same type as its target vertex in the embedding ϕ. Note that all vertices of the same type are in the same clique. In a final step, we move each main robot onto their target vertex using at most three moves. Assume that there is a main robot r which is not on its target vertex v. If the target vertex v is free, we can move r to that vertex with one additional move. If the target vertex 
+
+v is occupied by some robot r′, then we pick another vertex v′ of the same type that is not occupied by a main robot. Note that since there are at least 2 k + c + 2 vertices of each type (that does not include the vertex identity), such a vertex exits. If v′ is free, then we move the robot r′ to v′, and afterwards we move r to v. If v′ is occupied by an obnoxious robot r′′ , we perform a cyclic move. Let v′′ be the current position of r. We simultaneously move robot r
+
+to v, robot r′ to v′, and robot r′′ to v′′ . All described movements are clearly collision-free, contain at most three moves, and reduce the number of main robots that are not on their target vertex by one. Hence, by iterating this procedure, we can move all main robots to their respective target vertices in a collision-free manner by using at most three additional moves per main robot. Now we are ready to prove Theorem 9. 
+
+Proof of Theorem 9. It is straightforward to check that the described guesses create f (k +
+
+c) · nO(1) cases, the described checks can be performed in f (k + c) · nO(1) time, and the movement plan can be constructed in f (k + c) · nO(1) time. As argued during the description, the algorithm clearly produces a collision-free movement plan such that the end-configuration of the main robots is connected. Now assume there is an optimal solution M⋆ of length c to the Collision-Free Movement to Connectivity instance. Then there is a guess such that the each type vector corresponds to one movement in M⋆ and the tree T corresponds to a spanning tree in the subgraph of the main robots in their end-configuration. As argued, the movement plan constructed by the algorithm then has length at most 2 c + 3 k. It follows that we compute a 2-approximation with an additional additive error of 3 k. ◀REFERENCES 41 
+
+# 8 Conclusion 
+
+To the best of our knowledge, we give the first computational results for the problems 
+
+Collision-Free Movement to Π and Collision-Free Movement to Connectivity .We leave several open questions. We believe that the following are of particular interest. Is Collision-Free Movement to Connectivity fixed-parameter tractable when parameterized by c if the input graph is planar? Is Collision-Free Movement to Connectivity fixed-parameter tractable when parameterized by k + c if the input graph is a unit disk graph? It would also be interesting to identify graph classes on which Collision-Free Movement to Connectivity becomes solvable in polynomial time. Is Collision-Free Movement to Connectivity solvable in polynomial time if the input graph is a tree? It is also natural to consider other parameters, such as e.g. the number of obnoxious robots or structural parameters of the input graph such as the treewidth. Apart from these relatively specific questions, our work opens several natural future work directions. Instead of minimizing the total movement (energy) one could ask to minimize the makespan of the movement plan instead. There are also many other natural graph properties that one could focus on, for example one could require that the target formation admits a perfect matching among the main robots (for an even number of robots). Notably, for two robots this coincides with connectivity, and hence some of our hardness results transfer. 
+
+# References 
+
+1 Pankaj K. Agarwal, Mark de Berg, Benjamin Holmgren, Alex Steiger, and Martijn Struijs. Optimal motion planning for two square robots in a rectilinear environment. In 
+
+Proceedings of the 41st International Symposium on Computational Geometry (SoCG) ,volume 332 of LIPIcs , pages 5:1–5:17. Schloss Dagstuhl - Leibniz-Zentrum für Informatik, 2025. 
+
+2 Stefan Arnborg, Jens Lagergren, and Detlef Seese. Easy problems for tree-decomposable graphs. Journal of Algorithms , 12(2):308–340, 1991. 
+
+3 Piotr Berman, Erik D Demaine, and Morteza Zadimoghaddam. O(1)-approximations for maximum movement problems. In Proceedings of the 14th International Workshop on Approximation Algorithms for Combinatorial Optimization (APPROX) , pages 62–74. Springer, 2011. 
+
+4 Hans L Bodlaender, Bart MP Jansen, and Stefan Kratsch. Kernelization lower bounds by cross-composition. SIAM Journal on Discrete Mathematics , 28(1):277–305, 2014. 
+
+5 Bruno Courcelle. The monadic second-order logic of graphs. I. Recognizable sets of finite graphs. Information and computation , 85(1):12–75, 1990. 
+
+6 Bruno Courcelle and Joost Engelfriet. Graph structure and monadic second-order logic: a language-theoretic approach , volume 138. Cambridge University Press, 2012. 
+
+7 Gruia Cualinescu, Adrian Dumitrescu, and János Pach. Reconfigurations in graphs and grids. SIAM Journal of Discrete Mathematics , 22(1):124–138, 2008. 
+
+8 Marek Cygan, Fedor V. Fomin, Łukasz Kowalik, Daniel Lokshtanov, Dániel Marx, Marcin Pilipczuk, Michał Pilipczuk, and Saket Saurabh. Parameterized Algorithms . Springer, 2015. 42 REFERENCES 
+
+9 Argyrios Deligkas, Eduard Eiben, Robert Ganian, Iyad Kanj, Dominik Leko, and M. S. Ramanujan. Routing few robots in a crowded network. Journal of Computer and System Sciences , 157:103753, 2026. 
+
+10 Argyrios Deligkas, Eduard Eiben, Robert Ganian, Iyad Kanj, and M. S. Ramanujan. Parameterized algorithms for coordinated motion planning: Minimizing energy. In Pro-ceedings of the 51st International Colloquium on Automata, Languages, and Programming (ICALP) , volume 297 of LIPIcs , pages 53:1–53:18. Schloss Dagstuhl - Leibniz-Zentrum für Informatik, 2024. 
+
+11 Erik D. Demaine, Mohammad Taghi Hajiaghayi, Hamid Mahini, Amin S. Sayedi-Roshkhar, Shayan Oveis Gharan, and Morteza Zadimoghaddam. Minimizing movement. ACM Transactions on Algorithms , 5(3):30:1–30:30, 2009. 
+
+12 Erik D. Demaine, Mohammad Taghi Hajiaghayi, and Dániel Marx. Minimizing movement: Fixed-parameter tractability. ACM Transactions on Algorithms , 11(2):14:1–14:29, 2014. 
+
+13 Erik D. Demaine and Mikhail Rudoy. A simple proof that the ( n2 − 1)-puzzle is hard. 
+
+Theoretical Computer Science , 732:80–84, 2018. 
+
+14 Reinhard Diestel. Graph Theory, 5th Edition , volume 173 of Graduate Texts in Mathem-atics . Springer, 2016. 
+
+15 Rodney G. Downey and Michael R. Fellows. Fundamentals of Parameterized Complexity .Springer, 2013. 
+
+16 Eduard Eiben, Robert Ganian, and Iyad Kanj. The Parameterized Complexity of Coordinated Motion Planning. In Proceedings of the 39th International Symposium on Computational Geometry (SoCG) , volume 258 of Leibniz International Proceedings in Informatics (LIPIcs) , pages 28:1–28:16. Schloss Dagstuhl – Leibniz-Zentrum für Informatik, 2023. 
+
+17 Eduard Eiben, Robert Ganian, Iyad Kanj, and M. S. Ramanujan. A minor-testing approach for coordinated motion planning with sliding robots. In Proceedings of the 41st International Symposium on Computational Geometry (SoCG) , volume 332 of LIPIcs ,pages 44:1–44:15. Schloss Dagstuhl - Leibniz-Zentrum für Informatik, 2025. 
+
+18 Sándor P Fekete, Phillip Keldenich, Dominik Krupke, and Joseph SB Mitchell. Computing coordinated motion plans for robot swarms: The CG: SHOP challenge 2021. ACM Journal of Experimental Algorithmics (JEA) , 27:1–12, 2022. 
+
+19 Michael R. Fellows, Danny Hermelin, Frances Rosamond, and Stéphane Vialette. On the parameterized complexity of multiple-interval graph problems. Theoretical Computer Science , 410(1):53–61, 2009. 
+
+20 Henning Fernau, Torben Hagerup, Naomi Nishimura, Prabhakar Ragde, and Klaus Reinhardt. On the parameterized complexity of the generalized rush hour puzzle. In 
+
+Proceedings of the 15th Canadian Conference on Computational Geometry (CCCG) ,pages 6–9, 2003. 
+
+21 Foivos Fioravantes, Dusan Knop, Jan Matyás Kristan, Nikolaos Melissinos, and Michal Opler. Exact algorithms and lowerbounds for multiagent path finding: Power of treelike topology. In Proceedings of the 38th AAAI Conference on Artificial Intelligence (AAAI) ,pages 17380–17388. AAAI Press, 2024. 
+
+22 Gary William Flake and Eric B. Baum. Rush hour is PSPACE-complete, or “why you should generously tip parking lot attendants”. Theoretical Computer Science , 270(1-2):895–911, 2002. 
+
+23 Jörg Flum and Martin Grohe. Parameterized Complexity Theory , volume XIV of Texts in Theoretical Computer Science. An EATCS Series . Springer, 2006. REFERENCES 43 
+
+24 Fedor V Fomin, Daniel Lokshtanov, Fahad Panolan, Saket Saurabh, and Meirav Zehavi. Finding, hitting and packing cycles in subexponential time on unit disk graphs. Discrete & Computational Geometry , 62(4):879–911, 2019. 
+
+25 Fedor V Fomin, Daniel Lokshtanov, Saket Saurabh, and Meirav Zehavi. Kernelization: Theory of Parameterized Preprocessing . Cambridge University Press, 2019. 
+
+26 Zachary Friggstad and Mohammad R Salavatipour. Minimizing movement in mobile facility location problems. ACM Transactions on Algorithms (TALG) , 7(3):1–22, 2011. 
+
+27 Michael R Garey, David S Johnson, and Larry Stockmeyer. Some simplified NP-complete problems. In Proceedings of the 6th annual ACM Symposium on Theory of Computing (STOC) , pages 47–63, 1974. 
+
+28 Oded Goldreich. Finding the shortest move-sequence in the graph-generalized 15-puzzle is NP-hard. In Studies in complexity and cryptography. Miscellanea on the interplay between randomness and computation , pages 1–5. Springer, 2011. 
+
+29 Siddharth Gupta, Guy Sa’ar, and Meirav Zehavi. The parameterized complexity of motion planning for snake-like robots. Journal of Artificial Intelligence Research , 69:191–229, 2020. 
+
+30 Danny Hermelin and Xi Wu. Weak compositions and their applications to polynomial lower bounds for kernelization. In Proceedings of the 23rd annual ACM-SIAM Symposium on Discrete Algorithms (SODA) , pages 104–113. SIAM, 2012. 
+
+31 Iyad Kanj and Salman Parsa. On the parameterized complexity of motion planning for rectangular robots. In Proceedings of the 40th International Symposium on Computational Geometry (SoCG) , volume 293 of LIPIcs , pages 65:1–65:15. Schloss Dagstuhl - Leibniz-Zentrum für Informatik, 2024. 
+
+32 Richard M. Karp. Reducibility among combinatorial problems. In Complexity of Computer Computations , pages 85–103. Springer, 1972. 
+
+33 Subhash Khot and Venkatesh Raman. Parameterized complexity of finding subgraphs with hereditary properties. Theoretical Computer Science , 289(2):997–1008, 2002. 
+
+34 Nina Klobas, George B. Mertzios, Hendrik Molter, Rolf Niedermeier, and Philipp Zschoche. Interference-free walks in time: temporally disjoint paths. Autonomous Agents Multi Agent Systems , 37(1):1, 2023. 
+
+35 Pascal Kunz, Hendrik Molter, and Meirav Zehavi. In which graph structures can we efficiently find temporally disjoint paths and walks? In Proceedings of the 32nd International Joint Conference on Artificial Intelligence (IJCAI) , pages 180–188. ijcai.org, 2023. 
+
+36 Christos H Papadimitriou, Prabhakar Raghavan, Madhu Sudan, and Hisao Tamaki. Motion planning on a graph. In Proceedings 35th Annual Symposium on Foundations of Computer Science (FOCS) , pages 511–520. IEEE, 1994. 
+
+37 Alexander Pilz. Planar 3-SAT with a clause/variable cycle. Discrete Mathematics & Theoretical Computer Science , 21(3), 2019. 
+
+38 Daniel Ratner and Manfred Warmuth. The ( n2 −1)-puzzle and related relocation problems. 
+
+Journal of Symbolic Computation , 10(2):111–137, 1990. 
+
+39 Oren Salzman and Roni Stern. Research challenges and opportunities in multi-agent path finding and multi-agent pickup and delivery problems. In Proceedings of the 19th International Conference on Autonomous Agents and Multiagent Systems (AMAAS ’20) ,pages 1711–1715, 2020. 
+
+40 Guni Sharon, Roni Stern, Ariel Felner, and Nathan R Sturtevant. Conflict-based search for optimal multi-agent pathfinding. Artificial Intelligence , 219:40–66, 2015. 44 REFERENCES 
+
+41 Roni Stern. Multi-agent path finding - an overview. In Artificial Intelligence - 5th RAAI Summer School , pages 96–115, Dolgoprudny, Russia, 2019. Springer. 
+
+42 Roni Stern, Nathan R Sturtevant, Ariel Felner, Sven Koenig, Hang Ma, Thayne T. Walker, Jiaoyang Li, Dor Atzmon, Liron Cohen, T. K. Satish Kumar, Eli Boyarski, and Roman Barták. Multi-agent pathfinding: Definitions, variants, and benchmarks. In Proceedings of the 12th International Symposium on Combinatorial Search (SOCS) , pages 151–159, 2019. 
+
+43 Jingjin Yu and Steven M LaValle. Structure and intractability of optimal multi-robot path planning on graphs. In Proceedings of the 27th AAAI Conference on Artificial Intelligence (AAAI ’13) , pages 1443–1449, 2013.
