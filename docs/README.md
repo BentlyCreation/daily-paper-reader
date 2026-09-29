@@ -6,42 +6,62 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-28
-- 运行时间：2026-09-29 00:08:27 UTC
+- 最新运行日期：2026-09-29
+- 运行时间：2026-09-29 23:11:26 UTC
 - 运行状态：成功
-- 本次总论文数：6
-- 精读区：1
-- 速读区：5
+- 本次总论文数：13
+- 精读区：6
+- 速读区：7
 
 ### 今日简报（AI）
-9月28日共筛出6篇论文，精读1篇、速读5篇，重点落在机器人运动规划与多智能体学习。
-
-最值得看的是8.0分的《Collision-free Movement on Grids and Beyond》，讲网格及更广场景下的无碰撞移动；速读中7.0分的《Reinforcement Learning of Communication in a Mesh of Small Language Models》则关注小语言模型网格间的通信学习。
-
-普通读者可先读这两篇，再按兴趣浏览6-DoF图像轨迹规划与行人仿真这两篇速读。
-- 详情：[/202609/28/README](/202609/28/README)
+- 今日共生成 13 篇推荐（精读 6 篇，速读 7 篇）
+- 精读：《Decentralized Master-Mind: Joint Action Refinement through Iterative Intent Denoising in Multi-Agent Pathfinding》（10.0/10）, 《GuardPIBT: Counterfactually Gated Neural Guidance for Ultra-Large-Scale 3D Multi-Agent Path Finding》（9.0/10）
+- 速读：《Proactive Motion Planning for Human-Robot Cooperation》（7.0/10）, 《Communication-Aware Heterogeneous Graph Learning for Decentralized Multi-Human Multi-Robot Task Allocation》（7.0/10）, 《Emergence, Not Bandwidth: Physical Coupling and the Limits of Learned Multi-Agent Communication》（7.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202609/29/README](/202609/29/README)
 
 ### 精读区论文标签
-1. [Collision-free Movement on Grids and Beyond](/202609/28/2609.31099v1-collision-free-movement-on-grids-and-beyond)  
+1. [Decentralized Master-Mind: Joint Action Refinement through Iterative Intent Denoising in Multi-Agent Pathfinding](/202609/29/2609.32019v1-decentralized-master-mind-joint-action-refinement-through-iterative-intent-denoising-in-multi-agent-pathfinding)  
+   标签：评分：10.0/10、query:lbm
+   evidence：带通信的去中心化MAPF与迭代意图精炼
+2. [GuardPIBT: Counterfactually Gated Neural Guidance for Ultra-Large-Scale 3D Multi-Agent Path Finding](/202609/29/2609.35267v1-guardpibt-counterfactually-gated-neural-guidance-for-ultra-large-scale-3d-multi-agent-path-finding)  
+   标签：评分：9.0/10、query:lbm
+   evidence：3D多智能体路径规划，结合图注意力与PIBT排序
+3. [CollisionGAT: Controller-Agnostic One-Step Collision Screening for Multi-Agent Motion](/202609/29/2609.32783v1-collisiongat-controller-agnostic-one-step-collision-screening-for-multi-agent-motion)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：图注意力碰撞筛查用于多智能体运动协调
+4. [Hierarchical Multi-agent Reinforcement Learning for Warehouse Robot Coordination under Communication Loss](/202609/29/2609.33637v1-hierarchical-multi-agent-reinforcement-learning-for-warehouse-robot-coordination-under-communication-loss)  
    标签：评分：8.0/10、query:lbm
-   evidence：图上的协调运动规划与多智能体路径规划
+   evidence：通信丢失下仓库机器人协调的层级多智能体强化学习
+5. [Attention-based Hierarchical Variational Information Bottleneck for Robust Multi-Agent Communication under Variable Bandwidth](/202609/29/2609.34860v1-attention-based-hierarchical-variational-information-bottleneck-for-robust-multi-agent-communication-under-variable-bandwidth)  
+   标签：评分：8.0/10、query:marl-comm
+   evidence：带宽受限与前缀截断下的注意力通信
+6. [Strategically Robust Game-Theoretic Multi-Agent Trajectory Optimization](/202609/29/2609.35142v1-strategically-robust-game-theoretic-multi-agent-trajectory-optimization)  
+   标签：评分：8.0/10、query:intent-avoid
+   evidence：去中心化多智能体轨迹规划与势博弈避碰
 
 ### 速读区论文标签
-1. [Reinforcement Learning of Communication in a Mesh of Small Language Models](/202609/28/2609.30578v1-reinforcement-learning-of-communication-in-a-mesh-of-small-language-models)  
+1. [Proactive Motion Planning for Human-Robot Cooperation](/202609/29/2609.32354v1-proactive-motion-planning-for-human-robot-cooperation)  
+   标签：评分：7.0/10、query:intent-avoid
+   evidence：将人体运动预测融入主动式人机运动规划
+2. [Communication-Aware Heterogeneous Graph Learning for Decentralized Multi-Human Multi-Robot Task Allocation](/202609/29/2609.32935v1-communication-aware-heterogeneous-graph-learning-for-decentralized-multi-human-multi-robot-task-allocation)  
    标签：评分：7.0/10、query:marl-comm
-   evidence：在去中心化多智能体网格中学习何时通信与通信内容
-2. [SE(3) Neural Potential Fields for 6-DoF Trajectory Planning Directly from Images Without Explicit 3D Reconstruction](/202609/28/2609.24864v1-se3-neural-potential-fields-for-6-dof-trajectory-planning-directly-from-images-without-explicit-3d-reconstruction)  
+   evidence：面向去中心化多机器人协作的通信用异构图学习
+3. [Emergence, Not Bandwidth: Physical Coupling and the Limits of Learned Multi-Agent Communication](/202609/29/2609.34373v1-emergence-not-bandwidth-physical-coupling-and-the-limits-of-learned-multi-agent-communication)  
+   标签：评分：7.0/10、query:marl-comm
+   evidence：每决策仅2比特的限速多智能体通信
+4. [Do We Need Complex Topology Control? Distinct-Peer Random Routing Improves Cost-Efficiency in Sparse Multi-Agent Debate](/202609/29/2609.27150v1-do-we-need-complex-topology-control-distinct-peer-random-routing-improves-cost-efficiency-in-sparse-multi-agent-debate)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：多智能体辩论中的稀疏通信拓扑
+5. [MA-WAM: Multi-Agent World-Action Model for Test-Time Planning](/202609/29/2609.31281v1-ma-wam-multi-agent-world-action-model-for-test-time-planning)  
+   标签：评分：6.0/10、query:lbm
+   evidence：基于世界模型的多智能体联合动作规划
+6. [Path Planning with Motion Primitives in Dynamic Environments: SIPP on Lattices](/202609/29/2609.31803v1-path-planning-with-motion-primitives-in-dynamic-environments-sipp-on-lattices)  
    标签：评分：6.0/10、query:intent-avoid
-   evidence：从图像学习SE(3)神经势场进行无碰撞轨迹规划
-3. [A Human-Like Pedestrian Model for Automated Driving Simulations](/202609/28/2609.29175v1-a-human-like-pedestrian-model-for-automated-driving-simulations)  
-   标签：评分：6.0/10、query:intent-avoid
-   evidence：面向交互仿真的类人行人模型与学习策略
-4. [From Visual Search to Movement Control: A Priority Field for Artificial Agents](/202609/28/2609.30704v1-from-visual-search-to-movement-control-a-priority-field-for-artificial-agents)  
-   标签：评分：6.0/10、query:intent-avoid
-   evidence：用于移动障碍到达-避障的优先场，类似势场避碰
-5. [INTERACT: Interactive Planning for Autonomous Driving via Anchor-Conditioned Prediction and Trust-Region Refinement](/202609/28/2609.31137v1-interact-interactive-planning-for-autonomous-driving-via-anchor-conditioned-prediction-and-trust-region-refinement)  
-   标签：评分：6.0/10、query:intent-avoid
-   evidence：交互驾驶中的意图预测与运动规划联合
+   evidence：动态环境中含移动智能体的路径规划，基于格上SIPP的无碰撞规划
+7. [Receiver-Conditioned Latent Communication gives 94% CacheBack](/202609/29/2609.32046v1-receiver-conditioned-latent-communication-gives-94-cacheback)  
+   标签：评分：6.0/10、query:marl-comm
+   evidence：多智能体潜在通信，通过接收者条件化消息削减KV缓存传输量
 
 
 <div class="dpr-home-promo-card">

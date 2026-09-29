@@ -1,0 +1,505 @@
+Title: Path Planning with Motion Primitives in Dynamic Environments: SIPP on Lattices
+
+URL Source: https://arxiv.org/pdf/2609.31803v1
+
+Published Time: Tue, 29 Sep 2026 00:13:52 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+# Path Planning with Motion Primitives in Dynamic Environments: SIPP on Lattices 
+
+## Marat Agranovskiy 1
+
+1Markov Lab, Saint-Petersburg University. Contributing authors: agrinscience@gmail.com; 
+
+Abstract 
+
+Autonomous navigation in dynamic environments is a critical challenge, particu-larly when spaces are shared with other mobile agents whose future trajectories are known. While traditional grid-based planners efficiently find collision-free paths, their reliance on stop-and-turn mechanics over 2k-connected grids pro-duces piecewise-linear trajectories that are kinodynamically highly sub-optimal for differentially constrained robots. In this paper, we present an adaptation of Safe Interval Path Planning (SIPP) that operates on state lattices, utilizing precomputed, kinodynamically smooth motion primitives. To efficiently handle dynamic environments, we rasterize the spatiotemporal swept volumes of mov-ing obstacles directly onto the grid, treating grid cells as atomic units of space, whose resolution is typically dictated by inherent localization noise. We perform a comprehensive comparative analysis between our lattice-based approach and 2k-connected grid planners across diverse topological environments. Our evaluation considers a broad spectrum of performance metrics, including planning time, path angularity, cumulative heading change (angle-over-length), and bending energy. The results demonstrate that while the expanded state space of lattice-based search increases computational overhead, it yields trajectories with significantly superior kinodynamic properties. Specifically, our method achieves a reachabil-ity comparable to highly connected grids while ensuring smooth, continuous, and physically executable paths ready for real-world deployment. 
+
+Keywords: Grid, A*, Path Planning, Safe Interval Path Planning, SIPP, State Lattice, Motion Primitives, Kinodynamic Constraints, Dynamic Environments 
+
+Code: https://github.com/PathPlanning/LatticeSIPP ∗
+
+> ∗
+
+This is a preprint of a paper accepted for publication in the Proceedings of the International Conference on Interactive Collaborative Robotics (ICR 2026). 
+
+1arXiv:2609.31803v1 [cs.RO] 25 Sep 2026 1 Introduction 
+
+Path planning in dynamic environments is a fundamental challenge in mobile robotics, particularly in shared workspaces like automated warehouses or multi-robot logistics hubs. In these settings, the ego-agent must often navigate around other autonomous robots whose future trajectories are deterministic and known a priori. While coordinat-ing multiple agents to ensure global safety falls into the domain of Multi-Agent Path Finding (MAPF) [1] or Multi-Robot Motion Planning (MRMP) [2], treating these predictable agents as dynamic obstacles reduces the problem to a complex spatiotem-poral search for a single agent. Even within this single-agent paradigm, computing safe, efficient, and physically executable paths remains computationally demanding. Traditional grid-based planners typically rely on a discrete ”stop-and-turn” control mechanism, yielding piecewise-linear paths that are geometrically valid but kinemat-ically harsh for differentially constrained robots. To bridge the gap between abstract routing and real-world execution, some approaches apply post-processing techniques to convert jagged grid paths into feasible velocity schedules without altering the under-lying geometry [3]. While this ensures temporal feasibility – such as allocating extra time for in-place rotations – the spatial trajectory remains inherently angular. Con-versely, a more robust methodology incorporates kinodynamic constraints directly into the search space. Works such as CL-MAPF [4] employ a Hybrid A* expansion to model Ackerman steering, while HCBS [5] accommodates mixed fleets of holonomic and non-holonomic agents. A highly structured approach to embedding these kinodynamic constraints into the search is through state lattice planning [6, 7]. State lattices construct the search space using precomputed motion primitives: kinematically compliant continuous curves that seamlessly connect discrete robot states. However, the introduction of dynamic obstacles complicates this paradigm. Verifying continuous collisions between complex polynomial trajectories and moving constraints is analytically intractable in real-time. Consequently, contemporary algorithms often resort to temporal sampling, checking for collisions at discrete time intervals [8, 9]. This sampling strategy not only intro-duces significant computational overhead but also inherently risks missing inter-step collisions, thereby compromising safety guarantees. To circumvent the pitfalls of temporal sampling, we leverage the inherent spatial discretization of practical robotic systems. In real-world deployments, grid resolution is not merely an algorithmic artifact but a fundamental operational limit dictated by sensor noise and localization uncertainty. Treating grid cells as indivisible, atomic units of space provides a natural and robust framework for collision detection. Inspired by the principles of MeshA* [10], which accelerates lattice search by reasoning over the shared swept cells of primitive bundles, we adopt a purely spatial-temporal raster-ization approach. Instead of continuously evaluating or sampling polynomial curves, we rasterize the spatiotemporal swept volumes of both the moving obstacles and the ego-robot’s motion primitives directly onto the grid. Searching this augmented spatiotemporal domain ordinarily leads to a state-space explosion. To maintain computational tractability, we employ Safe Interval Path Plan-ning (SIPP) [11]. SIPP resolves the unbounded nature of the time dimension by aggregating contiguous, collision-free periods into discrete safe intervals, drastically 2reducing the branching factor. Its versatility has been proven across diverse applica-tions, ranging from anytime [12] and any-angle planning [13] to domains involving acceleration limits [14] and quadrotor navigation in uncertain environments [15, 16]. In this paper, we present a synthesis of kinematically feasible state lattices and the SIPP algorithm to address dynamic path planning. We formulate a mathematically rigorous discrete state space and a sampling-free, primitive-based collision check-ing framework. To quantify the benefits of our approach, we empirically evaluate our lattice-based SIPP against straight-line planners operating on 2 k-connected grids across various dimensionalities. Through a detailed analysis of search time, spatial routing efficiency, and critical geometric metrics – specifically bending energy and trajectory angularity – we demonstrate that an adequately expressive lattice control set can match the path lengths of highly connected grids while strictly guaranteeing physically executable, smooth trajectories. 
+
+# 2 The Main Part 
+
+## 2.1 Problem Statement 
+
+Consider a mobile agent with a physical footprint approximated by a circle of radius 
+
+R, moving in a 2D workspace W ⊂ R2. The workspace is tessellated into a regular grid with cells ( i, j ) ∈ Z2.
+
+State Representation . The state of the agent is defined by a 3D vector ( x, y, ϕ ), with coordinates ( x, y ) ∈ W and heading angle ϕ ∈ [0 , 360 ◦). We assume that the latter can be discretized into a set Θ = {ϕ1, . . . , ϕ k}, allowing us to focus on discrete states s = ( i, j, θ ) that correspond to the centers of the grid cells ( i, j ) ∈ Z2, with 
+
+θ ∈ Θ. 
+
+Environment Representation . The environment contains both static and dynamic obstacles. To handle these efficiently, we utilize a hybrid paradigm: 1. Static Environment : Represented as a binary occupancy grid S, where each cell (i, j ) is either free space ( Sij = 0) or a static obstacle ( Sij = 1). We do not artificially dilate this grid by the agent’s radius in advance to preserve the exact topological structure of the map (e.g., narrow corridors). 2. Dynamic Environment : Represented as a spatial-temporal map D. For each grid cell ( i, j ), the map provides a set of disjoint, half-open time intervals Dij =
+
+{[t(1)  
+
+> in
+
+, t (1) 
+
+> out
+
+), [t(2)  
+
+> in
+
+, t (2) 
+
+> out
+
+), . . . } during which the cell is considered occupied by mov-ing obstacles. To avoid computationally heavy continuous geometric intersections during the search, we pre-compute these intervals using the Minkowski sum. Specif-ically, the dynamic obstacles are geometrically dilated by the agent’s radius R,swept along their continuous trajectories, and the resulting spatial-temporal swept volumes are rasterized onto the grid. Consequently, the circular agent is conceptu-ally reduced to a point-mass: if the dilated moving obstacle covers the center of cell (i, j ) during a specific timeframe, it is recorded in Dij .
+
+Collision Checking Framework . In practical robotic systems, localization and mapping sensors possess inherent noise. By choosing a grid resolution that aligns 3with this uncertainty margin, grid cells effectively become atomic units of space. Con-sequently, we cannot meaningfully distinguish between different sub-cell positions. Therefore, for the purpose of collision checking, we assume that whenever the agent occupies a cell, its geometric center is localized precisely at the cell’s center. Under this assumption, static collision checking explicitly accounts for the agent’s volume: a discrete state at ( i, j ) is considered statically safe if all grid cells whose cen-ters fall within the Euclidean distance R from the center of ( i, j ) are free in S. Any minor spatial discrepancies caused by the center-localization assumption are absorbed by a conservative padding of the agent’s radius R. In contrast, because dynamic obsta-cles are already pre-dilated during the construction of D, dynamic collision checking is drastically simplified: we only need to query the safe intervals Dij at the single specific cell ( i, j ) corresponding to the agent’s center. 
+
+Motion Primitives . The kinematic constraints and physical capabilities of the mobile agent are encapsulated in motion primitives , each representing a short, kinodynamically-feasible motion (i.e., a continuous state change). We assume these primitives align with the discretization, meaning that transitions occur between two discrete states, such as ( i, j, θ ) and ( i′, j ′, θ ′). In other words, the motion starts at the center of a grid cell, ends at the center of another cell, and the agent’s heading at the endpoints belongs to a finite set of possible headings. Each primitive is additionally associated with a positive cost, which in our case is its execution time ∆ t > 0. To evaluate dynamic collisions along a motion, each primitive defines a spatial-temporal collision trace . For every cell c = ( ic, j c) traversed by the agent’s center during the motion, the primitive dictates a relative time interval [ τ cin , τ cout ) ⊆ [0 , ∆t)indicating when the agent’s center resides within cell c. Note that ( ic, j c) are the coordinates relative to the primitive’s start cell. For a given state s = ( i, j, θ ), there is a finite number of motion primitives that the agent can use to move to other states. Moreover, we assume there is at most one primitive connecting any specific pair of states, which corresponds to the intuitive understanding of a primitive as an elementary motion. We also consider that the space of discrete states, along with the primitives, is regular ; that is, for any δi, δ j ∈ Z if there exists a motion primitive connecting ( i, j, θ ) and ( i′, j ′, θ ′), then there also exists one from ( i + δi, j + δj , θ ) to ( i′ + δi, j ′ + δj , θ ′). While the endpoints of such primitives are distinct, the motion itself is not. This means that the collision traces of these primitives differ only by a parallel shift of the cells, and their costs coincide. Thus, we can consider a canonical set of template primitives , the control set , from which all other primitives can be obtained through parallel translation. We assume that such a set is finite and is computed offline. When a template primitive from the control set is instantiated at a discrete state ( i, j, θ ) at an absolute start time t, its relative temporal footprint is shifted to absolute time, yielding [ t + τ cin , t + τ cout ) for each swept cell ( i + ic, j + jc). The execution of a primitive is collision-free if all cells in its spatial trace are statically safe in S, and its absolute time intervals do not overlap with any dynamic obstacle intervals: [ t + τ cin , t + τ cout ) ∩ Di+ic, j +jc = ∅.
+
+Path and Objective . A path is a continuous sequence of collision-free motion primitives and, optionally, waiting actions (dwelling in a safe interval at the current 4cell). Adjacent primitives must share the same discrete spatial state to ensure conti-nuity. The task is to find a collision-free path from a start state s0 = ( i0, j 0, θ 0) at time t = t0, to a goal state sf = ( if , j f , θ f ). We wish to solve this problem optimally by finding the path that yields the minimum arrival time tf at the goal state. 
+
+## 2.2 Safe Interval Path Planning with Motion Primitives 
+
+To effectively navigate the spatial-temporal space defined by dynamic obstacles, we build upon the Safe Interval Path Planning (SIPP) algorithm [11]. Standard search algorithms operating in the time-augmented state space suffer from a state space explosion due to the unbounded nature of the time dimension. SIPP mitigates this issue by abstracting the timeline into a strictly finite set of contiguous, collision-free periods called safe intervals . We refer the reader to the foundational works [11–13] for a detailed explanation of the core algorithm as well as comprehensive examples, and now proceed with an overview of how SIPP is adapted to our framework with motion primitives. 
+
+State Space . Recall that the dynamic environment defines a set of occupied, half-open time intervals Dij = {[t(1)  
+
+> in
+
+, t (1) 
+
+> out
+
+), . . . } for each grid cell ( i, j ). Consequently, the complementary free time naturally consists of a finite set of disjoint half-open intervals. Thus, for a cell ( i, j ), a safe interval I = [ tstart , t end ) is defined as a maximal contiguous period of time during which the cell is not occupied by any moving obstacles from Dij .      
+
+> Definition 1 (SIPP State) A state in the SIPP search space is represented by a tuple:
+> p=⟨i, j, θ, I ⟩,
+> where ( i, j, θ ) is the discrete state and I= [ tstart , t end ) is a safe interval at the cell ( i, j ). The minimum arrival time at this state is denoted as tarr .
+
+Note that tarr serves as the g-value in the search graph (i.e., g(p) = tarr ). Because the agent is allowed to wait in place within a safe interval without colliding with dynamic obstacles, it does not have to depart exactly at its arrival time. Instead, the valid departure times from state p form a continuous window [ tarr , t end − ε), where ε
+
+represents the minimum time required for the agent to completely clear the current cell after initiating a motion primitive. 
+
+Initialization . The search process begins at a user-defined start time t0. To con-struct the root node of the search tree, we must map the initial configuration to a valid SIPP state. This involves querying the dynamic environment at the start cell to find the safe interval that encompasses t0, as detailed in Algorithm 1. If the cell is occupied by a dynamic obstacle exactly at t0, no such valid interval exists, and the problem is trivially unsolvable. 
+
+Earliest Safe Departure . The fundamental operation in our SIPP formulation is finding a valid, collision-free transition. Because motion primitives have a spatial-temporal footprint spanning multiple cells, verifying a transition requires more than a simple boundary check. We must find the earliest safe departure time tdep within the departure window (possible departure times) such that the agent’s footprint never overlaps with any dynamic obstacle. 5Algorithm 1 Constructing the Initial SIPP State 
+
+Input: Initial discrete state s0 = ( i0, j 0, θ 0), start time t0
+
+Output: Initial SIPP state pstart or ∅
+
+Function name: GetInitialState (s0, t0) 
+
+> 1:
+
+SafeIntervals ← R+ \ Di0j0 ▷ Full planning horizon R+ := [0 , ∞) 
+
+> 2:
+
+for all I = [ tstart , t end ) ∈ SafeIntervals do  
+
+> 3:
+
+if tstart ≤ t0 and t0 < t end then  
+
+> 4:
+
+pstart ← ⟨ i0, j 0, θ 0, I ⟩ 
+
+> 5:
+
+g(pstart ) ← t0 ▷ Initial arrival time is t0 
+
+> 6:
+
+return pstart  
+
+> 7:
+
+return ∅ ▷ Start cell is occupied at t0
+
+Algorithm 2 details this continuous time-search procedure. For each cell in the primitive’s trace, we project the dynamic obstacles’ occupied intervals back in time to compute invalid departure blocks . By merging and sorting these blocks, we linearly scan for the first available departure time. Notably, this function depends solely on the template primitive and the grid cell (at which this primitive starts), decoupling it from the SIPP graph logic. 
+
+Algorithm 2 Continuous Earliest Safe Departure Search 
+
+Input: Grid cell ( i, j ), Primitive prim , Departure window [ tmin , t max )
+
+Output: Earliest valid departure time tdep ∈ [tmin , t max ) or ∞
+
+Function name: GetEarliestDeparture (( i, j ), prim , tmin , tmax ) 
+
+> 1:
+
+InvalidIntervals ← ∅ ▷ List of invalid departure bounds  
+
+> 2:
+
+for all cell c = ( ic, j c) in prim .SpatialTrace do  
+
+> 3:
+
+[τ cin , τ cout ) ← prim .GetRelativeTime (c) 
+
+> 4:
+
+for all [ostart , o end ) ∈ Di+ic, j +jc do ▷ Occupied intervals of c 
+
+> 5:
+
+istart ← ostart − τ cout ▷ Forbidden departure interval due to obstacle  
+
+> 6:
+
+iend ← oend − τ cin  
+
+> 7:
+
+if iend > t min and istart < t max then ▷ Keep only intervals that  
+
+> 8:
+
+InvalidIntervals .add ([ istart , i end )) ▷ overlap departure window  
+
+> 9:
+
+if InvalidIntervals is empty then  
+
+> 10:
+
+return tmin ▷ No obstacles threaten the execution  
+
+> 11:
+
+Sort InvalidIntervals in ascending order by istart  
+
+> 12:
+
+tdep ← tmin  
+
+> 13:
+
+for all [istart , i end ) ∈ InvalidIntervals do  
+
+> 14:
+
+if tdep < i start then  
+
+> 15:
+
+return tdep ▷ Found a safe gap before the next obstacle  
+
+> 16:
+
+tdep ← max( tdep , i end ) ▷ Wait for the obstacle to pass  
+
+> 17:
+
+if tdep ≥ tmax then  
+
+> 18:
+
+return ∞ ▷ Departure window closed  
+
+> 19:
+
+return tdep 
+
+6Algorithm 3 Generating SIPP Successors 
+
+Input: SIPP state u, arrival time tarr (current g-value) 
+
+Output: Set of successor tuples ( v, t new arr , wait time )
+
+Function name: SafeStatic (( i, j ), prim ) 
+
+> 1:
+
+for all cell c = ( ic, j c) in prim .SpatialTrace do  
+
+> 2:
+
+(iabs , j abs ) ← (i + ic, j + jc) ▷ Cell c shifted by primitive’s origin ( i, j ) 
+
+> 3:
+
+if ∃(x, y ) s.t. ∥(x, y ) − (iabs , j abs )∥ ≤ R and Sx,y = 1 then  
+
+> 4:
+
+return False ▷ Obstacle within radius R 
+
+> 5:
+
+return True 
+
+Function name: GetSuccessors (u, tarr ) 
+
+> 1:
+
+i, j, θ, I ← u 
+
+> 2:
+
+Successors ← ∅  
+
+> 3:
+
+for all prim ∈ ControlSet (θ) do  
+
+> 4:
+
+if not SafeStatic (( i, j ), prim ) then ▷ Check instance of prim from (i,j)  
+
+> 5:
+
+continue ▷ Skip if collision trace hits static obstacles  
+
+> 6:
+
+(i′, j ′, θ ′) ← (i + prim .i goal , j + prim .j goal , prim .θ goal ) ▷ Absolute target state  
+
+> 7:
+
+TargetIntervals ← R+ \ Di′j′ 
+
+> 8:
+
+τ start out ← prim .τ (0 ,0)  
+
+> out
+
+▷ Time to completely clear the starting cell  
+
+> 9:
+
+for all I′ ∈ TargetIntervals do  
+
+> 10:
+
+▷ Can’t depart before current arrival, nor arrive before target interval opens  
+
+> 11:
+
+tdep min ← max( tarr , I ′.t start − prim .∆t) 
+
+> 12:
+
+▷ Must clear current cell before I closes, and arrive before I′ closes  
+
+> 13:
+
+tdep max ← min( I.t end − τ start out , I ′.t end − prim .∆t) 
+
+> 14:
+
+if tdep min ≥ tdep max then  
+
+> 15:
+
+continue ▷ Invalid departure window for this target interval  
+
+> 16:
+
+tdep ← GetEarliestDeparture (( i, j ), prim , t dep min , t dep max ) 
+
+> 17:
+
+if tdep ̸ = ∞ then  
+
+> 18:
+
+tnew arr ← tdep + prim .∆t 
+
+> 19:
+
+wait time ← tdep − tarr  
+
+> 20:
+
+v ← ⟨ i′, j ′, θ ′, I ′⟩ 
+
+> 21:
+
+Successors .add (( v, t new arr , wait time ))  
+
+> 22:
+
+return Successors 
+
+Successor Generation . During the A* expansion loop, generating successors relies on evaluating transitions into specific safe intervals of the target discrete states. For a given SIPP state u, we iterate over the canonical control set applicable to its orientation θ. For each valid primitive, we determine the target discrete state and retrieve all its safe intervals. Crucially, we must attempt to find a valid departure time for each individual target interval. For a specific target interval, we calculate a strictly bounded departure window [ tdep min , t dep max ) that satisfies both the temporal constraints of the current interval (clearing the starting cell before it closes) and the target interval (arriving while it is open). If the continuous departure search within this window yields a valid time, the successor state is constructed, as outlined in Algorithm 3. 7Fig. 1 Neighborhood topologies for 2 k -connected grids ( k = 2 , 3, 4, 5). 
+
+Fig. 2 Decomposition of the 16-heading control set for smooth transition motion planning. (Left) Cardinal and ordinal directions (0 ◦, 90 ◦, . . . ); (Center) Diagonal primitives; (Right) Intermediate directions with 22 .5◦ angular resolution. Solid orange lines denote the base primitive set (7 × 16 = 112 primitives), which is augmented by auxiliary primitives (dashed purple) to form the complete 
+
+extended control set (24 × 16 = 384 primitives). 
+
+# 3 Results 
+
+## 3.1 Evaluated Algorithms 
+
+To empirically evaluate the performance of SIPP across different topological struc-tures, we utilize a simulated differential-drive robot. We benchmark the algorithm using six distinct motion primitive sets 1:
+
+• SIPP-Basic : A minimal set of kinodynamically smooth motion primitives designed for seamless transitions between discrete states in a 3D space ( i, j, θ ) (see Fig. 2). 
+
+• SIPP-Extended : An enriched control set containing supplementary maneuvers to enhance maneuverability in constrained spaces (see Fig. 2, dashed lines). 
+
+• SIPP-2^k ( k = 2 , 3, 4, 5): A 2 k-connected grid neighborhood where transitions are straight-line segments. Unlike the lattice sets, the state space is inherently 2D ( i, j ), as the robot is assumed to be capable of moving to any valid neighbor regardless of its current orientation. The topological structures of the 2 k neighborhoods are illustrated in Fig. 1. 
+
+> 1Implementation and visualization source code: https://github.com/PathPlanning/LatticeSIPP.
+
+83.2 Evaluation Metrics 
+
+We compare the algorithms based on both search efficiency and the geometric quality of the resulting spatial trajectories. Our evaluation metrics are defined as follows: 
+
+1. Search Time 
+
+The computational time required by the A* expansion loop to find the optimal path. 
+
+2. Path Cost 
+
+The total execution time of the trajectory from the start state to the goal state. In the SIPP framework, this value naturally encapsulates both the traversal time along the primitives and the necessary waiting times (dwelling in safe intervals) to yield to dynamic obstacles. 
+
+3. Trajectory Angularity ( A)
+
+To quantify the ”jaggedness” of the spatial path, we sample points along the trajectory at a fixed high-frequency interval δt . For every consecutive triplet of sampled points 
+
+pi−1, p i, p i+1 , we compute the discrete curvature, defined as the inverse radius of their circumscribed circle R(i) 
+
+> c
+
+. A larger inverse radius indicates a sharper, less natural turn, whereas collinear points yield an infinite radius and thus zero curvature. The total angularity is defined as the sum of these discrete curvatures along the trajectory: 
+
+A = X
+
+> i
+
+1
+
+R(i)
+
+> c
+
+4. Angle-Over-Length (AOL) 
+
+This metric quantifies the cumulative angular displacement [17]. Consider a trajectory as a planar curve parameterized by its arc length s ∈ [0 , L ]. The infinitesimal change in the agent’s heading θ at any point s can be approximated as |dθ | ≈ | θ′(s)|ds .In differential geometry, for a curve with a continuous tangent, the rate of change of the heading angle with respect to the arc length is exactly the signed curvature: 
+
+θ′(s) = κ(s). Consequently, the total variation of the angle for smooth path with lattice primitives is the integral of the absolute curvature: AOL smooth 
+
+Z L
+
+> 0
+
+|dθ | =
+
+Z L
+
+> 0
+
+|κ(s)|ds 
+
+For the piecewise-linear paths produced by the 2 k-connected grids, the heading derivative is zero along the segments but forms a Dirac delta function at the junctions. Thus, we compute this as the sum of the absolute angles between consecutive straight-line segments: AOL grid = X
+
+> j
+
+|∆θj |
+
+5. Bending Energy ( Ebend )
+
+The bending energy represents the physical effort required to execute the path, defined as the integral of the squared curvature κ(s) along the arc length s:
+
+Ebend =
+
+Z L
+
+> 0
+
+κ2(s)ds 
+
+9For the lattice sets, the primitives are designed to join with finite curvature, allow-ing this integral to be computed continuously. However, for 2 k grid paths, point-turns imply infinite instantaneous curvature. To provide a fair physical comparison, we model these junctions by approximating the point-turn as a continuous rotation along a minimal feasible turning radius. Given our grid resolution, we assume a maximal inscribed circle within a cell, Rmin = 0 .5. The arc length for a turn of angle ∆ θ is 
+
+sarc = Rmin |∆θ|, with a constant curvature κ = 1 /R min . The bending energy penalty for a single junction becomes: 
+
+Eturn =
+
+Z sarc 
+
+> 0
+
+ 1
+
+Rmin 
+
+2
+
+ds = |∆θ|
+
+Rmin 
+
+Thus, the bending energy for the grid-based trajectories is computed as the sum of these discrete turn penalties: 
+
+Egrid bend = X
+
+> j
+
+|∆θj |
+
+Rmin 
+
+## 3.3 Empirical Evaluation 
+
+Setup. We evaluated our approach on standard grid maps from the widely used MovingAI benchmark [18]: Denver (a city street map), arena (an open space with scattered structural obstacles), and empty 64 64 (a completely obstacle-free 64 × 64 grid). For each map, we utilized the accompanying benchmark scenario files to obtain pairs of start and goal spatial coordinates ( i0, j 0) and ( if , j f ). The ego-robot is modeled as a circular agent with a radius of R = 1 (relative to the unit grid cell size). To ensure a fair geometric baseline comparison between our 3D lattice-based approach and the 2D 2 k-connected planners, the start and goal heading constraints (θ0 and θf ) were relaxed. Since 2 k algorithms operate strictly in a spatial domain and allow instantaneous, penalty-free heading changes, forcing rigid terminal orientations on the lattice planner would artificially necessitate large kinematic detours (e.g., loop-ing to align with a final angle). Such detours would disproportionately inflate spatial metrics and skew the comparison. Thus, the search is considered successful once the agent’s center reaches the target cell ( if , j f ) with any valid heading. Strict kinody-namic continuity is naturally maintained by the lattice primitives throughout the rest of the generated trajectory. Dynamic obstacles are generated procedurally using randomized Depth-First Search (DFS) walks over the state lattice. While these obstacles ignore collisions with the static map and each other, this unstructured generation is a deliberate choice designed to rigorously stress-test the planner. Because our SIPP adaptation relies entirely on the abstraction of safe time intervals per grid cell, the physical coherence or interactions of dynamic hazards are structurally irrelevant to the collision-checking logic. By forcing the algorithm to navigate through densely overlapping, chaotic spatiotemporal constraints, we demonstrate its robustness in a ”worst-case” regime, guaranteeing its efficacy in more predictable, physically constrained multi-agent environments. Consistent with standard conventions, all agents disappear from the workspace upon completing their trajectories. 10 Table 1 Merged Benchmark Results for Denver 1 256 map Obstacles SIPP-B SIPP-E SIPP-2 2 SIPP-2 3 SIPP-2 4 SIPP-2 5                                                                                                
+
+> Path Cost
+> 00.813x 0.782x 1.000x 0.826x 0.791x 0.782x 50 0.821x 0.787x 1.000x 0.829x 0.795x 0.786x 150 0.835x 0.796x 1.000x 0.830x 0.792x 0.787x 320 0.896x 0.811x 1.000x 0.854x 0.814x 0.803x
+> Trajectory Angularity
+> 00.123x 0.100x 1.000x 0.401x 0.155x 0.076x 50 0.168x 0.144x 1.000x 0.479x 0.201x 0.110x 150 0.174x 0.159x 1.000x 0.505x 0.223x 0.137x 320 0.204x 0.223x 1.000x 0.542x 0.312x 0.205x
+> Angle-Over-Length
+> 00.102x 0.080x 1.000x 0.356x 0.139x 0.069x 50 0.140x 0.117x 1.000x 0.425x 0.181x 0.099x 150 0.147x 0.132x 1.000x 0.448x 0.198x 0.122x 320 0.170x 0.190x 1.000x 0.490x 0.275x 0.186x
+> Bending Energy
+> 00.006x 0.005x 1.000x 0.356x 0.139x 0.069x 50 0.008x 0.007x 1.000x 0.425x 0.181x 0.099x 150 0.009x 0.009x 1.000x 0.448x 0.198x 0.122x 320 0.012x 0.019x 1.000x 0.490x 0.275x 0.186x
+
+Results. Metric values for each planning instance were normalized relative to the standard 4-connected search ( Grid-2^2 ) baseline, with aggregated results represent-ing the medians of these normalized values. Detailed geometric and cost metrics for the Denver 1 256 map are presented in Table 1. Computational performance across all environments is summarized in Figure 3, and qualitative trajectory examples are depicted in Figure 4. Since SIPP is provably optimal, each generated path is strictly optimal with respect to its specific control set. 
+
+Search Time. As expected, lattice-based algorithms incur higher computational costs than Grid-2^k variants (Fig. 3). This overhead stems naturally from expanding nodes in a 3D state space ( i, j, θ ) compared to the 2D spatial domain ( i, j ), representing a direct and necessary trade-off between search speed and kinodynamic smoothness. 
+
+Trajectory Quality. The primary advantage of the lattice-based approach lies in its physical executability. As shown in Table 1, lattice algorithms demonstrate a massive reduction in Bending Energy ( Ebend ) compared to all Grid-2^k variants. While 2 k-connected grids require robots to perform severe, non-smooth point-turns, lattice primitives replace these junctions with continuous curves, yielding paths that are inherently stable and ready for low-level control systems. 11 Map: Denver 1 256 
+
+Map: Empty 64 64 
+
+Map: Arena 
+
+Fig. 3 Median runtime comparison across different environments (relative to the runtime of 
+
+SIPP-2^2 ). The lower – the better. 
+
+12 SIPP-Basic SIPP-Extended 
+
+SIPP-2^2 SIPP-2^3 
+
+SIPP-2^4 SIPP-2^5 
+
+Fig. 4 Paths for the Arena map with 20 dynamic obstacles of radius 1 cell. Planning is performed between cells (39 , 5) and (3 , 39); the snapshot is shown at t = t0 = 0. 
+
+13 4 Conclusion 
+
+In this paper, we presented a dynamic path planning approach integrating state lattices with the SIPP algorithm. By rasterizing the spatial-temporal swept volumes of moving obstacles directly onto the grid, we enabled efficient, sampling-free collision checking. Our evaluation reveals that while highly connected grids (e.g., Grid-2^5 ) perform exceptionally well on spatial metrics due to their dense branching, they produce kine-matically unfeasible, jagged paths. Nevertheless, they serve as a geometric benchmark: by progressively enriching the lattice control set, we can successfully match these superior routing metrics while guaranteeing physically executable, smooth trajectories. However, the increased dimensionality of the state lattice inevitably impacts search time. To address this, future work will explore adapting the MeshA* algorithm [10] to evaluate bundles of primitives simultaneously, aiming to drastically reduce the branching factor while preserving optimality. Moving forward, we plan to validate our framework via closed-loop physical deployments against planners such as TEB or MPC, and extend this approach to Multi-Agent Path Finding (MAPF). 
+
+# References 
+
+[1] Andreychuk, A., Yakovlev, K., Atzmon, D., Stern, R.: Multi-agent pathfinding with continuous time, pp. 39–45 (2019). https://doi.org/10.24963/ijcai.2019/6 [2] Kottinger, J., Almagor, S., Lahijanian, M.: Conflict-based search for multi-robot motion planning with kinodynamic constraints. In: 2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pp. 13494–13499 (2022). https://doi.org/10.1109/IROS47612.2022.9982018 [3] H¨ onig, W., Kumar, T.K.S., Cohen, L., Ma, H., Xu, H., Ayanian, N., Koenig, S.: Multi-agent path finding with kinematic constraints. In: International Conference on Automated Planning and Scheduling (2016). 
+
+https://api.semanticscholar.org/CorpusID:3672307 
+
+[4] Wen, L., Liu, Y., Li, H.: Cl-mapf: Multi-agent path finding for car-like robots with kinematic and spatiotemporal constraints. Robotics and Autonomous Systems 
+
+150 , 103997 (2022) https://doi.org/10.1016/j.robot.2021.103997 [5] Bai, Y., Kotpalliwar, S., Kanellakis, C., Nikolakopoulos, G.: Multi-agent path planning based on conflict-based search (cbs) variations for heterogeneous robots. Journal of Intelligent & Robotic Systems 111 (2025) https://doi.org/10.1007/ s10846-025-02229-0 [6] Pivtoraiko, M., Kelly, A.: Efficient constrained path planning via search in state lattices. In: International Symposium on Artificial Intelligence, Robotics, and Automation in Space, pp. 1–7 (2005). Munich Germany [7] Pivtoraiko, M., Knepper, R.A., Kelly, A.: Differentially constrained mobile robot motion planning in state lattices. Journal of Field Robotics 26 (3), 308–333 (2009) 14 https://doi.org/10.1002/rob.20285 [8] Wang, Z., Zhang, Z., Dou, W., Hu, G., Zhang, L., Zhang, M.: Extending conflict-based search for optimal and efficient quadrotor swarm motion planning. Drones 
+
+8, 719 (2024) https://doi.org/10.3390/drones8120719 [9] Moldagalieva, A., Ortiz-Haro, J., Toussaint, M., Hoenig, W.: db-cbs: Discontinuity-bounded conflict-based search for multi-robot kinodynamic motion planning, pp. 14569–14575 (2024). https://doi.org/10.1109/ICRA57147.2024. 10610999 [10] Agranovskiy, M., Yakovlev, K.: MeshA*: Efficient path planning with motion primitives. Proceedings of the AAAI Conference on Artificial Intelligence 40 (43), 36785–36792 (2026) https://doi.org/10.1609/aaai.v40i43.41004 [11] Phillips, M., Likhachev, M.: Sipp: Safe interval path planning for dynamic envi-ronments. In: 2011 IEEE International Conference on Robotics and Automation, pp. 5628–5635 (2011). https://doi.org/10.1109/ICRA.2011.5980306 [12] Narayanan, V., Phillips, M., Likhachev, M.: Anytime safe interval path plan-ning for dynamic environments. In: 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems, pp. 4708–4715 (2012). https://doi.org/10.1109/ IROS.2012.6386191 [13] Yakovlev, K., Andreychuk, A.: Any-angle pathfinding for multiple agents based on sipp algorithm. (2017). https://doi.org/10.48550/arXiv.1703.04159 [14] Ali, Z.A., Yakovlev, K.: Safe interval path planning with kinodynamic constraints. Proceedings of the AAAI Conference on Artificial Intelligence 37 (10), 12330– 12337 (2023) https://doi.org/10.1609/aaai.v37i10.26453 [15] Huang, S., Wu, Y., Tao, Y., Kumar, V.: Safe interval motion planning for quadrotors in dynamic environments. In: 2025 IEEE International Conference on Robotics and Automation (ICRA), pp. 2780–2786 (2025). https://doi.org/10. 1109/ICRA55743.2025.11127946 [16] Wiman, E., Tiger, M.: Safe lattice planning for motion planning with dynamic obstacles. In: 2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pp. 9287–9294 (2025). https://doi.org/10.1109/IROS60139. 2025.11247023 [17] Heiden, E., Palmieri, L., Bruns, L., Arras, K., Sukhatme, G., Koenig, S.: Bench-mr: A motion planning benchmark for wheeled mobile robots. IEEE Robotics and Automation Letters PP , 1–1 (2021) https://doi.org/10.1109/LRA.2021.3068913 [18] Sturtevant, N.: Benchmarks for grid-based pathfinding. Transactions on Compu-tational Intelligence and AI in Games 4(2), 144–148 (2012) 15

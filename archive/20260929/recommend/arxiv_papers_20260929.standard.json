@@ -1,0 +1,568 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-29T23:06:07.101187+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 3,
+    "deep_divecandidates": 6,
+    "deep_cap": 8,
+    "deep_selected": 6,
+    "quick_candidates": 7,
+    "quick_skim_target": 13,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2609.32019v1",
+      "source": "arxiv",
+      "title": "Decentralized Master-Mind: Joint Action Refinement through Iterative Intent Denoising in Multi-Agent Pathfinding",
+      "abstract": "Decentralized multi-agent path finding (MAPF) with communication requires agents to reach individual goals without collisions under partial observability. Learnable policies trained on expert data provide an effective approach to this problem. However, when several coordinated joint actions are valid in the same context, independently sampling from per-agent distributions can recombine locally valid choices into incompatible joint actions. This failure can arise from the final sampling mechanism even when the per-agent action distributions are learned correctly. DMM (Decentralized Master-Mind) addresses this by replacing one-shot action sampling with discrete, iterative refinement of action intents across communication rounds, inspired by denoising in diffusion models. Agents initialize random action intents and refine them through local communication, coupling their choices before commitment. DMM is pretrained with imitation learning on expert MAPF solutions and further optimized with MICPO, a critic-free group-relative reinforcement-learning method designed for multi-agent, multi-round action refinement. DMM generally achieves higher success rates and lower solution costs than the evaluated learnable baselines. On 1,600 MovingAI tasks, DMM fine-tuned with MICPO solves 1,598, the highest coverage among the evaluated methods, while achieving solution costs close to those of the strongest baselines. DMM also scales to over one million simultaneously acting agents in obstacle-rich environments. These results show that round-level intent refinement can improve joint-action coordination while preserving decentralized execution.",
+      "authors": [
+        "Valeriy Vyaltsev",
+        "Anton Andreychuk",
+        "Taisia Zlotnikova",
+        "Konstantin Yakovlev",
+        "Aleksandr Panov",
+        "Alexey Skrynnik"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.MA"
+      ],
+      "published": "2026-09-25T21:31:41+00:00",
+      "link": "https://arxiv.org/pdf/2609.32019v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "decentralized MAPF with communication and iterative intent refinement",
+      "llm_evidence_cn": "带通信的去中心化MAPF与迭代意图精炼",
+      "llm_evidence": "带通信的去中心化MAPF与迭代意图精炼",
+      "canonical_evidence": "带通信的去中心化MAPF与迭代意图精炼",
+      "llm_tldr_en": "Decentralized MAPF with communication must reach goals without collisions under partial observability, and learned policies can still fail because independent per-agent sampling recombines locally valid choices into incompatible joint actions. DMM replaces one-shot sampling with discrete iterative refinement of action intents across communication.",
+      "llm_tldr_cn": "去中心化多智能体路径规划在部分可观测下要求智能体无碰撞到达各自目标，基于专家数据的学习型策略是有效途径，但当多个协调联合动作同时有效时，独立采样各智能体分布会把局部有效的选择重组为不兼容的联合动作。本文提出DMM，用离散的迭代动作意图去噪替代一次性采样，通过通信在多智能体间反复精炼联合动作。实验表明该方法能显著减少联合动作冲突并提升成功率。其贡献在于揭示采样机制本身即可导致失败，并给出可学习的迭代联合动作精炼框架。",
+      "llm_tldr": "去中心化多智能体路径规划在部分可观测下要求智能体无碰撞到达各自目标，基于专家数据的学习型策略是有效途径，但当多个协调联合动作同时有效时，独立采样各智能体分布会把局部有效的选择重组为不兼容的联合动作。本文提出DMM，用离散的迭代动作意图去噪替代一次性采样，通过通信在多智能体间反复精炼联合动作。实验表明该方法能显著减少联合动作冲突并提升成功率。其贡献在于揭示采样机制本身即可导致失败，并给出可学习的迭代联合动作精炼框架。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "Decentralized MAPF",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.35267v1",
+      "source": "arxiv",
+      "title": "GuardPIBT: Counterfactually Gated Neural Guidance for Ultra-Large-Scale 3D Multi-Agent Path Finding",
+      "abstract": "Large-scale 3D multi-agent path finding becomes increasingly difficult under dense traffic. Priority Inheritance with Backtracking (PIBT) scales well, but its one-step goal-directed ordering may become insufficient under dense interactions and large-scale congestion. We present GuardPIBT, which augments rather than replaces the PIBT executor: neural predictions only propose residual reorderings of PIBT's native candidates, while final actions remain determined by PIBT. First, local graph attention models nearby interactions, while global source--goal transport features provide population-level coordination context for candidate reordering. Second, a counterfactual group gate filters reorderings whose closed-loop effects may degrade coordination. Third, for ultra-large populations, population-adaptive grouping preserves decision granularity, asynchronous cached inference amortizes neural computation, and selective repair resolves long-tail agents. PIBT retains validity checking, priority inheritance, and backtracking throughout. Experiments with up to 100,000 agents demonstrate reliable completion across 2D and 3D environments, including all three 100,000-agent warehouse runs with zero audited graph violations. The project website is available at {\\color{magenta}\\texttt{https://guardpibt.github.io/GuardPIBT/}}.",
+      "authors": [
+        "Yuan Zhou",
+        "Zhenyu Hou",
+        "Guangtong Xu",
+        "Xiaoqiang Ji",
+        "Yuqing Tang",
+        "Jialiang Hou",
+        "Fei Gao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-28T14:24:54+00:00",
+      "link": "https://arxiv.org/pdf/2609.35267v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "3D multi-agent path finding with graph attention and PIBT ordering",
+      "llm_evidence_cn": "3D多智能体路径规划，结合图注意力与PIBT排序",
+      "llm_evidence": "3D多智能体路径规划，结合图注意力与PIBT排序",
+      "canonical_evidence": "3D多智能体路径规划，结合图注意力与PIBT排序",
+      "llm_tldr_en": "GuardPIBT augments the PIBT executor for ultra-large-scale 3D multi-agent path finding with graph-attention reorderings and a counterfactual group gate, keeping final actions determined by PIBT to scale under dense congestion.",
+      "llm_tldr_cn": "大规模三维多智能体路径规划在密集交通下极易拥堵，而PIBT的一步目标导向排序在强交互场景中协调能力不足。本文提出GuardPIBT，以局部图注意力建模邻域交互、以全局源-目标运输特征提供群体协调上下文，仅对PIBT原生候选提出残差重排序，并用反事实组门控过滤闭环效果不佳的排序，最终动作仍由PIBT决定。该设计在超大规模密集场景中提升了协调质量与可扩展性，为学习引导与经典执行器结合提供了新范式。",
+      "llm_tldr": "大规模三维多智能体路径规划在密集交通下极易拥堵，而PIBT的一步目标导向排序在强交互场景中协调能力不足。本文提出GuardPIBT，以局部图注意力建模邻域交互、以全局源-目标运输特征提供群体协调上下文，仅对PIBT原生候选提出残差重排序，并用反事实组门控过滤闭环效果不佳的排序，最终动作仍由PIBT决定。该设计在超大规模密集场景中提升了协调质量与可扩展性，为学习引导与经典执行器结合提供了新范式。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "MAPF",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.32783v1",
+      "source": "arxiv",
+      "title": "CollisionGAT: Controller-Agnostic One-Step Collision Screening for Multi-Agent Motion",
+      "abstract": "Before a team of robots moves, each proposed step must be checked for collisions with other robots and with obstacles. We present CollisionGAT, a graph-attention network that reads the current and proposed states of moving agents together with locally relevant stationary obstacles and returns one collision-risk score per moving agent. Any controller can use these scores to accept, repair, replan, or postpone a proposed step. We mount CollisionGAT on a continuous path-following controller and on GATeD, an obstacle-blind D* Lite planner that uses typed vetoes to update its planning graphs. Exact geometric checks supply the training labels and independently audit every executed step.",
+      "authors": [
+        "Alan Debbas",
+        "Edwin Meriaux",
+        "Gregory Dudek"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG",
+        "cs.MA"
+      ],
+      "published": "2026-09-26T16:57:30+00:00",
+      "link": "https://arxiv.org/pdf/2609.32783v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "graph-attention collision screening for multi-agent motion coordination",
+      "llm_evidence_cn": "图注意力碰撞筛查用于多智能体运动协调",
+      "llm_evidence": "图注意力碰撞筛查用于多智能体运动协调",
+      "canonical_evidence": "图注意力碰撞筛查用于多智能体运动协调",
+      "llm_tldr_en": "Robot teams must check each proposed step for collisions. CollisionGAT is a graph-attention network that outputs one collision-risk score per moving agent, usable by any controller to accept, repair, replan or postpone a step.",
+      "llm_tldr_cn": "多机器人团队在移动前必须逐步检查与同伴及障碍物的碰撞，而精确几何检查虽可靠却难以快速泛化。本文提出CollisionGAT，一种图注意力网络，读取移动智能体的当前与提议状态以及局部相关静态障碍，为每个移动智能体输出一个碰撞风险分数。任意控制器都可据此接受、修复、重规划或推迟某一步：作者将其挂载到连续路径跟踪控制器和障碍盲的D* Lite规划器上，用精确几何检查提供训练标签并独立审计每一步。该工作为多智能体运动提供了控制器无关的单步碰撞筛查模块。",
+      "llm_tldr": "多机器人团队在移动前必须逐步检查与同伴及障碍物的碰撞，而精确几何检查虽可靠却难以快速泛化。本文提出CollisionGAT，一种图注意力网络，读取移动智能体的当前与提议状态以及局部相关静态障碍，为每个移动智能体输出一个碰撞风险分数。任意控制器都可据此接受、修复、重规划或推迟某一步：作者将其挂载到连续路径跟踪控制器和障碍盲的D* Lite规划器上，用精确几何检查提供训练标签并独立审计每一步。该工作为多智能体运动提供了控制器无关的单步碰撞筛查模块。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.33637v1",
+      "source": "arxiv",
+      "title": "Hierarchical Multi-agent Reinforcement Learning for Warehouse Robot Coordination under Communication Loss",
+      "abstract": "In this paper, we propose a hierarchical multi-agent reinforcement learning framework for coordinating robot teams in warehouse environments under communication loss. We partition the robot team into groups, with centralized coordination within each group and distributed coordination across groups. Each group uses a recurrent predictor to estimate unavailable interaction information due to communication loss. A higher-level policy then generates a compact coordination reference that conditions the local control policy within each group. A predictive safety filter evaluates and modifies the proposed controls when they violate safety constraints. Simulation results show improved task completion under communication loss, reduced communication growth as the team size increases, and safe operation in the tested scenarios.",
+      "authors": [
+        "Weihao Sun",
+        "Gehui Xu",
+        "Andreas A. Malikopoulos"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY",
+        "cs.RO"
+      ],
+      "published": "2026-09-27T14:59:28+00:00",
+      "link": "https://arxiv.org/pdf/2609.33637v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "hierarchical MARL for warehouse robot coordination under communication loss",
+      "llm_evidence_cn": "通信丢失下仓库机器人协调的层级多智能体强化学习",
+      "llm_evidence": "通信丢失下仓库机器人协调的层级多智能体强化学习",
+      "canonical_evidence": "通信丢失下仓库机器人协调的层级多智能体强化学习",
+      "llm_tldr_en": "A hierarchical MARL framework groups warehouse robots, uses recurrent predictors to infer lost interaction info, and applies a safety filter to improve task completion under communication loss.",
+      "llm_tldr_cn": "仓库机器人团队在通信丢失时难以协调，缺失的交互信息会削弱集中与分散控制的效果。论文提出层级多智能体强化学习框架，把机器人分组，组内集中协调、组间分散协调，并用循环预测器估计因通信丢失而不可得的交互信息。上层策略生成紧凑协调参考以条件化组内局部控制，同时用预测安全滤波器在违反安全约束时修正控制。仿真结果表明该方法在通信丢失下提升了任务完成率，为受限通信的多机器人路径协调提供方案。",
+      "llm_tldr": "仓库机器人团队在通信丢失时难以协调，缺失的交互信息会削弱集中与分散控制的效果。论文提出层级多智能体强化学习框架，把机器人分组，组内集中协调、组间分散协调，并用循环预测器估计因通信丢失而不可得的交互信息。上层策略生成紧凑协调参考以条件化组内局部控制，同时用预测安全滤波器在违反安全约束时修正控制。仿真结果表明该方法在通信丢失下提升了任务完成率，为受限通信的多机器人路径协调提供方案。",
+      "llm_tags": [
+        "query:lbm"
+      ],
+      "matched_query_tag": "query:lbm",
+      "matched_query_text": "multi-agent reinforcement learning for path planning",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.34860v1",
+      "source": "arxiv",
+      "title": "Attention-based Hierarchical Variational Information Bottleneck for Robust Multi-Agent Communication under Variable Bandwidth",
+      "abstract": "Learning-based multi-agent communication under limited bandwidth does not only require deciding what to communicate, but also structuring messages so that partial transmissions remain useful. We study this problem under prefix truncation, where only the first part of each message is received. To address it, we propose \\textbf{AH-VIB}, an attention-based autoregressive variational communication model that combines a variational information bottleneck (VIB) with sequential message generation and a hierarchical robustness loss. We evaluate AH-VIB on a custom cooperative object-inspection and occupancy-mapping task, where agents equipped with a limited field-of-view sensor coordinate to scan inspection objects in an occupancy-grid world, under variable and fixed bandwidth conditions, and compare it against MADDPG, CommNet, a flat VIB baseline, and an autoregressive MLP ablation. AH-VIB achieves competitive mean return while improving performance reliability under the most constrained bandwidth conditions.   These results indicate that AH-VIB improves the reliability and graceful degradation of learned communication under bandwidth constraints.",
+      "authors": [
+        "Lukas Koch Vindbjerg",
+        "Qi Zhang",
+        "Yury Brodskiy",
+        "Lukas Esterle"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-09-28T10:48:36+00:00",
+      "link": "https://arxiv.org/pdf/2609.34860v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "attention-based communication under limited bandwidth and prefix truncation",
+      "llm_evidence_cn": "带宽受限与前缀截断下的注意力通信",
+      "llm_evidence": "带宽受限与前缀截断下的注意力通信",
+      "canonical_evidence": "带宽受限与前缀截断下的注意力通信",
+      "llm_tldr_en": "Learning-based multi-agent communication under limited bandwidth must also structure messages so partial transmissions stay useful. AH-VIB combines an attention-based autoregressive variational information bottleneck with sequential generation and a hierarchical robustness loss, evaluated on cooperative object-inspection and occupancy mapping.",
+      "llm_tldr_cn": "带宽受限下的学习型多智能体通信不仅要决定说什么，还要让部分传输仍具价值。该文研究前缀截断场景，提出AH-VIB，一种基于注意力的自回归变分通信模型，将变分信息瓶颈与顺序消息生成及层次鲁棒性损失结合。在协作式目标巡检与占据栅格建图任务中，智能体仅凭有限视场传感器协同扫描，验证了该方法的鲁棒性。",
+      "llm_tldr": "带宽受限下的学习型多智能体通信不仅要决定说什么，还要让部分传输仍具价值。该文研究前缀截断场景，提出AH-VIB，一种基于注意力的自回归变分通信模型，将变分信息瓶颈与顺序消息生成及层次鲁棒性损失结合。在协作式目标巡检与占据栅格建图任务中，智能体仅凭有限视场传感器协同扫描，验证了该方法的鲁棒性。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.35142v1",
+      "source": "arxiv",
+      "title": "Strategically Robust Game-Theoretic Multi-Agent Trajectory Optimization",
+      "abstract": "Aviation authorities worldwide expect Advanced Air Mobility (AAM) traffic management to be decentralized among service providers, requiring AAM flights to autonomously plan trajectories by predicting other flights' control inputs rather than relying on centralized coordination. Game-theoretic approaches that formulate multi-agent collision avoidance as an exact dynamic potential game can efficiently find open-loop equilibria, but they assume that agents exactly follow their equilibrium trajectories---an unrealistic assumption given uncertainties in actuation, perception, and computation. We propose a strategically robust formulation where each agent protects against a fictitious adversary that, for each timestep, perturbs other agents' control inputs within a bounded budget to minimize distance at that timestep. We show that, under reasonable assumptions on agents' distance cost and robustness levels, the strategically robust game remains an exact dynamic potential game and admits a quasi-closed-form solution to the inner adversarial problem for linear dynamics, which limits computational overhead. Experiments with up to eight agents using logarithmic distance costs show that strategic robustness selects more robust trajectories in high-collision-risk configurations while leaving low-risk trajectories nearly unchanged, with only a modest increase in runtime.",
+      "authors": [
+        "Victor L. Qin",
+        "Nicolas Lanzetti",
+        "Saverio Bolognani",
+        "Hamsa Balakrishnan"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY",
+        "cs.GT",
+        "cs.MA"
+      ],
+      "published": "2026-09-28T13:27:33+00:00",
+      "link": "https://arxiv.org/pdf/2609.35142v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "decentralized multi-agent trajectory planning with potential-game collision avoidance",
+      "llm_evidence_cn": "去中心化多智能体轨迹规划与势博弈避碰",
+      "llm_evidence": "去中心化多智能体轨迹规划与势博弈避碰",
+      "canonical_evidence": "去中心化多智能体轨迹规划与势博弈避碰",
+      "llm_tldr_en": "Decentralized air traffic requires agents to plan by predicting others, but game-theoretic equilibria assume exact execution. This paper proposes a strategically robust formulation where each agent guards against an adversary perturbing others' controls, yielding robust collision avoidance.",
+      "llm_tldr_cn": "先进空中交通管理要求去中心化的自主轨迹规划，智能体需通过预测他机控制输入来避碰；然而基于动态势博弈的博弈论方法虽能高效求得开环均衡，却假设各智能体精确遵循均衡轨迹，这在执行、感知与计算存在不确定性时并不现实。本文提出策略鲁棒表述，让每个智能体对抗一个逐时刻扰动其他智能体控制输入的虚拟对手，从而在不确定条件下求得更为稳健的避碰轨迹。该工作将动态势博弈扩展为策略鲁棒形式，提升了去中心化多智能体避碰的现实适用性。",
+      "llm_tldr": "先进空中交通管理要求去中心化的自主轨迹规划，智能体需通过预测他机控制输入来避碰；然而基于动态势博弈的博弈论方法虽能高效求得开环均衡，却假设各智能体精确遵循均衡轨迹，这在执行、感知与计算存在不确定性时并不现实。本文提出策略鲁棒表述，让每个智能体对抗一个逐时刻扰动其他智能体控制输入的虚拟对手，从而在不确定条件下求得更为稳健的避碰轨迹。该工作将动态势博弈扩展为策略鲁棒形式，提升了去中心化多智能体避碰的现实适用性。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "decentralized collision avoidance multi-agent system coordination",
+      "matched_requirement_id": "req-25",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.32354v1",
+      "source": "arxiv",
+      "title": "Proactive Motion Planning for Human-Robot Cooperation",
+      "abstract": "This abstract addresses the incorporation of human motion prediction into proactive and dynamic human-aware motion planning, with the goal of enabling safe collaboration between humans and robots. A deep learning, graph-based model is used to forecast human motion and is integrated into a planning framework. This framework employs a static roadmap along with a time-variant A* algorithm to modify the trajectory of a UR5e manipulator. This method greatly improves human-robot interaction and enables proactive collision avoidance by combining precise motion forecasts with adaptive trajectory planning.",
+      "authors": [
+        "Elena Basei",
+        "Edoardo Lamon",
+        "Matteo Saveriano",
+        "Daniele Fontanelli",
+        "Luigi Palopoli"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-26T08:17:11+00:00",
+      "link": "https://arxiv.org/pdf/2609.32354v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "human motion prediction integrated into proactive human-aware motion planning",
+      "llm_evidence_cn": "将人体运动预测融入主动式人机运动规划",
+      "llm_evidence": "将人体运动预测融入主动式人机运动规划",
+      "canonical_evidence": "将人体运动预测融入主动式人机运动规划",
+      "llm_tldr_en": "This work integrates human motion prediction into proactive human-aware motion planning, using a deep graph-based model and a time-variant A* roadmap to enable safe human-robot collaboration.",
+      "llm_tldr_cn": "面向人机协作，现有规划难以提前应对人类未来运动以实现安全避碰。论文将基于图深度模型的人体运动预测融入主动规划框架，结合静态路线图与时变A*算法调整UR5e机械臂轨迹。实验表明该方法结合精准运动预测与自适应轨迹规划，显著提升人机交互并实现主动避碰。",
+      "llm_tldr": "面向人机协作，现有规划难以提前应对人类未来运动以实现安全避碰。论文将基于图深度模型的人体运动预测融入主动规划框架，结合静态路线图与时变A*算法调整UR5e机械臂轨迹。实验表明该方法结合精准运动预测与自适应轨迹规划，显著提升人机交互并实现主动避碰。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "multi-agent intent prediction future motion planning",
+      "matched_requirement_id": "req-21",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.27150v1",
+      "source": "arxiv",
+      "title": "Do We Need Complex Topology Control? Distinct-Peer Random Routing Improves Cost-Efficiency in Sparse Multi-Agent Debate",
+      "abstract": "Multi-agent debate (MAD) has emerged as a promising paradigm for improving the reasoning accuracy of large language models (LLMs) through iterative peer interaction. Communication topology plays a central role in this process, motivating increasingly sophisticated mechanisms that learn, adapt, or dynamically reconfigure agent interactions to improve accuracy or reasoning reliability. Meanwhile, prior studies suggest that much simpler sparse communication can already achieve competitive performance at substantially lower cost. In this work, we take a closer look at sparse MAD and ask whether complex topology control is actually necessary to improve collective reasoning. We find that a simple random-without-replacement routing policy, which lets each agent debate with two distinct and newly sampled peers at every round, provides a surprisingly strong baseline and consistently improves the accuracy-cost trade-off of sparse MAD. Building on this observation, we further study deliberation stopping and show that lightweight stopping can substantially reduce inference cost while preserving competitive accuracy. Our results suggest that sophisticated topology control such as learned topology adaption should be evaluated against strong simple routing and stopping baselines before its additional complexity is justified.",
+      "authors": [
+        "Boxuan Wang",
+        "Zhuoyun Li",
+        "Xiaowei Huang",
+        "Yi Dong"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-22T23:25:43+00:00",
+      "link": "https://arxiv.org/pdf/2609.27150v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "sparse communication topology in multi-agent debate",
+      "llm_evidence_cn": "多智能体辩论中的稀疏通信拓扑",
+      "llm_evidence": "多智能体辩论中的稀疏通信拓扑",
+      "canonical_evidence": "多智能体辩论中的稀疏通信拓扑",
+      "llm_tldr_en": "Sparse multi-agent debate often assumes complex topology control is needed. This work shows a simple random-without-replacement peer routing achieves competitive reasoning accuracy at much lower cost, questioning whether sophisticated topology learning is necessary in sparse debate.",
+      "llm_tldr_cn": "多智能体辩论通过迭代同伴交互提升大模型推理，通信拓扑被视为关键，催生了日益复杂的拓扑学习机制。该文重新审视稀疏辩论，追问复杂拓扑控制是否必要。研究发现简单的无重复随机对等路由即能以显著更低的成本取得有竞争力的推理精度，从而对昂贵拓扑学习的必要性提出质疑。",
+      "llm_tldr": "多智能体辩论通过迭代同伴交互提升大模型推理，通信拓扑被视为关键，催生了日益复杂的拓扑学习机制。该文重新审视稀疏辩论，追问复杂拓扑控制是否必要。研究发现简单的无重复随机对等路由即能以显著更低的成本取得有竞争力的推理精度，从而对昂贵拓扑学习的必要性提出质疑。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.32935v1",
+      "source": "arxiv",
+      "title": "Communication-Aware Heterogeneous Graph Learning for Decentralized Multi-Human Multi-Robot Task Allocation",
+      "abstract": "Multi-human multi-robot (MH-MR) teams combine robotic autonomy with human expertise, but effective task allocation requires coordinating scarce, dynamically available human support with distributed robot execution. Limited robot-robot and human-robot communication further complicates this coupling by delaying information exchange and supervisory intervention. We introduce CommHG, a communication-aware heterogeneous graph learning framework for decentralized MH-MR task allocation. CommHG represents coupled human-robot-task interactions through local graphs conditioned on information availability and age. Learned communication actions enable robots to decide when and which operator to query, and when to share information with peers. Allocation and communication are jointly optimized through cooperative multi-agent reinforcement learning, allowing the team to acquire useful information while managing limited communication and supervisory resources. We also introduce a benchmark integrating heterogeneous humans and robots, dynamic tasks and operational states, and constrained robot-robot and bidirectional human-robot links. Experiments across heterogeneous teams with up to 16 robots, 6 humans, and 112 tasks show that CommHG improves timely weighted mission completion as coordination scale increases, outperforming the strongest baseline in the Large scenario.",
+      "authors": [
+        "Ziqin Yuan",
+        "Ruiqi Wang",
+        "Baijian Yang",
+        "Byung-Cheol Min"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-26T20:48:48+00:00",
+      "link": "https://arxiv.org/pdf/2609.32935v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "communication-aware heterogeneous graph learning for decentralized multi-robot coordination",
+      "llm_evidence_cn": "面向去中心化多机器人协作的通信用异构图学习",
+      "llm_evidence": "面向去中心化多机器人协作的通信用异构图学习",
+      "canonical_evidence": "面向去中心化多机器人协作的通信用异构图学习",
+      "llm_tldr_en": "CommHG learns when and whom to query over heterogeneous human-robot-task graphs, enabling decentralized multi-human multi-robot task allocation under limited and delayed communication.",
+      "llm_tldr_cn": "多人类多机器人团队中人类支持稀缺且通信受限，会延迟信息交换与监督干预，使去中心化任务分配变得困难。论文提出CommHG框架，用条件于信息可用性与时效的局部异构图建模人-机器人-任务耦合关系，并通过学习通信动作决定何时向哪名操作员查询、何时共享信息。实验表明该方法在通信受限下能提升协调效率与任务完成效果。其贡献在于把通信决策与图学习结合，为受限通信下的多机器人协作提供可扩展方案。",
+      "llm_tldr": "多人类多机器人团队中人类支持稀缺且通信受限，会延迟信息交换与监督干预，使去中心化任务分配变得困难。论文提出CommHG框架，用条件于信息可用性与时效的局部异构图建模人-机器人-任务耦合关系，并通过学习通信动作决定何时向哪名操作员查询、何时共享信息。实验表明该方法在通信受限下能提升协调效率与任务完成效果。其贡献在于把通信决策与图学习结合，为受限通信下的多机器人协作提供可扩展方案。",
+      "llm_tags": [
+        "query:marl-comm:composite"
+      ],
+      "matched_query_tag": "query:marl-comm:composite",
+      "matched_query_text": "Papers central to marl-comm, especially work that connects or combines: multi-agent reinforcement learning communication methods; sparse communication in multi-agent reinforcement learning; attention mask mechanism for communication in multi-agent reinforcement learning; graph attention network for agent communication; transformer for communication in multi-agent reinforcement learning; chatter problem in multi-agent communication; adaptive communication mask using attention for multi agent reinforcement learning to solve chatter problem; sparse communication with topology constraints for multi agent path planning; graph attention network based communication protocol for multi agent navigation; transformer based information aggregation for multi agent reinforcement learning in spatial tasks.",
+      "matched_requirement_id": "req-composite-marl-comm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.31281v1",
+      "source": "arxiv",
+      "title": "MA-WAM: Multi-Agent World-Action Model for Test-Time Planning",
+      "abstract": "Multi-agent cooperative tasks require different agents to execute a joint action simultaneously, and each agent's action affects both the observations and responses of the other agents. Hence, a world model is needed to predict the team return resulting from the joint actions of all agents. A naive extension directly applies a single-agent world model to each agent's action when predicting the team return step by step. However, such an extension fails to capture the dependencies among the simultaneous actions of multiple agents. We propose Multi-Agent World-Action Model (MA-WAM), a test-time planning framework that enables a frozen multi-agent flow policy to evaluate futures of candidate joint actions. To our knowledge, MA-WAM is the first test-time world-model planner for multi-agent flow policies. MA-WAM predicts the consequences of each joint action according to cross-agent dependencies and enables efficient candidate scoring. Across 30 offline multi-agent reinforcement learning (MARL) settings on MAMuJoCo, SMAC, and MPE, MA-WAM achieves mean relative gains of 22.0% over direct execution and 25.6% over uniform action selection. Under the standard evaluation protocol on an A100 GPU, MA-WAM adds 12.1 ms, accounting for 2.5% of the measured generation-and-scoring time.",
+      "authors": [
+        "Guowei Zou",
+        "Haitao Wang",
+        "Guoxin Wang",
+        "Beiwen Zhang",
+        "Zhiquan Chen",
+        "Guojie Wang",
+        "Hejun Wu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-25T13:52:39+00:00",
+      "link": "https://arxiv.org/pdf/2609.31281v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent joint-action planning with world model",
+      "llm_evidence_cn": "基于世界模型的多智能体联合动作规划",
+      "llm_evidence": "基于世界模型的多智能体联合动作规划",
+      "canonical_evidence": "基于世界模型的多智能体联合动作规划",
+      "llm_tldr_en": "MA-WAM is a test-time planning framework using a multi-agent world-action model to evaluate futures of candidate joint actions, capturing inter-agent dependencies that naive single-agent extensions miss.",
+      "llm_tldr_cn": "多智能体协作任务要求各智能体同时执行联合动作，且每个动作都会影响他人的观测与响应，但直接套用单智能体世界模型无法捕捉同时动作之间的依赖。论文提出多智能体世界-动作模型MA-WAM，作为测试时规划框架，使冻结的多智能体流策略能够评估候选联合动作的未来。方法能刻画智能体同时动作的相互依赖并预测团队回报，为多智能体联合规划提供了新的世界模型范式。",
+      "llm_tldr": "多智能体协作任务要求各智能体同时执行联合动作，且每个动作都会影响他人的观测与响应，但直接套用单智能体世界模型无法捕捉同时动作之间的依赖。论文提出多智能体世界-动作模型MA-WAM，作为测试时规划框架，使冻结的多智能体流策略能够评估候选联合动作的未来。方法能刻画智能体同时动作的相互依赖并预测团队回报，为多智能体联合规划提供了新的世界模型范式。",
+      "llm_tags": [
+        "query:lbm:composite"
+      ],
+      "matched_query_tag": "query:lbm:composite",
+      "matched_query_text": "Papers central to 多智能体路径规划, especially work that connects or combines: M; Decentralized MAPF; MAPF; multi-agent path finding learning-based approach; multi-agent reinforcement learning for path planning; imitation learning from expert demonstrations for multi-agent path finding; decentralized path planning reinforcement learning; learning based multi agent pathfinding; learning based multi agent path planning using reinforcement learning and imitation learning; imitation learning from expert trajectories for multi agent path finding.",
+      "matched_requirement_id": "req-composite-lbm",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.34373v1",
+      "source": "arxiv",
+      "title": "Emergence, Not Bandwidth: Physical Coupling and the Limits of Learned Multi-Agent Communication",
+      "abstract": "Rate-limited multi-agent teams raise three questions the emergent-communication literature has answered only empirically: what an optimal message should encode, what compression costs over a horizon, and when a learned protocol is unique enough for a teammate to read. We answer them for rate-limited Dec-POMDPs, then measure how far reinforcement learning falls short of the optimum. Our theorems fix what is achievable independently of any learner, so a gap between an engineered and a learned sender at the same bit budget is an optimization fact, not an information-theoretic one. We instantiate this on three MuJoCo arenas spanning zero, partial and rigid physical coupling, charging every condition exactly 2 bits per decision, and create the discriminating regime by closing a physical side channel within one arena, holding bodies, task and reward fixed. Communication value is governed by coupling: under rigid coupling through a shared object, no channel beats silence (+0.001 +/- 0.001, p = 0.982, n = 25), since proprioception already carries that information; without coupling, every condition solves the task; under partial coupling, the engineered 2-bit sender reaches an interquartile mean of 1.000 but the learned one reaches 0.482, indistinguishable from silence (p = 0.400, n = 25). With a shared alphabet, bandwidth cannot explain the gap. Warm-starting from an engineered receiver localizes the failure: the same channel reaches 0.857 versus 0.562 cold-started (p < 0.001), so it is neither representational nor one of maintenance; reinforcement learning fails to discover the protocol. Cross-play shows learned protocols are individually meaningful but mutually unintelligible: self-play 0.980 collapses to 0.144 across seeds, and our best constructed alignment leaves at least 77% of that gap. All headline results use 25 seeds per arena and seven published baselines at matched rate.",
+      "authors": [
+        "Mihir Chauhan",
+        "Aniket Bera"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.MA",
+        "cs.RO"
+      ],
+      "published": "2026-09-28T05:46:53+00:00",
+      "link": "https://arxiv.org/pdf/2609.34373v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:marl-comm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "rate-limited multi-agent communication with 2-bit budget per decision",
+      "llm_evidence_cn": "每决策仅2比特的限速多智能体通信",
+      "llm_evidence": "每决策仅2比特的限速多智能体通信",
+      "canonical_evidence": "每决策仅2比特的限速多智能体通信",
+      "llm_tldr_en": "This work characterizes optimal messages in rate-limited Dec-POMDPs and measures how far learned multi-agent communication falls short, testing physical coupling across MuJoCo arenas at 2 bits per decision.",
+      "llm_tldr_cn": "限速多智能体团队的涌现通信文献多停留在经验层面，缺乏对最优消息内容、压缩代价与协议可读性的理论回答。论文针对限速Dec-POMDP给出可达性定理，界定与学习器无关的最优边界，并在三种物理耦合程度的MuJoCo环境中每决策固定2比特预算来度量强化学习的差距。结果显示工程化发送者与学习发送者的差距属于优化问题而非信息论问题。该工作为稀疏、低带宽多智能体通信提供了理论基准与诊断工具。",
+      "llm_tldr": "限速多智能体团队的涌现通信文献多停留在经验层面，缺乏对最优消息内容、压缩代价与协议可读性的理论回答。论文针对限速Dec-POMDP给出可达性定理，界定与学习器无关的最优边界，并在三种物理耦合程度的MuJoCo环境中每决策固定2比特预算来度量强化学习的差距。结果显示工程化发送者与学习发送者的差距属于优化问题而非信息论问题。该工作为稀疏、低带宽多智能体通信提供了理论基准与诊断工具。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "sparse communication in multi-agent reinforcement learning",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.31803v1",
+      "source": "arxiv",
+      "title": "Path Planning with Motion Primitives in Dynamic Environments: SIPP on Lattices",
+      "abstract": "Autonomous navigation in dynamic environments is a critical challenge, particularly when spaces are shared with other mobile agents whose future trajectories are known. While traditional grid-based planners efficiently find collision-free paths, their reliance on stop-and-turn mechanics over $2^k$-connected grids produces piecewise-linear trajectories that are kinodynamically highly sub-optimal for differentially constrained robots. In this paper, we present an adaptation of Safe Interval Path Planning (SIPP) that operates on state lattices, utilizing precomputed, kinodynamically smooth motion primitives. To efficiently handle dynamic environments, we rasterize the spatiotemporal swept volumes of moving obstacles directly onto the grid, treating grid cells as atomic units of space, whose resolution is typically dictated by inherent localization noise. We perform a comprehensive comparative analysis between our lattice-based approach and $2^k$-connected grid planners across diverse topological environments. Our evaluation considers a broad spectrum of performance metrics, including planning time, path angularity, cumulative heading change (angle-over-length), and bending energy. The results demonstrate that while the expanded state space of lattice-based search increases computational overhead, it yields trajectories with significantly superior kinodynamic properties. Specifically, our method achieves a reachability comparable to highly connected grids while ensuring smooth, continuous, and physically executable paths ready for real-world deployment.",
+      "authors": [
+        "Marat Agranovskiy"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-25T12:02:19+00:00",
+      "link": "https://arxiv.org/pdf/2609.31803v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "path planning in dynamic environments with moving agents, collision-free planning via SIPP on lattices",
+      "llm_evidence_cn": "动态环境中含移动智能体的路径规划，基于格上SIPP的无碰撞规划",
+      "llm_evidence": "动态环境中含移动智能体的路径规划，基于格上SIPP的无碰撞规划",
+      "canonical_evidence": "动态环境中含移动智能体的路径规划，基于格上SIPP的无碰撞规划",
+      "llm_tldr_en": "This paper adapts Safe Interval Path Planning to state lattices with kinodynamically smooth motion primitives and rasterized spatiotemporal swept volumes, yielding smoother, kinodynamically better paths for robots in dynamic multi-agent spaces.",
+      "llm_tldr_cn": "针对动态环境中与其他移动智能体共享空间时的导航难题，以及网格规划器停转机制产生运动学次优分段线性轨迹的缺陷，本文将安全区间路径规划(SIPP)适配到状态格上，采用预计算的运动学平滑运动基元，并把移动障碍物的时空扫掠体栅格化到网格。方法在保持动态环境处理能力的同时生成更平滑、运动学更优的路径，为差速约束机器人提供实用规划方案。",
+      "llm_tldr": "针对动态环境中与其他移动智能体共享空间时的导航难题，以及网格规划器停转机制产生运动学次优分段线性轨迹的缺陷，本文将安全区间路径规划(SIPP)适配到状态格上，采用预计算的运动学平滑运动基元，并把移动障碍物的时空扫掠体栅格化到网格。方法在保持动态环境处理能力的同时生成更平滑、运动学更优的路径，为差速约束机器人提供实用规划方案。",
+      "llm_tags": [
+        "query:intent-avoid"
+      ],
+      "matched_query_tag": "query:intent-avoid",
+      "matched_query_text": "Decentralized potential field methods for crowd obstacle avoidance and path planning",
+      "matched_requirement_id": "req-28",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.32046v1",
+      "source": "arxiv",
+      "title": "Receiver-Conditioned Latent Communication gives 94% CacheBack",
+      "abstract": "Multi-agent systems distribute large contexts across agents that communicate to solve a task. Text messages are compact but require decoding and may omit evidence the receiving agent needs. Recent latent communication instead transfers KV caches. This avoids text generation and can improve accuracy and latency. However, a full KV cache grows linearly with both the context an individual agent processes, and the number of agents that coordinate together. This raises memory and context costs, often far exceeding available GPU resources and context window sizes. Our key observation is that agents need only send what the receiving agent requires for its local task -- which we call receiver-conditioned communication. The receiver agent passes the sender a small description of its information needs, which serves to filter and compress the sender agent's KV cache. CacheBack is a simple, robust, training-free instance of receiver conditioning based on the sender's attention weights. On FanOutQA, CacheBack with Qwen 3 removes 75% of the state the agent would otherwise receive, improving accuracy by 14.7 percentage points and reducing median task-completion latency by 3.2x relative to text communication. We show comparable improvements across model families that span dense Transformers, Mamba-attention hybrids, and sliding-window attention.",
+      "authors": [
+        "Maximillian Rossi",
+        "Prajwal Raghunath",
+        "Haoqing Xuan",
+        "Yusen Zhang",
+        "Eugene Wu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-25T22:20:08+00:00",
+      "link": "https://arxiv.org/pdf/2609.32046v1",
+      "tags": [
+        "keyword:intent-avoid",
+        "keyword:lbm",
+        "keyword:marl-comm",
+        "query:intent-avoid",
+        "query:lbm",
+        "query:marl-comm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-agent latent communication that cuts KV cache traffic via receiver-conditioned messaging",
+      "llm_evidence_cn": "多智能体潜在通信，通过接收者条件化消息削减KV缓存传输量",
+      "llm_evidence": "多智能体潜在通信，通过接收者条件化消息削减KV缓存传输量",
+      "canonical_evidence": "多智能体潜在通信，通过接收者条件化消息削减KV缓存传输量",
+      "llm_tldr_en": "To cut the memory and context cost of latent KV-cache communication in multi-agent systems, this paper proposes receiver-conditioned communication where senders transmit only what the receiver's local task needs, reducing cache traffic by about 94%.",
+      "llm_tldr_cn": "针对多智能体潜在通信中完整KV缓存随上下文和智能体数量线性增长、内存与上下文开销过高的问题，本文提出接收者条件化通信：接收方给出自身需求的简短描述，发送方只传输其本地任务所需信息。该方法大幅压缩了传输的KV缓存规模。实验显示在保持准确率与延迟优势的同时可削减约94%的缓存通信量，为多智能体潜在通信提供了高效可扩展的传输机制。",
+      "llm_tldr": "针对多智能体潜在通信中完整KV缓存随上下文和智能体数量线性增长、内存与上下文开销过高的问题，本文提出接收者条件化通信：接收方给出自身需求的简短描述，发送方只传输其本地任务所需信息。该方法大幅压缩了传输的KV缓存规模。实验显示在保持准确率与延迟优势的同时可削减约94%的缓存通信量，为多智能体潜在通信提供了高效可扩展的传输机制。",
+      "llm_tags": [
+        "query:marl-comm"
+      ],
+      "matched_query_tag": "query:marl-comm",
+      "matched_query_text": "multi-agent reinforcement learning communication methods",
+      "matched_requirement_id": "req-11",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
