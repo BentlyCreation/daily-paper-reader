@@ -1,0 +1,487 @@
+Title: A Sample-Based Approach for Hierarchical Information-Theoretic Compression of Probabilistic Occupancy Grids
+
+URL Source: https://arxiv.org/pdf/2609.27330v1
+
+Published Time: Thu, 24 Sep 2026 00:33:14 GMT
+
+Number of Pages: 7
+
+Markdown Content:
+# A Sample-Based Approach for Hierarchical Information-Theoretic Compression of Probabilistic Occupancy Grids 
+
+Zhenyu Jin 1 and Daniel T. Larsson 2
+
+Abstract — We develop a sample-based framework for con-structing information-driven hierarchical multi-resolution rep-resentations of probabilistic occupancy grids. Recent meth-ods compute information-optimal abstractions via dynamic-programming-based exhaustive recursions, which become com-putationally prohibitive for large-scale grids and are ill-suited to robotics applications. To address this limitation, we introduce a sample-based strategy inspired by Monte Carlo Tree Search (MCTS) that incrementally constructs hierarchical abstractions through statistical estimation rather than exhaustive enumer-ation. The proposed method is anytime in nature, allowing computation to be terminated at any stage to produce a valid compressed representation. We compare our approach with the information-optimal Q-tree search algorithm and demonstrate its effectiveness in rapidly generating abstractions of large real-world probabilistic occupancy grids. 
+
+I. I NTRODUCTION 
+
+Autonomous systems are increasingly deployed across a diverse set of applications such as search and rescue, warehouse and supply chain logistics, and agriculture [1]– [3]. Furthermore, recent advances in sensing and onboard computation have enabled increasingly capable autonomous platforms, leading to a diverse ecosystem of systems that vary widely in size, agility, sensing modalities, and compu-tational resources. As autonomy expands into increasingly diverse domains, there is a growing need for principled frameworks that explicitly account for sensing, communi-cation, and computational resource constraints. A central component of autonomy is environment repre-sentation, or more specifically, how agents process sensory data from cameras and LiDAR, for example, into structured models that support tasks such as perception and collision-free planning. In this context, a fundamental challenge in building intelligent autonomous systems is enabling agents to distinguish between task-relevant and irrelevant details within the environment. Effective autonomy under resource constraints therefore requires principled methods for distill-ing information into task-relevant representations while re-specting computational and memory limitations. In this work, we focus on one such representation, namely probabilistic occupancy grids, and study the problem of systematically compressing them in an information-driven, resource-aware manner.           
+
+> 1Z. Jin is aPhD Student in the Aerospace and Mechanical Engi-neering Department at the University of Arizona in Tucson, AZ, USA.
+
+zhjin320@arizona.edu 
+
+> 2D. Larsson is an Assistant Professor in the Aerospace and Mechanical Engineering Department at the University of Arizona in Tucson, AZ, USA.
+
+dlarsson@arizona.edu 
+
+The compression of grid representations for autonomous systems applications has been studied extensively, as reduc-ing the size of these representations lowers on-board memory requirements and mitigates the computational burden asso-ciated with planning and exploration [4]–[9]. However, until recently, the design of multi-resolution representations for probabilistic occupancy grids has remained largely heuristic, relying on statistical criteria and human judgment to guide pruning or compression procedures [10]–[12]. While heuris-tic approaches often provide practical benefits in terms of execution time, they offer no formal guarantees on the size of the resulting compressed representation or on the amount of information about the variable of interest (e.g., occupancy probability) that is preserved after compression. In contrast, recent work [13]–[15] adopts a more system-atic approach to abstraction design for probabilistic occu-pancy grids by leveraging concepts from information theory. Specifically, the authors of [13] formulate the design of hier-archical multi-resolution representations as an optimization problem inspired by the information bottleneck (IB) prin-ciple. The information bottleneck problem, first introduced in [16], with additional variants introduced in [17], [18], is an encoder-design framework that balances two competing objectives: (i) retaining predictive information about a des-ignated relevant variable in the compressed representation, and (ii) achieving a desired level of compression. The IB formulation is probabilistic, quantifying these objectives using mutual information between the corresponding random variables, assuming access to their joint distribution. A key observation in [13] is that a hierarchical occupancy grid representation can be interpreted as a deterministic signal en-coder with a particular structure. This perspective establishes a bridge between information-theoretic signal compression and hierarchical abstraction design, enabling information-theoretic quantities such as mutual information to be defined over structured encoders (e.g., quadtrees and octrees). In doing so, it provides a rigorous mechanism for quantifying the information retained by a multi-resolution representation about cell occupancy. To solve the IB-inspired occupancy grid compression problem, an action-value function reminiscent of those com-monly used in reinforcement learning is introduced, where the decision at each node is whether to expand (refine) or prune (compress) the corresponding region. The resulting algorithm, termed Q-tree search, is shown to return an opti-mal solution to the IB-based compression problem. However, the method is recursive in nature and requires a bottom-up traversal of the entire hierarchical structure. As a result, al-arXiv:2609.27330v1 [cs.RO] 23 Sep 2026 though the approach yields a provably optimal solution to the probabilistic grid-compression problem, it is computationally expensive, particularly for the large-scale grids commonly encountered in real-world robotics applications. It is therefore that in this paper we develop a method that enables autonomous systems to design information-informed hierarchical multi-resolution abstractions of proba-bilistic occupancy grids while remaining responsive to the computational constraints of real-world robotics. To this end, we propose a sample-based strategy inspired by Monte Carlo Tree Search (MCTS) to construct multi-resolution information-driven compressions over large domains. Our method is anytime in nature, allowing the abstraction process to be queried at any stage to obtain a valid compressed repre-sentation. By adopting a sample-based search procedure, we avoid exhaustive bottom-up recursions over the full hierarchi-cal structure while naturally accommodating heuristics that accelerate the discovery of high-quality solutions. Conse-quently, the proposed framework enables a principled trade-off between computational effort and abstraction quality in the design of information-driven multi-resolution occupancy grid representations. II. P ROBLEM FORMULATION & K EY CHALLENGES 
+
+As our objective is to design hierarchical multi-resolution representations of probabilistic occupancy grids, we first in-troduce the probabilistic framework underlying the problem. Let (Ω , F, P) be a probability space, and let X : Ω → R,
+
+Y : Ω → R, and T : Ω → R be random variables with joint distribution p(x, y, t ) = P({ω ∈ Ω : X(ω) = 
+
+x, Y (ω) = y, Z (ω) = z}). The roles of these variables in our setting are described below. Our developments will adopt the information bottleneck (IB) principle [16], which considers the problem 
+
+max  
+
+> p(t|x)
+
+I(T ; Y ) − αI (T ; X), (1) where X denotes the original (source) signal, T the com-pressed representation of the source X, Y the relevance (auxillary) variable for which we wish to maintain predictive information regarding when designing the signal encoder 
+
+p(t|x). The IB problem assumes the Markov condition Y →
+
+X → T , meaning that T and Y are conditionally indepen-dent given X. This reflects the fact that the representation 
+
+T is constructed solely from X, and so any information T
+
+retains about Y must be mediated through X. The encoder 
+
+p(t|x) maps outcomes of X to those of T , potentially stochastically, so as to retain predictive information about 
+
+Y (measured by I(T ; Y )) while promoting compression (measured by I(T ; X)), where the parameter α > 0 governs the trade-off between information retention and compression, and I(X; Y ) is the mutual information between random variables X and Y [19]. The objective of the IB problem (1) is thus to design a compressed representation T by specifying the encoder p(t|x) so as to balance the retainment of pre-dictive information regarding Y (maximizing I(T ; Y )) while compressing the source X to as high degree as possible (by minimizing I(T ; X)), where the balance between the two is specified by α.Note that (1) does not enforce any structural constraints on the encoder p(t|x) required for occupancy grid represen-tations into grid structures amenable to autonomous systems applications, and thus we will restrict the encoder class to hierarchical multi-resolution trees. Moreover, since our goal is to form hierarchical, multi-resolution, compressions of probabilistic occupancy grids, we next introduce the for-malism that relates the information-theoretic concepts above to that of probabilistic grids. To this end, assume that, for some integer n > 0, the environment is represented by a 
+
+2n × 2n probabilistic grid X ∈ R2n×2n
+
+, where each finest-resolution cell (X )i has occupancy probability oi ∈ [0 , 1] .We define the source X so that its outcomes correspond to finest-resolution cells xi, and define Y ∈ { 0, 1} as the occupancy variable with conditional distribution given by 
+
+p(y = 1 |xi) = oi, which is specified by the occupancy map. Restricting the IB optimization to the space T S of feasible hierarchical trees (e.g., quadtrees or octrees) by constraining the allowable structure of p(t|x), the problem we consider for the remainder of the paper can be formulated as 
+
+max  
+
+> T ∈T S
+
+IY (T ) − αI X (T ), (2) where for Tq ∈ T S , IY (Tq ) = I(Tq ; Y ) and IX (Tq ) = 
+
+I(Tq ; X), where Tq is the compressed random variable induced by tree Tq [13]. The restriction of p(t|x) to the space of hierarchical representations is possible via the observation that each tree Tq ∈ T S defines a deterministic mapping from finest-resolution cells (outcomes x of X) to leaf nodes (outcomes t of Tq ), and thus each Tq corresponds to a deterministic encoder pq (t|x) with special structure [13]. The objective of (2) is therefore to identify a hierarchical, multi-resolution representation that maximizes the retention of (probabilistic) occupancy information while compressing the original grid to as high degree as possible. It is important to note that, since T S is a countable set, the problem (2) belongs to a class of discrete optimization problems. An optimal solution to (2) can be obtained via the Q-tree search algorithm, a dynamic-programming-inspired al-gorithm that recursively evaluates an action-value function to determine whether each node should be expanded or pruned [13]. Although Q-tree search returns provably op-timal solutions, it exhibits several limitations that restrict its practical deployment in real-world robotic systems: 1) Creation of Full Tree for Evaluation : The action-value function is computed via bottom-up recursion from leaf nodes to the root, necessitating generation and evaluation of the entire finest-resolution tree and all subsequent nodes. Consequently, an abstraction cannot be produced unless all nodes are evaluated, precluding partial or budget-constrained computation. 2) Resource Budget Adaptivity : Robotic platforms operate under limited computational resources. Therefore, a practical abstraction method should permit a con-trollable trade-off between computation and solution quality. As a dynamic-programming procedure, Q-tree search provides no natural mechanism for intermediate solutions. Instead, the algorithm must run to comple-tion before returning a solution. 3) Limited Parallelization Structure : The strict bottom-up dependency present in Q-tree search that requires the value function of all children to be evaluated before up-dating a parent, constrains parallel execution and limits opportunities for hardware acceleration, particularly on resource-constrained edge-computing platforms. To address these limitations, we propose a sample-based framework for solving (2) inspired by the Monte Carlo Tree Search (MCTS) algorithm [20]. Rather than exhaus-tively evaluating the action-value function over all nodes of the full tree, the method incrementally estimates action values through stochastically sampled rollouts and adaptively concentrates computation in regions of high estimated util-ity (high predictive information). Moreover, the algorithm allows agents to limit the number of stochastic rollouts, thereby providing a means to control the computational effort expended in solving (2), and may be terminated in an anytime fashion to return a valid solution at any intermediate stage of execution. The next section presents the formalism of the proposed approach, followed by results that demonstrate its ability to rapidly generate multi-resolution information-driven abstractions of large real-world probabilistic grids. III. A S AMPLE -B ASED ALGORITHM FOR THE DESIGN OF 
+
+HIERARCHICAL ABSTRACTIONS 
+
+In this section, we present an incremental sample-based al-gorithm for solving (2) inspired by Monte Carlo Tree Search (MCTS). A key observation is that the IB objective over 
+
+T S decomposes additively over local partition refinements, enabling a node-centric action-value formulation in which the value of a state–action pair corresponds to refining a specific region. Accordingly, solving (2) can be viewed as incrementally selecting which nodes to expand, allowing the problem to be formulated as a sequential decision-making process. 
+
+A. Value-Based Formulation of the Tree-Search Problem 
+
+Given any Tk ∈ T S at time k, we let the state sk =
+
+Nleaf (Tk), where Nleaf (Tk) is the set of leafs nodes of the tree 
+
+Tk. When in the state sk corresponding to the tree Tk, the agent is permitted to select at most one of the leaf nodes of 
+
+Tk for expansion (refinement), and thus the action at time k
+
+is ak = t for some t ∈ N leaf (Tk), or ak = −1 if no expansion is selected. Note that the feasible action space is state-dependent, and is given by A(sk) = Nleaf (Tk)∪{− 1}. When in state sk and action ak is selected, the state transitions to new state (tree) sk+1 according to the deterministic relation 
+
+sk+1 = f (sk, a k), where 
+
+f (s, a ) = 
+
+(
+
+(s \ a) ∪ C (a), if a̸ = −1,s, otherwise, (3) and C(a) is set of children of the node a selected for expansion. Note that the tree corresponding to sk+1 will differ by only a single leaf-node expansion to the tree given by state sk.Now, let Jα(T ) = IY (T ) − αI X (T ) be the objective function of problem (2). We define the one-step reward function of our process according to 
+
+Rα(sk, a k) = Jα(Tk+1 ) − Jα(Tk) = ∆ Jα(ak), (4) where Tk = tree (sk) and Tk+1 = tree (sk+1 ) =
+
+tree (f (sk, a k)) are the trees corresponding to states sk
+
+and sk+1 , respectively. Note that when the objective Jα(T )
+
+is evaluated between two trees that differ by the ex-pansion of a single leaf node as in (4), the change in cost depends only on the expanded node ak. Accordingly, the objective difference may be written as ∆Jα(ak) =∆IY (ak) − α∆IX (ak). Furthermore, the incremental in-formation terms are given by ∆IX (ak) = p(ak)H(Π) 
+
+and ∆IY (ak) = p(ak)JS Π(p(y|t′
+
+> 1
+
+), . . . , p (y|t′|C (ak )|)) , where JS Π(·) denotes the Jensen–Shannon (JS) divergence [21]. Here {t′
+
+> 1
+
+, . . . , t ′|C (ak )|} are the children of the node ak,
+
+Π is the merger distribution, and H(Π) is the Shannon entropy of Π [18], [19]. For additional details regarding these incremental quantities, the interested reader is referred to [13]. The problem (2) can then be written as 
+
+max   
+
+> {a0,s 1,a 1,...,s N,N }
+> N
+
+X
+
+> k=1
+
+Rα(sk, a k), (5) where the decision horizon N is unknown a priori, and the initial state is s0 = {tR}, with tR denoting the root (single-node) tree. We solve (5) using a sample-based approach inspired by reinforcement learning. To this end, we define the state–action value function as 
+
+Qπα(s, a ) = Eπ
+
+h X 
+
+> j≥0
+
+Rα(sk+j , a k+j )|s = sk, a = ak
+
+i
+
+, (6) which represents the expected reward-to-come when starting in state s = sk, selecting action a = ak, and following policy 
+
+π thereafter [20]. The optimal state–action value function is 
+
+Q∗
+
+> α
+
+(s, a ) = max π Qπα(s, a ), and the optimal value function is V ∗ 
+
+> α
+
+(s) = max a Q∗
+
+> α
+
+(s, a ). The optimal action to select in state s is therefore a∗ = arg max a Q∗
+
+> α
+
+(s, a ).A key challenge in our setting is the cardinality and representation of the state sk. The state encodes a large number of possible grid compression alternatives (i.e., trees), and multiple sequences of node expansions may lead to the same state, making the mapping between expansion sequences and states non-unique. However, the structure of the objective in (4) allows the problem to be reformulated at the level of nodes, since the cost depends only on the node selected for expansion and the regions defined by any subset of leaf nodes are disjoint. Consequently, selecting leaf node 
+
+ak for expansion in state sk yields the following reward-to-come 
+
+Q∗
+
+> α
+
+(sk, a k) = X
+
+> t∈sk
+
+δak ,t ¯y∗
+
+> α
+
+(t), (7) where 
+
+¯y∗
+
+> α
+
+(t) = ∆ Jα(t) + X
+
+> c∈C (t)
+
+¯V ∗ 
+
+> α
+
+(c), (8) and 
+
+¯V ∗ 
+
+> α
+
+(t) = max {0, ∆Jα(t) + X
+
+> c∈C (t)
+
+¯V ∗ 
+
+> α
+
+(c)}, (9) 
+
+= max {0, ¯y∗
+
+> α
+
+(t)},
+
+and δak ,t is the Kronecker delta function. Equation (9) corresponds to the node-based value function used in Q-tree search [13], which computes an optimal solution to (5) via a bottom-up recursion over the finest-resolution tree. At each node, the recursion evaluates two alternatives: (i) prune the node (future value 0), or (ii) expand the node, yielding future value ∆Jα(t) + P 
+
+> c∈C (t)
+
+¯V ∗ 
+
+> α
+
+(c). Thus, refinement of t is beneficial only if the net gain of expansion, including optimal continuation through its children, is positive, as otherwise the node is kept as a leaf. This decision is determined through ¯V ∗ 
+
+> α
+
+(t), and nodes with ¯V ∗ 
+
+> α
+
+(t) > 0 are expanded in a top-down procedure using (7) to select subsequent actions (expansions). 1 The procedure terminates when no expansion yields positive value in (7), at which point action 
+
+ak = −1 is selected to stop the search. As discussed in Section II, although this procedure yields an optimal solution to (2), it suffers from limitations that restrict its applicability in robotics. We therefore seek a sample-based alternative, presented next. 
+
+B. Evaluation and Back-propagation of Sample-Based Roll-outs 
+
+The goal of our algorithm is to generate an estimate of 
+
+¯V ∗ 
+
+> α
+
+(t) in (9), denoted ˆVα(t), using a sample-based Monte Carlo approach. Our method seeks to obtain these estimates rapidly while avoiding evaluation of nodes unlikely to be retained in the compressed tree. Importantly, relations (7) and (9) show that estimating ¯V ∗ 
+
+> α
+
+(t), which is a function de-fined over nodes t, is sufficient to determine Q∗
+
+> α
+
+(sk, a k), the latter depends on the tree state sk. Therefore, the algorithm operates by generating samples directly in the node space. Our algorithm thus proceeds in two phases. First, a set of rollout trajectories is generated through the tree to enable forward evaluation of the estimated reward-to-come. Then, a backward induction phase is used to update the estimate 
+
+ˆVα(t) for each node t affected by the rollout. Moreover, we will assume that only a finite number M of rollout samples are available. Phase one proceeds as follows. Suppose the algorithm has generated a tree Tk ∈ T S corresponding to state 
+
+sk. An action ak is then selected through an exploration procedure using a two-step strategy that combines Upper-Confidence-Bound (UCB) and ε-greedy methods [20]. In the first exploration step, the UCB rule is used to select a leaf            
+
+> 1Notice that if ¯V∗
+> α(t)>0then ¯V∗
+> α(t) = ¯ y∗
+> α(t)>0.
+
+node for expansion according to 
+
+ak = arg max 
+
+> a
+
+(
+
+ˆQα(sk, a ) + κ
+
+s
+
+ln N1(sk)
+
+N2(sk, a )
+
+)
+
+, (10) where ˆQα(sk, a ) = P 
+
+> t∈sk
+
+δa,t ˆyα(t), ˆyα(t) is an estimate of 
+
+¯y∗
+
+> α
+
+(t) computed in phase two, N1(sk) is the number of visits to state sk, N2(sk, a ) is the number of times action a has been selected in state sk, and κ is a constant that balances exploration and exploitation. Once a suitable leaf node has been identified by (10), the node is expanded and a rollout is initiated in the node space to generate an estimate of (9). During the rollout, an ε-greedy exploration rule recursively determines whether a child of an expanded node is selected for further expansion or if the rollout is terminated. That is, the rollout ends when the ε-greedy selection chooses not to expand any child of an expanded node, thereby terminating the finite node sequence that constitutes the rollout. It is important to note that the proposed two-step ex-ploration procedure is designed to use the available rollout samples efficiently when estimating ¯V ∗ 
+
+> α
+
+(t), similar to the guided rollout-selection mechanism in MCTS. In particular, the tree-state UCB rule (10) directs rollouts toward leaf nodes that appear promising while balancing sample allocation with exploring under-explored regions (leafs). In contrast, purely node-centric rollouts could waste many samples estimating 
+
+¯V ∗ 
+
+> α
+
+(t) for nodes t that provide little information gain or are unlikely to appear in a solution to (5). Thus, combining tree-level (UCB) and node-level ( ε-greedy) exploration focuses rollouts on informative regions and supports incremental construction of the hierarchical tree. Phase two begins once the rollout process described above terminates. At this point, the algorithm has generated a sequence of nodes (t0, . . . , t ℓ), where ℓ is the variable length of the rollout sequence. We then use the one-step reward information, ∆Jα(tj ), for each of these nodes to update our estimate of the function ˆVα(t0), as follows. For a general rollout sequence (t0, . . . , t ℓ) starting in node t0, we compute 
+
+ˆyiα(t0) = ˆ yi−1 
+
+> α
+
+(t0) + 1
+
+N3(t0)
+
+> ℓ
+
+X
+
+> j=0
+
+∆Jα(tj ), (11) where N3(t0) is the number of times the node t0 has been visited as part of any rollout, and i is the iteration number. We then initialize a backpropagation procedure to update ˆyα(t)
+
+for each ancestor t of t0 according to 
+
+ˆyiα(t) = ˆ yi−1 
+
+> α
+
+(t) + 1
+
+N3(t)
+
+∆Jα(t) + X
+
+> c∈C (t)
+
+max {0, ˆyiα(c)}.
+
+(12) The estimate ˆVα(t) of ¯V ∗ 
+
+> α
+
+(t) at iteration i is then given by 
+
+ˆVα(t) = max {0, ˆyiα(t)}. (13) Once (11)-(12) have been computed for t0 and each of its ancestors t, the process repeats by returning to phase one to again randomly sample a new leaf node for evaluation via (10) using the updated action-value function ˆQα(sk, a ) = P 
+
+> t∈sk
+
+δak ,t ˆyα(t) with ˆyα(t) = ˆ yiα(t).Algorithm 1 Sample-based information-theoretic multi-resolution grid compression. 
+
+Require: root node tR, rollout budget M , constants α, ϵ, κ .
+
+Ensure: Hierarchical Tree T ∈ T S . 
+
+> 1:
+
+Initialize TMC with root {tR}. 
+
+> 2:
+
+Set N1(s) = 0 , N2(s, a ) = 0 , and ˆy0
+
+> α
+
+(tR) = 0 . 
+
+> 3:
+
+for i = 1 to M do  
+
+> 4:
+
+s ← getRoot (TMC ); 
+
+> 5:
+
+while true do  
+
+> 6:
+
+A(s) ← setActionSpace (Nleaf (tree (s))) ; 
+
+> 7:
+
+ˆQα(s, a ) ← uptActVal (A(s), {ˆyα(t)}t∈s); 
+
+> 8:
+
+a ← lfSel 
+
+ ˆQα(s, a ), κ, N 1(s), N 2(s, a )
+
+
+
+; 
+
+> 9:
+
+if isIn (f (s, a ), TMC ) then  
+
+> 10:
+
+s ← f (s, a ); 
+
+> 11:
+
+else  
+
+> 12:
+
+s′ ← f (s, a ); 
+
+> 13:
+
+TMC ← add (s′, TMC ); 
+
+> 14:
+
+(t0, . . . , t ℓ) ← rollout (ε, C(a)) ; 
+
+> 15:
+
+ˆyiα(t0) ← rolloutEval (t0, . . . , t ℓ); 
+
+> 16:
+
+ˆyiα(t) ← backProp (ancestor (t0)) ; 
+
+> 17:
+
+break  
+
+> 18:
+
+end if  
+
+> 19:
+
+end while  
+
+> 20:
+
+end for  
+
+> 21:
+
+ˆVα ← createValueEstimate (ˆ yMα ); 
+
+> 22:
+
+return T = createAbstraction ( ˆVα, t R);
+
+C. A Monte-Carlo Algorithm for Abstraction Design 
+
+Our proposed approach is summarized in Algorithm 1. The algorithm is initialized with the root node tR, the rollout budget M , and parameters α, ε, and κ, where α controls the information–compression trade-off in (2) and ε, κ regulate exploration. The method incrementally constructs a Monte-Carlo tree TMC that guides sampling toward regions likely to contain high-value information. The tree TMC is initialized with the root tree tR ∈ T S , corresponding to the initial state s0 = {tR}. New states s are added to TMC as they are discovered, and their action-value functions (7) estimated via the rollout and backpropagation procedure described in Section III-B. The algorithm proceeds in the two phases described ear-lier. Phase I applies the UCB rule (10) to explore actions in previously visited states stored in TMC , as checked by 
+
+isIn (·) in line 9. If an unseen state s′ is encountered, it is added to TMC in line 13, after which a rollout is initiated from the children of the expanded node a in line 14. Phase II then evaluates the rollout using (11) (line 15) and propagates value estimates using (12) (line 16). Once the sample budget 
+
+M is exhausted, node-value estimates are computed via (13) in line 21, and the final grid compression tree T is obtained in line 22 by expanding nodes t for which ˆVα(t) > 0 in a top-down manner starting at the root tR until no further positive-value expansions remain.           
+
+> Fig. 1. (left) 128 ×128 example environment for comparison with Q-tree search. (middle) Abstraction obtained with Q-tree search. (Right) Abstraction obtained with sample-based method with M= 3000 rollout budget. Abstractions obtained for α= 0 .0067 .
+
+IV. R ESULTS AND DISCUSSION 
+
+In this section, we evaluate the proposed sample-based approach for constructing hierarchical representations of probabilistic grids in two scenarios. First, we compare our method with the optimal Q-tree search algorithm on asample grid and show that the resulting abstractions closely match those obtained by exhaustive Q-tree search. Second, we demonstrate the ability of our approach to generate regional multi-resolution compressions of probabilistic grids constructed from real-world LiDAR data. 
+
+A. Comparison with Q-tree Search 
+
+In this section, we compare our sample-based approach with the Q-tree search method developed in [13]. We con-sider the 128 × 128 grid shown in Fig. 1 (left), where grayscale intensity indicates the probability that cell i is occupied, oi = p(y = 1 |xi), with lighter regions correspond-ing to higher occupancy probability. The source distribution 
+
+p(x) is assumed uniform, and so p(x, y ) = p(y|x)p(x).Algorithm 1 is executed using ε = 0 .2 and κ = 1 , while the parameter α is varied across several cases. In Fig. 2 we report the total reward (2), the error relative to Q-tree search, and the normalized I(T ; Y ) versus I(T ; X)
+
+(information-plane) curves for a range of α and rollout budgets M . The results show that even with a limited rollout budget our method achieves only small error relative to the optimal Q-tree reward. As the rollout budget increases, the solutions produced by the proposed approach become nearly identical to those of Q-tree search, illustrating the control-lable trade-off between computational effort and optimality. In addition, the information-plane curves recover the same information–complexity frontier as the optimal quadtree so-lution when sufficient rollout samples are available. In Fig. 3 we compare the number of leaf nodes and the retained relevant information for solutions produced by our sample-based method and Q-tree search across several values of α under a rollout budget of M = 5000 . The results show that even with a limited rollout budget, the proposed method produces quadtree structures with leaf counts highly consistent with those of the optimal Q-tree solutions. More-over, the close agreement in the corresponding values of 
+
+I(T ; Y ) indicates that the resulting abstractions retain nearly identical predictive information, demonstrating the similarity Fig. 2. (top) Total reward obtained by executing Q-tree search and the sample-based approach for a variety of rollout budgets M as a function of α. (middle) The difference in objective function value (error) between the optimal Q-tree search solution and our sample-based approach as a function of α. (bottom) the normalized information-plane showing the trade-off between compression (x-axis) and information-retention (y-axis) for each method. The curve is traced by varying α, where movement to the right (decreasing α) corresponds to less compressed trees (more leaves) that retain more information. 
+
+between the multi-resolution representations produced by both methods. 
+
+B. Application to Real-World Occupancy Grid Compression 
+
+In this section, we demonstrate the ability of the pro-posed method to generate multi-resolution compressions of probabilistic occupancy maps constructed from real-world data. The map shown in Fig. 4(left) was generated by an autonomous ground robot navigating the hallway outside our laboratory using ROS2 Foxy and SLAM Toolbox, and has resolution 2048 × 2048 . From this map we select three representative regions of interest (ROIs), denoted RA, RB ,and RC , that are relevant to robotic navigation tasks and are shown in Fig. 4(left). Furthermore, we incorporate a heuristic early-stopping strategy during rollouts to accelerate the sample-based search. Under this heuristic, a rollout may terminate early if it samples a sequence of nodes forming a subtree with positive value, indicating that expanding the subtree root node (start of rollout) yields positive reward improvement. In Fig. 5 we compare the performance of the proposed sample-based method with Q-tree search for generating multi-resolution representations of the regions of interest. The top panel reports the runtime required to complete the           
+
+> Fig. 3. Comparison of the percentage of leaf nodes (top) and relevant information retention I(T;Y)(bottom) between our sample-based method (SBM) and Q-tree search (QTS) for various values of αwith M= 5000 .
+
+compression task, while the bottom panel shows the amount of task-relevant information preserved after compression. The results indicate that the sample-based method retains approximately 88% of the information preserved by Q-tree search while requiring only about 11% of the corresponding computation time. In other words, by tolerating a roughly a 12% reduction in preserved information, the proposed sample-based method achieves an approximate nine-fold speedup in search time compared to Q-tree search. Notably, these improvements arise entirely from algorithmic design, as no hardware acceleration was used in this experiment. It is also worth noting that Q-tree search cannot produce a valid solution if the algorithm is interrupted before completion. In contrast, the proposed method can be terminated at any point during the M rollouts to produce a valid solution, albeit potentially producing a multi-resolution solution with a reduced amount of retained information. Overall, the results highlight a key advantage of the proposed approach: it enables a flexible trade-off between information optimality and computational effort, allowing substantial runtime im-provements with only modest loss in retained information.          
+
+> Fig. 4. (left) Probabilistic occupancy grid constructed from real-world LiDAR data with three regions of interest labeled as RA,RB, and RC
+> shown. (middle) and (right) show example multi-resolution compressions of RAand RB, respectively, obtained by our sample based approach.
+
+Fig. 5. Execution time and relevant information retention comparison between Q-tree search (QTS) and our proposed sample-based method (SBM) for α1 = 0 .0005 , α2 = 0 .004 , α3 = 0 .0067 and M = 5500 
+
+over the three regions RA, RB and RC .
+
+V. C ONCLUSION 
+
+In this paper, we developed a sample-based approach for constructing multi-resolution, information-theoretic com-pression of probabilistic occupancy grids. Our method lever-ages ideas from Monte Carlo Tree Search (MCTS) to in-crementally build an information-informed hierarchical tree using sampled value estimates. The proposed approach is anytime in nature, allowing computation to be terminated early while directing the available sampling budget toward regions of the environment that appear most promising. We demonstrate the effectiveness of our framework through com-parison with the information-optimal Q-tree search algorithm and show its ability to rapidly generate abstractions of large-scale probabilistic occupancy grids derived from real-world data. REFERENCES [1] P. Lou, Z.-d. Zhou, Y.-P. Chen, and W. Ai, “Study on multi-agent-based agile supply chain management,” The International Journal of Advanced Manufacturing Technology , vol. 23, no. 3, pp. 197–203, 2004. [2] J. P. Queralta, J. Taipalmaa, B. C. Pullinen, V. K. Sarker, T. N. Gia, H. Tenhunen, M. Gabbouj, J. Raitoharju, and T. Westerlund, “Collaborative multi-robot search and rescue: planning, coordination, perception, and active vision,” IEEE Access , vol. 8, pp. 191 617– 191 643, 2020. [3] A. Bechar and C. Vigneault, “Agricultural robots for field operations: Concepts and components,” Biosystems Engineering , vol. 149, pp. 94– 111, 2016. [4] F. Hauer, A. Kundu, J. M. Rehg, and P. Tsiotras, “Multi-scale perception and path planning on probabilistic obstacle maps,” in IEEE International Conference on Robotics and Automation , May 2015, pp. 4210–4215. [5] F. Hauer and P. Tsiotras, “Reduced complexity multi-scale path-planning on probabilistic maps,” in IEEE International Conference on Robotics and Automation , May 2016, pp. 83–88. [6] E. Nelson and N. Michael, “Information-theoretic occupancy grid compression for high-speed information-based exploration,” in 
+
+IEEE/RSJ International Conference on Intelligent Robots and Systems ,September 2015, pp. 4976–4982. [7] R. V. Cowlagi and P. Tsiotras, “Multiresolution path planning with wavelets: A local replanning approach,” in Proceedings of the 2008 American Control Conference (ACC) . Seattle, WA, USA: IEEE, Jun. 2008, pp. 2804–2809. [8] S. Kambhampati and L. S. Davis, “Multiresolution path planning for mobile robots,” IEEE Journal of Robotics and Automation , vol. RA-2, no. 3, pp. 135–145, Sep. 1986. [9] S. Behnke, “Local multiresolution path planning,” in RoboCup 2003: Robot Soccer World Cup VII , ser. Lecture Notes in Computer Science. Berlin, Heidelberg: Springer, 2004, vol. 3020, pp. 332–343. [10] E. Einhorn, C. Schroter, and H.-M. Gross, “Finding the adequate resolution for grid mapping — cell sizes locally adapting on-the-fly,” in Proceedings of the IEEE International Conference on Robotics and Automation (ICRA) . Shanghai, China: IEEE, 2011, pp. 1843–1848. [11] R. V. Cowlagi and P. Tsiotras, “Beyond quadtrees: Cell decompositions for path planning using wavelet transforms,” in Proceedings of the 46th IEEE Conference on Decision and Control (CDC) . New Orleans, LA, USA: IEEE, Dec. 2007, pp. 1392–1397. [12] G. K. Kraetzschmar, H. Moravec, C. R¨ osmann, and M. Ruenz, “Probabilistic quadtrees for variable-resolution mapping of spatial environments,” Robotics and Autonomous Systems , vol. 52, no. 2–3, pp. 119–136, 2004. [13] D. T. Larsson, D. Maity, and P. Tsiotras, “Q-tree search: an information-theoretic approach toward hierarchical abstractions for agents with computational limitations,” IEEE Transactions on Robotics , vol. 36, no. 6, pp. 1669–1685, 2020. [14] ——, “Information-theoretic abstractions for resource-constrained agents via mixed-integer linear programming,” in Proceedings of the Workshop on Computation-Aware Algorithmic Design for Cyber-Physical Systems , May 2021, pp. 1–6. [15] ——, “A linear programming approach for resource-aware information-theoretic tree abstractions,” in Computation-Aware Algorithmic Design for Cyber-Physical Systems . Springer, 2023, pp. 101–138. [16] N. Tishby, F. C. Pereira, and W. Bialek, “The information bottleneck method,” in The 37th annual Allerton Conference on Communication ,September 1999, p. 368–377. [17] D. J. Strouse and D. J. Schwab, “The deterministic information bottleneck,” Neural Computation , vol. 29, no. 6, pp. 1611–1630, June 2017. [18] N. Slonim and N. Tishby, “Agglomerative information bottleneck,” in 
+
+Advances in Neural Information Processing Systems , vol. 12, 1999, pp. 617–623. [19] T. M. Cover and J. A. Thomas, Elements of Information Theory ,2nd ed. Hoboken, NJ: Wiley-Interscience, 2006. [20] R. S. Sutton and A. G. Barto, Reinforcement Learning: An Introduc-tion , 2nd ed. Cambridge, MA: The MIT Press, 2018. [21] J. Lin, “Divergence measures based on the Shannon entropy,” IEEE Transactions on Information Theory , vol. 37, no. 1, pp. 145–151, Jan 1991.
