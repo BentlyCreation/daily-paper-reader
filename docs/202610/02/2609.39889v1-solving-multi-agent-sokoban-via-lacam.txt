@@ -1,0 +1,358 @@
+Title: Solving Multi-Agent Sokoban via LaCAM
+
+URL Source: https://arxiv.org/pdf/2609.39889v1
+
+Published Time: Thu, 01 Oct 2026 01:56:05 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+> PREPRINT
+
+# Solving Multi-Agent Sokoban via LaCAM 
+
+Keisuke Okumura 
+
+National Institute of Advanced Industrial Science and Technology (AIST), Japan okumura.k@aist.go.jp 
+
+ABSTRACT 
+
+Sokoban, a puzzle game in which an agent pushes boxes onto unlabelled target locations in a grid world, is a long-standing benchmark planning problem. While it is easy to see the connection to practical applications such as warehouse logistics with autonomous forklifts, its multi-agent counterpart has remained underdeveloped. This is because Multi-Agent Sokoban is substantially more difficult due to factors specific to multi-agent planning, such as the rapidly growing branching factor as the number of agents grows and the need to handle integrated task assignment and collision-free pathfinding. In this paper, we show that a scalable planner for Multi-Agent Sokoban can be designed by leveraging recent advances in multi-agent pathfinding (MAPF). Specifically, our Sokoban-LaCAM efficiently solves instances involving tens of agents and boxes while preserving both completeness and eventual optimality guarantees. This provides evidence that MAPF can serve as a powerful primitive for solving broader collective automation problems. Project page: https://kei18.github.io/multi-agent-sokoban/ 
+
+## 1 Introduction 
+
+Sokoban is a popular puzzle game in which an agent pushes boxes onto target locations in a grid world, but also a long-standing benchmark problem for heuristic search due to its computational difficulty [1–3]. For example, when a box is adjacent to a wall, the agent cannot push it from that direction, restricting the set of reachable box configurations. This asymmetry gives rise to dead-end situations, leading search algorithms to spend substantial effort exploring fruitless branches in the absence of effective heuristics, which are notoriously difficult to design. Not surprisingly, Sokoban is PSPACE-complete from the perspective of computational complexity [4]. By contrast, its multi-agent counterpart, which we refer to as Multi-Agent Sokoban , has received little attention. Only a few papers have explicitly considered this problem [5, 6], and no dedicated solver is publicly available to the best of our knowledge. Nevertheless, Multi-Agent Sokoban poses interesting challenges in multi-agent planning while maintaining strong connections to real-world problems. For example, a planner must determine both which agent should transport each box and which target location each box should be assigned to. It must then compute collision-free paths while avoiding agent–agent, agent–box, and box–box collisions, as well as dead-end situations. This structure closely resembles warehouse logistics [7], where multiple autonomous robots (e.g., AGVs and forklifts) transport goods (e.g., parcels and pallets) to designated locations while coordinating their movements to avoid mutual interference and maximise overall throughput. We therefore regard Multi-Agent Sokoban as a fruitful benchmark for multi-agent planning, where a planner needs to address integrated task assignment and coordinated path planning. In particular, we ask whether multi-agent pathfinding (MAPF) techniques can provide a scalable and real-time planning primitive beyond the canonical MAPF formulation. MAPF [8], the problem of computing collision-free paths for multiple agents on a graph, has been extensively studied since the early 2010s, driven by the increasing demand for coordinated robots in factory automation. Among recent advances, LaCAM (∗) [9, 10] demonstrates that reliable sub-second planning for hundreds of agents is possible. Since LaCAM searches directly over the configuration space, where a configuration represents the states of all agents, its search framework naturally extends to collective automation problems that admit a configuration-space formulation. 1arXiv:2609.39889v1 [cs.MA] 30 Sep 2026 Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+To this end, this paper presents Sokoban-LaCAM for Multi-Agent Sokoban. It performs search over the configuration space by generating joint actions via constrained PIBT [11], where each agent’s action is determined based on target–box and agent–box assignments. To further speed up the solution discovery, we introduce problem-specific heuristics and pruning rules on top of the joint search. Theoretically, Sokoban-LaCAM is complete and eventually optimal with respect to cumulative transition cost (e.g., plan length; aka. makespan), meaning that it finds an optimal solution in finite time whenever one exists and otherwise correctly reports infeasibility. Empirically, Sokoban-LaCAM solves instances with tens of agents and boxes within seconds. This demonstrates substantially better scalability than adapting IDA ∗ [12], which has traditionally been used for single-agent Sokoban. Importantly, the broader goal of this work is not merely to solve Multi-Agent Sokoban, but to demonstrate that search-based MAPF algorithms, at least LaCAM, can serve as general multi-agent combinatorial search frameworks for collective automation problems. This perspective opens the door to integrating learned heuristics to guide search efficiently [13], as well as developing effective task-specific configuration generators that exploit the underlying problem structure [14, 15]. In the remainder of the paper, we first formulate Multi-Agent Sokoban and review related work, with a particular focus on connections to MAPF. We then present Sokoban-LaCAM and evaluate its performance experimentally. Throughout the paper, we use ⊥ as an “undefined” sign for convenience. 
+
+## 2 Preliminaries 
+
+2.1 Problem Definition 
+
+Let G = ( V, E ) be an undirected graph representing a grid environment, where V is the set of traversable cells and E connects orthogonally adjacent cells. We consider a set of agents A = {a1, . . . , a n}, a set of boxes B = {b1, . . . , b m}, and a set of target locations T ⊆ V . We assume that the number of boxes equals the number of targets (i.e., m = |T |). A configuration is defined as an injective function Q : A ∪ B 7 → V , assigning every object (either agent or box) to a distinct vertex. A Multi-Agent Sokoban instance is then defined as ⟨G, A, B, T, Q init ⟩,where Qinit denotes the initial configuration. A solution is a finite sequence of configurations π = ( Q0 =
+
+Qinit , Q 1, . . . , Q last ) such that every target vertex is occupied by a box in the final configuration, namely, 
+
+∀g ∈ T, ∃b ∈ B, Q last (b) = g. 
+
+Furthermore, every (ordered) pair of consecutive configurations must satisfy the transition rules defined below. A transition from a configuration Qfrom to another one Qto is valid if the following conditions hold: 
+
+(i) Every object either stays at its current vertex or moves to an adjacent vertex; (ii) No swap conflict occurs between any pair of objects, i.e., ∀i̸ = j ∈ A ∪ B, (Qfrom (i), Q from (j)) ̸ = ( Qto (j), Q to (i)) ; (iii) For every moved box, there exists exactly one agent occupying the adjacent vertex in the pushing direction that moves into the box’s previous location, while the box simultaneously moves one step further in the same direction; and (iv) An agent cannot push two boxes simultaneously. Note that the vertex conflict constraint is already implied by the definition of a configuration. Then, the quality of a solution π is evaluated by its length, referred to as the makespan . Our objective is to compute a makespan-minimising solution as quickly as possible. Compared to the standard single-agent formulation, which has been widely studied in the search community [2, 3] and, more recently, in the learning community [3, 16], Multi-Agent Sokoban additionally requires reasoning about inter-agent collisions. The principal challenge, however, is the dramatically increased branching factor, which grows exponentially with the number of agents n and renders conventional search schemes impractical at scale. This motivates us to leverage algorithmic insights established in MAPF. 2Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+2.2 MAPF, LaCAM, and PIBT Algorithm 1: LaCAM                                                                                                     
+
+> input : MAPF instance (G, A, Q init , Q goal )
+> output : solution or NO_SOLUTION
+> 1: initialize Open ,Explored
+> 2: Ninit ← ⟨ Q:Qinit ,tree :J[⊥]K,parent :⊥⟩
+> 3: Open .push (Ninit );Explored [Qinit ] = Ninit
+> 4: while Open ̸=∅do
+> 5: N←Open .top ()
+> 6: if N.Q =Qgoal then return backtrack (N)
+> 7: if N. tree =∅then Open .pop () ;continue
+> (lazy constraints addition)
+> 8: C←N. tree .pop ()
+> 9: if |C| ≤ | A|then
+> 10: ai←a|C|;v←N.Q [ai]
+> 11: for u∈neigh (v)∪ { v}do
+> 12: N. tree .push ([ C+⟨ai, u ⟩])
+> (configuration generation)
+> 13: Qnew ←configuration _generator (N.Q, C )
+> 14: if Qnew ̸=⊥ ∧ Qnew ̸∈Explored then
+> 15: Nnew ← ⟨ Q:Qnew ,tree :J[⊥]K,parent :N⟩
+> 16: Open .push (Nnew );Explored [Qnew ] = Nnew
+> 17: return NO_SOLUTION
+
+The canonical MAPF formulation can be viewed as a special case of Multi-Agent Sokoban by set-ting B = ∅ and introducing a goal configuration 
+
+Qgoal , where each agent ai is required to reach its assigned target Qgoal (ai). Motivated by applications in warehouse logistics, numerous solution paradigms have been developed for MAPF, including rule-based methods, dedicated search algorithms, and learning-based approaches [17, 18], to achieve scalable real-time planning. One particularly successful paradigm is configuration generator-based search, exemplified by LaCAM [9]. Algorithm 1 presents the pseudocode of LaCAM. It maintains an Open stack of search nodes and an 
+
+Explored table recording previously visited config-urations. LaCAM expands one search node at a time in a depth-first manner. As in conventional graph search, each node corresponds to a configuration and stores a pointer to its parent. In addition, each node maintains a tree queue of constraints used for successor generation (Line 2). Each constraint C
+
+specifies which agents take which actions, partially determines the successor configuration (Line 8–12). Then, given the current configuration and a selected constraint, configuration generator produces exactly one successor configuration Qnew satisfying C (Line 13). Rather than explicitly enumerating all feasible successor configurations, whose number grows exponentially with n, LaCAM incrementally refines the constraints to lazily explore the successor space. This postpones the exponential branching inherent in multi-agent planning while preserving the exhaustive search structure, thereby maintaining completeness and enabling highly scalable planning. Furthermore, a minor modification to Alg. 1 by introducing search-tree rewiring yields 
+
+LaCAM ∗ [10], an anytime algorithm that eventually converges to an optimal solution. LaCAM’s performance largely depends on the underlying configuration generator, which is typically instantiated by PIBT [11]. Given, for each agent ai, an ordered list of candidate actions ϕi called preference ,PIBT synthesises a feasible successor configuration in time linear in n while guaranteeing a collision-free transition. This scheme has subsequently been adapted to a range of planning settings beyond the canonical MAPF formulation [19–22], demonstrating the versatility of PIBT as a primitive for scalable multi-agent coordination. Importantly, neither LaCAM nor PIBT is tied to the canonical MAPF formulation. Rather, they provide a generic framework for systematic search over configurations, where successor configurations are generated from agent-wise action preferences. This abstraction has enabled LaCAM to serve as a planning primitive well beyond MAPF, such as aggressive navigation with physical robot fleets [23]. In this work, we take this idea one step further by tackling the substantially more challenging Multi-Agent Sokoban problem, where path planning is tightly coupled with task planning , as well as workspace reconfiguration via object manipulation ,since box movements dynamically alter the traversable workspace. 
+
+2.3 Integrated Task and Path Planning 
+
+In the context of MAPF, task planning is typically formulated as target assignment. While this problem has long been studied as an independent problem [24], the advent of MAPF has motivated research on integrated multi-agent target assignment and path planning. One representative formulation is unlabelled MAPF , in 3Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+which interchangeable agents are required to occupy a given set of target locations, while MAPF-UA (with unassigned agents) [25] considers settings in which a subset of agents may terminate at arbitrary vertices. A more general formulation is target assignment and pathfinding (TAPF) , where an agent–vertex matrix specifies the admissible targets for each agent. Various algorithms have been developed for unlabelled MAPF [26, 27], MAPF-UA [14, 28], and TAPF [29–31], ranging from optimal algorithms to highly scalable suboptimal methods. Notably, several recent scalable algorithms for these formulations build upon LaCAM, motivating us to extend the framework to Multi-Agent Sokoban. 
+
+2.4 Planning with Object Manipulation 
+
+Sokoban naturally combines path planning with object manipulation, where moving objects continuously modify the traversable workspace for both agents and other objects. Manipulation planning in which the final obstacle configuration is not part of the planning objective has been studied in both discrete [32, 33] and continuous domains [34, 35], as well as in multi-agent settings [36, 37]. In parallel, inspired by warehouse automation, several MAPF variants have also considered transporting shelves or cargo [38–42], under the assumption that the transporting agent and the transported object are allowed to occupy the same location. In contrast, Sokoban’s push-only dynamics make dead-ends particularly severe and often irreversible, unlike formulations that permit objects to be carried, co-located with agents, or repositioned more freely. 
+
+## 3 Sokoban-LaCAM 
+
+This section first presents the core design of Sokoban-LaCAM, followed by the task assignment heuristics that enable it to efficiently solve large-scale instances. Our objective is not to provide a complete engineering blueprint, but rather to demonstrate that a configuration-based search framework for MAPF can be readily extended to Multi-Agent Sokoban with only modest modifications. Accordingly, several implementation details are omitted for brevity. 
+
+3.1 Minimal Adaptation 
+
+Our Sokoban-LaCAM directly applies Alg. 1 to the configuration space of Multi-Agent Sokoban, with a dedicated PIBT-based configuration generator (Line 13) that accounts for box-aware coordination. Although a configuration is defined by the placements of both agents and boxes, boxes never move independently. Thus, LaCAM’s constraints only need to regulate agent actions. This results in an exhaustive search regardless of the underlying configuration generator, even one based on random walks, following the analysis in [9]. Consequently, the algorithm is complete; that is, it finds a solution in finite time whenever one exists and otherwise proves that the instance is infeasible. Moreover, its eventual-optimal variant, LaCAM ∗, is readily applicable, yielding an eventually optimal solver for Multi-Agent Sokoban under cumulative cost objectives such as makespan. The adaptation of PIBT, hereafter referred to as Sokoban-PIBT , is likewise straightforward. Recall that PIBT synthesises a collision-free action for each agent ai given its preference ϕi, which is an ordered list of applicable actions. We retain this structure; that is, Sokoban-PIBT only generates agent actions, while the resulting box placements are determined implicitly by these actions. The only modification is the collision model. If an agent action pushes an adjacent box, Sokoban-PIBT performs collision checking after simulating the corresponding box movement. Any action that results in a box–box or box–agent collision is rejected. Note that this modification does not guarantee that Sokoban-PIBT always produces a feasible configuration under the given constraint. However, this is not problematic, as such failures are naturally handled by LaCAM, which simply continues searching over alternative constraints. The remaining challenge is therefore to construct the preferences ϕi supplied to Sokoban-PIBT, as described next. 4Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+3.2 Preference Construction 
+
+The performance of Sokoban-LaCAM largely depends on the quality of the constructed preferences. In particular, preference construction must be computationally efficient, as it is invoked at every search iteration, while also providing effective guidance to avoid exploring fruitless branches. With these considerations in mind, our approach consists of the following two steps for a given configuration Q:1. Target–Box Assignment : We first solve a maximum-cardinality matching problem to determine which box should be assigned to which target, yielding an assignment function MT-B : T 7 → B. For each box bj not already located on its assigned target tj ∈ T , this assignment immediately determines a 
+
+stand sj ∈ V , namely the position from which an agent should push bj towards tj . Note that a single box may admit multiple stands because the direction from which it can be pushed towards its target is not necessarily unique. Conversely, a box may have no feasible stand because all candidate stands are blocked by other boxes. 2. Agent–Stand Assignment : We next solve a matching problem between agents and the identified stands. This yields an assignment function MA-S : A 7 → S ∪ {⊥} , where S denotes the set of stands. Unlike the target–box assignment, some agents may remain unassigned (mapped to ⊥), and some stands may not be assigned to any agent (e.g., when |A| ≪ | B|). Once these assignments have been made, we derive the preference ϕi for each agent according to the following rules. 1. If MA-S (ai) = sj and ai is on sj , the box-push action is available. Thus, ai prioritises the action towards Q(bj ); the remaining actions are ordered randomly. 2. If MA-S (ai) = sj but ai has not yet reached sj , the applicable actions are ordered in ascending order of dist G\B (Q(ai), s j ), where dist G\B denotes the shortest-path distance on the graph induced by removing all box locations, since agents cannot traverse them. 3. When MA-S (ai) = ⊥, the applicable actions are ordered in ascending order of the resulting value of min sj ∈S dist G\B (Q(ai), s j ). This distance is efficiently computed by a multi-source BFS from all stands. This encourages idle agents to remain close to potential future tasks. Together, these rules guide agents towards useful box-pushing actions while naturally distributing work across multiple agents, thereby increasing concurrency and contributing to minimising the plan makespan. We now describe each assignment procedure in detail. 
+
+3.3 Target–Box Assignment 
+
+Before entering the LaCAM search iterations, Sokoban-LaCAM precomputes a push-aware distance dist p(t, v )
+
+from each target t ∈ T to every location v ∈ V . This distance is computed by a backward BFS rooted at each target while excluding positions from which a box cannot be pushed, such as locations adjacent to walls. We then seek a target–box assignment MT-B that minimises the maximum push-aware target–box distance, 
+
+max t∈T dist p(t, MT-B (t)) , as a surrogate objective for reducing the final makespan. This naturally gives rise to a bottleneck assignment problem [43]. Instead of solving this problem optimally, however, we adopt a lightweight heuristic, since the final makespan also depends on the subsequent agent–stand assignment and collision-free pathfinding. Specifically, inspired by a suboptimal unlabelled MAPF algorithm [27], we first compute an unweighted bipartite matching between targets and boxes using the Ford–Fulkerson algorithm based on DFS augmenting paths [44]. Each augmenting-path search visits candidate boxes in ascending order of their push-aware distance to the current target, producing a distance-aware, albeit suboptimal, assignment. The resulting assignment is 5Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+then refined by a local search that repeatedly performs pairwise swaps of target assignments whenever doing so reduces the maximum push-aware target–box distance. The final assignment is denoted by MT-B . Note that this refinement is guaranteed to terminate after finitely many iterations, since each accepted swap strictly decreases the objective. 
+
+3.4 Agent–Stand Assignment 
+
+Next, using the push-aware distance dist p, we identify a set of stands S ⊆ V \ S  
+
+> bj∈B
+
+Q(bj ), where each stand represents a location from which an agent can push a box towards its assigned target, following MT-B .A candidate stand v ∈ V is discarded if it is occupied by another box or if the corresponding next box position is occupied by another box, since in either case the box cannot be pushed immediately. Furthermore, certain push actions immediately lead to dead-end configurations. For example, pushing a box may result in two adjacent boxes being trapped against a wall, rendering both boxes unpushable thereafter. Such stand candidates are filtered out during the stand identification phase. We then seek an agent–stand assignment MA-S that minimises the maximum box-aware distance dist G\B ,
+
+max  
+
+> ai∈A
+
+dist G\B (Q(ai), MA-S (ai)) ,
+
+analogous to the target–box assignment. Unlike the previous step, however, a single box may admit multiple stands, whereas assigning multiple agents to the same box is redundant. We thus adopt a constrained greedy assignment that processes agents sequentially. Each agent is assigned to its unassigned nearest stand in terms of the box-aware distance, while ensuring that each box is assigned to at most one agent. This is followed by pairwise-swap refinement, analogous to the construction of MT-B , to further reduce the maximum assigned distance, resulting in the final assignment MA-S .
+
+3.5 Search Improvements 
+
+The preceding sections describe the essential components of Sokoban-LaCAM. Here, we present several search techniques that further improve its performance. The techniques below include those specific to the anytime variant (i.e., Sokoban-LaCAM ∗), which continues searching after the first feasible solution is found. 
+
+Random Restart is a common technique for escaping search stagnation by non-deterministically returning to the initial search node [45]. It has been successfully applied to several MAPF planners, including LaCAM itself [10]. We adopt the same strategy by re-inserting the initial search node into Open with a small probability (e.g., 0.001 ) whenever the search encounters a previously explored configuration at Line 14. Furthermore, after a feasible solution is found, random restarts are also triggered stochastically to encourage exploration of different search branches. 
+
+Admissible Heuristic maps a configuration Q to a lower bound on the cost required to reach a goal configuration. Within LaCAM ∗, such heuristics are used for branch-and-bound, pruning search nodes that cannot improve upon the current best solution. The trivial heuristic hzero (·) := 0 is admissible, whereas tighter lower bounds substantially improve the convergence towards the optimum. We therefore introduce the following heuristic, which combines lower bounds on the required target–box and agent–box movements: 
+
+hT-B-A (Q) = max  
+
+> bj∈B′
+
+
+
+min  
+
+> t∈T
+
+dist p(t, b j ) + max 
+
+
+
+min  
+
+> ai∈A
+
+dist G(Q(ai), b j ) − 1, 0
+
+ 
+
+,
+
+where B′={bj ∈B | Q(bj )̸ ∈ T } denotes a set of targets not on any target, and dist G is the shortest path distance on G.6Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+Search Stuck Detection is implemented using the heuristic hT-B-A . Specifically, we monitor the search progress through this cost-to-go estimate. If the heuristic value does not decrease for dstuck consecutive search iterations ( 64 in our experiments), we regard the search as being stuck, following the intuition of heuristic plateau detection [46], since successful search typically reduces this estimate over time. In such cases, Sokoban-LaCAM performs a random restart, which improves solution discovery on challenging instances. To preserve completeness in theory, dstuck should gradually increase over time. However, our preliminary experiments showed no practical benefit from such a strategy, and we therefore use a fixed value of dstuck in default throughout the search. 
+
+Dead-end Configuration Pruning can be applied immediately after configuration generation at Line 13. For example, a configuration can be discarded if four boxes form a 2 × 2 block, rendering all of them permanently unpushable, unless all four cells are targets. Another simple criterion compares the numbers of boxes and targets adjacent to the outer walls of the grid, allowing certain infeasible configurations to be detected efficiently. Many additional dead-end patterns have been studied for Sokoban, and incorporating them is expected to further improve the planner. Since they are primarily engineering optimisations, we leave a comprehensive treatment to future work. 
+
+Duplicate Detection can be strengthened by exploiting the unlabelled nature of Multi-Agent Sokoban. In labelled settings, where individual agents and boxes are distinguished, two configurations Q and Q′ are considered identical if Q(o) = Q′(o) for every object o ∈ A ∪ B. In contrast, Multi-Agent Sokoban treats both agents and boxes as indistinguishable. Accordingly, two configurations are regarded as identical when 
+
+Q(A) = Q′(A) ∧ Q(B) = Q′(B), where Q(O) := S 
+
+> o∈O
+
+Q(o) denotes the set of locations occupied by objects in O. This substantially reduces the number of distinct configurations stored in Explored , thereby accelerating anytime refinement. 
+
+## 4 Evaluation 
+
+We evaluate Sokoban-LaCAM from three perspectives: 
+
+• the benefit of introducing an MAPF-based search backbone through small-scale instances (Sec. 4.1); 
+
+• the planner’s ability to solve diverse instances with different map sizes, obstacle layouts, and numbers of agents and boxes (Sec. 4.2); and 
+
+• the contribution of each technical component (Sec. 4.3). All experiments are conducted on a desktop PC equipped with an Apple M1 Ultra CPU (20 cores) and 64 GB 
+
+RAM, with a maximum of 16 different runs in parallel using multi-threading. Each instance is generated by randomly placing agents and boxes on a given grid map while excluding trivially infeasible cases; nevertheless, unsolvable instances may still be included. Example instances are illustrated in Fig. 1. Our implementation is written in C++ and builds upon the LaCAM codebase for MAPF [10]. 
+
+4.1 Comparison with IDA ∗
+
+Single-agent Sokoban has long been tackled via IDA ∗ [12], together with domain-specific enhancements [2]. We therefore adapt this approach to Multi-Agent Sokoban as a natural baseline. Our IDA ∗ implementation performs makespan-optimal search over configurations while incorporating the admissible heuristic hT-B-A 
+
+and the dead-end pruning techniques introduced in Sec. 3.5. We then compare IDA ∗ with Sokoban-LaCAM ∗,an anytime search that continues the search towards makespan-optimal solutions. Both planners are evaluated on the obstacle-free 5 × 5 map, denoted by empty-5-5 , with the number of agents n ∈ { 2, 4, 6} and boxes 7Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura success (% ↑) time ( ms ↓) sub-opt of LaCAM ∗         
+
+> IDA ∗LaCAM ∗IDA ∗LaCAM ∗init 30 s opt-proven 30.0 93.3 3117 ±2663 <0.1 ms 1.44 1.00 24/27 =89%
+
+Table 1: Performance of Sokoban-LaCAM ∗ against IDA ∗ on the 90 instances of empty-5-5 from Fig. 1 under a 
+
+30 s time limit. Among them, both planners solve 27 instances. For these commonly solved instances, we report the time required by Sokoban-LaCAM ∗ to obtain its initial solutions, together with the suboptimality factors for initial and final solutions using the optimal IDA ∗ solutions as references. Notably, Sokoban-LaCAM ∗
+
+finds initial solutions for all 27 instances almost instantly, and all of them eventually converge to the optimum. Furthermore, Sokoban-LaCAM ∗ proves optimality for most of these instances (see opt-proven ). 
+
+m ∈ { 2, 4, 6}. Each setting contains 10 instances, resulting in 90 instances in total. The planning time limit is set to 30 s .Table 1 presents the aggregated results. Overall, at this problem scale, Sokoban-LaCAM ∗ solves more instances, finds initial feasible solutions almost instantly, and eventually converges to optimal solutions on all instances solved by IDA ∗, proving optimality for most of them. The substantially lower success rate of IDA ∗ suggests that, while admissible heuristics are essential for systematic search, hT-B-A alone is insufficient to guide the search effectively in Multi-Agent Sokoban. This highlights the importance of configuration generator–based search combined with depth-first exploration. Rather than relying primarily on increasingly informative heuristics to evaluate configurations, LaCAM directly generates promising successor configurations without seeing unpromising ones. This design leads to substantially more efficient search in the vast configuration space. 
+
+4.2 Stress Test 
+
+We next stress-test Sokoban-LaCAM across a wide range of problem settings, as summarised in Fig. 1. The benchmark includes obstacle-free maps, maps with 10% randomly distributed obstacles, and warehouse-like environments; some of them are from the MAPF benchmark [8]. Since IDA ∗ largely fails at this scale, it is omitted from the following evaluation. Instead, we additionally evaluate the underlying configuration generator, Sokoban-PIBT, by repeatedly applying it from the current configuration until all boxes reach their targets or the makespan upper bound is exceeded. The planning time limit is set to 10 s . Each scenario consists of 10 instances. Note that our goal is not to solve highly challenging puzzle instances, but rather to assess the planner’s ability to coordinate multiple agents. The results in Fig. 1 reveal that Sokoban-PIBT alone can solve relatively easy instances, while the systematic search framework of Sokoban-LaCAM substantially improves the overall planning performance. Nevertheless, Sokoban-LaCAM struggles more on instances with many boxes than many agents, suggesting that successful box manipulation requires more careful long-horizon reasoning to avoid irreversible dead-ends. Despite this, Sokoban-LaCAM successfully solves instances with more than 100 agents or more than 100 boxes, far beyond the reach of conventional search schemes, demonstrating that recent advances in MAPF provide a powerful foundation for scalable multi-agent planning beyond canonical MAPF. We additionally report that replacing the proposed preference construction strategy, which performs target–box and agent–stand assignment, with random preference construction solves only 2.8% of instances, highlighting the importance of informed preference construction. 
+
+4.3 Ablation Study 
+
+Finally, Fig. 2 investigates the contribution of each search component introduced in Sec. 3.5 beyond the basic LaCAM framework. The evaluation uses the instances on the random-x-x-10 maps, where x ∈ { 8, 16 , 32 , 64 }.Among the proposed techniques, search stuck detection plays the most important role in solving difficult 8Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+empty-5-5 2 4 6246               
+
+> 100 80 20 80 80 60 100 90 50 246246
+> 100 100 90 100 100 80 100 100 80
+
+empty-8-8 4 8 12 16 1248                            
+
+> 100 70 30 20 100 60 40 10 100 60 40 40 90 60 60 20 4812 16 1248
+> 100 80 40 50 100 80 60 50 100 80 60 70 100 80 70 90
+
+empty-16-16 10 20 30 40 50 10 20 30 40                                      
+
+> 100 80 50 20 0100 70 50 10 0100 60 20 20 080 50 40 10 010 20 30 40 50 10 20 30 40
+> 100 100 100 100 60 100 100 100 100 40 100 100 100 100 60 100 100 100 80 20
+
+empty-32-32 20 40 60 80 100 120 20 40 60 80 100 120                                                                  
+
+> 100 100 80 50 20 0100 90 80 60 10 080 70 30 50 0070 70 50 20 0070 60 20 50 10 10 60 30 20 00020 40 60 80 100 120 20 40 60 80 100 120
+> 100 100 100 100 70 50 100 100 100 90 60 30 100 100 90 100 70 30 100 100 90 60 60 080 60 80 40 30 10 90 70 50 10 10 0
+
+empty-64-64 50 100 150 200 50 100 150 200                            
+
+> 100 90 60 10 90 70 50 30 90 70 80 30 90 70 30 20 50 100 150 200 50 100 150 200
+> 100 100 100 80 100 90 90 30 100 90 90 60 90 80 40 30
+
+random-8-8-10 4 8 12 4812                
+
+> 80 30 10 80 20 080 60 04812 4812
+> 100 60 30 100 100 70 100 100 70
+
+random-16-16-10 5 10 15 20 510 15 20                             
+
+> 80 20 30 20 70 40 20 20 70 40 20 060 20 30 10 510 15 20 510 15 20
+> 100 60 60 40 100 70 60 40 100 70 60 40 100 70 60 40
+
+random-32-32-10 20 40 60 20 40 60                
+
+> 60 30 10 70 20 030 10 10 20 40 60 20 40 60
+> 80 70 40 80 50 40 70 50 40
+
+random-64-64-10 20 40 60 80 100 20 40 60 80 100                                              
+
+> 60 10 20 10 10 50 30 20 10 10 60 40 10 0060 20 30 0040 50 20 10 020 40 60 80 100 20 40 60 80 100
+> 60 50 20 10 060 50 50 20 10 60 50 50 10 10 60 50 50 10 10 50 50 50 10 10
+
+warehouse_c3-1 4 6 8 10 46810                             
+
+> 90 50 20 080 30 010 90 50 20 10 80 40 20 10 46810 46810
+> 90 80 70 70 90 80 70 70 100 80 70 80 100 80 70 80
+
+warehouse_c4-2 10 20 30 40 10 20 30 40                            
+
+> 90 40 10 060 40 0030 30 0080 00010 20 30 40 10 20 30 40
+> 100 90 60 0100 90 50 090 70 40 0100 60 00
+
+0 5 10 0.0 0.2 0.4 0.6 0.8 1.0 
+
+> success rate (of 1,880 instances)
+
+runtime [ s]Sokoban-PIBT (40.2%) 
+
+Sokoban-LaCAM (68.2%) 
+
+Aggregated 
+
+success [%] 
+
+#Boxes #Boxes #Agents #Agents 
+
+> Sokoban-PIBT Sokoban-LaCAM Sokoban-PIBT Sokoban-LaCAM
+
+empty-8-8 
+
+|A|=4 , |B|=16 
+
+random-8-8-10 
+
+|A|=10 , |B|=10 
+
+random-16-16-10 
+
+|A|=20 , |B|=20 
+
+random-32-32-10 
+
+|A|=60 , |B|=60 
+
+random-64-64-10 
+
+|A|=100 , |B|=100 
+
+warehouse_c3-1 
+
+|A|=10 , |B|=10 
+
+warehouse_c4-2 
+
+|A|=30 , |B|=30 
+
+• agent ■ box □ target 
+
+Figure 1: Planning performance of Sokoban-LaCAM and its underlying configuration generator, Sokoban-PIBT. The top row illustrates representative problem instances. The bottom rows report the success rate under a 10 s time limit across different maps and varying numbers of agents and boxes. Each scenario consists of ten instances. The centre-rightmost plot shows the aggregated success rate as a function of elapsed planning time. instances. Meanwhile, random restart has a substantial impact on solution quality, as also evidenced by the anytime behaviour shown in the right plot. Without it, the depth-first nature of LaCAM tends to continue digging into a single search branch, resulting in longer makespans and poorer exploration of the search space, as also reflected by the smaller numbers of generated search nodes and search constraints. The remaining components also contribute consistently to the overall performance. Although unlabelled duplicate detection and dead-end pruning introduce additional computation per node, their removal results in more generated search nodes and constraints, indicating that the extra overhead is more than compensated for by more effective pruning. 9Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura                                                        
+
+> success (rate ↑)init time (ms ↓)init cost impr (% ↑)
+> 10 s cost impr (% ↑)#search nodes #const-raints Sokoban-LaCAM 0.539 148 ±87 0.0 ±0.0 21.4 ±2.0 291K 2.6M
+> −unlabelled duplicate 0.537 175 ±106 -2.0 ±2.1 20.9 ±2.1 332K 2.8M
+> −dead-end pruning 0.532 743 ±88 0.1 ±2.5 21.3 ±2.0 347K 3.0M
+> −random restart 0.539 131 ±79 -3.2 ±3.4 -0.9 ±3.4 53K 0.9M
+> −stuck detection 0.485 180 ±92 -44.1 ±30.2 20.9 ±2.0 289K 2.6M 0246810 14 16 18 20 22
+> makespan time [ s]
+> random-8-8-10
+> −random restart
+> −dead-end pruning
+> −stuck detection
+> −unlabelled duplicate Sokoban-LaCAM
+
+Figure 2: Ablation study and anytime performance of Sokoban-LaCAM ∗ on the random-* maps from Fig. 1. Except for the success rate under the 10 s time limit, the left table reports averages over the 274 instances solved by all variants for a fair comparison, together with 95% confidence intervals. init time denotes the time required to find the first feasible solution. init cost impr reports the makespan improvement relative to Sokoban-LaCAM upon finding the initial solution. Similarly, 10 s cost impr reports the relative makespan improvement at the time limit. We additionally report the number of search nodes generated by LaCAM (#search nodes ) and the number of generated constraints ( #constraints ). The right plot focuses on the average makespan over planning time on random-8-8-10 , computed from the 72 instances solved by all variants. 
+
+## 5 Discussion 
+
+We presented Sokoban-LaCAM for Multi-Agent Sokoban, a largely unexplored planning problem that tightly integrates task assignment, object manipulation, and coordinated path planning. Our experiments show that Sokoban-LaCAM can efficiently solve large-scale instances. More importantly, however, our objective is not to solve Sokoban itself. Rather, we use it as a testbed for investigating whether recent advances in MAPF can be transferred beyond the canonical MAPF formulation. The results suggest that configuration-based MAPF search, exemplified by the combination of PIBT and LaCAM, provides a promising foundation for more general multi-agent planning problems. This perspective is particularly encouraging because conventional search techniques often struggle to scale to multi-agent settings due to the rapidly growing joint search space, whereas specialised MAPF search backbones can be extended with relatively modest domain-specific modifications, as demonstrated in this work. In this regard, we believe that MAPF should increasingly be viewed not merely as a standalone planning problem, but as a scalable algorithmic primitive upon which more sophisticated multi-agent planning systems can be built. With this in mind, a promising future direction is to integrate learned heuristics into Sokoban-LaCAM, following recent successes in learning-guided LaCAM for challenging problems [13]. 
+
+## Acknowledgments 
+
+This research was conducted by AIST and under FRONTia, a Japanese national program led by the Ministry of Economy, Trade and Industry of Japan (METI) and the New Energy and Industrial Technology Development Organization (NEDO), aimed at developing a domestic multimodal foundation model for AI robots and physical AI. 
+
+## References 
+
+[1] Dorit Dor and Uri Zwick. Sokoban and other motion planning problems. Computational Geometry ,1999. [2] Andreas Junghanns and Jonathan Schaeffer. Sokoban: Enhancing general single-agent search methods using domain knowledge. Artificial Intelligence (AIJ) , 2001. 10 Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+[3] Yaron Shoham and Gal Elidan. Solving sokoban with forward-backward reinforcement learning. In 
+
+Proceedings of Annual Symposium on Combinatorial Search (SoCS) , 2021. [4] Joseph C. Culberson. Sokoban is PSPACE-complete. Technical Report TR97-02, Department of Computing Science, University of Alberta, 1997. [5] James H Lawton and Matthew Berger. Multi-agent planning in dynamic domains. Technical report, 2008. [6] Tao Zhang, Liang Zheng, and Haruki Ueno. A multi-agent planning approach integrated with learning mechanism. In IEEE International Conference on Robotics and Biomimetics , 2009. [7] Peter R Wurman, Raffaello D’Andrea, and Mick Mountz. Coordinating hundreds of cooperative, autonomous vehicles in warehouses. AI magazine , 2008. [8] Roni Stern, Nathan Sturtevant, Ariel Felner, Sven Koenig, Hang Ma, Thayne Walker, Jiaoyang Li, Dor Atzmon, Liron Cohen, TK Kumar, et al. Multi-agent pathfinding: Definitions, variants, and benchmarks. In Proceedings of Annual Symposium on Combinatorial Search (SoCS) , 2019. [9] Keisuke Okumura. Lacam: Search-based algorithm for quick multi-agent pathfinding. In Proceedings of AAAI Conference on Artificial Intelligence (AAAI) , 2023. [10] Keisuke Okumura. Improving lacam for scalable eventually optimal multi-agent pathfinding. In 
+
+Proceedings of International Joint Conference on Artificial Intelligence (IJCAI) , 2023. [11] Keisuke Okumura, Manao Machida, Xavier Défago, and Yasumasa Tamura. Priority inheritance with backtracking for iterative multi-agent path finding. Artificial Intelligence (AIJ) , 2022. [12] Richard E Korf. Depth-first iterative-deepening: An optimal admissible tree search. Artificial Intelligence (AIJ) , 1985. [13] Rishabh Jain, Keisuke Okumura, Michael Amir, and Amanda Prorok. Graph attention-guided search for dense multi-agent pathfinding. In Proceedings of AAAI Conference on Artificial Intelligence (AAAI) ,2026. [14] Bo Fu, Zhe Chen, Rahul Chandan, Alexandre Ormiga Galvao Barbosa, Michael Caldara, Joey W Durham, and Federico Pecora. Symbolic planning and multi-agent path finding in extremely dense environments with unassigned agents. In Proceedings of AAAI Conference on Artificial Intelligence (AAAI) , 2026. [15] Takahiro Suzuki and Keisuke Okumura. Polynomial-time configuration generator for connected unlabeled multi-agent pathfinding. In Proceedings of International Conference on Automated Planning and Scheduling (ICAPS) , 2026. [16] Dieqiao Feng, Carla P Gomes, and Bart Selman. A novel automated curriculum strategy to solve hard sokoban planning instances. In Proceedings of the Conference on Neural Information Processing Systems (NeurIPS) , 2020. [17] Hang Ma. Graph-based multi-robot path finding and planning. Current Robotics Reports , 2022. [18] Jean-Marc Alkazzi and Keisuke Okumura. A comprehensive review on leveraging machine learning for multi-agent path finding. IEEE Access , 2024. 11 Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+[19] Keisuke Okumura, Yasumasa Tamura, and Xavier Défago. Time-independent planning for multiple moving agents. In Proceedings of AAAI Conference on Artificial Intelligence (AAAI) , 2021. [20] Egor Yukhnevich and Anton Andreychuk. Enhancing pibt via multi-action operations. In Proceedings of AAAI Conference on Artificial Intelligence (AAAI) , 2026. [21] Akmaral Moldagalieva, Keisuke Okumura, Amanda Prorok, and Wolfgang Hönig. db-lacam: Fast and scalable multi-robot kinodynamic motion planning with discontinuity-bounded search and lightweight mapf. In Proceedings of International Conference on Automated Planning and Scheduling (ICAPS) ,2026. [22] Hiroki Nagai and Keisuke Okumura. From gridworlds to warehouses: Adapting lightweight one-shot multi-agent pathfinding for agvs. In Proceedings of International Joint Conference on Artificial Intelligence (IJCAI) , 2026. [23] Keisuke Okumura, Guang Yang, Zhan Gao, Heedo Woo, and Amanda Prorok. Concrete multi-agent path planning enabling kinodynamically aggressive maneuvers. npj Robotics , 2026. [24] Brian P Gerkey and Maja J Matarić. A formal analysis and taxonomy of task allocation in multi-robot systems. International Journal of Robotics Research (IJRR) , 2004. [25] Ariel Felner and Roni Stern. Multi-agent path finding with unassigned agents (mapfua). In Proceedings of AAAI Conference on Artificial Intelligence (AAAI) , 2026. [26] Jingjin Yu and Steven M LaValle. Multi-agent path planning and network flow. In Proceedings of the Workshop on the Algorithmic Foundations of Robotics (WAFR) , 2013. [27] Keisuke Okumura and Xavier Défago. Solving simultaneous target assignment and path planning efficiently with time-independent execution. Artificial Intelligence (AIJ) , 2023. [28] Noy Gabay, Jonathan Morag, Ariel Felner, and Roni Stern. The reachability objective in multi-agent path finding. In Proceedings of International Conference on Autonomous Agents & Multiagent Systems (AAMAS) , 2026. [29] Hang Ma and Sven Koenig. Optimal target assignment and path finding for teams of agents. In 
+
+Proceedings of International Conference on Autonomous Agents & Multiagent Systems (AAMAS) , 2016. [30] Yimin Tang, Sven Koenig, and Jiaoyang Li. Ita-ecbs: A bounded-suboptimal algorithm for combined target-assignment and path-finding problem. In Proceedings of Annual Symposium on Combinatorial Search (SoCS) , 2024. [31] Yu Kumagai and Keisuke Okumura. Alternating target–path planning for scalable multi-agent coordina-tion. In Proceedings of Annual Symposium on Combinatorial Search (SoCS) , 2026. [32] Erik D Demaine, Martin L Demaine, and Joseph O’Rourke. Pushpush and push-1 are np-hard in 2d. In 
+
+Proceedings of the Annual Canadian Conference on Computational Geometry , 2000. [33] Zhongqiang Ren, Bunyod Suvonov, Guofei Chen, Botao He, Yijie Liao, Cornelia Fermuller, and Ji Zhang. Search-based path planning in interactive environments among movable obstacles. In Proceedings of IEEE International Conference on Robotics and Automation (ICRA) , 2025. [34] Gordon Wilfong. Motion planning in the presence of movable obstacles. In Proceedings of the annual symposium on computational geometry , 1988. 12 Solving Multi-Agent Sokoban via LaCAM Keisuke Okumura 
+
+[35] Mike Stilman and James Kuffner. Planning among movable obstacles with artificial constraints. 
+
+International Journal of Robotics Research (IJRR) , 2008. [36] Benoit Renault, Jacques Saraydaryan, David Brown, and Olivier Simonin. Multi-robot navigation among movable obstacles: Implicit coordination to deal with conflicts and deadlocks. In Proceedings of IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , 2024. [37] Shaoli Hu, Shizhe Zhao, and Zhongqiang Ren. Conflict-based search and prioritized planning for multi-agent path finding among movable obstacles. arXiv preprint , 2025. [38] David Vainshtain and Oren Salzman. Multi-agent terraforming: Efficient multi-agent path finding via environment manipulation. In Proceedings of Annual Symposium on Combinatorial Search (SoCS) ,2021. [39] Baiyu Li and Hang Ma. Double-deck multi-agent pickup and delivery: Multi-robot rearrangement in large-scale warehouses. IEEE Robotics and Automation Letters (RA-L) , 2023. [40] Pascal Bachor, Rolf-David Bergdoll, and Bernhard Nebel. The multi-agent transportation problem. In 
+
+Proceedings of AAAI Conference on Artificial Intelligence (AAAI) , 2023. [41] Hiroya Makino, Yoshihiro Ohama, and Seigo Ito. Marpf: multi-agent and multi-rack path finding. In 
+
+Proceedings of IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , 2024. [42] Yaakov Sherma, Eyal Weiss, and Oren Salzman. From agent centric to obstacle centric planning: A makespan-optimal algorithm for the multi-agent warehouse rearrangement problem. In Proceedings of Annual Symposium on Combinatorial Search (SoCS) , 2025. [43] O Gross. The bottleneck assignment problem. Technical report, 1959. [44] Lester R Ford Jr and Delbert R Fulkerson. Maximal flow through a network. Canadian journal of Mathematics , 1956. [45] Henry Kautz, Eric Horvitz, Yongshao Ruan, Carla Gomes, and Bart Selman. Dynamic restart policies. In Proceedings of AAAI Conference on Artificial Intelligence (AAAI) , 2002. [46] Eldan Cohen and J Christopher Beck. Local minima, heavy tails, and search effort for gbfs. In 
+
+Proceedings of International Joint Conference on Artificial Intelligence (IJCAI) , 2018. 13
